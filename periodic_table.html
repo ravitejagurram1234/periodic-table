@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Periodic Table of Elements</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #12121a;
+    --border: #1e1e2e;
+    --text: #e8e8f0;
+    --muted: #6b6b8a;
+    --accent: #7c3aed;
+
+    --alkali: #ff4757;
+    --alkaline: #ff6b35;
+    --lanthanide: #ffa502;
+    --actinide: #eccc68;
+    --transition: #2ed573;
+    --post-transition: #1e90ff;
+    --metalloid: #a29bfe;
+    --nonmetal: #fd79a8;
+    --halogen: #00cec9;
+    --noble: #e17055;
+    --unknown: #636e72;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Space Mono', monospace;
+    min-height: 100vh;
+    overflow-x: auto;
+    padding: 20px;
+  }
+
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: clamp(1.2rem, 3vw, 2rem);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #fff;
+    text-align: center;
+    margin-bottom: 6px;
+  }
+
+  .subtitle {
+    text-align: center;
+    font-size: 0.7rem;
+    color: var(--muted);
+    letter-spacing: 0.2em;
+    margin-bottom: 20px;
+  }
+
+  /* Legend */
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 12px;
+    justify-content: center;
+    margin-bottom: 18px;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.6rem;
+    color: var(--muted);
+    cursor: pointer;
+    transition: color 0.2s;
+  }
+  .legend-item:hover { color: var(--text); }
+  .legend-dot {
+    width: 8px; height: 8px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  /* Table */
+  .pt-wrapper {
+    overflow-x: auto;
+    padding-bottom: 10px;
+  }
+
+  .pt-grid {
+    display: grid;
+    grid-template-columns: repeat(18, 52px);
+    grid-template-rows: repeat(10, 52px);
+    gap: 3px;
+    min-width: fit-content;
+    margin: 0 auto;
+    width: fit-content;
+  }
+
+  /* Element cell */
+  .el {
+    position: relative;
+    border-radius: 5px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: transform 0.15s, border-color 0.15s, box-shadow 0.15s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2px;
+    overflow: hidden;
+  }
+  .el::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0.18;
+    border-radius: 4px;
+    background: currentColor;
+  }
+  .el:hover {
+    transform: scale(1.15) translateZ(0);
+    z-index: 10;
+    border-color: currentColor;
+    box-shadow: 0 0 16px currentColor;
+  }
+  .el:hover::before { opacity: 0.35; }
+
+  .el .num {
+    font-size: 0.45rem;
+    line-height: 1;
+    color: inherit;
+    opacity: 0.7;
+    align-self: flex-start;
+    padding-left: 3px;
+  }
+  .el .sym {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1rem;
+    line-height: 1;
+    color: inherit;
+  }
+  .el .name {
+    font-size: 0.3rem;
+    color: inherit;
+    opacity: 0.7;
+    text-align: center;
+    line-height: 1.2;
+  }
+  .el .mass {
+    font-size: 0.3rem;
+    color: inherit;
+    opacity: 0.5;
+  }
+
+  /* Category colors */
+  .alkali        { color: var(--alkali); }
+  .alkaline      { color: var(--alkaline); }
+  .lanthanide    { color: var(--lanthanide); }
+  .actinide      { color: var(--actinide); }
+  .transition    { color: var(--transition); }
+  .post-trans    { color: var(--post-transition); }
+  .metalloid     { color: var(--metalloid); }
+  .nonmetal      { color: var(--nonmetal); }
+  .halogen       { color: var(--halogen); }
+  .noble         { color: var(--noble); }
+  .unknown       { color: var(--unknown); }
+
+  /* Period & group labels */
+  .label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.55rem;
+    color: var(--muted);
+    font-family: 'Space Mono', monospace;
+  }
+
+  /* Placeholder cell (La/Ac series) */
+  .placeholder {
+    border-radius: 5px;
+    background: transparent;
+    border: 1px dashed var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.45rem;
+    color: var(--muted);
+    cursor: default;
+  }
+
+  /* Modal */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.8);
+    backdrop-filter: blur(6px);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px;
+    max-width: 420px;
+    width: 90%;
+    position: relative;
+    animation: pop 0.2s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  @keyframes pop {
+    from { transform: scale(0.85); opacity: 0; }
+    to   { transform: scale(1);    opacity: 1; }
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 16px; right: 16px;
+    background: none; border: none;
+    color: var(--muted);
+    font-size: 1.2rem;
+    cursor: pointer;
+    line-height: 1;
+    transition: color 0.2s;
+  }
+  .modal-close:hover { color: var(--text); }
+
+  .modal-symbol {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 4rem;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .modal-num {
+    font-size: 0.7rem;
+    color: var(--muted);
+    margin-bottom: 2px;
+  }
+  .modal-name {
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    font-size: 1.4rem;
+    margin-bottom: 2px;
+  }
+  .modal-category {
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    opacity: 0.6;
+    margin-bottom: 20px;
+  }
+  .modal-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 20px;
+  }
+  .modal-prop label {
+    display: block;
+    font-size: 0.55rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 2px;
+  }
+  .modal-prop span {
+    font-size: 0.8rem;
+  }
+
+  .modal-desc {
+    margin-top: 16px;
+    font-size: 0.65rem;
+    line-height: 1.7;
+    color: var(--muted);
+    border-top: 1px solid var(--border);
+    padding-top: 16px;
+  }
+
+  /* Search bar */
+  .search-bar {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 16px;
+  }
+  .search-bar input {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    padding: 8px 16px;
+    width: 240px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .search-bar input:focus { border-color: var(--accent); }
+  .search-bar input::placeholder { color: var(--muted); }
+
+  .el.dimmed { opacity: 0.15; }
+  .el.highlighted { opacity: 1 !important; }
+</style>
+</head>
+<body>
+
+<h1>Periodic Table of Elements</h1>
+<p class="subtitle">118 elements · Click any element to explore</p>
+
+<div class="search-bar">
+  <input type="text" id="search" placeholder="Search by name, symbol, or number…">
+</div>
+
+<div class="legend" id="legend"></div>
+
+<div class="pt-wrapper">
+  <div class="pt-grid" id="grid"></div>
+</div>
+
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal" id="modal">
+    <button class="modal-close" id="modal-close">✕</button>
+    <div class="modal-symbol" id="m-sym"></div>
+    <div class="modal-num" id="m-num"></div>
+    <div class="modal-name" id="m-name"></div>
+    <div class="modal-category" id="m-cat"></div>
+    <div class="modal-grid">
+      <div class="modal-prop"><label>Atomic Mass</label><span id="m-mass"></span></div>
+      <div class="modal-prop"><label>Period</label><span id="m-period"></span></div>
+      <div class="modal-prop"><label>Group</label><span id="m-group"></span></div>
+      <div class="modal-prop"><label>Electron Config</label><span id="m-config"></span></div>
+      <div class="modal-prop"><label>Electronegativity</label><span id="m-en"></span></div>
+      <div class="modal-prop"><label>State at STP</label><span id="m-state"></span></div>
+      <div class="modal-prop"><label>Melting Point</label><span id="m-mp"></span></div>
+      <div class="modal-prop"><label>Boiling Point</label><span id="m-bp"></span></div>
+    </div>
+    <div class="modal-desc" id="m-desc"></div>
+  </div>
+</div>
+
+<script>
+const CATEGORIES = {
+  'alkali':      { label: 'Alkali Metal',          css: 'alkali' },
+  'alkaline':    { label: 'Alkaline Earth Metal',  css: 'alkaline' },
+  'lanthanide':  { label: 'Lanthanide',            css: 'lanthanide' },
+  'actinide':    { label: 'Actinide',              css: 'actinide' },
+  'transition':  { label: 'Transition Metal',      css: 'transition' },
+  'post-trans':  { label: 'Post-Transition Metal', css: 'post-trans' },
+  'metalloid':   { label: 'Metalloid',             css: 'metalloid' },
+  'nonmetal':    { label: 'Nonmetal',              css: 'nonmetal' },
+  'halogen':     { label: 'Halogen',               css: 'halogen' },
+  'noble':       { label: 'Noble Gas',             css: 'noble' },
+  'unknown':     { label: 'Unknown',               css: 'unknown' },
+};
+
+// [number, symbol, name, mass, category, period, group, electronConfig, electronegativity, state, meltingK, boilingK, description]
+const ELEMENTS = [
+  [1,'H','Hydrogen',1.008,'nonmetal',1,1,'1s¹',2.20,'Gas',14,20,'The lightest and most abundant element in the universe. Forms stars and water.'],
+  [2,'He','Helium',4.003,'noble',1,18,'1s²',null,'Gas',1,4,'Second most abundant element in the universe. Used in balloons and cryogenics.'],
+  [3,'Li','Lithium',6.941,'alkali',2,1,'[He] 2s¹',0.98,'Solid',454,1615,'Lightest metal, used in batteries and mood-stabilizing medications.'],
+  [4,'Be','Beryllium',9.012,'alkaline',2,2,'[He] 2s²',1.57,'Solid',1560,2742,'Rare, light metal used in aerospace and nuclear applications.'],
+  [5,'B','Boron',10.811,'metalloid',2,13,'[He] 2s² 2p¹',2.04,'Solid',2349,4200,'Metalloid used in glass, ceramics, and semiconductors.'],
+  [6,'C','Carbon',12.011,'nonmetal',2,14,'[He] 2s² 2p²',2.55,'Solid',3915,5100,'Basis of all known life. Forms diamonds, graphite, and countless organic compounds.'],
+  [7,'N','Nitrogen',14.007,'nonmetal',2,15,'[He] 2s² 2p³',3.04,'Gas',63,77,'Makes up 78% of Earth\'s atmosphere. Essential for proteins and DNA.'],
+  [8,'O','Oxygen',15.999,'nonmetal',2,16,'[He] 2s² 2p⁴',3.44,'Gas',54,90,'Essential for respiration and combustion. Most abundant element in Earth\'s crust.'],
+  [9,'F','Fluorine',18.998,'halogen',2,17,'[He] 2s² 2p⁵',3.98,'Gas',54,85,'Most electronegative element. Extremely reactive; used in toothpaste and Teflon.'],
+  [10,'Ne','Neon',20.180,'noble',2,18,'[He] 2s² 2p⁶',null,'Gas',25,27,'Inert gas famous for its bright reddish-orange glow in neon signs.'],
+  [11,'Na','Sodium',22.990,'alkali',3,1,'[Ne] 3s¹',0.93,'Solid',371,1156,'Highly reactive metal. Combined with chlorine, it forms table salt.'],
+  [12,'Mg','Magnesium',24.305,'alkaline',3,2,'[Ne] 3s²',1.31,'Solid',923,1363,'Light structural metal used in alloys, fireworks, and biological systems.'],
+  [13,'Al','Aluminum',26.982,'post-trans',3,13,'[Ne] 3s² 3p¹',1.61,'Solid',933,2792,'Most abundant metal in Earth\'s crust. Lightweight and corrosion-resistant.'],
+  [14,'Si','Silicon',28.086,'metalloid',3,14,'[Ne] 3s² 3p²',1.90,'Solid',1687,3538,'Backbone of modern electronics and the second most abundant element in Earth\'s crust.'],
+  [15,'P','Phosphorus',30.974,'nonmetal',3,15,'[Ne] 3s² 3p³',2.19,'Solid',317,550,'Essential for DNA, ATP, and bones. White phosphorus is dangerously reactive.'],
+  [16,'S','Sulfur',32.065,'nonmetal',3,16,'[Ne] 3s² 3p⁴',2.58,'Solid',389,718,'Bright yellow nonmetal. Used in vulcanizing rubber and producing sulfuric acid.'],
+  [17,'Cl','Chlorine',35.453,'halogen',3,17,'[Ne] 3s² 3p⁵',3.16,'Gas',172,239,'Reactive halogen used to disinfect water and produce PVC plastics.'],
+  [18,'Ar','Argon',39.948,'noble',3,18,'[Ne] 3s² 3p⁶',null,'Gas',84,87,'Third most abundant gas in Earth\'s atmosphere. Used in welding and lighting.'],
+  [19,'K','Potassium',39.098,'alkali',4,1,'[Ar] 4s¹',0.82,'Solid',337,1032,'Essential electrolyte for nerve and muscle function. Very reactive with water.'],
+  [20,'Ca','Calcium',40.078,'alkaline',4,2,'[Ar] 4s²',1.00,'Solid',1115,1757,'Most abundant mineral in the human body. Vital for bones, teeth, and muscle function.'],
+  [21,'Sc','Scandium',44.956,'transition',4,3,'[Ar] 3d¹ 4s²',1.36,'Solid',1814,3109,'Rare transition metal used in aerospace alloys and high-intensity lighting.'],
+  [22,'Ti','Titanium',47.867,'transition',4,4,'[Ar] 3d² 4s²',1.54,'Solid',1941,3560,'Strong, lightweight metal with exceptional corrosion resistance. Used in aerospace.'],
+  [23,'V','Vanadium',50.942,'transition',4,5,'[Ar] 3d³ 4s²',1.63,'Solid',2183,3680,'Hard transition metal used in steel alloys and vanadium redox batteries.'],
+  [24,'Cr','Chromium',51.996,'transition',4,6,'[Ar] 3d⁵ 4s¹',1.66,'Solid',2180,2944,'Shiny, hard metal that resists corrosion. Gives stainless steel its properties.'],
+  [25,'Mn','Manganese',54.938,'transition',4,7,'[Ar] 3d⁵ 4s²',1.55,'Solid',1519,2334,'Essential trace element and important in steelmaking and battery chemistry.'],
+  [26,'Fe','Iron',55.845,'transition',4,8,'[Ar] 3d⁶ 4s²',1.83,'Solid',1811,3134,'Most used metal on Earth. Core component of steel and essential for blood oxygen.'],
+  [27,'Co','Cobalt',58.933,'transition',4,9,'[Ar] 3d⁷ 4s²',1.88,'Solid',1768,3200,'Magnetic metal used in superalloys, lithium batteries, and blue pigments.'],
+  [28,'Ni','Nickel',58.693,'transition',4,10,'[Ar] 3d⁸ 4s²',1.91,'Solid',1728,3186,'Corrosion-resistant metal used in stainless steel, coins, and electric vehicles.'],
+  [29,'Cu','Copper',63.546,'transition',4,11,'[Ar] 3d¹⁰ 4s¹',1.90,'Solid',1358,2835,'Excellent conductor of heat and electricity. Used in wiring, plumbing, and alloys.'],
+  [30,'Zn','Zinc',65.38,'transition',4,12,'[Ar] 3d¹⁰ 4s²',1.65,'Solid',693,1180,'Essential trace element used in galvanizing steel and as a dietary supplement.'],
+  [31,'Ga','Gallium',69.723,'post-trans',4,13,'[Ar] 3d¹⁰ 4s² 4p¹',1.81,'Solid',303,2477,'Melts just above room temperature. Used in LEDs and semiconductors.'],
+  [32,'Ge','Germanium',72.630,'metalloid',4,14,'[Ar] 3d¹⁰ 4s² 4p²',2.01,'Solid',1211,3106,'Metalloid critical to early transistors and still used in fiber optics.'],
+  [33,'As','Arsenic',74.922,'metalloid',4,15,'[Ar] 3d¹⁰ 4s² 4p³',2.18,'Solid',1090,887,'Toxic metalloid with semiconductor properties. Used in wood preservatives.'],
+  [34,'Se','Selenium',78.971,'nonmetal',4,16,'[Ar] 3d¹⁰ 4s² 4p⁴',2.55,'Solid',494,958,'Essential trace element with photoelectric properties used in solar cells.'],
+  [35,'Br','Bromine',79.904,'halogen',4,17,'[Ar] 3d¹⁰ 4s² 4p⁵',2.96,'Liquid',266,332,'One of only two liquid elements at room temperature. Used in flame retardants.'],
+  [36,'Kr','Krypton',83.798,'noble',4,18,'[Ar] 3d¹⁰ 4s² 4p⁶',null,'Gas',116,120,'Inert gas used in high-performance lighting and laser technology.'],
+  [37,'Rb','Rubidium',85.468,'alkali',5,1,'[Kr] 5s¹',0.82,'Solid',312,961,'Soft alkali metal used in atomic clocks and photoelectric cells.'],
+  [38,'Sr','Strontium',87.62,'alkaline',5,2,'[Kr] 5s²',0.95,'Solid',1050,1655,'Produces brilliant red color in fireworks. Also used in CRT displays.'],
+  [39,'Y','Yttrium',88.906,'transition',5,3,'[Kr] 4d¹ 5s²',1.22,'Solid',1799,3609,'Rare earth metal used in LEDs, laser crystals, and superconductors.'],
+  [40,'Zr','Zirconium',91.224,'transition',5,4,'[Kr] 4d² 5s²',1.33,'Solid',2128,4682,'Corrosion-resistant metal crucial to nuclear reactor fuel rod cladding.'],
+  [41,'Nb','Niobium',92.906,'transition',5,5,'[Kr] 4d⁴ 5s¹',1.60,'Solid',2750,5017,'Superconducting metal used in MRI machines and particle accelerators.'],
+  [42,'Mo','Molybdenum',95.96,'transition',5,6,'[Kr] 4d⁵ 5s¹',2.16,'Solid',2896,4912,'High melting point metal used in steel alloys and as a catalyst.'],
+  [43,'Tc','Technetium',98,'transition',5,7,'[Kr] 4d⁵ 5s²',1.90,'Solid',2430,4538,'First artificially produced element. Used in nuclear medicine diagnostics.'],
+  [44,'Ru','Ruthenium',101.07,'transition',5,8,'[Kr] 4d⁷ 5s¹',2.20,'Solid',2607,4423,'Rare platinum-group metal used in electrical contacts and catalysts.'],
+  [45,'Rh','Rhodium',102.906,'transition',5,9,'[Kr] 4d⁸ 5s¹',2.28,'Solid',2237,3968,'Extremely rare and valuable metal. Key component of catalytic converters.'],
+  [46,'Pd','Palladium',106.42,'transition',5,10,'[Kr] 4d¹⁰',2.20,'Solid',1828,3236,'Precious metal used in catalytic converters, electronics, and jewelry.'],
+  [47,'Ag','Silver',107.868,'transition',5,11,'[Kr] 4d¹⁰ 5s¹',1.93,'Solid',1235,2435,'Best electrical conductor of all elements. Used in jewelry, mirrors, and electronics.'],
+  [48,'Cd','Cadmium',112.411,'transition',5,12,'[Kr] 4d¹⁰ 5s²',1.69,'Solid',594,1040,'Toxic metal used in rechargeable NiCd batteries and yellow pigments.'],
+  [49,'In','Indium',114.818,'post-trans',5,13,'[Kr] 4d¹⁰ 5s² 5p¹',1.78,'Solid',430,2345,'Soft metal that makes a high-pitched cry when bent. Used in LCD screens.'],
+  [50,'Sn','Tin',118.710,'post-trans',5,14,'[Kr] 4d¹⁰ 5s² 5p²',1.96,'Solid',505,2875,'Used since antiquity in bronze alloys. Resists corrosion and is non-toxic.'],
+  [51,'Sb','Antimony',121.760,'metalloid',5,15,'[Kr] 4d¹⁰ 5s² 5p³',2.05,'Solid',904,1908,'Brittle metalloid used in flame retardants, batteries, and semiconductors.'],
+  [52,'Te','Tellurium',127.60,'metalloid',5,16,'[Kr] 4d¹⁰ 5s² 5p⁴',2.10,'Solid',723,1261,'Rare metalloid used in solar panels and as a semiconductor dopant.'],
+  [53,'I','Iodine',126.904,'halogen',5,17,'[Kr] 4d¹⁰ 5s² 5p⁵',2.66,'Solid',387,457,'Essential for thyroid hormones. Used as an antiseptic and in photography.'],
+  [54,'Xe','Xenon',131.293,'noble',5,18,'[Kr] 4d¹⁰ 5s² 5p⁶',2.60,'Gas',161,165,'Dense noble gas used in powerful lamps, anesthesia, and ion propulsion.'],
+  [55,'Cs','Caesium',132.905,'alkali',6,1,'[Xe] 6s¹',0.79,'Solid',302,944,'Most electropositive metal. Caesium-133 defines the international second.'],
+  [56,'Ba','Barium',137.327,'alkaline',6,2,'[Xe] 6s²',0.89,'Solid',1000,2170,'Soft metal whose compounds produce green flames in fireworks.'],
+  [57,'La','Lanthanum',138.905,'lanthanide',6,3,'[Xe] 5d¹ 6s²',1.10,'Solid',1193,3737,'First lanthanide, used in camera lenses, catalysts, and hybrid car batteries.'],
+  [58,'Ce','Cerium',140.116,'lanthanide',6,null,'[Xe] 4f¹ 5d¹ 6s²',1.12,'Solid',1068,3716,'Most abundant rare earth metal. Used in catalytic converters and glass polishing.'],
+  [59,'Pr','Praseodymium',140.908,'lanthanide',6,null,'[Xe] 4f³ 6s²',1.13,'Solid',1208,3793,'Creates strong permanent magnets when alloyed with neodymium.'],
+  [60,'Nd','Neodymium',144.242,'lanthanide',6,null,'[Xe] 4f⁴ 6s²',1.14,'Solid',1297,3347,'Used in powerful neodymium magnets found in speakers, hard drives, and EVs.'],
+  [61,'Pm','Promethium',145,'lanthanide',6,null,'[Xe] 4f⁵ 6s²',null,'Solid',1315,3273,'Radioactive lanthanide with no stable isotopes. Used in luminous paint.'],
+  [62,'Sm','Samarium',150.36,'lanthanide',6,null,'[Xe] 4f⁶ 6s²',1.17,'Solid',1345,2067,'Used in samarium-cobalt magnets and cancer treatment.'],
+  [63,'Eu','Europium',151.964,'lanthanide',6,null,'[Xe] 4f⁷ 6s²',null,'Solid',1099,1802,'Produces red and blue phosphors in television and LED screens.'],
+  [64,'Gd','Gadolinium',157.25,'lanthanide',6,null,'[Xe] 4f⁷ 5d¹ 6s²',1.20,'Solid',1585,3546,'Strongly magnetic at room temperature. Used as MRI contrast agent.'],
+  [65,'Tb','Terbium',158.925,'lanthanide',6,null,'[Xe] 4f⁹ 6s²',null,'Solid',1629,3503,'Used in solid-state devices, sonar systems, and green phosphors.'],
+  [66,'Dy','Dysprosium',162.500,'lanthanide',6,null,'[Xe] 4f¹⁰ 6s²',1.22,'Solid',1680,2840,'Has the highest magnetic strength of any element; used in data storage.'],
+  [67,'Ho','Holmium',164.930,'lanthanide',6,null,'[Xe] 4f¹¹ 6s²',1.23,'Solid',1734,2993,'Highest magnetic moment of any naturally occurring element.'],
+  [68,'Er','Erbium',167.259,'lanthanide',6,null,'[Xe] 4f¹² 6s²',1.24,'Solid',1802,3141,'Pink-tinted metal used in fiber optic amplifiers and lasers.'],
+  [69,'Tm','Thulium',168.934,'lanthanide',6,null,'[Xe] 4f¹³ 6s²',1.25,'Solid',1818,2223,'Rarest stable lanthanide. Used in portable X-ray devices.'],
+  [70,'Yb','Ytterbium',173.054,'lanthanide',6,null,'[Xe] 4f¹⁴ 6s²',null,'Solid',1097,1469,'Used in atomic clocks, lasers, and improving stainless steel.'],
+  [71,'Lu','Lutetium',174.967,'lanthanide',6,null,'[Xe] 4f¹⁴ 5d¹ 6s²',1.27,'Solid',1936,3675,'Hardest and densest lanthanide. Used in PET scan detectors.'],
+  [72,'Hf','Hafnium',178.49,'transition',6,4,'[Xe] 4f¹⁴ 5d² 6s²',1.30,'Solid',2506,4876,'Used in nuclear reactor control rods due to high neutron absorption.'],
+  [73,'Ta','Tantalum',180.948,'transition',6,5,'[Xe] 4f¹⁴ 5d³ 6s²',1.50,'Solid',3290,5731,'Corrosion-resistant metal used in capacitors for electronics.'],
+  [74,'W','Tungsten',183.84,'transition',6,6,'[Xe] 4f¹⁴ 5d⁴ 6s²',2.36,'Solid',3695,5828,'Highest melting point of all metals. Used in incandescent bulb filaments.'],
+  [75,'Re','Rhenium',186.207,'transition',6,7,'[Xe] 4f¹⁴ 5d⁵ 6s²',1.90,'Solid',3459,5869,'One of the rarest metals. Used in jet engine superalloys and catalysts.'],
+  [76,'Os','Osmium',190.23,'transition',6,8,'[Xe] 4f¹⁴ 5d⁶ 6s²',2.20,'Solid',3306,5285,'Densest naturally occurring element. Used in fountain pen nibs.'],
+  [77,'Ir','Iridium',192.217,'transition',6,9,'[Xe] 4f¹⁴ 5d⁷ 6s²',2.20,'Solid',2739,4701,'Most corrosion-resistant metal. Used in spark plugs and crucibles.'],
+  [78,'Pt','Platinum',195.084,'transition',6,10,'[Xe] 4f¹⁴ 5d⁹ 6s¹',2.28,'Solid',2041,4098,'Precious metal used in jewelry, catalytic converters, and cancer drugs.'],
+  [79,'Au','Gold',196.967,'transition',6,11,'[Xe] 4f¹⁴ 5d¹⁰ 6s¹',2.54,'Solid',1337,3129,'The most sought-after metal throughout history. Excellent conductor, never tarnishes.'],
+  [80,'Hg','Mercury',200.592,'transition',6,12,'[Xe] 4f¹⁴ 5d¹⁰ 6s²',2.00,'Liquid',234,630,'Only metal liquid at room temperature. Used in thermometers and fluorescent lamps.'],
+  [81,'Tl','Thallium',204.383,'post-trans',6,13,'[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p¹',1.62,'Solid',577,1746,'Highly toxic metal used in infrared optics and some superconductors.'],
+  [82,'Pb','Lead',207.2,'post-trans',6,14,'[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p²',1.87,'Solid',601,2022,'Dense, malleable metal used in batteries, radiation shielding, and historically in paint.'],
+  [83,'Bi','Bismuth',208.980,'post-trans',6,15,'[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p³',2.02,'Solid',544,1837,'Low-toxicity heavy metal used in cosmetics, pharmaceuticals, and alloys.'],
+  [84,'Po','Polonium',209,'metalloid',6,16,'[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p⁴',2.00,'Solid',527,1235,'Radioactive metalloid discovered by Marie Curie. Used in antistatic devices.'],
+  [85,'At','Astatine',210,'halogen',6,17,'[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p⁵',2.20,'Solid',575,610,'Rarest naturally occurring element. Studied for targeted cancer therapy.'],
+  [86,'Rn','Radon',222,'noble',6,18,'[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p⁶',null,'Gas',202,211,'Radioactive noble gas that seeps from soil. A serious environmental health hazard.'],
+  [87,'Fr','Francium',223,'alkali',7,1,'[Rn] 7s¹',0.70,'Solid',300,950,'Most unstable naturally occurring element and most electropositive.'],
+  [88,'Ra','Radium',226,'alkaline',7,2,'[Rn] 7s²',0.90,'Solid',973,2010,'Radioactive element discovered by Marie Curie. Used in early cancer treatment.'],
+  [89,'Ac','Actinium',227,'actinide',7,3,'[Rn] 6d¹ 7s²',1.10,'Solid',1500,3500,'Glows blue in the dark due to radioactivity. Used in cancer therapy research.'],
+  [90,'Th','Thorium',232.038,'actinide',7,null,'[Rn] 6d² 7s²',1.30,'Solid',2023,5061,'Radioactive metal with potential as safer nuclear fuel alternative to uranium.'],
+  [91,'Pa','Protactinium',231.036,'actinide',7,null,'[Rn] 5f² 6d¹ 7s²',1.50,'Solid',1841,4300,'Rare radioactive metal found in uranium ore. Parent isotope in decay chain.'],
+  [92,'U','Uranium',238.029,'actinide',7,null,'[Rn] 5f³ 6d¹ 7s²',1.38,'Solid',1405,4404,'Dense radioactive metal powering nuclear reactors worldwide.'],
+  [93,'Np','Neptunium',237,'actinide',7,null,'[Rn] 5f⁴ 6d¹ 7s²',1.36,'Solid',917,4273,'First transuranic element, produced in nuclear reactors.'],
+  [94,'Pu','Plutonium',244,'actinide',7,null,'[Rn] 5f⁶ 7s²',1.28,'Solid',913,3501,'Used in nuclear weapons and as fuel in spacecraft radioisotope generators.'],
+  [95,'Am','Americium',243,'actinide',7,null,'[Rn] 5f⁷ 7s²',1.30,'Solid',1449,2880,'Synthetic element used in household smoke detectors.'],
+  [96,'Cm','Curium',247,'actinide',7,null,'[Rn] 5f⁷ 6d¹ 7s²',1.30,'Solid',1613,3383,'Named for Marie and Pierre Curie. Used as heat/power source in spacecraft.'],
+  [97,'Bk','Berkelium',247,'actinide',7,null,'[Rn] 5f⁹ 7s²',1.30,'Solid',1259,2900,'Synthetic transuranic element. Used only in research.'],
+  [98,'Cf','Californium',251,'actinide',7,null,'[Rn] 5f¹⁰ 7s²',1.30,'Solid',1173,1743,'Used as a portable neutron source for detecting gold and silver deposits.'],
+  [99,'Es','Einsteinium',252,'actinide',7,null,'[Rn] 5f¹¹ 7s²',1.30,'Solid',1133,null,'Named for Einstein. First synthesized in a thermonuclear bomb test.'],
+  [100,'Fm','Fermium',257,'actinide',7,null,'[Rn] 5f¹² 7s²',1.30,'Solid',1800,null,'Named for Enrico Fermi. Produced only in nuclear reactors or explosions.'],
+  [101,'Md','Mendelevium',258,'actinide',7,null,'[Rn] 5f¹³ 7s²',1.30,'Solid',1100,null,'Named for Mendeleev, the creator of the periodic table.'],
+  [102,'No','Nobelium',259,'actinide',7,null,'[Rn] 5f¹⁴ 7s²',1.30,'Solid',1100,null,'Named for Alfred Nobel. Only produced a few atoms at a time.'],
+  [103,'Lr','Lawrencium',266,'actinide',7,null,'[Rn] 5f¹⁴ 7s² 7p¹',null,'Solid',1900,null,'Last actinide, named for Ernest Lawrence, inventor of the cyclotron.'],
+  [104,'Rf','Rutherfordium',267,'transition',7,4,'[Rn] 5f¹⁴ 6d² 7s²',null,'Solid',2400,5800,'First transactinide element. Named for Ernest Rutherford.'],
+  [105,'Db','Dubnium',268,'transition',7,5,'[Rn] 5f¹⁴ 6d³ 7s²',null,'Solid',null,null,'Synthetic element named for Dubna, Russia, where it was first synthesized.'],
+  [106,'Sg','Seaborgium',269,'transition',7,6,'[Rn] 5f¹⁴ 6d⁴ 7s²',null,'Solid',null,null,'Named for Glenn Seaborg, who helped synthesize ten transuranium elements.'],
+  [107,'Bh','Bohrium',270,'transition',7,7,'[Rn] 5f¹⁴ 6d⁵ 7s²',null,'Solid',null,null,'Synthetic superheavy element named for physicist Niels Bohr.'],
+  [108,'Hs','Hassium',277,'transition',7,8,'[Rn] 5f¹⁴ 6d⁶ 7s²',null,'Solid',null,null,'Named for the German state of Hesse. Only a few atoms have ever been made.'],
+  [109,'Mt','Meitnerium',278,'unknown',7,9,'[Rn] 5f¹⁴ 6d⁷ 7s²',null,'Solid',null,null,'Named for physicist Lise Meitner, pioneer of nuclear fission.'],
+  [110,'Ds','Darmstadtium',281,'unknown',7,10,'[Rn] 5f¹⁴ 6d⁸ 7s²',null,'Solid',null,null,'Synthetic superheavy element named for Darmstadt, Germany.'],
+  [111,'Rg','Roentgenium',282,'unknown',7,11,'[Rn] 5f¹⁴ 6d¹⁰ 7s¹',null,'Solid',null,null,'Named for Wilhelm Röntgen, discoverer of X-rays.'],
+  [112,'Cn','Copernicium',285,'transition',7,12,'[Rn] 5f¹⁴ 6d¹⁰ 7s²',null,'Gas',null,null,'Named for Nicolaus Copernicus. May behave more like a noble gas than a metal.'],
+  [113,'Nh','Nihonium',286,'post-trans',7,13,'[Rn] 5f¹⁴ 6d¹⁰ 7s² 7p¹',null,'Solid',null,null,'Named for Japan (Nihon). First element discovered in Asia.'],
+  [114,'Fl','Flerovium',289,'post-trans',7,14,'[Rn] 5f¹⁴ 6d¹⁰ 7s² 7p²',null,'Solid',null,null,'Named for Flerov Laboratory. May exhibit unexpected noble-gas-like properties.'],
+  [115,'Mc','Moscovium',290,'post-trans',7,15,'[Rn] 5f¹⁴ 6d¹⁰ 7s² 7p³',null,'Solid',null,null,'Named for the Moscow Oblast where it was synthesized.'],
+  [116,'Lv','Livermorium',293,'post-trans',7,16,'[Rn] 5f¹⁴ 6d¹⁰ 7s² 7p⁴',null,'Solid',null,null,'Named for Lawrence Livermore National Laboratory in California.'],
+  [117,'Ts','Tennessine',294,'halogen',7,17,'[Rn] 5f¹⁴ 6d¹⁰ 7s² 7p⁵',null,'Solid',null,null,'Named for Tennessee. Second heaviest known element.'],
+  [118,'Og','Oganesson',294,'noble',7,18,'[Rn] 5f¹⁴ 6d¹⁰ 7s² 7p⁶',null,'Solid',null,null,'Heaviest known element, named for physicist Yuri Oganessian. May be a solid.'],
+];
+
+// Grid positions: [atomicNumber, row, col]
+// Row/col are 1-indexed. We reserve row 1 for period labels, col 1 for group labels.
+// But we'll implement the standard layout directly.
+
+// Standard PT layout: [atomicNum] => [gridRow, gridCol] (1-based, matching the PT grid)
+// Period labels go in col 0, Group labels go in row 0.
+// Actual element cells in rows 1-9 (period 1-7 + 2 rows for f-block)
+// We'll use a 10-row × 18-col grid (rows 0=group labels, 1-7=periods, 8=gap, 9=lanthanum, 10=actinides)
+
+function buildGrid() {
+  const grid = document.getElementById('grid');
+  const elByNum = {};
+  ELEMENTS.forEach(e => elByNum[e[0]] = e);
+
+  // Map: atomicNumber -> [row, col] (1-indexed in the 10×18 grid)
+  // Row 1 = period 1, row 2 = period 2 ... row 7 = period 7
+  // Row 8 = La/Ac separator row (empty, just labels)
+  // Row 9 = lanthanides (57-71)
+  // Row 10 = actinides (89-103)
+
+  const pos = {};
+  // Period 1
+  pos[1]=[1,1]; pos[2]=[1,18];
+  // Period 2
+  for(let i=3;i<=4;i++) pos[i]=[2,i-2];
+  for(let i=5;i<=10;i++) pos[i]=[2,i+8];
+  // Period 3
+  for(let i=11;i<=12;i++) pos[i]=[3,i-10];
+  for(let i=13;i<=18;i++) pos[i]=[3,i-0];
+  // Period 4
+  for(let i=19;i<=36;i++) pos[i]=[4,i-18];
+  // Period 5
+  for(let i=37;i<=54;i++) pos[i]=[5,i-36];
+  // Period 6
+  for(let i=55;i<=56;i++) pos[i]=[6,i-54];
+  pos[57]=[6,3]; // La marker
+  for(let i=72;i<=86;i++) pos[i]=[6,i-68];
+  // Period 7
+  for(let i=87;i<=88;i++) pos[i]=[7,i-86];
+  pos[89]=[7,3]; // Ac marker
+  for(let i=104;i<=118;i++) pos[i]=[7,i-100];
+  // Lanthanides row 9
+  for(let i=58;i<=71;i++) pos[i]=[9,i-54];
+  // Actinides row 10
+  for(let i=90;i<=103;i++) pos[i]=[10,i-86];
+
+  // Fill 10×18 grid
+  const cells = {}; // "r,c" -> el data or null
+  for(let [num, [r,c]] of Object.entries(pos)) {
+    cells[`${r},${c}`] = parseInt(num);
+  }
+
+  // Render cells
+  for(let r=1;r<=10;r++) {
+    for(let c=1;c<=18;c++) {
+      const key = `${r},${c}`;
+      const num = cells[key];
+
+      if(r===8) {
+        // Gap row - just spacer
+        const sp = document.createElement('div');
+        sp.style.gridColumn = c;
+        sp.style.gridRow = r;
+        grid.appendChild(sp);
+        continue;
+      }
+
+      if(num) {
+        const el = elByNum[num];
+        const [n,sym,name,mass,cat,period,group,config,en,state,mp,bp,desc] = el;
+        const div = document.createElement('div');
+        div.className = `el ${CATEGORIES[cat].css}`;
+        div.style.gridColumn = c;
+        div.style.gridRow = r;
+        div.innerHTML = `<span class="num">${n}</span><span class="sym">${sym}</span><span class="name">${name.length>9?name.slice(0,8)+'…':name}</span>`;
+        div.dataset.num = n;
+        div.addEventListener('click', () => openModal(el));
+        grid.appendChild(div);
+      } else {
+        // Special placeholders for La/Ac in row 6,7 col 3
+        if((r===6||r===7) && c===3) {
+          const ph = document.createElement('div');
+          ph.className = 'placeholder';
+          ph.style.gridColumn = c;
+          ph.style.gridRow = r;
+          ph.textContent = r===6 ? '57-71' : '89-103';
+          grid.appendChild(ph);
+        } else {
+          const sp = document.createElement('div');
+          sp.style.gridColumn = c;
+          sp.style.gridRow = r;
+          grid.appendChild(sp);
+        }
+      }
+    }
+  }
+}
+
+function openModal(el) {
+  const [n,sym,name,mass,cat,period,group,config,en,state,mp,bp,desc] = el;
+  const catData = CATEGORIES[cat];
+  document.getElementById('m-sym').textContent = sym;
+  document.getElementById('m-sym').style.color = getComputedStyle(document.documentElement).getPropertyValue(`--${catData.css}`);
+  document.getElementById('m-num').textContent = `Atomic Number ${n}`;
+  document.getElementById('m-name').textContent = name;
+  document.getElementById('m-cat').textContent = catData.label;
+  document.getElementById('m-mass').textContent = mass + ' u';
+  document.getElementById('m-period').textContent = period || '—';
+  document.getElementById('m-group').textContent = group || '—';
+  document.getElementById('m-config').textContent = config;
+  document.getElementById('m-en').textContent = en != null ? en + ' (Pauling)' : '—';
+  document.getElementById('m-state').textContent = state || '—';
+  document.getElementById('m-mp').textContent = mp ? mp + ' K' : '—';
+  document.getElementById('m-bp').textContent = bp ? bp + ' K' : '—';
+  document.getElementById('m-desc').textContent = desc;
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+function buildLegend() {
+  const legend = document.getElementById('legend');
+  Object.entries(CATEGORIES).forEach(([key, {label, css}]) => {
+    const item = document.createElement('div');
+    item.className = 'legend-item';
+    item.dataset.cat = css;
+    item.innerHTML = `<div class="legend-dot" style="background:var(--${css})"></div>${label}`;
+    item.addEventListener('click', () => filterByCategory(css));
+    legend.appendChild(item);
+  });
+}
+
+let activeFilter = null;
+function filterByCategory(css) {
+  const allEls = document.querySelectorAll('.el');
+  if(activeFilter === css) {
+    activeFilter = null;
+    allEls.forEach(e => e.classList.remove('dimmed','highlighted'));
+    return;
+  }
+  activeFilter = css;
+  allEls.forEach(e => {
+    if(e.classList.contains(css)) {
+      e.classList.remove('dimmed');
+      e.classList.add('highlighted');
+    } else {
+      e.classList.add('dimmed');
+      e.classList.remove('highlighted');
+    }
+  });
+}
+
+// Search
+document.getElementById('search').addEventListener('input', function() {
+  const q = this.value.toLowerCase().trim();
+  const allEls = document.querySelectorAll('.el');
+  if(!q) {
+    activeFilter = null;
+    allEls.forEach(e => e.classList.remove('dimmed','highlighted'));
+    return;
+  }
+  allEls.forEach(e => {
+    const num = parseInt(e.dataset.num);
+    const el = ELEMENTS[num-1];
+    const [n,sym,name] = el;
+    const match = name.toLowerCase().includes(q) || sym.toLowerCase().includes(q) || String(n).includes(q);
+    if(match) {
+      e.classList.remove('dimmed');
+      e.classList.add('highlighted');
+    } else {
+      e.classList.add('dimmed');
+      e.classList.remove('highlighted');
+    }
+  });
+});
+
+document.getElementById('modal-close').addEventListener('click', () => {
+  document.getElementById('modal-overlay').classList.remove('open');
+});
+document.getElementById('modal-overlay').addEventListener('click', (e) => {
+  if(e.target === document.getElementById('modal-overlay'))
+    document.getElementById('modal-overlay').classList.remove('open');
+});
+
+buildGrid();
+buildLegend();
+</script>
+</body>
+</html>
