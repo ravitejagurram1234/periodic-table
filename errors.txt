@@ -1,10 +1,13 @@
-C:\Users\rgurram062722\bin\idea-IU-26.1\plugins\maven\lib\maven3\bin\mvn.cmd -Didea.version=2026.1 -Dmaven.ext.class.path=C:\Users\rgurram062722\bin\idea-IU-26.1\plugins\maven\lib\intellij.maven.rt\maven-event-listener.jar -Djansi.passthrough=true -Dstyle.color=always -s C:\Users\rgurram062722\.m2\Settings.xml -Dmaven.repo.local=C:\Users\rgurram062722\.m2\repository test -f pom.xml
+C:\Users\rgurram062722\bin\idea-IU-26.1\plugins\maven\lib\maven3\bin\mvn.cmd -Didea.version=2026.1 -Dmaven.ext.class.path=C:\Users\rgurram062722\bin\idea-IU-26.1\plugins\maven\lib\intellij.maven.rt\maven-event-listener.jar -Djansi.passthrough=true -Dstyle.color=always -s C:\Users\rgurram062722\.m2\Settings.xml -Dmaven.repo.local=C:\Users\rgurram062722\.m2\repository clean install -f pom.xml
 [INFO] Scanning for projects...
 [INFO] 
 [INFO] --------------< com.socgen.sgs.api:quark-engine-service >---------------
 [INFO] Building quark-batch-job REST API 1.0.0-SNAPSHOT
 [INFO]   from pom.xml
 [INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.2.0:clean (default-clean) @ quark-engine-service ---
+[INFO] Deleting C:\Users\rgurram062722\Documents\GitHub\engine service repo\quark-engine\target
 [INFO] 
 [INFO] --- build-helper:3.4.0:parse-version (parse-version) @ quark-engine-service ---
 [INFO] 
@@ -22,7 +25,9 @@ C:\Users\rgurram062722\bin\idea-IU-26.1\plugins\maven\lib\maven3\bin\mvn.cmd -Di
 [INFO] 
 [INFO] --- axistools:1.4:wsdl2java (generate-qxpsmsdk) @ quark-engine-service ---
 [INFO] about to add compile source root
-[INFO] Nothing to generate. All WSDL files are up to date.
+[INFO] Processing wsdl: C:\Users\rgurram062722\Documents\GitHub\engine service repo\quark-engine\src\main\resources\wsdl\qxpsmsdk.wsdl
+log4j:WARN No appenders could be found for logger (org.apache.axis.i18n.ProjectResourceBundle).
+log4j:WARN Please initialize the log4j system properly.
 [INFO] 
 [INFO] --- spring-boot:2.7.18:build-info (default) @ quark-engine-service ---
 [INFO] 
@@ -32,11 +37,11 @@ C:\Users\rgurram062722\bin\idea-IU-26.1\plugins\maven\lib\maven3\bin\mvn.cmd -Di
 [INFO] 
 [INFO] --- compiler:3.11.0:compile (default-compile) @ quark-engine-service ---
 [INFO] Changes detected - recompiling the module! :source
-[INFO] Compiling 417 source files with javac [debug deprecation release 17] to target\classes
+[INFO] Compiling 419 source files with javac [debug deprecation release 17] to target\classes
 [WARNING] /C:/Users/rgurram062722/Documents/GitHub/engine service repo/quark-engine/src/main/java/com/socgen/sgs/api/quark/engine/domain/DocumentDomain.java:[51,21] @Builder will ignore the initializing expression entirely. If you want the initializing expression to serve as default, add @Builder.Default. If it is not supposed to be settable during building, make the field final.
 [WARNING] /C:/Users/rgurram062722/Documents/GitHub/engine service repo/quark-engine/src/main/java/com/socgen/sgs/api/quark/engine/domain/DocumentDomain.java:[70,26] @Builder will ignore the initializing expression entirely. If you want the initializing expression to serve as default, add @Builder.Default. If it is not supposed to be settable during building, make the field final.
-[WARNING] /C:/Users/rgurram062722/Documents/GitHub/engine service repo/quark-engine/src/main/java/com/socgen/sgs/api/quark/engine/infra/dao/impl/EndRunDaoImpl.java:[106,20] setPlsqlIndexTable(int,java.lang.Object,int,int,int,int) in oracle.jdbc.OraclePreparedStatement has been deprecated
 [WARNING] /C:/Users/rgurram062722/Documents/GitHub/engine service repo/quark-engine/src/main/java/com/socgen/sgs/api/quark/engine/infra/dao/impl/EndRunDaoImpl.java:[108,20] setPlsqlIndexTable(int,java.lang.Object,int,int,int,int) in oracle.jdbc.OraclePreparedStatement has been deprecated
+[WARNING] /C:/Users/rgurram062722/Documents/GitHub/engine service repo/quark-engine/src/main/java/com/socgen/sgs/api/quark/engine/infra/dao/impl/EndRunDaoImpl.java:[110,20] setPlsqlIndexTable(int,java.lang.Object,int,int,int,int) in oracle.jdbc.OraclePreparedStatement has been deprecated
 [WARNING] /C:/Users/rgurram062722/Documents/GitHub/engine service repo/quark-engine/src/main/java/com/socgen/sgs/api/quark/engine/infra/dao/impl/InsertDataStorageDaoImpl.java:[48,20] setPlsqlIndexTable(int,java.lang.Object,int,int,int,int) in oracle.jdbc.OraclePreparedStatement has been deprecated
 [WARNING] /C:/Users/rgurram062722/Documents/GitHub/engine service repo/quark-engine/src/main/java/com/socgen/sgs/api/quark/engine/infra/dao/impl/InsertDataStorageDaoImpl.java:[49,20] setPlsqlIndexTable(int,java.lang.Object,int,int,int,int) in oracle.jdbc.OraclePreparedStatement has been deprecated
 [WARNING] /C:/Users/rgurram062722/Documents/GitHub/engine service repo/quark-engine/src/main/java/com/socgen/sgs/api/quark/engine/infra/dao/impl/InsertDataStorageDaoImpl.java:[50,20] setPlsqlIndexTable(int,java.lang.Object,int,int,int,int) in oracle.jdbc.OraclePreparedStatement has been deprecated
@@ -54,7 +59,7 @@ C:\Users\rgurram062722\bin\idea-IU-26.1\plugins\maven\lib\maven3\bin\mvn.cmd -Di
 [INFO] 
 [INFO] --- compiler:3.11.0:testCompile (default-testCompile) @ quark-engine-service ---
 [INFO] Changes detected - recompiling the module! :dependency
-[INFO] Compiling 50 source files with javac [debug deprecation release 17] to target\test-classes
+[INFO] Compiling 51 source files with javac [debug deprecation release 17] to target\test-classes
 [INFO] 
 [INFO] --- surefire:3.2.1:test (default-test) @ quark-engine-service ---
 [INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
@@ -63,149 +68,97 @@ C:\Users\rgurram062722\bin\idea-IU-26.1\plugins\maven\lib\maven3\bin\mvn.cmd -Di
 [INFO]  T E S T S
 [INFO] -------------------------------------------------------
 [INFO] Running com.socgen.sgs.api.quark.engine.CleanArchitectureLayersTest
-14:18:08.002 [main] INFO com.tngtech.archunit.core.PluginLoader -- Detected Java version 17.0.16
-[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 5.323 s -- in com.socgen.sgs.api.quark.engine.CleanArchitectureLayersTest
+04:48:01.807 [main] INFO com.tngtech.archunit.core.PluginLoader -- Detected Java version 17.0.16
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 5.367 s -- in com.socgen.sgs.api.quark.engine.CleanArchitectureLayersTest
 [INFO] Running com.socgen.sgs.api.quark.engine.WrongFrameworksTest
-[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.418 s -- in com.socgen.sgs.api.quark.engine.WrongFrameworksTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.333 s -- in com.socgen.sgs.api.quark.engine.WrongFrameworksTest
 [INFO] Running com.socgen.sgs.api.quark.engine.business.GetGabaritBusinessTest
 OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
-14:18:17.216 [main] INFO com.socgen.sgs.api.quark.engine.business.GetGabaritBusiness -- Fetching gabarit document suivi for idSuiviGabaritSource: 400
-14:18:17.233 [main] INFO com.socgen.sgs.api.quark.engine.business.GetGabaritBusiness -- Prepared gabarit paths - poolPath: null, fullPath: null
-14:18:17.292 [main] INFO com.socgen.sgs.api.quark.engine.business.GetGabaritBusiness -- Fetching certified gabarit document for idSuivi: 300
-14:18:17.297 [main] INFO com.socgen.sgs.api.quark.engine.business.GetGabaritBusiness -- Prepared gabarit paths - poolPath: R_10/G_300.QXP, fullPath: D:\Documents\R_10\G_300.QXP
-14:18:17.344 [main] INFO com.socgen.sgs.api.quark.engine.business.GetGabaritBusiness -- Fetching gabarit document suivi for idSuiviGabaritSource: 400
-14:18:17.344 [main] INFO com.socgen.sgs.api.quark.engine.business.GetGabaritBusiness -- Prepared gabarit paths - poolPath: R_10/G_400.QXP, fullPath: D:\Documents\R_10\G_400.QXP
-14:18:17.352 [main] INFO com.socgen.sgs.api.quark.engine.business.GetGabaritBusiness -- Fetching gabarit for idGabarit: 5
-14:18:17.354 [main] INFO com.socgen.sgs.api.quark.engine.business.GetGabaritBusiness -- Prepared gabarit paths - poolPath: R_10/G_1.QXP, fullPath: D:\Documents\R_10\G_1.QXP
-14:18:17.361 [main] INFO com.socgen.sgs.api.quark.engine.business.GetGabaritBusiness -- Fetching gabarit for idGabarit: 5
-14:18:17.362 [main] INFO com.socgen.sgs.api.quark.engine.business.GetGabaritBusiness -- Prepared gabarit paths - poolPath: null, fullPath: null
-14:18:17.367 [main] INFO com.socgen.sgs.api.quark.engine.business.GetGabaritBusiness -- Fetching gabarit document courant for idSuivi: 200
-14:18:17.369 [main] INFO com.socgen.sgs.api.quark.engine.business.GetGabaritBusiness -- Prepared gabarit paths - poolPath: null, fullPath: null
-14:18:17.375 [main] INFO com.socgen.sgs.api.quark.engine.business.GetGabaritBusiness -- Fetching gabarit document courant for idSuivi: 200
-14:18:17.375 [main] INFO com.socgen.sgs.api.quark.engine.business.GetGabaritBusiness -- Prepared gabarit paths - poolPath: R_10/G_200.QXP, fullPath: D:\Documents\R_10\G_200.QXP
-14:18:17.383 [main] INFO com.socgen.sgs.api.quark.engine.business.GetGabaritBusiness -- Fetching certified gabarit document for idSuivi: 300
-14:18:17.384 [main] INFO com.socgen.sgs.api.quark.engine.business.GetGabaritBusiness -- Prepared gabarit paths - poolPath: null, fullPath: null
-[ERROR] Tests run: 8, Failures: 4, Errors: 0, Skipped: 0, Time elapsed: 3.597 s <<< FAILURE! -- in com.socgen.sgs.api.quark.engine.business.GetGabaritBusinessTest
-[ERROR] com.socgen.sgs.api.quark.engine.business.GetGabaritBusinessTest.shouldFetchCertifiedGabaritAndSetPaths -- Time elapsed: 0.044 s <<< FAILURE!
-org.opentest4j.AssertionFailedError: expected: <D:\Documents/R_10/G_300.QXP> but was: <D:\Documents\R_10\G_300.QXP>
-	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
-	at org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:132)
-	at org.junit.jupiter.api.AssertEquals.failNotEqual(AssertEquals.java:197)
-	at org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:182)
-	at org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:177)
-	at org.junit.jupiter.api.Assertions.assertEquals(Assertions.java:1145)
-	at com.socgen.sgs.api.quark.engine.business.GetGabaritBusinessTest.shouldFetchCertifiedGabaritAndSetPaths(GetGabaritBusinessTest.java:115)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:569)
-	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
-	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
-
-[ERROR] com.socgen.sgs.api.quark.engine.business.GetGabaritBusinessTest.shouldFetchGabaritDocumentSuiviAndSetPaths -- Time elapsed: 0.007 s <<< FAILURE!
-org.opentest4j.AssertionFailedError: expected: <D:\Documents/R_10/G_400.QXP> but was: <D:\Documents\R_10\G_400.QXP>
-	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
-	at org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:132)
-	at org.junit.jupiter.api.AssertEquals.failNotEqual(AssertEquals.java:197)
-	at org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:182)
-	at org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:177)
-	at org.junit.jupiter.api.Assertions.assertEquals(Assertions.java:1145)
-	at com.socgen.sgs.api.quark.engine.business.GetGabaritBusinessTest.shouldFetchGabaritDocumentSuiviAndSetPaths(GetGabaritBusinessTest.java:143)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:569)
-	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
-	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
-
-[ERROR] com.socgen.sgs.api.quark.engine.business.GetGabaritBusinessTest.shouldFetchGabaritAndSetPaths -- Time elapsed: 0.007 s <<< FAILURE!
-org.opentest4j.AssertionFailedError: expected: <D:\Documents/R_10/G_1.QXP> but was: <D:\Documents\R_10\G_1.QXP>
-	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
-	at org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:132)
-	at org.junit.jupiter.api.AssertEquals.failNotEqual(AssertEquals.java:197)
-	at org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:182)
-	at org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:177)
-	at org.junit.jupiter.api.Assertions.assertEquals(Assertions.java:1145)
-	at com.socgen.sgs.api.quark.engine.business.GetGabaritBusinessTest.shouldFetchGabaritAndSetPaths(GetGabaritBusinessTest.java:57)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:569)
-	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
-	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
-
-[ERROR] com.socgen.sgs.api.quark.engine.business.GetGabaritBusinessTest.shouldFetchGabaritDocumentCourantAndSetPaths -- Time elapsed: 0.006 s <<< FAILURE!
-org.opentest4j.AssertionFailedError: expected: <D:\Documents/R_10/G_200.QXP> but was: <D:\Documents\R_10\G_200.QXP>
-	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
-	at org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:132)
-	at org.junit.jupiter.api.AssertEquals.failNotEqual(AssertEquals.java:197)
-	at org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:182)
-	at org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:177)
-	at org.junit.jupiter.api.Assertions.assertEquals(Assertions.java:1145)
-	at com.socgen.sgs.api.quark.engine.business.GetGabaritBusinessTest.shouldFetchGabaritDocumentCourantAndSetPaths(GetGabaritBusinessTest.java:87)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:569)
-	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
-	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
-
+04:48:10.928 [main] INFO com.socgen.sgs.api.quark.engine.business.GetGabaritBusiness -- Fetching gabarit document suivi for idSuiviGabaritSource: 400
+04:48:10.956 [main] INFO com.socgen.sgs.api.quark.engine.business.GetGabaritBusiness -- Prepared gabarit paths - poolPath: null, fullPath: null
+04:48:10.999 [main] INFO com.socgen.sgs.api.quark.engine.business.GetGabaritBusiness -- Fetching certified gabarit document for idSuivi: 300
+04:48:11.003 [main] INFO com.socgen.sgs.api.quark.engine.business.GetGabaritBusiness -- Prepared gabarit paths - poolPath: R_10/G_300.QXP, fullPath: D:\Documents\R_10\G_300.QXP
+04:48:11.028 [main] INFO com.socgen.sgs.api.quark.engine.business.GetGabaritBusiness -- Fetching gabarit document suivi for idSuiviGabaritSource: 400
+04:48:11.028 [main] INFO com.socgen.sgs.api.quark.engine.business.GetGabaritBusiness -- Prepared gabarit paths - poolPath: R_10/G_400.QXP, fullPath: D:\Documents\R_10\G_400.QXP
+04:48:11.033 [main] INFO com.socgen.sgs.api.quark.engine.business.GetGabaritBusiness -- Fetching gabarit for idGabarit: 5
+04:48:11.034 [main] INFO com.socgen.sgs.api.quark.engine.business.GetGabaritBusiness -- Prepared gabarit paths - poolPath: R_10/G_1.QXP, fullPath: D:\Documents\R_10\G_1.QXP
+04:48:11.039 [main] INFO com.socgen.sgs.api.quark.engine.business.GetGabaritBusiness -- Fetching gabarit for idGabarit: 5
+04:48:11.040 [main] INFO com.socgen.sgs.api.quark.engine.business.GetGabaritBusiness -- Prepared gabarit paths - poolPath: null, fullPath: null
+04:48:11.044 [main] INFO com.socgen.sgs.api.quark.engine.business.GetGabaritBusiness -- Fetching gabarit document courant for idSuivi: 200
+04:48:11.044 [main] INFO com.socgen.sgs.api.quark.engine.business.GetGabaritBusiness -- Prepared gabarit paths - poolPath: null, fullPath: null
+04:48:11.050 [main] INFO com.socgen.sgs.api.quark.engine.business.GetGabaritBusiness -- Fetching gabarit document courant for idSuivi: 200
+04:48:11.050 [main] INFO com.socgen.sgs.api.quark.engine.business.GetGabaritBusiness -- Prepared gabarit paths - poolPath: R_10/G_200.QXP, fullPath: D:\Documents\R_10\G_200.QXP
+04:48:11.056 [main] INFO com.socgen.sgs.api.quark.engine.business.GetGabaritBusiness -- Fetching certified gabarit document for idSuivi: 300
+04:48:11.056 [main] INFO com.socgen.sgs.api.quark.engine.business.GetGabaritBusiness -- Prepared gabarit paths - poolPath: null, fullPath: null
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.580 s -- in com.socgen.sgs.api.quark.engine.business.GetGabaritBusinessTest
 [INFO] Running com.socgen.sgs.api.quark.engine.business.GetInParamsBusinessTest
-14:18:17.462 [main] INFO com.socgen.sgs.api.quark.engine.business.GetInParamsBusiness -- Business layer: loading in-params for runId: 42
-14:18:17.500 [main] INFO com.socgen.sgs.api.quark.engine.business.GetInParamsBusiness -- Business layer: loading in-params for runId: 42
-[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.084 s -- in com.socgen.sgs.api.quark.engine.business.GetInParamsBusinessTest
+04:48:11.114 [main] INFO com.socgen.sgs.api.quark.engine.business.GetInParamsBusiness -- Business layer: loading in-params for runId: 42
+04:48:11.120 [main] INFO com.socgen.sgs.api.quark.engine.business.GetInParamsBusiness -- Business layer: loading in-params for runId: 42
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.054 s -- in com.socgen.sgs.api.quark.engine.business.GetInParamsBusinessTest
 [INFO] Running com.socgen.sgs.api.quark.engine.business.GetRunPropertiesBusinessTest
-14:18:17.586 [main] INFO com.socgen.sgs.api.quark.engine.business.GetRunPropertiesBusiness -- Business layer: fetching run properties for runId: 100
-14:18:17.592 [main] INFO com.socgen.sgs.api.quark.engine.business.GetRunPropertiesBusiness -- Business layer: fetching run properties for runId: 55
-[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.065 s -- in com.socgen.sgs.api.quark.engine.business.GetRunPropertiesBusinessTest
+04:48:11.170 [main] INFO com.socgen.sgs.api.quark.engine.business.GetRunPropertiesBusiness -- Business layer: fetching run properties for runId: 100
+04:48:11.175 [main] INFO com.socgen.sgs.api.quark.engine.business.GetRunPropertiesBusiness -- Business layer: fetching run properties for runId: 55
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.047 s -- in com.socgen.sgs.api.quark.engine.business.GetRunPropertiesBusinessTest
 [INFO] Running com.socgen.sgs.api.quark.engine.business.RunStartUpdateBusinessTest
-14:18:17.654 [main] INFO com.socgen.sgs.api.quark.engine.business.RunStartUpdateBusiness -- Business layer: starting run with ID: 77
-14:18:17.659 [main] INFO com.socgen.sgs.api.quark.engine.business.RunStartUpdateBusiness -- Business layer: starting run with ID: 77
-[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.042 s -- in com.socgen.sgs.api.quark.engine.business.RunStartUpdateBusinessTest
+04:48:11.225 [main] INFO com.socgen.sgs.api.quark.engine.business.RunStartUpdateBusiness -- Business layer: starting run with ID: 77
+04:48:11.228 [main] INFO com.socgen.sgs.api.quark.engine.business.RunStartUpdateBusiness -- Business layer: starting run with ID: 77
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.048 s -- in com.socgen.sgs.api.quark.engine.business.RunStartUpdateBusinessTest
 [INFO] Running com.socgen.sgs.api.quark.engine.domain.bloc.BlocBaseTest
-[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.026 s -- in com.socgen.sgs.api.quark.engine.domain.bloc.BlocBaseTest
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.020 s -- in com.socgen.sgs.api.quark.engine.domain.bloc.BlocBaseTest
 [INFO] Running com.socgen.sgs.api.quark.engine.domain.DataNameValueTest
-[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.021 s -- in com.socgen.sgs.api.quark.engine.domain.DataNameValueTest
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.016 s -- in com.socgen.sgs.api.quark.engine.domain.DataNameValueTest
 [INFO] Running com.socgen.sgs.api.quark.engine.domain.DocumentDomainTest
-[INFO] Tests run: 9, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.014 s -- in com.socgen.sgs.api.quark.engine.domain.DocumentDomainTest
+[INFO] Tests run: 9, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.010 s -- in com.socgen.sgs.api.quark.engine.domain.DocumentDomainTest
 [INFO] Running com.socgen.sgs.api.quark.engine.domain.dynamic.report.DMasterPageTest
-[INFO] Tests run: 13, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.016 s -- in com.socgen.sgs.api.quark.engine.domain.dynamic.report.DMasterPageTest
+[INFO] Tests run: 13, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.018 s -- in com.socgen.sgs.api.quark.engine.domain.dynamic.report.DMasterPageTest
 [INFO] Running com.socgen.sgs.api.quark.engine.domain.helper.DataTypeHelperTest
-[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.075 s -- in com.socgen.sgs.api.quark.engine.domain.helper.DataTypeHelperTest
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.097 s -- in com.socgen.sgs.api.quark.engine.domain.helper.DataTypeHelperTest
 [INFO] Running com.socgen.sgs.api.quark.engine.domain.InParamTest
-[INFO] Tests run: 15, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.031 s -- in com.socgen.sgs.api.quark.engine.domain.InParamTest
+[INFO] Tests run: 15, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.014 s -- in com.socgen.sgs.api.quark.engine.domain.InParamTest
 [INFO] Running com.socgen.sgs.api.quark.engine.domain.RunIdTest
-[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.009 s -- in com.socgen.sgs.api.quark.engine.domain.RunIdTest
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.007 s -- in com.socgen.sgs.api.quark.engine.domain.RunIdTest
 [INFO] Running com.socgen.sgs.api.quark.engine.domain.RunPropertiesTest
-[INFO] Tests run: 15, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.027 s -- in com.socgen.sgs.api.quark.engine.domain.RunPropertiesTest
+[INFO] Tests run: 15, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.017 s -- in com.socgen.sgs.api.quark.engine.domain.RunPropertiesTest
 [INFO] Running com.socgen.sgs.api.quark.engine.domain.RunStatusTest
-[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.013 s -- in com.socgen.sgs.api.quark.engine.domain.RunStatusTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.010 s -- in com.socgen.sgs.api.quark.engine.domain.RunStatusTest
 [INFO] Running com.socgen.sgs.api.quark.engine.domain.RunTest
-[INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.016 s -- in com.socgen.sgs.api.quark.engine.domain.RunTest
+[INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.014 s -- in com.socgen.sgs.api.quark.engine.domain.RunTest
 [INFO] Running com.socgen.sgs.api.quark.engine.domain.StoreDataTypeTest
-[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.009 s -- in com.socgen.sgs.api.quark.engine.domain.StoreDataTypeTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s -- in com.socgen.sgs.api.quark.engine.domain.StoreDataTypeTest
 [INFO] Running com.socgen.sgs.api.quark.engine.domain.task.TaskExceptionTest
-[INFO] Tests run: 12, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.030 s -- in com.socgen.sgs.api.quark.engine.domain.task.TaskExceptionTest
+[INFO] Tests run: 12, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.014 s -- in com.socgen.sgs.api.quark.engine.domain.task.TaskExceptionTest
 [INFO] Running com.socgen.sgs.api.quark.engine.domain.task.TaskImageOffsetTest
-[INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.019 s -- in com.socgen.sgs.api.quark.engine.domain.task.TaskImageOffsetTest
+[INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.010 s -- in com.socgen.sgs.api.quark.engine.domain.task.TaskImageOffsetTest
 [INFO] Running com.socgen.sgs.api.quark.engine.domain.task.TaskImagePositionTest
-[INFO] Tests run: 12, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.015 s -- in com.socgen.sgs.api.quark.engine.domain.task.TaskImagePositionTest
+[INFO] Tests run: 12, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.009 s -- in com.socgen.sgs.api.quark.engine.domain.task.TaskImagePositionTest
 [INFO] Running com.socgen.sgs.api.quark.engine.domain.task.TaskPropertiesTest
-[INFO] Tests run: 12, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.016 s -- in com.socgen.sgs.api.quark.engine.domain.task.TaskPropertiesTest
+[INFO] Tests run: 12, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.009 s -- in com.socgen.sgs.api.quark.engine.domain.task.TaskPropertiesTest
 [INFO] Running com.socgen.sgs.api.quark.engine.domain.TaskCompartimentModeTest
-[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.006 s -- in com.socgen.sgs.api.quark.engine.domain.TaskCompartimentModeTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.004 s -- in com.socgen.sgs.api.quark.engine.domain.TaskCompartimentModeTest
 [INFO] Running com.socgen.sgs.api.quark.engine.dto.RunIdDtoTest
-[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.008 s -- in com.socgen.sgs.api.quark.engine.dto.RunIdDtoTest
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.006 s -- in com.socgen.sgs.api.quark.engine.dto.RunIdDtoTest
 [INFO] Running com.socgen.sgs.api.quark.engine.enums.AbsoluteRepeatTypeTest
-[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.004 s -- in com.socgen.sgs.api.quark.engine.enums.AbsoluteRepeatTypeTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s -- in com.socgen.sgs.api.quark.engine.enums.AbsoluteRepeatTypeTest
 [INFO] Running com.socgen.sgs.api.quark.engine.enums.BlocActionEnumTest
-[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s -- in com.socgen.sgs.api.quark.engine.enums.BlocActionEnumTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.002 s -- in com.socgen.sgs.api.quark.engine.enums.BlocActionEnumTest
 [INFO] Running com.socgen.sgs.api.quark.engine.enums.DataTypeEnumTest
-[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s -- in com.socgen.sgs.api.quark.engine.enums.DataTypeEnumTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.002 s -- in com.socgen.sgs.api.quark.engine.enums.DataTypeEnumTest
 [INFO] Running com.socgen.sgs.api.quark.engine.enums.DocumentFormatEnumTest
-[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.006 s -- in com.socgen.sgs.api.quark.engine.enums.DocumentFormatEnumTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.005 s -- in com.socgen.sgs.api.quark.engine.enums.DocumentFormatEnumTest
 [INFO] Running com.socgen.sgs.api.quark.engine.enums.GabaritSourceEnumTest
-[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.010 s -- in com.socgen.sgs.api.quark.engine.enums.GabaritSourceEnumTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.004 s -- in com.socgen.sgs.api.quark.engine.enums.GabaritSourceEnumTest
 [INFO] Running com.socgen.sgs.api.quark.engine.enums.SubTaskTypeEnumTest
-[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.008 s -- in com.socgen.sgs.api.quark.engine.enums.SubTaskTypeEnumTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.005 s -- in com.socgen.sgs.api.quark.engine.enums.SubTaskTypeEnumTest
 [INFO] Running com.socgen.sgs.api.quark.engine.enums.TaskActionTypeEnumTest
-[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.005 s -- in com.socgen.sgs.api.quark.engine.enums.TaskActionTypeEnumTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s -- in com.socgen.sgs.api.quark.engine.enums.TaskActionTypeEnumTest
 [INFO] Running com.socgen.sgs.api.quark.engine.enums.TaskExceptionTypeEnumTest
 [INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s -- in com.socgen.sgs.api.quark.engine.enums.TaskExceptionTypeEnumTest
 [INFO] Running com.socgen.sgs.api.quark.engine.enums.TypeRapportEnumTest
-[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.005 s -- in com.socgen.sgs.api.quark.engine.enums.TypeRapportEnumTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s -- in com.socgen.sgs.api.quark.engine.enums.TypeRapportEnumTest
 [INFO] Running com.socgen.sgs.api.quark.engine.infra.api.v1.EngineServiceControllerTest
-14:18:18.819 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.socgen.sgs.api.quark.engine.infra.api.v1.EngineServiceControllerTest]: EngineServiceControllerTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
-14:18:19.230 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.socgen.sgs.api.quark.engine.Application for test class com.socgen.sgs.api.quark.engine.infra.api.v1.EngineServiceControllerTest
-14:18:19.455 [main] INFO org.springframework.boot.devtools.restart.RestartApplicationListener -- Restart disabled due to context in which it is running
+04:48:11.984 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.socgen.sgs.api.quark.engine.infra.api.v1.EngineServiceControllerTest]: EngineServiceControllerTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+04:48:12.311 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.socgen.sgs.api.quark.engine.Application for test class com.socgen.sgs.api.quark.engine.infra.api.v1.EngineServiceControllerTest
+04:48:12.520 [main] INFO org.springframework.boot.devtools.restart.RestartApplicationListener -- Restart disabled due to context in which it is running
 
   .   ____          _            __ _ _
  /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
@@ -215,17 +168,17 @@ org.opentest4j.AssertionFailedError: expected: <D:\Documents/R_10/G_200.QXP> but
  =========|_|==============|___/=/_/_/_/
  :: Spring Boot ::                (v3.2.0)
 
-2026-06-21T14:18:20.661+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] .a.q.e.i.a.v.EngineServiceControllerTest : Starting EngineServiceControllerTest using Java 17.0.16 with PID 1352 (started by rgurram062722 in C:\Users\rgurram062722\Documents\GitHub\engine service repo\quark-engine)
-2026-06-21T14:18:20.669+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] .a.q.e.i.a.v.EngineServiceControllerTest : No active profile set, falling back to 1 default profile: "default"
-2026-06-21T14:18:30.198+05:30  WARN 1352 --- [quark-engine-service] [           main] [                                                 ] o.s.b.a.m.MustacheAutoConfiguration      : Cannot find template location: classpath:/templates/ (please add some templates, check your Mustache configuration, or set spring.mustache.check-template-location=false)
-2026-06-21T14:18:30.558+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@6fec9aa4, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@3ff0826a, org.springframework.security.web.context.SecurityContextHolderFilter@5b7910ab, org.springframework.security.web.header.HeaderWriterFilter@36cadeec, org.springframework.web.filter.CorsFilter@20f3548b, org.springframework.security.web.csrf.CsrfFilter@e3426a9, org.springframework.security.web.authentication.logout.LogoutFilter@2ba879bc, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter@17653f4f, org.springframework.security.web.authentication.ui.DefaultLoginPageGeneratingFilter@62caa1d9, org.springframework.security.web.authentication.ui.DefaultLogoutPageGeneratingFilter@28fe255, org.springframework.security.web.authentication.www.BasicAuthenticationFilter@6807096a, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@66058c28, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@c274b00, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@9bd611a, org.springframework.security.web.access.ExceptionTranslationFilter@580f7fc1, org.springframework.security.web.access.intercept.AuthorizationFilter@37893540]
-2026-06-21T14:18:30.689+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
-2026-06-21T14:18:30.690+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
-2026-06-21T14:18:30.693+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 3 ms
-2026-06-21T14:18:30.924+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] .a.q.e.i.a.v.EngineServiceControllerTest : Started EngineServiceControllerTest in 11.494 seconds (process running for 27.94)
-2026-06-21T14:18:31.050+05:30  WARN 1352 --- [quark-engine-service] [           main] [                                                 ] o.s.w.s.h.HandlerMappingIntrospector     : Cache miss for REQUEST dispatch to '/ap/v1/EngineService/fetchRunProperties/99' (previous null). Performing CorsConfiguration lookup. This is logged once only at WARN level, and every time at TRACE.
-2026-06-21T14:18:31.125+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] .s.s.a.q.e.i.a.v.EngineServiceController : Fetching run properties for runId: 99
-2026-06-21T14:18:31.126+05:30 ERROR 1352 --- [quark-engine-service] [           main] [                                                 ] .s.s.a.q.e.i.a.v.EngineServiceController : Error fetching run properties for runId: 99
+2026-06-25T04:48:13.588+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] .a.q.e.i.a.v.EngineServiceControllerTest : Starting EngineServiceControllerTest using Java 17.0.16 with PID 1572 (started by rgurram062722 in C:\Users\rgurram062722\Documents\GitHub\engine service repo\quark-engine)
+2026-06-25T04:48:13.593+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] .a.q.e.i.a.v.EngineServiceControllerTest : No active profile set, falling back to 1 default profile: "default"
+2026-06-25T04:48:22.005+05:30  WARN 1572 --- [quark-engine-service] [           main] [                                                 ] o.s.b.a.m.MustacheAutoConfiguration      : Cannot find template location: classpath:/templates/ (please add some templates, check your Mustache configuration, or set spring.mustache.check-template-location=false)
+2026-06-25T04:48:22.342+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@7558f455, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@583813d3, org.springframework.security.web.context.SecurityContextHolderFilter@2c700686, org.springframework.security.web.header.HeaderWriterFilter@4f70087c, org.springframework.web.filter.CorsFilter@2b64714d, org.springframework.security.web.csrf.CsrfFilter@2223382c, org.springframework.security.web.authentication.logout.LogoutFilter@352f525, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter@73b0c7e6, org.springframework.security.web.authentication.ui.DefaultLoginPageGeneratingFilter@12da437f, org.springframework.security.web.authentication.ui.DefaultLogoutPageGeneratingFilter@36c1257f, org.springframework.security.web.authentication.www.BasicAuthenticationFilter@66a97c99, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@23041a53, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@4d2100eb, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@40985ae, org.springframework.security.web.access.ExceptionTranslationFilter@260fe103, org.springframework.security.web.access.intercept.AuthorizationFilter@4d1f30ab]
+2026-06-25T04:48:22.464+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
+2026-06-25T04:48:22.464+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-06-25T04:48:22.467+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 3 ms
+2026-06-25T04:48:22.667+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] .a.q.e.i.a.v.EngineServiceControllerTest : Started EngineServiceControllerTest in 10.168 seconds (process running for 25.643)
+2026-06-25T04:48:22.798+05:30  WARN 1572 --- [quark-engine-service] [           main] [                                                 ] o.s.w.s.h.HandlerMappingIntrospector     : Cache miss for REQUEST dispatch to '/ap/v1/EngineService/fetchRunProperties/99' (previous null). Performing CorsConfiguration lookup. This is logged once only at WARN level, and every time at TRACE.
+2026-06-25T04:48:22.849+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] .s.s.a.q.e.i.a.v.EngineServiceController : Fetching run properties for runId: 99
+2026-06-25T04:48:22.850+05:30 ERROR 1572 --- [quark-engine-service] [           main] [                                                 ] .s.s.a.q.e.i.a.v.EngineServiceController : Error fetching run properties for runId: 99
 
 java.lang.RuntimeException: properties error
 	at com.socgen.sgs.api.quark.engine.infra.api.v1.EngineServiceController.fetchRunProperties(EngineServiceController.java:41)
@@ -388,8 +341,9 @@ java.lang.RuntimeException: properties error
 	at org.apache.maven.surefire.booter.ForkedBooter.run(ForkedBooter.java:507)
 	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:495)
 
-2026-06-21T14:18:31.291+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] .s.s.a.q.e.i.a.v.EngineServiceController : Processing run with runId: 100
-2026-06-21T14:18:31.293+05:30 ERROR 1352 --- [quark-engine-service] [           main] [                                                 ] .s.s.a.q.e.i.a.v.EngineServiceController : Error processing run with runId: 100
+2026-06-25T04:48:22.966+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] .s.s.a.q.e.i.a.v.EngineServiceController : Processing run with runId: 100
+2026-06-25T04:48:22.980+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] .s.s.a.q.e.i.a.v.EngineServiceController : Processing run with runId: 100
+2026-06-25T04:48:22.980+05:30 ERROR 1572 --- [quark-engine-service] [           main] [                                                 ] .s.s.a.q.e.i.a.v.EngineServiceController : Error processing run with runId: 100
 
 java.lang.RuntimeException: processing error
 	at com.socgen.sgs.api.quark.engine.infra.api.v1.EngineServiceController.processRun(EngineServiceController.java:27)
@@ -552,10 +506,10 @@ java.lang.RuntimeException: processing error
 	at org.apache.maven.surefire.booter.ForkedBooter.run(ForkedBooter.java:507)
 	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:495)
 
-2026-06-21T14:18:31.314+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] .s.s.a.q.e.i.a.v.EngineServiceController : Fetching run properties for runId: 200
-2026-06-21T14:18:31.442+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] .s.s.a.q.e.i.a.v.EngineServiceController : Fetching run properties for runId: 33
-[ERROR] Tests run: 6, Failures: 0, Errors: 2, Skipped: 0, Time elapsed: 12.90 s <<< FAILURE! -- in com.socgen.sgs.api.quark.engine.infra.api.v1.EngineServiceControllerTest
-[ERROR] com.socgen.sgs.api.quark.engine.infra.api.v1.EngineServiceControllerTest.shouldPassCorrectRunIdToProcessor -- Time elapsed: 0.057 s <<< ERROR!
+2026-06-25T04:48:22.991+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] .s.s.a.q.e.i.a.v.EngineServiceController : Fetching run properties for runId: 200
+2026-06-25T04:48:23.098+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] .s.s.a.q.e.i.a.v.EngineServiceController : Fetching run properties for runId: 33
+[ERROR] Tests run: 6, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 11.39 s <<< FAILURE! -- in com.socgen.sgs.api.quark.engine.infra.api.v1.EngineServiceControllerTest
+[ERROR] com.socgen.sgs.api.quark.engine.infra.api.v1.EngineServiceControllerTest.shouldPassCorrectRunIdToProcessor -- Time elapsed: 0.056 s <<< ERROR!
 org.mockito.exceptions.base.MockitoException: 
 
 Only void methods can doNothing()!
@@ -570,24 +524,9 @@ someVoidMethod() does nothing the 1st time but throws an exception the 2nd time 
 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
 
-[ERROR] com.socgen.sgs.api.quark.engine.infra.api.v1.EngineServiceControllerTest.shouldReturn200WhenProcessRunSucceeds -- Time elapsed: 0.007 s <<< ERROR!
-org.mockito.exceptions.base.MockitoException: 
-
-Only void methods can doNothing()!
-Example of correct use of doNothing():
-    doNothing().
-    doThrow(new RuntimeException())
-    .when(mock).someVoidMethod();
-Above means:
-someVoidMethod() does nothing the 1st time but throws an exception the 2nd time is called
-	at com.socgen.sgs.api.quark.engine.infra.api.v1.EngineServiceControllerTest.shouldReturn200WhenProcessRunSucceeds(EngineServiceControllerTest.java:38)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:569)
-	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
-	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
-
 [INFO] Running com.socgen.sgs.api.quark.engine.infra.dao.impl.GetGabaritDaoImplTest
-2026-06-21T14:18:31.823+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.i.d.impl.GetGabaritDaoImpl   : Fetching gabarit for idGabarit: 1
-2026-06-21T14:18:31.832+05:30 ERROR 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.i.d.impl.GetGabaritDaoImpl   : Error fetching gabarit for idGabarit: 1
+2026-06-25T04:48:23.429+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.i.d.impl.GetGabaritDaoImpl   : Fetching gabarit for idGabarit: 1
+2026-06-25T04:48:23.435+05:30 ERROR 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.i.d.impl.GetGabaritDaoImpl   : Error fetching gabarit for idGabarit: 1
 
 java.lang.RuntimeException: db error
 	at org.springframework.jdbc.core.simple.SimpleJdbcCall.execute(SimpleJdbcCall.java:198)
@@ -669,16 +608,16 @@ java.lang.RuntimeException: db error
 	at org.apache.maven.surefire.booter.ForkedBooter.run(ForkedBooter.java:507)
 	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:495)
 
-2026-06-21T14:18:31.847+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.i.d.impl.GetGabaritDaoImpl   : Fetching gabarit for idGabarit: 99
-2026-06-21T14:18:31.848+05:30 ERROR 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.i.d.impl.GetGabaritDaoImpl   : No gabarit found for idGabarit: 99
-2026-06-21T14:18:31.853+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.i.d.impl.GetGabaritDaoImpl   : Fetching gabarit for idGabarit: 1
-2026-06-21T14:18:31.855+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.i.d.impl.GetGabaritDaoImpl   : Successfully retrieved gabarit for idGabarit: 1
-2026-06-21T14:18:31.861+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.i.d.impl.GetGabaritDaoImpl   : Fetching gabarit for idGabarit: 99
-2026-06-21T14:18:31.861+05:30 ERROR 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.i.d.impl.GetGabaritDaoImpl   : No gabarit found for idGabarit: 99
-[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.408 s -- in com.socgen.sgs.api.quark.engine.infra.dao.impl.GetGabaritDaoImplTest
+2026-06-25T04:48:23.444+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.i.d.impl.GetGabaritDaoImpl   : Fetching gabarit for idGabarit: 99
+2026-06-25T04:48:23.445+05:30 ERROR 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.i.d.impl.GetGabaritDaoImpl   : No gabarit found for idGabarit: 99
+2026-06-25T04:48:23.449+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.i.d.impl.GetGabaritDaoImpl   : Fetching gabarit for idGabarit: 1
+2026-06-25T04:48:23.450+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.i.d.impl.GetGabaritDaoImpl   : Successfully retrieved gabarit for idGabarit: 1
+2026-06-25T04:48:23.457+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.i.d.impl.GetGabaritDaoImpl   : Fetching gabarit for idGabarit: 99
+2026-06-25T04:48:23.457+05:30 ERROR 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.i.d.impl.GetGabaritDaoImpl   : No gabarit found for idGabarit: 99
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.350 s -- in com.socgen.sgs.api.quark.engine.infra.dao.impl.GetGabaritDaoImplTest
 [INFO] Running com.socgen.sgs.api.quark.engine.infra.dao.impl.GetGabaritDocumentCertifieDaoImplTest
-2026-06-21T14:18:31.878+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] .i.d.i.GetGabaritDocumentCertifieDaoImpl : Fetching certified gabarit document for idSuivi: 300
-2026-06-21T14:18:31.879+05:30 ERROR 1352 --- [quark-engine-service] [           main] [                                                 ] .i.d.i.GetGabaritDocumentCertifieDaoImpl : Error fetching certified gabarit document for idSuivi: 300
+2026-06-25T04:48:23.472+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] .i.d.i.GetGabaritDocumentCertifieDaoImpl : Fetching certified gabarit document for idSuivi: 300
+2026-06-25T04:48:23.473+05:30 ERROR 1572 --- [quark-engine-service] [           main] [                                                 ] .i.d.i.GetGabaritDocumentCertifieDaoImpl : Error fetching certified gabarit document for idSuivi: 300
 
 java.lang.RuntimeException: db error
 	at org.springframework.jdbc.core.simple.SimpleJdbcCall.execute(SimpleJdbcCall.java:198)
@@ -760,16 +699,16 @@ java.lang.RuntimeException: db error
 	at org.apache.maven.surefire.booter.ForkedBooter.run(ForkedBooter.java:507)
 	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:495)
 
-2026-06-21T14:18:31.885+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] .i.d.i.GetGabaritDocumentCertifieDaoImpl : Fetching certified gabarit document for idSuivi: 300
-2026-06-21T14:18:31.886+05:30 ERROR 1352 --- [quark-engine-service] [           main] [                                                 ] .i.d.i.GetGabaritDocumentCertifieDaoImpl : No certified gabarit document found for idSuivi: 300
-2026-06-21T14:18:31.891+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] .i.d.i.GetGabaritDocumentCertifieDaoImpl : Fetching certified gabarit document for idSuivi: 300
-2026-06-21T14:18:31.891+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] .i.d.i.GetGabaritDocumentCertifieDaoImpl : Successfully retrieved certified gabarit document for idSuivi: 300
-2026-06-21T14:18:31.896+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] .i.d.i.GetGabaritDocumentCertifieDaoImpl : Fetching certified gabarit document for idSuivi: 300
-2026-06-21T14:18:31.897+05:30 ERROR 1352 --- [quark-engine-service] [           main] [                                                 ] .i.d.i.GetGabaritDocumentCertifieDaoImpl : No certified gabarit document found for idSuivi: 300
-[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.032 s -- in com.socgen.sgs.api.quark.engine.infra.dao.impl.GetGabaritDocumentCertifieDaoImplTest
+2026-06-25T04:48:23.478+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] .i.d.i.GetGabaritDocumentCertifieDaoImpl : Fetching certified gabarit document for idSuivi: 300
+2026-06-25T04:48:23.479+05:30 ERROR 1572 --- [quark-engine-service] [           main] [                                                 ] .i.d.i.GetGabaritDocumentCertifieDaoImpl : No certified gabarit document found for idSuivi: 300
+2026-06-25T04:48:23.482+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] .i.d.i.GetGabaritDocumentCertifieDaoImpl : Fetching certified gabarit document for idSuivi: 300
+2026-06-25T04:48:23.482+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] .i.d.i.GetGabaritDocumentCertifieDaoImpl : Successfully retrieved certified gabarit document for idSuivi: 300
+2026-06-25T04:48:23.485+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] .i.d.i.GetGabaritDocumentCertifieDaoImpl : Fetching certified gabarit document for idSuivi: 300
+2026-06-25T04:48:23.487+05:30 ERROR 1572 --- [quark-engine-service] [           main] [                                                 ] .i.d.i.GetGabaritDocumentCertifieDaoImpl : No certified gabarit document found for idSuivi: 300
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.025 s -- in com.socgen.sgs.api.quark.engine.infra.dao.impl.GetGabaritDocumentCertifieDaoImplTest
 [INFO] Running com.socgen.sgs.api.quark.engine.infra.dao.impl.GetGabaritDocumentDaoImplTest
-2026-06-21T14:18:31.918+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] .s.a.q.e.i.d.i.GetGabaritDocumentDaoImpl : Fetching gabarit document for idSuivi: 200
-2026-06-21T14:18:31.919+05:30 ERROR 1352 --- [quark-engine-service] [           main] [                                                 ] .s.a.q.e.i.d.i.GetGabaritDocumentDaoImpl : Error fetching gabarit document for idSuivi: 200
+2026-06-25T04:48:23.500+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] .s.a.q.e.i.d.i.GetGabaritDocumentDaoImpl : Fetching gabarit document for idSuivi: 200
+2026-06-25T04:48:23.501+05:30 ERROR 1572 --- [quark-engine-service] [           main] [                                                 ] .s.a.q.e.i.d.i.GetGabaritDocumentDaoImpl : Error fetching gabarit document for idSuivi: 200
 
 java.lang.RuntimeException: db error
 	at org.springframework.jdbc.core.simple.SimpleJdbcCall.execute(SimpleJdbcCall.java:198)
@@ -851,24 +790,24 @@ java.lang.RuntimeException: db error
 	at org.apache.maven.surefire.booter.ForkedBooter.run(ForkedBooter.java:507)
 	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:495)
 
-2026-06-21T14:18:31.924+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] .s.a.q.e.i.d.i.GetGabaritDocumentDaoImpl : Fetching gabarit document for idSuivi: 200
-2026-06-21T14:18:31.925+05:30 ERROR 1352 --- [quark-engine-service] [           main] [                                                 ] .s.a.q.e.i.d.i.GetGabaritDocumentDaoImpl : No gabarit document found for idSuivi: 200
-2026-06-21T14:18:31.929+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] .s.a.q.e.i.d.i.GetGabaritDocumentDaoImpl : Fetching gabarit document for idSuivi: 200
-2026-06-21T14:18:31.929+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] .s.a.q.e.i.d.i.GetGabaritDocumentDaoImpl : Successfully retrieved gabarit document for idSuivi: 200
-2026-06-21T14:18:31.932+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] .s.a.q.e.i.d.i.GetGabaritDocumentDaoImpl : Fetching gabarit document for idSuivi: 200
-2026-06-21T14:18:31.933+05:30 ERROR 1352 --- [quark-engine-service] [           main] [                                                 ] .s.a.q.e.i.d.i.GetGabaritDocumentDaoImpl : No gabarit document found for idSuivi: 200
-[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.026 s -- in com.socgen.sgs.api.quark.engine.infra.dao.impl.GetGabaritDocumentDaoImplTest
+2026-06-25T04:48:23.506+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] .s.a.q.e.i.d.i.GetGabaritDocumentDaoImpl : Fetching gabarit document for idSuivi: 200
+2026-06-25T04:48:23.507+05:30 ERROR 1572 --- [quark-engine-service] [           main] [                                                 ] .s.a.q.e.i.d.i.GetGabaritDocumentDaoImpl : No gabarit document found for idSuivi: 200
+2026-06-25T04:48:23.510+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] .s.a.q.e.i.d.i.GetGabaritDocumentDaoImpl : Fetching gabarit document for idSuivi: 200
+2026-06-25T04:48:23.510+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] .s.a.q.e.i.d.i.GetGabaritDocumentDaoImpl : Successfully retrieved gabarit document for idSuivi: 200
+2026-06-25T04:48:23.513+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] .s.a.q.e.i.d.i.GetGabaritDocumentDaoImpl : Fetching gabarit document for idSuivi: 200
+2026-06-25T04:48:23.514+05:30 ERROR 1572 --- [quark-engine-service] [           main] [                                                 ] .s.a.q.e.i.d.i.GetGabaritDocumentDaoImpl : No gabarit document found for idSuivi: 200
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.024 s -- in com.socgen.sgs.api.quark.engine.infra.dao.impl.GetGabaritDocumentDaoImplTest
 [INFO] Running com.socgen.sgs.api.quark.engine.infra.dao.impl.GetInParamsDaoImplTest
-2026-06-21T14:18:31.986+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.i.d.impl.GetInParamsDaoImpl  : Fetching in-params for idSuivi: 55
-2026-06-21T14:18:31.987+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.i.d.impl.GetInParamsDaoImpl  : Loaded 0 in-params for idSuivi: 55
-2026-06-21T14:18:31.990+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.i.d.impl.GetInParamsDaoImpl  : Fetching in-params for idSuivi: 55
-2026-06-21T14:18:31.991+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.i.d.impl.GetInParamsDaoImpl  : Loaded 1 in-params for idSuivi: 55
-2026-06-21T14:18:31.995+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.i.d.impl.GetInParamsDaoImpl  : Fetching in-params for idSuivi: 55
-2026-06-21T14:18:31.996+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.i.d.impl.GetInParamsDaoImpl  : Loaded 0 in-params for idSuivi: 55
-2026-06-21T14:18:32.000+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.i.d.impl.GetInParamsDaoImpl  : Fetching in-params for idSuivi: 55
-2026-06-21T14:18:32.000+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.i.d.impl.GetInParamsDaoImpl  : Loaded 2 in-params for idSuivi: 55
-2026-06-21T14:18:32.004+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.i.d.impl.GetInParamsDaoImpl  : Fetching in-params for idSuivi: 55
-2026-06-21T14:18:32.005+05:30 ERROR 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.i.d.impl.GetInParamsDaoImpl  : Error fetching in-params for idSuivi: 55
+2026-06-25T04:48:23.560+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.i.d.impl.GetInParamsDaoImpl  : Fetching in-params for idSuivi: 55
+2026-06-25T04:48:23.560+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.i.d.impl.GetInParamsDaoImpl  : Loaded 0 in-params for idSuivi: 55
+2026-06-25T04:48:23.563+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.i.d.impl.GetInParamsDaoImpl  : Fetching in-params for idSuivi: 55
+2026-06-25T04:48:23.564+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.i.d.impl.GetInParamsDaoImpl  : Loaded 1 in-params for idSuivi: 55
+2026-06-25T04:48:23.567+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.i.d.impl.GetInParamsDaoImpl  : Fetching in-params for idSuivi: 55
+2026-06-25T04:48:23.568+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.i.d.impl.GetInParamsDaoImpl  : Loaded 0 in-params for idSuivi: 55
+2026-06-25T04:48:23.571+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.i.d.impl.GetInParamsDaoImpl  : Fetching in-params for idSuivi: 55
+2026-06-25T04:48:23.572+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.i.d.impl.GetInParamsDaoImpl  : Loaded 2 in-params for idSuivi: 55
+2026-06-25T04:48:23.576+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.i.d.impl.GetInParamsDaoImpl  : Fetching in-params for idSuivi: 55
+2026-06-25T04:48:23.577+05:30 ERROR 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.i.d.impl.GetInParamsDaoImpl  : Error fetching in-params for idSuivi: 55
 
 java.lang.RuntimeException: db error
 	at org.springframework.jdbc.core.simple.SimpleJdbcCall.execute(SimpleJdbcCall.java:198)
@@ -950,10 +889,10 @@ java.lang.RuntimeException: db error
 	at org.apache.maven.surefire.booter.ForkedBooter.run(ForkedBooter.java:507)
 	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:495)
 
-[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.067 s -- in com.socgen.sgs.api.quark.engine.infra.dao.impl.GetInParamsDaoImplTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.061 s -- in com.socgen.sgs.api.quark.engine.infra.dao.impl.GetInParamsDaoImplTest
 [INFO] Running com.socgen.sgs.api.quark.engine.infra.dao.impl.GetRunPropertiesDaoImplTest
-2026-06-21T14:18:32.064+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] .s.s.a.q.e.i.d.i.GetRunPropertiesDaoImpl : Fetching run properties for runId: 1
-2026-06-21T14:18:32.065+05:30 ERROR 1352 --- [quark-engine-service] [           main] [                                                 ] .s.s.a.q.e.i.d.i.GetRunPropertiesDaoImpl : Error fetching run properties for runId: 1
+2026-06-25T04:48:23.634+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] .s.s.a.q.e.i.d.i.GetRunPropertiesDaoImpl : Fetching run properties for runId: 1
+2026-06-25T04:48:23.635+05:30 ERROR 1572 --- [quark-engine-service] [           main] [                                                 ] .s.s.a.q.e.i.d.i.GetRunPropertiesDaoImpl : Error fetching run properties for runId: 1
 
 java.lang.RuntimeException: db error
 	at org.springframework.jdbc.core.simple.SimpleJdbcCall.execute(SimpleJdbcCall.java:198)
@@ -1035,40 +974,40 @@ java.lang.RuntimeException: db error
 	at org.apache.maven.surefire.booter.ForkedBooter.run(ForkedBooter.java:507)
 	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:495)
 
-2026-06-21T14:18:32.071+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] .s.s.a.q.e.i.d.i.GetRunPropertiesDaoImpl : Fetching run properties for runId: 99
-2026-06-21T14:18:32.073+05:30 ERROR 1352 --- [quark-engine-service] [           main] [                                                 ] .s.s.a.q.e.i.d.i.GetRunPropertiesDaoImpl : No run properties found for runId: 99
-2026-06-21T14:18:32.080+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] .s.s.a.q.e.i.d.i.GetRunPropertiesDaoImpl : Fetching run properties for runId: 99
-2026-06-21T14:18:32.081+05:30 ERROR 1352 --- [quark-engine-service] [           main] [                                                 ] .s.s.a.q.e.i.d.i.GetRunPropertiesDaoImpl : No run properties found for runId: 99
-2026-06-21T14:18:32.086+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] .s.s.a.q.e.i.d.i.GetRunPropertiesDaoImpl : Fetching run properties for runId: 1
-2026-06-21T14:18:32.087+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] .s.s.a.q.e.i.d.i.GetRunPropertiesDaoImpl : Successfully retrieved run properties for runId: 1
-2026-06-21T14:18:32.095+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] .s.s.a.q.e.i.d.i.GetRunPropertiesDaoImpl : Fetching run properties for runId: 100
-2026-06-21T14:18:32.096+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] .s.s.a.q.e.i.d.i.GetRunPropertiesDaoImpl : Successfully retrieved run properties for runId: 100
-[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.087 s -- in com.socgen.sgs.api.quark.engine.infra.dao.impl.GetRunPropertiesDaoImplTest
+2026-06-25T04:48:23.638+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] .s.s.a.q.e.i.d.i.GetRunPropertiesDaoImpl : Fetching run properties for runId: 99
+2026-06-25T04:48:23.639+05:30 ERROR 1572 --- [quark-engine-service] [           main] [                                                 ] .s.s.a.q.e.i.d.i.GetRunPropertiesDaoImpl : No run properties found for runId: 99
+2026-06-25T04:48:23.643+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] .s.s.a.q.e.i.d.i.GetRunPropertiesDaoImpl : Fetching run properties for runId: 99
+2026-06-25T04:48:23.643+05:30 ERROR 1572 --- [quark-engine-service] [           main] [                                                 ] .s.s.a.q.e.i.d.i.GetRunPropertiesDaoImpl : No run properties found for runId: 99
+2026-06-25T04:48:23.646+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] .s.s.a.q.e.i.d.i.GetRunPropertiesDaoImpl : Fetching run properties for runId: 1
+2026-06-25T04:48:23.646+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] .s.s.a.q.e.i.d.i.GetRunPropertiesDaoImpl : Successfully retrieved run properties for runId: 1
+2026-06-25T04:48:23.649+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] .s.s.a.q.e.i.d.i.GetRunPropertiesDaoImpl : Fetching run properties for runId: 100
+2026-06-25T04:48:23.649+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] .s.s.a.q.e.i.d.i.GetRunPropertiesDaoImpl : Successfully retrieved run properties for runId: 100
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.068 s -- in com.socgen.sgs.api.quark.engine.infra.dao.impl.GetRunPropertiesDaoImplTest
 [INFO] Running com.socgen.sgs.api.quark.engine.infra.dao.impl.GetTaskExceptionsDaoImplTest
-2026-06-21T14:18:32.110+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] s.s.a.q.e.i.d.i.GetTaskExceptionsDaoImpl : Fetching task exceptions for runId: 100
-2026-06-21T14:18:32.110+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] s.s.a.q.e.i.d.i.GetTaskExceptionsDaoImpl : Fetched 2 task exception rows for runId: 100
-2026-06-21T14:18:32.115+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] s.s.a.q.e.i.d.i.GetTaskExceptionsDaoImpl : Fetching task exceptions for runId: 100
-2026-06-21T14:18:32.116+05:30  WARN 1352 --- [quark-engine-service] [           main] [                                                 ] s.s.a.q.e.i.d.i.GetTaskExceptionsDaoImpl : No task exceptions returned for runId: 100
-2026-06-21T14:18:32.121+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] s.s.a.q.e.i.d.i.GetTaskExceptionsDaoImpl : Fetching task exceptions for runId: 100
-2026-06-21T14:18:32.121+05:30  WARN 1352 --- [quark-engine-service] [           main] [                                                 ] s.s.a.q.e.i.d.i.GetTaskExceptionsDaoImpl : No task exceptions returned for runId: 100
-[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.020 s -- in com.socgen.sgs.api.quark.engine.infra.dao.impl.GetTaskExceptionsDaoImplTest
+2026-06-25T04:48:23.657+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] s.s.a.q.e.i.d.i.GetTaskExceptionsDaoImpl : Fetching task exceptions for runId: 100
+2026-06-25T04:48:23.657+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] s.s.a.q.e.i.d.i.GetTaskExceptionsDaoImpl : Fetched 2 task exception rows for runId: 100
+2026-06-25T04:48:23.661+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] s.s.a.q.e.i.d.i.GetTaskExceptionsDaoImpl : Fetching task exceptions for runId: 100
+2026-06-25T04:48:23.661+05:30  WARN 1572 --- [quark-engine-service] [           main] [                                                 ] s.s.a.q.e.i.d.i.GetTaskExceptionsDaoImpl : No task exceptions returned for runId: 100
+2026-06-25T04:48:23.663+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] s.s.a.q.e.i.d.i.GetTaskExceptionsDaoImpl : Fetching task exceptions for runId: 100
+2026-06-25T04:48:23.664+05:30  WARN 1572 --- [quark-engine-service] [           main] [                                                 ] s.s.a.q.e.i.d.i.GetTaskExceptionsDaoImpl : No task exceptions returned for runId: 100
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.012 s -- in com.socgen.sgs.api.quark.engine.infra.dao.impl.GetTaskExceptionsDaoImplTest
 [INFO] Running com.socgen.sgs.api.quark.engine.infra.dao.impl.GetTasksDaoImplTest
-2026-06-21T14:18:32.138+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.i.dao.impl.GetTasksDaoImpl   : Fetching tasks for runId: 100
-2026-06-21T14:18:32.139+05:30  WARN 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.i.dao.impl.GetTasksDaoImpl   : No tasks returned for runId: 100
-2026-06-21T14:18:32.143+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.i.dao.impl.GetTasksDaoImpl   : Fetching tasks for runId: 100
-2026-06-21T14:18:32.143+05:30  WARN 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.i.dao.impl.GetTasksDaoImpl   : No tasks returned for runId: 100
-2026-06-21T14:18:32.147+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.i.dao.impl.GetTasksDaoImpl   : Fetching tasks for runId: 100
-2026-06-21T14:18:32.148+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.i.dao.impl.GetTasksDaoImpl   : Fetched 2 task rows for runId: 100
-[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.023 s -- in com.socgen.sgs.api.quark.engine.infra.dao.impl.GetTasksDaoImplTest
+2026-06-25T04:48:23.672+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.i.dao.impl.GetTasksDaoImpl   : Fetching tasks for runId: 100
+2026-06-25T04:48:23.673+05:30  WARN 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.i.dao.impl.GetTasksDaoImpl   : No tasks returned for runId: 100
+2026-06-25T04:48:23.677+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.i.dao.impl.GetTasksDaoImpl   : Fetching tasks for runId: 100
+2026-06-25T04:48:23.678+05:30  WARN 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.i.dao.impl.GetTasksDaoImpl   : No tasks returned for runId: 100
+2026-06-25T04:48:23.680+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.i.dao.impl.GetTasksDaoImpl   : Fetching tasks for runId: 100
+2026-06-25T04:48:23.680+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.i.dao.impl.GetTasksDaoImpl   : Fetched 2 task rows for runId: 100
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.013 s -- in com.socgen.sgs.api.quark.engine.infra.dao.impl.GetTasksDaoImplTest
 [INFO] Running com.socgen.sgs.api.quark.engine.infra.dao.impl.RunStartUpdateDaoImplTest
-2026-06-21T14:18:32.160+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.i.d.i.RunStartUpdateDaoImpl  : Starting run with ID: 77
-2026-06-21T14:18:32.161+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.i.d.i.RunStartUpdateDaoImpl  : Successfully started run with ID: 77
-2026-06-21T14:18:32.168+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.i.d.i.RunStartUpdateDaoImpl  : Starting run with ID: 77
-2026-06-21T14:18:32.169+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.i.d.i.RunStartUpdateDaoImpl  : Successfully started run with ID: 77
-2026-06-21T14:18:32.173+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.i.d.i.RunStartUpdateDaoImpl  : Starting run with ID: 77
-2026-06-21T14:18:32.174+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.i.d.i.RunStartUpdateDaoImpl  : Successfully started run with ID: 77
-2026-06-21T14:18:32.178+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.i.d.i.RunStartUpdateDaoImpl  : Starting run with ID: 77
-2026-06-21T14:18:32.179+05:30 ERROR 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.i.d.i.RunStartUpdateDaoImpl  : Error starting run with ID: 77
+2026-06-25T04:48:23.696+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.i.d.i.RunStartUpdateDaoImpl  : Starting run with ID: 77
+2026-06-25T04:48:23.697+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.i.d.i.RunStartUpdateDaoImpl  : Successfully started run with ID: 77
+2026-06-25T04:48:23.704+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.i.d.i.RunStartUpdateDaoImpl  : Starting run with ID: 77
+2026-06-25T04:48:23.704+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.i.d.i.RunStartUpdateDaoImpl  : Successfully started run with ID: 77
+2026-06-25T04:48:23.707+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.i.d.i.RunStartUpdateDaoImpl  : Starting run with ID: 77
+2026-06-25T04:48:23.708+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.i.d.i.RunStartUpdateDaoImpl  : Successfully started run with ID: 77
+2026-06-25T04:48:23.711+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.i.d.i.RunStartUpdateDaoImpl  : Starting run with ID: 77
+2026-06-25T04:48:23.712+05:30 ERROR 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.i.d.i.RunStartUpdateDaoImpl  : Error starting run with ID: 77
 
 java.lang.RuntimeException: db error
 	at org.springframework.jdbc.core.simple.SimpleJdbcCall.execute(SimpleJdbcCall.java:198)
@@ -1150,322 +1089,89 @@ java.lang.RuntimeException: db error
 	at org.apache.maven.surefire.booter.ForkedBooter.run(ForkedBooter.java:507)
 	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:495)
 
-[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.028 s -- in com.socgen.sgs.api.quark.engine.infra.dao.impl.RunStartUpdateDaoImplTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.023 s -- in com.socgen.sgs.api.quark.engine.infra.dao.impl.RunStartUpdateDaoImplTest
 [INFO] Running com.socgen.sgs.api.quark.engine.mapper.InParamMapperTest
-[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.300 s -- in com.socgen.sgs.api.quark.engine.mapper.InParamMapperTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.297 s -- in com.socgen.sgs.api.quark.engine.mapper.InParamMapperTest
+[INFO] Running com.socgen.sgs.api.quark.engine.mapper.InParamSqlMapperTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.011 s -- in com.socgen.sgs.api.quark.engine.mapper.InParamSqlMapperTest
 [INFO] Running com.socgen.sgs.api.quark.engine.mapper.RunPropertiesMapperTest
-[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.031 s -- in com.socgen.sgs.api.quark.engine.mapper.RunPropertiesMapperTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.024 s -- in com.socgen.sgs.api.quark.engine.mapper.RunPropertiesMapperTest
 [INFO] Running com.socgen.sgs.api.quark.engine.mapper.TaskExceptionMapperTest
-[INFO] Tests run: 13, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.017 s -- in com.socgen.sgs.api.quark.engine.mapper.TaskExceptionMapperTest
+[INFO] Tests run: 14, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.010 s -- in com.socgen.sgs.api.quark.engine.mapper.TaskExceptionMapperTest
 [INFO] Running com.socgen.sgs.api.quark.engine.mapper.TaskMapperTest
-2026-06-21T14:18:32.626+05:30  WARN 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.quark.engine.mapper.TaskMapper   : Unknown task type code: SYSTEM for taskId: 99
-2026-06-21T14:18:32.644+05:30  WARN 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.quark.engine.mapper.TaskMapper   : Unknown task type code: SYSTEM for taskId: 99
-[INFO] Tests run: 17, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.111 s -- in com.socgen.sgs.api.quark.engine.mapper.TaskMapperTest
+2026-06-25T04:48:24.141+05:30  WARN 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.quark.engine.mapper.TaskMapper   : Unknown task type code: SYSTEM for taskId: 99
+2026-06-25T04:48:24.155+05:30  WARN 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.quark.engine.mapper.TaskMapper   : Unknown task type code: SYSTEM for taskId: 99
+[INFO] Tests run: 17, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.091 s -- in com.socgen.sgs.api.quark.engine.mapper.TaskMapperTest
 [INFO] Running com.socgen.sgs.api.quark.engine.service.impl.LoadTasksServiceImplTest
-2026-06-21T14:18:32.849+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Loading tasks for runId: 100
-2026-06-21T14:18:32.849+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Loaded 1 tasks for runId: 100
-2026-06-21T14:18:32.850+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Loading task exceptions for runId: 100
-2026-06-21T14:18:32.850+05:30  WARN 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Task 999 not found in run 100 for bloc exception 'BLOC_MISSING'
-2026-06-21T14:18:32.851+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Task exceptions loaded for runId: 100
-2026-06-21T14:18:32.854+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : DID task added for runId: 100
-2026-06-21T14:18:32.861+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Loading tasks for runId: 100
-2026-06-21T14:18:32.861+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Loaded 0 tasks for runId: 100
-2026-06-21T14:18:32.862+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Loading task exceptions for runId: 100
-2026-06-21T14:18:32.862+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Task exceptions loaded for runId: 100
-2026-06-21T14:18:32.862+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : DID task added for runId: 100
-2026-06-21T14:18:32.865+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Loading tasks for runId: 100
-2026-06-21T14:18:32.866+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Loaded 0 tasks for runId: 100
-2026-06-21T14:18:32.866+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Loading task exceptions for runId: 100
-2026-06-21T14:18:32.866+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Task exceptions loaded for runId: 100
-2026-06-21T14:18:32.866+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : DID task added for runId: 100
-2026-06-21T14:18:32.872+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Loading tasks for runId: 100
-2026-06-21T14:18:32.873+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Loaded 1 tasks for runId: 100
-2026-06-21T14:18:32.873+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Loading task exceptions for runId: 100
-2026-06-21T14:18:32.873+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Task exceptions loaded for runId: 100
-2026-06-21T14:18:32.874+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : DID task added for runId: 100
-2026-06-21T14:18:32.878+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Loading tasks for runId: 100
-2026-06-21T14:18:32.879+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Loaded 1 tasks for runId: 100
-2026-06-21T14:18:32.879+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Loading task exceptions for runId: 100
-2026-06-21T14:18:32.880+05:30  WARN 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Duplicate bloc exception 'BLOC_DUP' for task [10 - null] in run 100
-2026-06-21T14:18:32.880+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Task exceptions loaded for runId: 100
-2026-06-21T14:18:32.880+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : DID task added for runId: 100
-2026-06-21T14:18:32.885+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Loading tasks for runId: 100
-2026-06-21T14:18:32.885+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Loaded 2 tasks for runId: 100
-2026-06-21T14:18:32.885+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Loading task exceptions for runId: 100
-2026-06-21T14:18:32.885+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Task exceptions loaded for runId: 100
-2026-06-21T14:18:32.886+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : DID task added for runId: 100
-2026-06-21T14:18:32.893+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Loading tasks for runId: 100
-2026-06-21T14:18:32.894+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Loaded 2 tasks for runId: 100
-2026-06-21T14:18:32.894+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Loading task exceptions for runId: 100
-2026-06-21T14:18:32.894+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Task exceptions loaded for runId: 100
-2026-06-21T14:18:32.895+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : DID task added for runId: 100
-2026-06-21T14:18:32.898+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Loading tasks for runId: 100
-2026-06-21T14:18:32.898+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Loaded 0 tasks for runId: 100
-2026-06-21T14:18:32.898+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Loading task exceptions for runId: 100
-2026-06-21T14:18:32.899+05:30  WARN 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Task 999 not found in run 100 for bloc exception 'BLOC_MISSING'
-2026-06-21T14:18:32.899+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Task exceptions loaded for runId: 100
-2026-06-21T14:18:32.899+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : DID task added for runId: 100
-2026-06-21T14:18:32.902+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Loading tasks for runId: 100
-2026-06-21T14:18:32.902+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Loaded 1 tasks for runId: 100
-2026-06-21T14:18:32.902+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Loading task exceptions for runId: 100
-2026-06-21T14:18:32.902+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Task exceptions loaded for runId: 100
-2026-06-21T14:18:32.903+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : DID task added for runId: 100
-2026-06-21T14:18:32.907+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Loading tasks for runId: 100
-2026-06-21T14:18:32.908+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Loaded 1 tasks for runId: 100
-2026-06-21T14:18:32.908+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Loading task exceptions for runId: 100
-2026-06-21T14:18:32.908+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Task exceptions loaded for runId: 100
-2026-06-21T14:18:32.908+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : DID task added for runId: 100
-[INFO] Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.249 s -- in com.socgen.sgs.api.quark.engine.service.impl.LoadTasksServiceImplTest
+2026-06-25T04:48:24.347+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Loading tasks for runId: 100
+2026-06-25T04:48:24.348+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Loaded 1 tasks for runId: 100
+2026-06-25T04:48:24.348+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Loading task exceptions for runId: 100
+2026-06-25T04:48:24.349+05:30  WARN 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Task 999 not found in run 100 for bloc exception 'BLOC_MISSING'
+2026-06-25T04:48:24.350+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Task exceptions loaded for runId: 100
+2026-06-25T04:48:24.353+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : DID task added for runId: 100
+2026-06-25T04:48:24.356+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Loading tasks for runId: 100
+2026-06-25T04:48:24.357+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Loaded 0 tasks for runId: 100
+2026-06-25T04:48:24.357+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Loading task exceptions for runId: 100
+2026-06-25T04:48:24.358+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Task exceptions loaded for runId: 100
+2026-06-25T04:48:24.358+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : DID task added for runId: 100
+2026-06-25T04:48:24.361+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Loading tasks for runId: 100
+2026-06-25T04:48:24.362+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Loaded 0 tasks for runId: 100
+2026-06-25T04:48:24.362+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Loading task exceptions for runId: 100
+2026-06-25T04:48:24.362+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Task exceptions loaded for runId: 100
+2026-06-25T04:48:24.363+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : DID task added for runId: 100
+2026-06-25T04:48:24.366+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Loading tasks for runId: 100
+2026-06-25T04:48:24.367+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Loaded 1 tasks for runId: 100
+2026-06-25T04:48:24.367+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Loading task exceptions for runId: 100
+2026-06-25T04:48:24.367+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Task exceptions loaded for runId: 100
+2026-06-25T04:48:24.367+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : DID task added for runId: 100
+2026-06-25T04:48:24.370+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Loading tasks for runId: 100
+2026-06-25T04:48:24.371+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Loaded 1 tasks for runId: 100
+2026-06-25T04:48:24.371+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Loading task exceptions for runId: 100
+2026-06-25T04:48:24.371+05:30  WARN 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Duplicate bloc exception 'BLOC_DUP' for task [10 - null] in run 100
+2026-06-25T04:48:24.372+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Task exceptions loaded for runId: 100
+2026-06-25T04:48:24.372+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : DID task added for runId: 100
+2026-06-25T04:48:24.376+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Loading tasks for runId: 100
+2026-06-25T04:48:24.377+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Loaded 2 tasks for runId: 100
+2026-06-25T04:48:24.377+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Loading task exceptions for runId: 100
+2026-06-25T04:48:24.378+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Task exceptions loaded for runId: 100
+2026-06-25T04:48:24.378+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : DID task added for runId: 100
+2026-06-25T04:48:24.384+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Loading tasks for runId: 100
+2026-06-25T04:48:24.385+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Loaded 2 tasks for runId: 100
+2026-06-25T04:48:24.385+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Loading task exceptions for runId: 100
+2026-06-25T04:48:24.386+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Task exceptions loaded for runId: 100
+2026-06-25T04:48:24.386+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : DID task added for runId: 100
+2026-06-25T04:48:24.389+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Loading tasks for runId: 100
+2026-06-25T04:48:24.389+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Loaded 0 tasks for runId: 100
+2026-06-25T04:48:24.389+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Loading task exceptions for runId: 100
+2026-06-25T04:48:24.390+05:30  WARN 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Task 999 not found in run 100 for bloc exception 'BLOC_MISSING'
+2026-06-25T04:48:24.390+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Task exceptions loaded for runId: 100
+2026-06-25T04:48:24.390+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : DID task added for runId: 100
+2026-06-25T04:48:24.392+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Loading tasks for runId: 100
+2026-06-25T04:48:24.393+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Loaded 1 tasks for runId: 100
+2026-06-25T04:48:24.393+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Loading task exceptions for runId: 100
+2026-06-25T04:48:24.393+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Task exceptions loaded for runId: 100
+2026-06-25T04:48:24.393+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : DID task added for runId: 100
+2026-06-25T04:48:24.396+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Loading tasks for runId: 100
+2026-06-25T04:48:24.397+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Loaded 1 tasks for runId: 100
+2026-06-25T04:48:24.397+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Loading task exceptions for runId: 100
+2026-06-25T04:48:24.399+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Task exceptions loaded for runId: 100
+2026-06-25T04:48:24.399+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : DID task added for runId: 100
+[INFO] Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.234 s -- in com.socgen.sgs.api.quark.engine.service.impl.LoadTasksServiceImplTest
 [INFO] Running com.socgen.sgs.api.quark.engine.service.impl.ProcessRunServiceImplTest
-2026-06-21T14:18:33.271+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Processing run with runId: 42
-2026-06-21T14:18:33.273+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Run started successfully with runId: 42
-2026-06-21T14:18:33.273+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Loading run with runId: 42
-2026-06-21T14:18:33.273+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Retrieving properties for runId: 42
-2026-06-21T14:18:33.274+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Successfully retrieved properties for runId: 42
-2026-06-21T14:18:33.277+05:30 ERROR 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Run [42] failed: Cannot invoke "com.socgen.sgs.api.quark.engine.business.LoadTemplatesBusiness.execute(com.socgen.sgs.api.quark.engine.domain.Run)" because "this.loadTemplatesBusiness" is null
-
-java.lang.NullPointerException: Cannot invoke "com.socgen.sgs.api.quark.engine.business.LoadTemplatesBusiness.execute(com.socgen.sgs.api.quark.engine.domain.Run)" because "this.loadTemplatesBusiness" is null
-	at com.socgen.sgs.api.quark.engine.service.impl.ProcessRunServiceImpl.load(ProcessRunServiceImpl.java:189)
-	at com.socgen.sgs.api.quark.engine.service.impl.ProcessRunServiceImpl.runProcessor(ProcessRunServiceImpl.java:67)
-	at com.socgen.sgs.api.quark.engine.service.impl.ProcessRunServiceImplTest.shouldInitialiseRunAndCallLoad(ProcessRunServiceImplTest.java:69)
-	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
-	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:569)
-	at org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:728)
-	at org.junit.jupiter.engine.execution.MethodInvocation.proceed(MethodInvocation.java:60)
-	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$ValidatingInvocation.proceed(InvocationInterceptorChain.java:131)
-	at org.junit.jupiter.engine.extension.TimeoutExtension.intercept(TimeoutExtension.java:156)
-	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestableMethod(TimeoutExtension.java:147)
-	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestMethod(TimeoutExtension.java:86)
-	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker$ReflectiveInterceptorCall.lambda$ofVoidMethod$0(InterceptingExecutableInvoker.java:103)
-	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.lambda$invoke$0(InterceptingExecutableInvoker.java:93)
-	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$InterceptedInvocation.proceed(InvocationInterceptorChain.java:106)
-	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.proceed(InvocationInterceptorChain.java:64)
-	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.chainAndInvoke(InvocationInterceptorChain.java:45)
-	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.invoke(InvocationInterceptorChain.java:37)
-	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.invoke(InterceptingExecutableInvoker.java:92)
-	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.invoke(InterceptingExecutableInvoker.java:86)
-	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.lambda$invokeTestMethod$7(TestMethodTestDescriptor.java:218)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.invokeTestMethod(TestMethodTestDescriptor.java:214)
-	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:139)
-	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:69)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:151)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:141)
-	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:139)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:138)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95)
-	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
-	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:41)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:155)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:141)
-	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:139)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:138)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95)
-	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
-	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:41)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:155)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:141)
-	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:139)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:138)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95)
-	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.submit(SameThreadHierarchicalTestExecutorService.java:35)
-	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.execute(HierarchicalTestExecutor.java:57)
-	at org.junit.platform.engine.support.hierarchical.HierarchicalTestEngine.execute(HierarchicalTestEngine.java:54)
-	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:198)
-	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:169)
-	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:93)
-	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.lambda$execute$0(EngineExecutionOrchestrator.java:58)
-	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.withInterceptedStreams(EngineExecutionOrchestrator.java:141)
-	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:57)
-	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:103)
-	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:85)
-	at org.junit.platform.launcher.core.DelegatingLauncher.execute(DelegatingLauncher.java:47)
-	at org.apache.maven.surefire.junitplatform.LazyLauncher.execute(LazyLauncher.java:56)
-	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.execute(JUnitPlatformProvider.java:184)
-	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invokeAllTests(JUnitPlatformProvider.java:148)
-	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invoke(JUnitPlatformProvider.java:122)
-	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:385)
-	at org.apache.maven.surefire.booter.ForkedBooter.execute(ForkedBooter.java:162)
-	at org.apache.maven.surefire.booter.ForkedBooter.run(ForkedBooter.java:507)
-	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:495)
-
-2026-06-21T14:18:33.280+05:30 ERROR 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : End_Run failed for run [42]: Cannot invoke "com.socgen.sgs.api.quark.engine.business.EndRunBusiness.execute(com.socgen.sgs.api.quark.engine.domain.Run)" because "this.endRunBusiness" is null
-
-java.lang.NullPointerException: Cannot invoke "com.socgen.sgs.api.quark.engine.business.EndRunBusiness.execute(com.socgen.sgs.api.quark.engine.domain.Run)" because "this.endRunBusiness" is null
-	at com.socgen.sgs.api.quark.engine.service.impl.ProcessRunServiceImpl.runProcessor(ProcessRunServiceImpl.java:121)
-	at com.socgen.sgs.api.quark.engine.service.impl.ProcessRunServiceImplTest.shouldInitialiseRunAndCallLoad(ProcessRunServiceImplTest.java:69)
-	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
-	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:569)
-	at org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:728)
-	at org.junit.jupiter.engine.execution.MethodInvocation.proceed(MethodInvocation.java:60)
-	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$ValidatingInvocation.proceed(InvocationInterceptorChain.java:131)
-	at org.junit.jupiter.engine.extension.TimeoutExtension.intercept(TimeoutExtension.java:156)
-	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestableMethod(TimeoutExtension.java:147)
-	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestMethod(TimeoutExtension.java:86)
-	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker$ReflectiveInterceptorCall.lambda$ofVoidMethod$0(InterceptingExecutableInvoker.java:103)
-	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.lambda$invoke$0(InterceptingExecutableInvoker.java:93)
-	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$InterceptedInvocation.proceed(InvocationInterceptorChain.java:106)
-	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.proceed(InvocationInterceptorChain.java:64)
-	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.chainAndInvoke(InvocationInterceptorChain.java:45)
-	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.invoke(InvocationInterceptorChain.java:37)
-	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.invoke(InterceptingExecutableInvoker.java:92)
-	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.invoke(InterceptingExecutableInvoker.java:86)
-	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.lambda$invokeTestMethod$7(TestMethodTestDescriptor.java:218)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.invokeTestMethod(TestMethodTestDescriptor.java:214)
-	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:139)
-	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:69)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:151)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:141)
-	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:139)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:138)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95)
-	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
-	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:41)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:155)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:141)
-	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:139)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:138)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95)
-	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
-	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:41)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:155)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:141)
-	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:139)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:138)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95)
-	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.submit(SameThreadHierarchicalTestExecutorService.java:35)
-	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.execute(HierarchicalTestExecutor.java:57)
-	at org.junit.platform.engine.support.hierarchical.HierarchicalTestEngine.execute(HierarchicalTestEngine.java:54)
-	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:198)
-	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:169)
-	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:93)
-	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.lambda$execute$0(EngineExecutionOrchestrator.java:58)
-	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.withInterceptedStreams(EngineExecutionOrchestrator.java:141)
-	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:57)
-	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:103)
-	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:85)
-	at org.junit.platform.launcher.core.DelegatingLauncher.execute(DelegatingLauncher.java:47)
-	at org.apache.maven.surefire.junitplatform.LazyLauncher.execute(LazyLauncher.java:56)
-	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.execute(JUnitPlatformProvider.java:184)
-	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invokeAllTests(JUnitPlatformProvider.java:148)
-	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invoke(JUnitPlatformProvider.java:122)
-	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:385)
-	at org.apache.maven.surefire.booter.ForkedBooter.execute(ForkedBooter.java:162)
-	at org.apache.maven.surefire.booter.ForkedBooter.run(ForkedBooter.java:507)
-	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:495)
-
-2026-06-21T14:18:33.281+05:30 ERROR 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : End_Run retry failed for run [42]: Cannot invoke "com.socgen.sgs.api.quark.engine.business.EndRunBusiness.execute(com.socgen.sgs.api.quark.engine.domain.Run)" because "this.endRunBusiness" is null
-
-java.lang.NullPointerException: Cannot invoke "com.socgen.sgs.api.quark.engine.business.EndRunBusiness.execute(com.socgen.sgs.api.quark.engine.domain.Run)" because "this.endRunBusiness" is null
-	at com.socgen.sgs.api.quark.engine.service.impl.ProcessRunServiceImpl.runProcessor(ProcessRunServiceImpl.java:127)
-	at com.socgen.sgs.api.quark.engine.service.impl.ProcessRunServiceImplTest.shouldInitialiseRunAndCallLoad(ProcessRunServiceImplTest.java:69)
-	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
-	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:569)
-	at org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:728)
-	at org.junit.jupiter.engine.execution.MethodInvocation.proceed(MethodInvocation.java:60)
-	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$ValidatingInvocation.proceed(InvocationInterceptorChain.java:131)
-	at org.junit.jupiter.engine.extension.TimeoutExtension.intercept(TimeoutExtension.java:156)
-	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestableMethod(TimeoutExtension.java:147)
-	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestMethod(TimeoutExtension.java:86)
-	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker$ReflectiveInterceptorCall.lambda$ofVoidMethod$0(InterceptingExecutableInvoker.java:103)
-	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.lambda$invoke$0(InterceptingExecutableInvoker.java:93)
-	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$InterceptedInvocation.proceed(InvocationInterceptorChain.java:106)
-	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.proceed(InvocationInterceptorChain.java:64)
-	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.chainAndInvoke(InvocationInterceptorChain.java:45)
-	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.invoke(InvocationInterceptorChain.java:37)
-	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.invoke(InterceptingExecutableInvoker.java:92)
-	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.invoke(InterceptingExecutableInvoker.java:86)
-	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.lambda$invokeTestMethod$7(TestMethodTestDescriptor.java:218)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.invokeTestMethod(TestMethodTestDescriptor.java:214)
-	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:139)
-	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:69)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:151)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:141)
-	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:139)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:138)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95)
-	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
-	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:41)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:155)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:141)
-	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:139)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:138)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95)
-	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
-	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:41)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:155)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:141)
-	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:139)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:138)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95)
-	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.submit(SameThreadHierarchicalTestExecutorService.java:35)
-	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.execute(HierarchicalTestExecutor.java:57)
-	at org.junit.platform.engine.support.hierarchical.HierarchicalTestEngine.execute(HierarchicalTestEngine.java:54)
-	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:198)
-	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:169)
-	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:93)
-	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.lambda$execute$0(EngineExecutionOrchestrator.java:58)
-	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.withInterceptedStreams(EngineExecutionOrchestrator.java:141)
-	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:57)
-	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:103)
-	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:85)
-	at org.junit.platform.launcher.core.DelegatingLauncher.execute(DelegatingLauncher.java:47)
-	at org.apache.maven.surefire.junitplatform.LazyLauncher.execute(LazyLauncher.java:56)
-	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.execute(JUnitPlatformProvider.java:184)
-	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invokeAllTests(JUnitPlatformProvider.java:148)
-	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invoke(JUnitPlatformProvider.java:122)
-	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:385)
-	at org.apache.maven.surefire.booter.ForkedBooter.execute(ForkedBooter.java:162)
-	at org.apache.maven.surefire.booter.ForkedBooter.run(ForkedBooter.java:507)
-	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:495)
-
-2026-06-21T14:18:33.282+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Run completed for runId: 42 with status: ERROR
-2026-06-21T14:18:33.294+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Processing run with runId: 1
-2026-06-21T14:18:33.297+05:30 ERROR 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Run [1] failed: start failed
+2026-06-25T04:48:25.037+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Processing run with runId: 42
+2026-06-25T04:48:25.038+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Run started successfully with runId: 42
+2026-06-25T04:48:25.038+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Loading run with runId: 42
+2026-06-25T04:48:25.039+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Retrieving properties for runId: 42
+2026-06-25T04:48:25.039+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Successfully retrieved properties for runId: 42
+2026-06-25T04:48:25.042+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Run loading completed for runId: 42
+2026-06-25T04:48:25.044+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Run completed for runId: 42 with status: GENERATED
+2026-06-25T04:48:25.053+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Processing run with runId: 1
+2026-06-25T04:48:25.054+05:30 ERROR 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Run [1] failed: start failed
 
 java.lang.RuntimeException: start failed
 	at com.socgen.sgs.api.quark.engine.business.RunStartUpdateBusiness.execute(RunStartUpdateBusiness.java:22)
 	at com.socgen.sgs.api.quark.engine.service.impl.ProcessRunServiceImpl.runProcessor(ProcessRunServiceImpl.java:62)
-	at com.socgen.sgs.api.quark.engine.service.impl.ProcessRunServiceImplTest.lambda$shouldPropagateExceptionFromStartUpdate$0(ProcessRunServiceImplTest.java:131)
-	at org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:53)
-	at org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:35)
-	at org.junit.jupiter.api.Assertions.assertThrows(Assertions.java:3115)
-	at com.socgen.sgs.api.quark.engine.service.impl.ProcessRunServiceImplTest.shouldPropagateExceptionFromStartUpdate(ProcessRunServiceImplTest.java:131)
+	at com.socgen.sgs.api.quark.engine.service.impl.ProcessRunServiceImplTest.shouldPropagateExceptionFromStartUpdate(ProcessRunServiceImplTest.java:152)
 	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
 	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
@@ -1538,468 +1244,30 @@ java.lang.RuntimeException: start failed
 	at org.apache.maven.surefire.booter.ForkedBooter.run(ForkedBooter.java:507)
 	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:495)
 
-2026-06-21T14:18:33.298+05:30 ERROR 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : End_Run failed for run [1]: Cannot invoke "com.socgen.sgs.api.quark.engine.business.EndRunBusiness.execute(com.socgen.sgs.api.quark.engine.domain.Run)" because "this.endRunBusiness" is null
-
-java.lang.NullPointerException: Cannot invoke "com.socgen.sgs.api.quark.engine.business.EndRunBusiness.execute(com.socgen.sgs.api.quark.engine.domain.Run)" because "this.endRunBusiness" is null
-	at com.socgen.sgs.api.quark.engine.service.impl.ProcessRunServiceImpl.runProcessor(ProcessRunServiceImpl.java:121)
-	at com.socgen.sgs.api.quark.engine.service.impl.ProcessRunServiceImplTest.lambda$shouldPropagateExceptionFromStartUpdate$0(ProcessRunServiceImplTest.java:131)
-	at org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:53)
-	at org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:35)
-	at org.junit.jupiter.api.Assertions.assertThrows(Assertions.java:3115)
-	at com.socgen.sgs.api.quark.engine.service.impl.ProcessRunServiceImplTest.shouldPropagateExceptionFromStartUpdate(ProcessRunServiceImplTest.java:131)
-	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
-	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:569)
-	at org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:728)
-	at org.junit.jupiter.engine.execution.MethodInvocation.proceed(MethodInvocation.java:60)
-	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$ValidatingInvocation.proceed(InvocationInterceptorChain.java:131)
-	at org.junit.jupiter.engine.extension.TimeoutExtension.intercept(TimeoutExtension.java:156)
-	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestableMethod(TimeoutExtension.java:147)
-	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestMethod(TimeoutExtension.java:86)
-	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker$ReflectiveInterceptorCall.lambda$ofVoidMethod$0(InterceptingExecutableInvoker.java:103)
-	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.lambda$invoke$0(InterceptingExecutableInvoker.java:93)
-	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$InterceptedInvocation.proceed(InvocationInterceptorChain.java:106)
-	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.proceed(InvocationInterceptorChain.java:64)
-	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.chainAndInvoke(InvocationInterceptorChain.java:45)
-	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.invoke(InvocationInterceptorChain.java:37)
-	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.invoke(InterceptingExecutableInvoker.java:92)
-	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.invoke(InterceptingExecutableInvoker.java:86)
-	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.lambda$invokeTestMethod$7(TestMethodTestDescriptor.java:218)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.invokeTestMethod(TestMethodTestDescriptor.java:214)
-	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:139)
-	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:69)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:151)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:141)
-	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:139)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:138)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95)
-	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
-	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:41)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:155)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:141)
-	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:139)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:138)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95)
-	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
-	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:41)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:155)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:141)
-	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:139)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:138)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95)
-	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.submit(SameThreadHierarchicalTestExecutorService.java:35)
-	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.execute(HierarchicalTestExecutor.java:57)
-	at org.junit.platform.engine.support.hierarchical.HierarchicalTestEngine.execute(HierarchicalTestEngine.java:54)
-	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:198)
-	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:169)
-	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:93)
-	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.lambda$execute$0(EngineExecutionOrchestrator.java:58)
-	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.withInterceptedStreams(EngineExecutionOrchestrator.java:141)
-	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:57)
-	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:103)
-	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:85)
-	at org.junit.platform.launcher.core.DelegatingLauncher.execute(DelegatingLauncher.java:47)
-	at org.apache.maven.surefire.junitplatform.LazyLauncher.execute(LazyLauncher.java:56)
-	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.execute(JUnitPlatformProvider.java:184)
-	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invokeAllTests(JUnitPlatformProvider.java:148)
-	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invoke(JUnitPlatformProvider.java:122)
-	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:385)
-	at org.apache.maven.surefire.booter.ForkedBooter.execute(ForkedBooter.java:162)
-	at org.apache.maven.surefire.booter.ForkedBooter.run(ForkedBooter.java:507)
-	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:495)
-
-2026-06-21T14:18:33.300+05:30 ERROR 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : End_Run retry failed for run [1]: Cannot invoke "com.socgen.sgs.api.quark.engine.business.EndRunBusiness.execute(com.socgen.sgs.api.quark.engine.domain.Run)" because "this.endRunBusiness" is null
-
-java.lang.NullPointerException: Cannot invoke "com.socgen.sgs.api.quark.engine.business.EndRunBusiness.execute(com.socgen.sgs.api.quark.engine.domain.Run)" because "this.endRunBusiness" is null
-	at com.socgen.sgs.api.quark.engine.service.impl.ProcessRunServiceImpl.runProcessor(ProcessRunServiceImpl.java:127)
-	at com.socgen.sgs.api.quark.engine.service.impl.ProcessRunServiceImplTest.lambda$shouldPropagateExceptionFromStartUpdate$0(ProcessRunServiceImplTest.java:131)
-	at org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:53)
-	at org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:35)
-	at org.junit.jupiter.api.Assertions.assertThrows(Assertions.java:3115)
-	at com.socgen.sgs.api.quark.engine.service.impl.ProcessRunServiceImplTest.shouldPropagateExceptionFromStartUpdate(ProcessRunServiceImplTest.java:131)
-	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
-	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:569)
-	at org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:728)
-	at org.junit.jupiter.engine.execution.MethodInvocation.proceed(MethodInvocation.java:60)
-	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$ValidatingInvocation.proceed(InvocationInterceptorChain.java:131)
-	at org.junit.jupiter.engine.extension.TimeoutExtension.intercept(TimeoutExtension.java:156)
-	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestableMethod(TimeoutExtension.java:147)
-	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestMethod(TimeoutExtension.java:86)
-	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker$ReflectiveInterceptorCall.lambda$ofVoidMethod$0(InterceptingExecutableInvoker.java:103)
-	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.lambda$invoke$0(InterceptingExecutableInvoker.java:93)
-	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$InterceptedInvocation.proceed(InvocationInterceptorChain.java:106)
-	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.proceed(InvocationInterceptorChain.java:64)
-	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.chainAndInvoke(InvocationInterceptorChain.java:45)
-	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.invoke(InvocationInterceptorChain.java:37)
-	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.invoke(InterceptingExecutableInvoker.java:92)
-	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.invoke(InterceptingExecutableInvoker.java:86)
-	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.lambda$invokeTestMethod$7(TestMethodTestDescriptor.java:218)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.invokeTestMethod(TestMethodTestDescriptor.java:214)
-	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:139)
-	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:69)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:151)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:141)
-	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:139)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:138)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95)
-	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
-	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:41)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:155)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:141)
-	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:139)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:138)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95)
-	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
-	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:41)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:155)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:141)
-	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:139)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:138)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95)
-	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.submit(SameThreadHierarchicalTestExecutorService.java:35)
-	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.execute(HierarchicalTestExecutor.java:57)
-	at org.junit.platform.engine.support.hierarchical.HierarchicalTestEngine.execute(HierarchicalTestEngine.java:54)
-	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:198)
-	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:169)
-	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:93)
-	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.lambda$execute$0(EngineExecutionOrchestrator.java:58)
-	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.withInterceptedStreams(EngineExecutionOrchestrator.java:141)
-	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:57)
-	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:103)
-	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:85)
-	at org.junit.platform.launcher.core.DelegatingLauncher.execute(DelegatingLauncher.java:47)
-	at org.apache.maven.surefire.junitplatform.LazyLauncher.execute(LazyLauncher.java:56)
-	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.execute(JUnitPlatformProvider.java:184)
-	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invokeAllTests(JUnitPlatformProvider.java:148)
-	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invoke(JUnitPlatformProvider.java:122)
-	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:385)
-	at org.apache.maven.surefire.booter.ForkedBooter.execute(ForkedBooter.java:162)
-	at org.apache.maven.surefire.booter.ForkedBooter.run(ForkedBooter.java:507)
-	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:495)
-
-2026-06-21T14:18:33.301+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Run completed for runId: 1 with status: ERROR
-2026-06-21T14:18:33.308+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Loading run with runId: 1
-2026-06-21T14:18:33.309+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Retrieving properties for runId: 1
-2026-06-21T14:18:33.317+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Loading run with runId: 10
-2026-06-21T14:18:33.317+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Retrieving properties for runId: 10
-2026-06-21T14:18:33.317+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Successfully retrieved properties for runId: 10
-2026-06-21T14:18:33.322+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Processing run with runId: 1
-2026-06-21T14:18:33.324+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Run started successfully with runId: 1
-2026-06-21T14:18:33.324+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Loading run with runId: 1
-2026-06-21T14:18:33.324+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Retrieving properties for runId: 1
-2026-06-21T14:18:33.324+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Successfully retrieved properties for runId: 1
-2026-06-21T14:18:33.325+05:30 ERROR 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Run [1] failed: Cannot invoke "com.socgen.sgs.api.quark.engine.business.LoadTemplatesBusiness.execute(com.socgen.sgs.api.quark.engine.domain.Run)" because "this.loadTemplatesBusiness" is null
-
-java.lang.NullPointerException: Cannot invoke "com.socgen.sgs.api.quark.engine.business.LoadTemplatesBusiness.execute(com.socgen.sgs.api.quark.engine.domain.Run)" because "this.loadTemplatesBusiness" is null
-	at com.socgen.sgs.api.quark.engine.service.impl.ProcessRunServiceImpl.load(ProcessRunServiceImpl.java:189)
-	at com.socgen.sgs.api.quark.engine.service.impl.ProcessRunServiceImpl.runProcessor(ProcessRunServiceImpl.java:67)
-	at com.socgen.sgs.api.quark.engine.service.impl.ProcessRunServiceImplTest.shouldCallStartUpdateBeforeLoad(ProcessRunServiceImplTest.java:86)
-	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
-	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:569)
-	at org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:728)
-	at org.junit.jupiter.engine.execution.MethodInvocation.proceed(MethodInvocation.java:60)
-	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$ValidatingInvocation.proceed(InvocationInterceptorChain.java:131)
-	at org.junit.jupiter.engine.extension.TimeoutExtension.intercept(TimeoutExtension.java:156)
-	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestableMethod(TimeoutExtension.java:147)
-	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestMethod(TimeoutExtension.java:86)
-	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker$ReflectiveInterceptorCall.lambda$ofVoidMethod$0(InterceptingExecutableInvoker.java:103)
-	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.lambda$invoke$0(InterceptingExecutableInvoker.java:93)
-	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$InterceptedInvocation.proceed(InvocationInterceptorChain.java:106)
-	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.proceed(InvocationInterceptorChain.java:64)
-	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.chainAndInvoke(InvocationInterceptorChain.java:45)
-	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.invoke(InvocationInterceptorChain.java:37)
-	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.invoke(InterceptingExecutableInvoker.java:92)
-	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.invoke(InterceptingExecutableInvoker.java:86)
-	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.lambda$invokeTestMethod$7(TestMethodTestDescriptor.java:218)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.invokeTestMethod(TestMethodTestDescriptor.java:214)
-	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:139)
-	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:69)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:151)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:141)
-	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:139)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:138)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95)
-	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
-	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:41)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:155)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:141)
-	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:139)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:138)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95)
-	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
-	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:41)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:155)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:141)
-	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:139)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:138)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95)
-	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.submit(SameThreadHierarchicalTestExecutorService.java:35)
-	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.execute(HierarchicalTestExecutor.java:57)
-	at org.junit.platform.engine.support.hierarchical.HierarchicalTestEngine.execute(HierarchicalTestEngine.java:54)
-	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:198)
-	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:169)
-	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:93)
-	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.lambda$execute$0(EngineExecutionOrchestrator.java:58)
-	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.withInterceptedStreams(EngineExecutionOrchestrator.java:141)
-	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:57)
-	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:103)
-	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:85)
-	at org.junit.platform.launcher.core.DelegatingLauncher.execute(DelegatingLauncher.java:47)
-	at org.apache.maven.surefire.junitplatform.LazyLauncher.execute(LazyLauncher.java:56)
-	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.execute(JUnitPlatformProvider.java:184)
-	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invokeAllTests(JUnitPlatformProvider.java:148)
-	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invoke(JUnitPlatformProvider.java:122)
-	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:385)
-	at org.apache.maven.surefire.booter.ForkedBooter.execute(ForkedBooter.java:162)
-	at org.apache.maven.surefire.booter.ForkedBooter.run(ForkedBooter.java:507)
-	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:495)
-
-2026-06-21T14:18:33.326+05:30 ERROR 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : End_Run failed for run [1]: Cannot invoke "com.socgen.sgs.api.quark.engine.business.EndRunBusiness.execute(com.socgen.sgs.api.quark.engine.domain.Run)" because "this.endRunBusiness" is null
-
-java.lang.NullPointerException: Cannot invoke "com.socgen.sgs.api.quark.engine.business.EndRunBusiness.execute(com.socgen.sgs.api.quark.engine.domain.Run)" because "this.endRunBusiness" is null
-	at com.socgen.sgs.api.quark.engine.service.impl.ProcessRunServiceImpl.runProcessor(ProcessRunServiceImpl.java:121)
-	at com.socgen.sgs.api.quark.engine.service.impl.ProcessRunServiceImplTest.shouldCallStartUpdateBeforeLoad(ProcessRunServiceImplTest.java:86)
-	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
-	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:569)
-	at org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:728)
-	at org.junit.jupiter.engine.execution.MethodInvocation.proceed(MethodInvocation.java:60)
-	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$ValidatingInvocation.proceed(InvocationInterceptorChain.java:131)
-	at org.junit.jupiter.engine.extension.TimeoutExtension.intercept(TimeoutExtension.java:156)
-	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestableMethod(TimeoutExtension.java:147)
-	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestMethod(TimeoutExtension.java:86)
-	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker$ReflectiveInterceptorCall.lambda$ofVoidMethod$0(InterceptingExecutableInvoker.java:103)
-	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.lambda$invoke$0(InterceptingExecutableInvoker.java:93)
-	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$InterceptedInvocation.proceed(InvocationInterceptorChain.java:106)
-	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.proceed(InvocationInterceptorChain.java:64)
-	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.chainAndInvoke(InvocationInterceptorChain.java:45)
-	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.invoke(InvocationInterceptorChain.java:37)
-	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.invoke(InterceptingExecutableInvoker.java:92)
-	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.invoke(InterceptingExecutableInvoker.java:86)
-	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.lambda$invokeTestMethod$7(TestMethodTestDescriptor.java:218)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.invokeTestMethod(TestMethodTestDescriptor.java:214)
-	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:139)
-	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:69)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:151)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:141)
-	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:139)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:138)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95)
-	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
-	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:41)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:155)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:141)
-	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:139)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:138)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95)
-	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
-	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:41)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:155)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:141)
-	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:139)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:138)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95)
-	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.submit(SameThreadHierarchicalTestExecutorService.java:35)
-	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.execute(HierarchicalTestExecutor.java:57)
-	at org.junit.platform.engine.support.hierarchical.HierarchicalTestEngine.execute(HierarchicalTestEngine.java:54)
-	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:198)
-	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:169)
-	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:93)
-	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.lambda$execute$0(EngineExecutionOrchestrator.java:58)
-	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.withInterceptedStreams(EngineExecutionOrchestrator.java:141)
-	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:57)
-	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:103)
-	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:85)
-	at org.junit.platform.launcher.core.DelegatingLauncher.execute(DelegatingLauncher.java:47)
-	at org.apache.maven.surefire.junitplatform.LazyLauncher.execute(LazyLauncher.java:56)
-	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.execute(JUnitPlatformProvider.java:184)
-	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invokeAllTests(JUnitPlatformProvider.java:148)
-	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invoke(JUnitPlatformProvider.java:122)
-	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:385)
-	at org.apache.maven.surefire.booter.ForkedBooter.execute(ForkedBooter.java:162)
-	at org.apache.maven.surefire.booter.ForkedBooter.run(ForkedBooter.java:507)
-	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:495)
-
-2026-06-21T14:18:33.327+05:30 ERROR 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : End_Run retry failed for run [1]: Cannot invoke "com.socgen.sgs.api.quark.engine.business.EndRunBusiness.execute(com.socgen.sgs.api.quark.engine.domain.Run)" because "this.endRunBusiness" is null
-
-java.lang.NullPointerException: Cannot invoke "com.socgen.sgs.api.quark.engine.business.EndRunBusiness.execute(com.socgen.sgs.api.quark.engine.domain.Run)" because "this.endRunBusiness" is null
-	at com.socgen.sgs.api.quark.engine.service.impl.ProcessRunServiceImpl.runProcessor(ProcessRunServiceImpl.java:127)
-	at com.socgen.sgs.api.quark.engine.service.impl.ProcessRunServiceImplTest.shouldCallStartUpdateBeforeLoad(ProcessRunServiceImplTest.java:86)
-	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
-	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:569)
-	at org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:728)
-	at org.junit.jupiter.engine.execution.MethodInvocation.proceed(MethodInvocation.java:60)
-	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$ValidatingInvocation.proceed(InvocationInterceptorChain.java:131)
-	at org.junit.jupiter.engine.extension.TimeoutExtension.intercept(TimeoutExtension.java:156)
-	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestableMethod(TimeoutExtension.java:147)
-	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestMethod(TimeoutExtension.java:86)
-	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker$ReflectiveInterceptorCall.lambda$ofVoidMethod$0(InterceptingExecutableInvoker.java:103)
-	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.lambda$invoke$0(InterceptingExecutableInvoker.java:93)
-	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$InterceptedInvocation.proceed(InvocationInterceptorChain.java:106)
-	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.proceed(InvocationInterceptorChain.java:64)
-	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.chainAndInvoke(InvocationInterceptorChain.java:45)
-	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.invoke(InvocationInterceptorChain.java:37)
-	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.invoke(InterceptingExecutableInvoker.java:92)
-	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.invoke(InterceptingExecutableInvoker.java:86)
-	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.lambda$invokeTestMethod$7(TestMethodTestDescriptor.java:218)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.invokeTestMethod(TestMethodTestDescriptor.java:214)
-	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:139)
-	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:69)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:151)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:141)
-	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:139)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:138)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95)
-	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
-	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:41)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:155)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:141)
-	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:139)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:138)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95)
-	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
-	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:41)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:155)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:141)
-	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:139)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:138)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95)
-	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.submit(SameThreadHierarchicalTestExecutorService.java:35)
-	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.execute(HierarchicalTestExecutor.java:57)
-	at org.junit.platform.engine.support.hierarchical.HierarchicalTestEngine.execute(HierarchicalTestEngine.java:54)
-	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:198)
-	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:169)
-	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:93)
-	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.lambda$execute$0(EngineExecutionOrchestrator.java:58)
-	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.withInterceptedStreams(EngineExecutionOrchestrator.java:141)
-	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:57)
-	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:103)
-	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:85)
-	at org.junit.platform.launcher.core.DelegatingLauncher.execute(DelegatingLauncher.java:47)
-	at org.apache.maven.surefire.junitplatform.LazyLauncher.execute(LazyLauncher.java:56)
-	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.execute(JUnitPlatformProvider.java:184)
-	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invokeAllTests(JUnitPlatformProvider.java:148)
-	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invoke(JUnitPlatformProvider.java:122)
-	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:385)
-	at org.apache.maven.surefire.booter.ForkedBooter.execute(ForkedBooter.java:162)
-	at org.apache.maven.surefire.booter.ForkedBooter.run(ForkedBooter.java:507)
-	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:495)
-
-2026-06-21T14:18:33.330+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Run completed for runId: 1 with status: ERROR
-2026-06-21T14:18:33.335+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Retrieving properties for runId: 99
-2026-06-21T14:18:33.336+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Successfully retrieved properties for runId: 99
-2026-06-21T14:18:33.344+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Loading run with runId: 55
-2026-06-21T14:18:33.345+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Retrieving properties for runId: 55
-2026-06-21T14:18:33.346+05:30  INFO 1352 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Successfully retrieved properties for runId: 55
-[ERROR] Tests run: 8, Failures: 2, Errors: 2, Skipped: 0, Time elapsed: 0.435 s <<< FAILURE! -- in com.socgen.sgs.api.quark.engine.service.impl.ProcessRunServiceImplTest
-[ERROR] com.socgen.sgs.api.quark.engine.service.impl.ProcessRunServiceImplTest.shouldInitialiseRunAndCallLoad -- Time elapsed: 0.022 s <<< FAILURE!
-org.opentest4j.AssertionFailedError: expected: <TO_GENERATE> but was: <ERROR>
-	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
-	at org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:132)
-	at org.junit.jupiter.api.AssertEquals.failNotEqual(AssertEquals.java:197)
-	at org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:182)
-	at org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:177)
-	at org.junit.jupiter.api.Assertions.assertEquals(Assertions.java:1145)
-	at com.socgen.sgs.api.quark.engine.service.impl.ProcessRunServiceImplTest.shouldInitialiseRunAndCallLoad(ProcessRunServiceImplTest.java:76)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:569)
-	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
-	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
-
-[ERROR] com.socgen.sgs.api.quark.engine.service.impl.ProcessRunServiceImplTest.shouldPropagateExceptionFromStartUpdate -- Time elapsed: 0.013 s <<< FAILURE!
-org.opentest4j.AssertionFailedError: Expected java.lang.RuntimeException to be thrown, but nothing was thrown.
-	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:152)
-	at org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:73)
-	at org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:35)
-	at org.junit.jupiter.api.Assertions.assertThrows(Assertions.java:3115)
-	at com.socgen.sgs.api.quark.engine.service.impl.ProcessRunServiceImplTest.shouldPropagateExceptionFromStartUpdate(ProcessRunServiceImplTest.java:131)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:569)
-	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
-	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
-
-[ERROR] com.socgen.sgs.api.quark.engine.service.impl.ProcessRunServiceImplTest.shouldCallAllLoadStepsInOrder -- Time elapsed: 0.007 s <<< ERROR!
-java.lang.NullPointerException: Cannot invoke "com.socgen.sgs.api.quark.engine.business.LoadTemplatesBusiness.execute(com.socgen.sgs.api.quark.engine.domain.Run)" because "this.loadTemplatesBusiness" is null
-	at com.socgen.sgs.api.quark.engine.service.impl.ProcessRunServiceImpl.load(ProcessRunServiceImpl.java:189)
-	at com.socgen.sgs.api.quark.engine.service.impl.ProcessRunServiceImplTest.shouldCallAllLoadStepsInOrder(ProcessRunServiceImplTest.java:117)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:569)
-	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
-	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
-
-[ERROR] com.socgen.sgs.api.quark.engine.service.impl.ProcessRunServiceImplTest.shouldSetRunPropertiesAndRunId -- Time elapsed: 0.008 s <<< ERROR!
-java.lang.NullPointerException: Cannot invoke "com.socgen.sgs.api.quark.engine.business.LoadTemplatesBusiness.execute(com.socgen.sgs.api.quark.engine.domain.Run)" because "this.loadTemplatesBusiness" is null
-	at com.socgen.sgs.api.quark.engine.service.impl.ProcessRunServiceImpl.load(ProcessRunServiceImpl.java:189)
-	at com.socgen.sgs.api.quark.engine.service.impl.ProcessRunServiceImplTest.shouldSetRunPropertiesAndRunId(ProcessRunServiceImplTest.java:103)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:569)
-	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
-	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
-
+2026-06-25T04:48:25.056+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Run completed for runId: 1 with status: ERROR
+2026-06-25T04:48:25.065+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Loading run with runId: 1
+2026-06-25T04:48:25.065+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Retrieving properties for runId: 1
+2026-06-25T04:48:25.070+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Loading run with runId: 10
+2026-06-25T04:48:25.070+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Retrieving properties for runId: 10
+2026-06-25T04:48:25.070+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Successfully retrieved properties for runId: 10
+2026-06-25T04:48:25.071+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Run loading completed for runId: 10
+2026-06-25T04:48:25.087+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Processing run with runId: 1
+2026-06-25T04:48:25.088+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Run started successfully with runId: 1
+2026-06-25T04:48:25.088+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Loading run with runId: 1
+2026-06-25T04:48:25.088+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Retrieving properties for runId: 1
+2026-06-25T04:48:25.088+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Successfully retrieved properties for runId: 1
+2026-06-25T04:48:25.089+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Run loading completed for runId: 1
+2026-06-25T04:48:25.089+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Run completed for runId: 1 with status: GENERATED
+2026-06-25T04:48:25.094+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Retrieving properties for runId: 99
+2026-06-25T04:48:25.094+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Successfully retrieved properties for runId: 99
+2026-06-25T04:48:25.099+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Loading run with runId: 55
+2026-06-25T04:48:25.100+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Retrieving properties for runId: 55
+2026-06-25T04:48:25.100+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Successfully retrieved properties for runId: 55
+2026-06-25T04:48:25.100+05:30  INFO 1572 --- [quark-engine-service] [           main] [                                                 ] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Run loading completed for runId: 55
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.700 s -- in com.socgen.sgs.api.quark.engine.service.impl.ProcessRunServiceImplTest
 [INFO] 
 [INFO] Results:
 [INFO] 
-[ERROR] Failures: 
-[ERROR]   GetGabaritBusinessTest.shouldFetchCertifiedGabaritAndSetPaths:115 expected: <D:\Documents/R_10/G_300.QXP> but was: <D:\Documents\R_10\G_300.QXP>
-[ERROR]   GetGabaritBusinessTest.shouldFetchGabaritAndSetPaths:57 expected: <D:\Documents/R_10/G_1.QXP> but was: <D:\Documents\R_10\G_1.QXP>
-[ERROR]   GetGabaritBusinessTest.shouldFetchGabaritDocumentCourantAndSetPaths:87 expected: <D:\Documents/R_10/G_200.QXP> but was: <D:\Documents\R_10\G_200.QXP>
-[ERROR]   GetGabaritBusinessTest.shouldFetchGabaritDocumentSuiviAndSetPaths:143 expected: <D:\Documents/R_10/G_400.QXP> but was: <D:\Documents\R_10\G_400.QXP>
-[ERROR]   ProcessRunServiceImplTest.shouldInitialiseRunAndCallLoad:76 expected: <TO_GENERATE> but was: <ERROR>
-[ERROR]   ProcessRunServiceImplTest.shouldPropagateExceptionFromStartUpdate:131 Expected java.lang.RuntimeException to be thrown, but nothing was thrown.
 [ERROR] Errors: 
 [ERROR]   EngineServiceControllerTest.shouldPassCorrectRunIdToProcessor:65 Mockito 
 Only void methods can doNothing()!
@@ -2009,26 +1277,16 @@ Example of correct use of doNothing():
     .when(mock).someVoidMethod();
 Above means:
 someVoidMethod() does nothing the 1st time but throws an exception the 2nd time is called
-[ERROR]   EngineServiceControllerTest.shouldReturn200WhenProcessRunSucceeds:38 Mockito 
-Only void methods can doNothing()!
-Example of correct use of doNothing():
-    doNothing().
-    doThrow(new RuntimeException())
-    .when(mock).someVoidMethod();
-Above means:
-someVoidMethod() does nothing the 1st time but throws an exception the 2nd time is called
-[ERROR]   ProcessRunServiceImplTest.shouldCallAllLoadStepsInOrder:117 » NullPointer Cannot invoke "com.socgen.sgs.api.quark.engine.business.LoadTemplatesBusiness.execute(com.socgen.sgs.api.quark.engine.domain.Run)" because "this.loadTemplatesBusiness" is null
-[ERROR]   ProcessRunServiceImplTest.shouldSetRunPropertiesAndRunId:103 » NullPointer Cannot invoke "com.socgen.sgs.api.quark.engine.business.LoadTemplatesBusiness.execute(com.socgen.sgs.api.quark.engine.domain.Run)" because "this.loadTemplatesBusiness" is null
 [INFO] 
-[ERROR] Tests run: 309, Failures: 6, Errors: 4, Skipped: 0
+[ERROR] Tests run: 314, Failures: 0, Errors: 1, Skipped: 0
 [INFO] 
 [INFO] ------------------------------------------------------------------------
 [INFO] BUILD FAILURE
 [INFO] ------------------------------------------------------------------------
-[INFO] Total time:  01:39 min
-[INFO] Finished at: 2026-06-21T14:18:34+05:30
+[INFO] Total time:  01:48 min
+[INFO] Finished at: 2026-06-25T04:48:25+05:30
 [INFO] ------------------------------------------------------------------------
-[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:3.2.1:test (default-test) on project quark-engine-service: There are test failures.
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:3.2.1:test (default-test) on project quark-engine-service: 
 [ERROR] 
 [ERROR] Please refer to C:\Users\rgurram062722\Documents\GitHub\engine service repo\quark-engine\target\surefire-reports for the individual test results.
 [ERROR] Please refer to dump files (if any exist) [date].dump, [date]-jvmRun[N].dump and [date].dumpstream.
