@@ -1,0 +1,303 @@
+flowchart TD
+%% ============================================================================
+%% EOS Quark Engine - QXP_PREVIOUS (DOC_QXP) document-generation flow (start -> end)
+%% Exhaustive control flow, every if/else branch, all directions. Java + .NET refs.
+%% Render: https://mermaid.live  or  npx -p @mermaid-js/mermaid-cli mmdc -i this.mmd -o out.svg
+%% Legend: ([ ]) start/end · [ ] action · {  } decision (yes/no) · dashed "throws" -> CATCH
+%% QXP_PREVIOUS = copy blocs from a previously-certified QXP into the current gabarit,
+%%   either by explicit source|dest pairs (value or style) or by the .N level hierarchy.
+%% Universal spine shared with Plaquette; DELTA lives in ③b LOAD DOCS + ④ PROCESS.
+%% N: Task_QXP_Previous.Prepare + Process_QXP_Previous.cs
+%% ============================================================================
+
+    REST(["POST /processRun/{runId}"])
+    CTRL["EngineServiceController.processRun → runProcessor"]
+    INIT["Create Run · status=TO_GENERATE(1) · startDate=now"]
+    REST --> CTRL --> INIT --> START
+
+    subgraph TRY["TRY — main run body"]
+    direction TB
+
+      subgraph P1["① START (always)"]
+        START["status → RUNNING(4) · runStartUpdateBusiness.execute"]
+      end
+
+      subgraph P2["② LOAD (always)  J: load() · N: Run_Base.Load"]
+        direction TB
+        LP["getRunProperties (typeRapport, idSuivi, storeDataType, poolPath)"]
+        DGS{"gabaritSource?"}
+        GSOK["fetch gabarit (GABARIT / DOCUMENT_COURANT / _PRECEDENT_CERTIFIE / _SUIVI)"]
+        GSX["default → throw IllegalArgumentException"]
+        UPLOAD["addFile gabarit (UNCONDITIONAL, pre-degrade)"]
+        DDEG{"evaluateModeDegrade? (QXP and len>limit)"}
+        SETDEG["modeDegrade=true · skip XML+DID"]
+        LOADXML["load full gabarit XML + DID"]
+        DLG{"modeDegrade? (load substeps)"}
+        LOADREST["getInParams · loadTasks (+DID) · loadTemplates"]
+        LOADSKIP["skip InParams/Tasks/Templates"]
+        LP --> DGS
+        DGS -- "GABARIT/DOC_*" --> GSOK
+        DGS -- other --> GSX
+        GSOK --> UPLOAD --> DDEG
+        DDEG -- yes --> SETDEG --> DLG
+        DDEG -- no --> LOADXML --> DLG
+        DLG -- no --> LOADREST
+        DLG -- yes --> LOADSKIP
+      end
+
+      DG{"modeDegrade?  master gate (skips ③..⑥)"}
+      LOADREST --> DG
+      LOADSKIP --> DG
+
+      subgraph P3["③ PREPARE (skipped if degraded)"]
+        PREP["prepareTasks: task.prepare(); TaskQxpPrevious resolves subType"]
+      end
+
+      %% ----------------- DELTA: LOAD DOCS -----------------
+      subgraph P3B["③b LOAD DOCS — loadQxpPreviousTask  J: LoadTaskDocumentsBusiness · N: Task_QXP_Previous.Prepare"]
+        direction TB
+        LDG{"todo and document==null ?"}
+        LDSKIP["skip (not todo or already loaded)"]
+        %% resolve previousTypeRapport
+        RPT{"previousType set (not blank)?"}
+        RPTDEF["use default typeRapport"]
+        RPTANY{"== 'any' ?"}
+        RPT0["type = 0 (any certified)"]
+        RPTSAME{"!= 'same' ?"}
+        RPTPARSE{"parseInt > 0 ? (NumberFormatException→default)"}
+        RPTNUM["type = parsed"]
+        LDFETCH["getLastQxpCertifie(idSuivi, type)  N: Get_Last_Qxp_Certifie 2-arg"]
+        LDNULL{"doc == null ?"}
+        LDNULLE["RunError(UNSPECIFIED Document_LastQxp_Null) · todo=false · skip"]
+        LDADD["addFile(QXP) · loadQxpSource"]
+        LDCS{"conserverStyle?"}
+        LDPROJ["load QXP project DOM"]
+        LDXMLONLY["XML only"]
+        LDSET["task.setDocument(doc)"]
+
+        LDG -- no --> LDSKIP
+        LDG -- yes --> RPT
+        RPT -- no --> RPTDEF --> LDFETCH
+        RPT -- yes --> RPTANY
+        RPTANY -- yes --> RPT0 --> LDFETCH
+        RPTANY -- no --> RPTSAME
+        RPTSAME -- "no (same)" --> RPTDEF
+        RPTSAME -- yes --> RPTPARSE
+        RPTPARSE -- yes --> RPTNUM --> LDFETCH
+        RPTPARSE -- "no/exception" --> RPTDEF
+        LDFETCH --> LDNULL
+        LDNULL -- yes --> LDNULLE
+        LDNULL -- no --> LDADD --> LDCS
+        LDCS -- yes --> LDPROJ --> LDSET
+        LDCS -- no --> LDXMLONLY --> LDSET
+      end
+
+      %% ----------------- DELTA: PROCESS -----------------
+      subgraph P4["④ PROCESS — QxpPreviousTaskProcessStrategy  N: Process_QXP_Previous.cs"]
+        direction TB
+        PP0{"doc == null ?"}
+        PP0E["log warn · return"]
+        PMODE{"source and dest blocName both set?"}
+
+        %% EXPLICIT MODE
+        EXSPLIT["split source by '|'  ·  split dest by '¤'(U+00A4)"]
+        EXPOS{"position parts == 2 ?"}
+        EXPOSY["dest = parts[0] split '|' · positionBlocName = parts[1]"]
+        EXPOSN["dest = full split '|' · no position"]
+        EXLEN{"source.len != dest.len ?"}
+        EXLENE["RunError(UNSPECIFIED Invalid_List_Count) · continue (safe overlap)"]
+        EXAN{"conserverStyle? (analyse project)"}
+        EXLOOP{"per pair: dest already in update|modify ?"}
+        EXDUPE["RunError(UNSPECIFIED ErrorDuplicateBloc) · skip pair"]
+        EXCS{"conserverStyle?"}
+        EXVAL["VALUE: BlocBox(dest, qxpXml.getValue(src)) UPDATE → blocsUpdate"]
+        EXFIND{"source element in project?"}
+        EXMISS["RunError(UNSPECIFIED Missing_TElement)"]
+        EXTYPE{"element type?"}
+        EXTBOX{"getNewTBoxStyleValueFromTBox null?"}
+        EXTBOXE["RunError(UNSPECIFIED ErrorAddingBloc)"]
+        EXTBOXOK["BlocBox(style) UPDATE → blocsModify"]
+        EXTTAB{"getNewTTableStyleValueFromTTable null?"}
+        EXTTABE["RunError(UNSPECIFIED ErrorAddingBloc)"]
+        EXTTABOK["BlocTable(style) UPDATE → blocsModify"]
+        EXOTHER["RunError(UNSPECIFIED Invalid_TElement_Type)"]
+        EXMORE{"more pairs?"}
+
+        %% HIERARCHY MODE
+        HLEVEL["collect blocs ending .N0,.N1,… into byLevels until empty level"]
+        HEMPTY{"byLevels empty?"}
+        HNONE["no blocs generated"]
+        HLOOP{"per source name: len < 3 ?"}
+        HSKIP["skip (too short)"]
+        HDEST["dest = base + '.N' + (level+1)"]
+        HDUP{"dest already in blocsUpdate?"}
+        HDUPE["RunError(UNSPECIFIED ErrorDuplicateBloc)"]
+        HVAL{"value blank/null?"}
+        HNULLSTR["value = task.getNullString()"]
+        HADD["BlocBox(dest, value) UPDATE → blocsUpdate (catch → ErrorAddingBloc)"]
+        HMORE{"more names/levels?"}
+
+        PP0 -- yes --> PP0E
+        PP0 -- no --> PMODE
+        PMODE -- "yes (explicit)" --> EXSPLIT --> EXPOS
+        EXPOS -- yes --> EXPOSY --> EXLEN
+        EXPOS -- no --> EXPOSN --> EXLEN
+        EXLEN -- yes --> EXLENE --> EXAN
+        EXLEN -- no --> EXAN
+        EXAN --> EXLOOP
+        EXLOOP -- yes --> EXDUPE --> EXMORE
+        EXLOOP -- no --> EXCS
+        EXCS -- "false" --> EXVAL --> EXMORE
+        EXCS -- "true" --> EXFIND
+        EXFIND -- no --> EXMISS --> EXMORE
+        EXFIND -- yes --> EXTYPE
+        EXTYPE -- TBox --> EXTBOX
+        EXTBOX -- yes --> EXTBOXE --> EXMORE
+        EXTBOX -- no --> EXTBOXOK --> EXMORE
+        EXTYPE -- TTable --> EXTTAB
+        EXTTAB -- yes --> EXTTABE --> EXMORE
+        EXTTAB -- no --> EXTTABOK --> EXMORE
+        EXTYPE -- other --> EXOTHER --> EXMORE
+        EXMORE -- yes --> EXLOOP
+        EXMORE -- no --> PPDONE["process done"]
+
+        PMODE -- "no (hierarchy)" --> HLEVEL --> HEMPTY
+        HEMPTY -- yes --> HNONE --> PPDONE
+        HEMPTY -- no --> HLOOP
+        HLOOP -- yes --> HSKIP --> HMORE
+        HLOOP -- no --> HDEST --> HDUP
+        HDUP -- yes --> HDUPE --> HMORE
+        HDUP -- no --> HVAL
+        HVAL -- yes --> HNULLSTR --> HADD
+        HVAL -- no --> HADD
+        HADD --> HMORE
+        HMORE -- yes --> HLOOP
+        HMORE -- no --> PPDONE
+      end
+
+      %% ----------------- shared tail -----------------
+      subgraph P5["⑤ STEPS"]
+        direction TB
+        DSC{"modeDegrade? (short-circuit)"}
+        GETSTEPS["RunTask.getSteps: UPDATE(SOAP) + PAGINATION + MODIFY split@5000<br/>value pairs → SOAP; style copies → HTTP MODIFY"]
+        SLOOP["per step: prepare (evaluateInfo + box limits)"]
+        DFULL{"fullExclude?"}
+        DDIRECT{"directCall?"}
+        HTTP["HTTP combined URL: ParamsValue + Modify + SaveAs + QxpRender"]
+        SOAP["QXPSM SOAP executeStep (value updates)"]
+        POST["download new gabarit → update run.gabarit → inform"]
+        SNEXT{"more steps?"}
+        DSC -- yes --> SKIPSTEPS["return"]
+        DSC -- no --> GETSTEPS --> SLOOP --> DFULL
+        DFULL -- yes --> SNEXT
+        DFULL -- no --> DDIRECT
+        DDIRECT -- "yes (structural)" --> HTTP --> POST
+        DDIRECT -- "no (value)" --> SOAP --> POST
+        POST --> SNEXT
+        SNEXT -- yes --> SLOOP
+        SNEXT -- no --> SDONE["steps done"]
+      end
+
+      subgraph P6["⑥ CHECK"]
+        direction TB
+        REFRESH["refresh gabarit XML"]
+        DOVF{"hasControlOverflow? (inert here)"}
+        DSQL{"store SQL flag?"}
+        SQLC["collect SQL data"]
+        DDOCST{"store DOCUMENT flag?"}
+        DOCC2["refresh XML → collect box values (skip Box*/[...])"]
+        REFRESH --> DOVF
+        DOVF -- yes --> DSQL
+        DOVF -- no --> DSQL
+        DSQL -- yes --> SQLC --> DDOCST
+        DSQL -- no --> DDOCST
+        DDOCST -- yes --> DOCC2 --> CDONE["check done"]
+        DDOCST -- no --> CDONE
+      end
+
+      subgraph P7["⑦ RENDER (always)"]
+        direction TB
+        DJPG{"renderJpg? (default off)"}
+        JPG["JPEG render — propagates"]
+        DPDFR{"renderPdf? (default on)"}
+        PDFR["PDF render — catch QxpsException swallow; else propagate"]
+        DQXPR{"renderQxp? (default on)"}
+        QXPF["QXP literal fetch — propagates"]
+        BUILD["buildRunResult → finalJpg/finalPdf/finalQxp"]
+        SUCCESS["status → GENERATED(2)"]
+        DJPG -- yes --> JPG --> DPDFR
+        DJPG -- no --> DPDFR
+        DPDFR -- yes --> PDFR --> DQXPR
+        DPDFR -- no --> DQXPR
+        DQXPR -- yes --> QXPF --> BUILD
+        DQXPR -- no --> BUILD
+        BUILD --> SUCCESS
+      end
+
+      %% intra-TRY wiring
+      START --> LP
+      DG -- "no (normal)" --> PREP
+      DG -- "yes (degraded)" --> DJPG
+      PREP --> LDG
+      LDSKIP --> PP0
+      LDNULLE --> PP0
+      LDSET --> PP0
+      PPDONE --> DSC
+      PP0E --> DSC
+      SDONE --> REFRESH
+      SKIPSTEPS --> CDONE
+      CDONE --> DJPG
+    end
+
+    CATCH["catch (Exception) → status ERROR(3) · RunError(BLOQUANTE)"]
+    START -.->|throws| CATCH
+    GSX -.->|throws| CATCH
+    HTTP -.->|throws| CATCH
+    SOAP -.->|throws| CATCH
+    JPG -.->|throws| CATCH
+    QXPF -.->|throws| CATCH
+
+    subgraph FIN["FINALLY (always)"]
+      direction TB
+      FDEG{"modeDegrade?"}
+      FDEGE["RunError(CRITIQUE RunInSafeMode)"]
+      ERSTART["endRunBusiness.execute · endDate=now"]
+      DSTATUS{"status == ERROR?"}
+      UPDSTAT["updateStatusRun (no doc insert)"]
+      INSDOCS["insert finalQXP(6)+finalPDF(7) → endRun proc"]
+      INSERR["insertErrors (blank→'aucun')"]
+      AUDIT["insertAuditRun (status label)"]
+      DSTORE{"status != ERROR?"}
+      DSSQL{"store SQL flag and data?"}
+      SSQL["insertData SQL (diff=false)"]
+      DSDOC{"store DOC flag and data?"}
+      SDOC["insertData DOCUMENT (diff=true)"]
+      ERDONE["commit"]
+      FDEG -- yes --> FDEGE --> ERSTART
+      FDEG -- no --> ERSTART
+      ERSTART --> DSTATUS
+      DSTATUS -- yes --> UPDSTAT --> INSERR
+      DSTATUS -- no --> INSDOCS --> INSERR
+      INSERR --> AUDIT --> DSTORE
+      DSTORE -- yes --> DSSQL
+      DSTORE -- no --> ERDONE
+      DSSQL -- yes --> SSQL --> DSDOC
+      DSSQL -- no --> DSDOC
+      DSDOC -- yes --> SDOC --> ERDONE
+      DSDOC -- no --> ERDONE
+    end
+
+    SUCCESS --> FDEG
+    CATCH --> FDEG
+    ERDONE --> RET(["return Run"])
+
+    classDef decision fill:#fff4d6,stroke:#e8a400,color:#5a4500;
+    classDef err fill:#fdecec,stroke:#e03131,color:#7a1212;
+    classDef ok fill:#e9fbf0,stroke:#0ca678,color:#0a5c43;
+    classDef http fill:#e7f1ff,stroke:#1c7ed6,color:#0b4ea2;
+    classDef soap fill:#e9fbf0,stroke:#0ca678,color:#0a5c43;
+    class DGS,DDEG,DLG,DG,LDG,RPT,RPTANY,RPTSAME,RPTPARSE,LDNULL,LDCS,PP0,PMODE,EXPOS,EXLEN,EXAN,EXLOOP,EXCS,EXFIND,EXTYPE,EXTBOX,EXTTAB,EXMORE,HEMPTY,HLOOP,HDUP,HVAL,HMORE,DSC,DFULL,DDIRECT,SNEXT,DOVF,DSQL,DDOCST,DJPG,DPDFR,DQXPR,FDEG,DSTATUS,DSTORE,DSSQL,DSDOC decision;
+    class GSX,SETDEG,LDNULLE,PP0E,EXLENE,EXDUPE,EXMISS,EXTBOXE,EXTTABE,EXOTHER,HDUPE,HNONE,CATCH,FDEGE,UPDSTAT,LOADSKIP err;
+    class SUCCESS,RET,ERDONE,BUILD,EXTBOXOK,EXTTABOK ok;
+    class HTTP http;
+    class SOAP soap;

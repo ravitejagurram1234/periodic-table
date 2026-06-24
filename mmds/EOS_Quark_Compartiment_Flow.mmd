@@ -1,0 +1,283 @@
+flowchart TD
+%% ============================================================================
+%% EOS Quark Engine - COMPARTIMENT generation flow (start -> end)
+%% Exhaustive control flow, every if/else branch, all directions. Java + .NET refs.
+%% Render: https://mermaid.live  or  npx -p @mermaid-js/mermaid-cli mmdc -i this.mmd -o out.svg
+%% Legend: ([ ]) start/end · [ ] action · {  } decision (yes/no) · dashed "throws" -> CATCH
+%% COMPARTIMENT = run one CHILD run per compartment of a fund, then merge their output into
+%%   the parent at anchors. Modes: GENERATE (run children) / INCORPORATE (reuse prior QXP) / BOTH.
+%% DELTA vs Plaquette: ④ PROCESS = CompartimentTaskProcessStrategy, a 3-phase pipeline whose
+%%   Phase 2 RECURSES into the full run pipeline (processRunService.runProcessor) per child.
+%% N: Process_Compartiment.cs  (Run / Run_Previous children)
+%% ============================================================================
+
+    REST(["POST /processRun/{runId}"])
+    CTRL["EngineServiceController.processRun → runProcessor"]
+    INIT["Create Run · status=TO_GENERATE(1) · startDate=now"]
+    REST --> CTRL --> INIT --> START
+
+    subgraph TRY["TRY — main run body (PARENT run)"]
+    direction TB
+
+      subgraph P1["① START (always)"]
+        START["status → RUNNING(4) · runStartUpdateBusiness.execute"]
+      end
+
+      subgraph P2["② LOAD (always)"]
+        direction TB
+        LP["getRunProperties (compartimentMode, idGabaritFils, ...) · prepareGabarit (upload, degrade, XML+DID)"]
+        DLG{"modeDegrade? (load substeps)"}
+        LOADREST["getInParams · loadTasks (+DID) · loadTemplates"]
+        LOADSKIP["skip"]
+        LP --> DLG
+        DLG -- no --> LOADREST
+        DLG -- yes --> LOADSKIP
+      end
+
+      DG{"modeDegrade?  master gate (skips ③..⑥)"}
+      LOADREST --> DG
+      LOADSKIP --> DG
+
+      subgraph P3["③ PREPARE (skipped if degraded)"]
+        PREP["prepareTasks: task.prepare()"]
+      end
+
+      %% ----------------- DELTA: PROCESS (3 phases) -----------------
+      subgraph P4["④ PROCESS — CompartimentTaskProcessStrategy (3 phases)  N: Process_Compartiment.cs"]
+        direction TB
+
+        DMODE{"compartimentMode == UNKNOWN?"}
+        DMODEE["throw IllegalStateException (missing mode)"]
+
+        subgraph PH1["Phase 1 — Prepare_Runs (child setup)"]
+          direction TB
+          P1EVAL{"task.isEvaluateRuns()?"}
+          P1SKIP["skip Phase 1"]
+          P1GEN["toGenerate = (mode==GENERATE or GENERATE_AND_INCORPORATE)"]
+          P1FETCH["GetCompartimentRunsBusiness.execute(idGabarit,idFndCode,idGabaritFils,typeRapport=4,idLangue,dateEcheance,toGenerate)"]
+          P1NONE{"compartimentRuns empty?"}
+          P1NONEE["RunError(CRITIQUE NoneRunCompartiment) · return"]
+          P1RUNID{"per compartment: runId > 0?"}
+          P1STUB["create Run stub (toGenerate) / Run_Previous stub → task.childRuns"]
+          P1EMPTYE["RunError(CRITIQUE EmptyRunCompartiment) · skip entry"]
+          P1MORE{"more compartments?"}
+          P1EVAL -- no --> P1SKIP
+          P1EVAL -- yes --> P1GEN --> P1FETCH --> P1NONE
+          P1NONE -- yes --> P1NONEE
+          P1NONE -- no --> P1RUNID
+          P1RUNID -- yes --> P1STUB --> P1MORE
+          P1RUNID -- no --> P1EMPTYE --> P1MORE
+          P1MORE -- yes --> P1RUNID
+        end
+
+        subgraph PH2["Phase 2 — Execute_Runs (RECURSION)"]
+          direction TB
+          P2GEN["toGenerate = (mode==GENERATE or GENERATE_AND_INCORPORATE)"]
+          P2EACH{"per child: toGenerate?"}
+          P2REC["RECURSION: processRunService.runProcessor(childRunId)<br/>=> full nested run (Start..End)"]
+          P2PREV["loadPreviousChild(child)"]
+          P2QXP{"idLastQxp > 0?"}
+          P2QXPE["RunError(CRITIQUE EmptyRunChildQXP) · empty Run"]
+          P2DOC{"doc by idLastQxp null (or data null)?"}
+          P2DOCE["RunError(CRITIQUE EmptyRunChildQXP) · empty Run"]
+          P2POP["addFile(doc) · prev.setGabarit(doc) · result.finalQxp=doc"]
+          P2CATCH["catch per child → log · keep stub"]
+          P2MORE{"more children?"}
+          P2GEN --> P2EACH
+          P2EACH -- "yes (generate)" --> P2REC --> P2MORE
+          P2EACH -- "no (reuse)" --> P2PREV --> P2QXP
+          P2QXP -- no --> P2QXPE --> P2MORE
+          P2QXP -- yes --> P2DOC
+          P2DOC -- yes --> P2DOCE --> P2MORE
+          P2DOC -- no --> P2POP --> P2MORE
+          P2REC -.-> P2CATCH
+          P2MORE -- yes --> P2EACH
+        end
+
+        subgraph PH3["Phase 3 — Render_Runs (extract + incorporate)"]
+          direction TB
+          P3INC["incorporate = (mode==INCORPORATE or GENERATE_AND_INCORPORATE)"]
+          P3DO{"incorporate?"}
+          P3SKIP["task.setTodo(false) · return (no merge)"]
+          P3EACH["per child: addRunBlocs"]
+          P3HASQ{"child finalQxp and gabarit poolPath present?"}
+          P3HASQE["RunError(CRITIQUE EmptyRunChildQXP) · skip child"]
+          P3PROJ["getDocumentProjectBusiness.getProject(child poolPath)  = QXPSM getXPressDOM"]
+          P3PROJV{"project null/EMPTY/no layouts?"}
+          P3PROJE["RunError(CRITIQUE EmptyRunChildProject) · skip child"]
+          %% addBlocs box extraction
+          P3BOX{"per box: pageName endsWith '*' (pasteboard)?"}
+          P3BOXSKIP["skip box (off-page)"]
+          P3PAGENUM{"page number parses?"}
+          P3PAGEW["log warn · skip box"]
+          P3RENAME["rename box _<idFndCode> (≤24 chars; if default Box{UID}→newBlocName) BEFORE clearing UID"]
+          P3UID["clear UID (AFTER rename)"]
+          P3MKBOX["BlocBox CREATE → group by page"]
+          P3VIS{"page has visible box (suppressOutput=='false')?"}
+          P3VISSKIP["skip page (no visible boxes)"]
+          P3MKPAGE["BlocPage CREATE T{taskId}_P{n} → blocsModify"]
+          P3ADDBOX["add page boxes (relativePage) → blocsModify · lastPage++"]
+          P3BOXMORE{"more boxes/pages/children?"}
+          %% anchors
+          P3EMPTY{"blocsModify empty (all children empty)?"}
+          P3EMPTYP["create one empty page T{taskId}_P0"]
+          P3ANCH["nbAnciennePage = endPage - startPage (INCLUSIVE loop)"]
+          P3REM["BlocPage REMOVE old pages (lastPage+i) → blocsModify"]
+          P3MVS["move start anchor → page0 · pagination=true"]
+          P3MVE["move end anchor → lastPage-1 · pagination=true"]
+
+          P3INC --> P3DO
+          P3DO -- no --> P3SKIP
+          P3DO -- yes --> P3EACH --> P3HASQ
+          P3HASQ -- no --> P3HASQE --> P3BOXMORE
+          P3HASQ -- yes --> P3PROJ --> P3PROJV
+          P3PROJV -- yes --> P3PROJE --> P3BOXMORE
+          P3PROJV -- no --> P3BOX
+          P3BOX -- yes --> P3BOXSKIP --> P3BOXMORE
+          P3BOX -- no --> P3PAGENUM
+          P3PAGENUM -- no --> P3PAGEW --> P3BOXMORE
+          P3PAGENUM -- yes --> P3RENAME --> P3UID --> P3MKBOX --> P3VIS
+          P3VIS -- no --> P3VISSKIP --> P3BOXMORE
+          P3VIS -- yes --> P3MKPAGE --> P3ADDBOX --> P3BOXMORE
+          P3BOXMORE -- yes --> P3EACH
+          P3BOXMORE -- no --> P3EMPTY
+          P3EMPTY -- yes --> P3EMPTYP --> P3ANCH
+          P3EMPTY -- no --> P3ANCH
+          P3ANCH --> P3REM --> P3MVS --> P3MVE
+        end
+
+        DMODE -- yes --> DMODEE
+        DMODE -- no --> P1EVAL
+        P1SKIP --> P2GEN
+        P1NONEE --> P2GEN
+        P1MORE -- no --> P2GEN
+        P2MORE -- no --> P3INC
+        P3SKIP --> PPDONE["process done"]
+        P3MVE --> PPDONE
+      end
+
+      %% ----------------- shared tail -----------------
+      subgraph P5["⑤ STEPS (parent applies merged blocs)"]
+        direction TB
+        DSC{"modeDegrade? (short-circuit)"}
+        GETSTEPS["RunTask.getSteps: UPDATE + PAGINATION + MODIFY split@5000<br/>Compartiment = MODIFY (child boxes) + pagination (pages)"]
+        SLOOP["per step: prepare (evaluateInfo + box limits)"]
+        DFULL{"fullExclude?"}
+        DDIRECT{"directCall?"}
+        HTTP["HTTP combined: ParamsValue + Modify + SaveAs + QxpRender"]
+        SOAP["QXPSM SOAP executeStep"]
+        POST["download new gabarit → update → inform"]
+        SNEXT{"more steps?"}
+        DSC -- yes --> SKIPSTEPS["return"]
+        DSC -- no --> GETSTEPS --> SLOOP --> DFULL
+        DFULL -- yes --> SNEXT
+        DFULL -- no --> DDIRECT
+        DDIRECT -- "yes (structural)" --> HTTP --> POST
+        DDIRECT -- "no (value)" --> SOAP --> POST
+        POST --> SNEXT
+        SNEXT -- yes --> SLOOP
+        SNEXT -- no --> SDONE["steps done"]
+      end
+
+      subgraph P6["⑥ CHECK"]
+        direction TB
+        REFRESH["refresh gabarit XML"]
+        DOVF{"hasControlOverflow? (inert here)"}
+        DSQL{"store SQL flag?"}
+        SQLC["collect SQL data"]
+        DDOCST{"store DOCUMENT flag?"}
+        DOCC2["refresh XML → collect box values (skip Box*/[...])"]
+        REFRESH --> DOVF
+        DOVF -- yes --> DSQL
+        DOVF -- no --> DSQL
+        DSQL -- yes --> SQLC --> DDOCST
+        DSQL -- no --> DDOCST
+        DDOCST -- yes --> DOCC2 --> CDONE["check done"]
+        DDOCST -- no --> CDONE
+      end
+
+      subgraph P7["⑦ RENDER (always)"]
+        direction TB
+        DJPG{"renderJpg? (default off)"}
+        JPG["JPEG render — propagates"]
+        DPDFR{"renderPdf? (default on)"}
+        PDFR["PDF render — catch QxpsException swallow; else propagate"]
+        DQXPR{"renderQxp? (default on)"}
+        QXPF["QXP literal fetch — propagates"]
+        BUILD["buildRunResult → finalJpg/finalPdf/finalQxp"]
+        SUCCESS["status → GENERATED(2)"]
+        DJPG -- yes --> JPG --> DPDFR
+        DJPG -- no --> DPDFR
+        DPDFR -- yes --> PDFR --> DQXPR
+        DPDFR -- no --> DQXPR
+        DQXPR -- yes --> QXPF --> BUILD
+        DQXPR -- no --> BUILD
+        BUILD --> SUCCESS
+      end
+
+      %% intra-TRY wiring
+      START --> LP
+      DG -- "no (normal)" --> PREP
+      DG -- "yes (degraded)" --> DJPG
+      PREP --> DMODE
+      PPDONE --> DSC
+      DMODEE -.->|throws| CATCH
+      SDONE --> REFRESH
+      SKIPSTEPS --> CDONE
+      CDONE --> DJPG
+    end
+
+    CATCH["catch (Exception) → status ERROR(3) · RunError(BLOQUANTE)"]
+    START -.->|throws| CATCH
+    HTTP -.->|throws| CATCH
+    SOAP -.->|throws| CATCH
+    JPG -.->|throws| CATCH
+    QXPF -.->|throws| CATCH
+    P2REC -.->|child throws| CATCH
+
+    subgraph FIN["FINALLY (always)"]
+      direction TB
+      FDEG{"modeDegrade?"}
+      FDEGE["RunError(CRITIQUE RunInSafeMode)"]
+      ERSTART["endRunBusiness.execute · endDate=now"]
+      DSTATUS{"status == ERROR?"}
+      UPDSTAT["updateStatusRun (no doc insert)"]
+      INSDOCS["insert finalQXP(6)+finalPDF(7) → endRun proc"]
+      INSERR["insertErrors (blank→'aucun')"]
+      AUDIT["insertAuditRun (status label)"]
+      DSTORE{"status != ERROR?"}
+      DSSQL{"store SQL flag and data?"}
+      SSQL["insertData SQL (diff=false)"]
+      DSDOC{"store DOC flag and data?"}
+      SDOC["insertData DOCUMENT (diff=true)"]
+      ERDONE["commit"]
+      FDEG -- yes --> FDEGE --> ERSTART
+      FDEG -- no --> ERSTART
+      ERSTART --> DSTATUS
+      DSTATUS -- yes --> UPDSTAT --> INSERR
+      DSTATUS -- no --> INSDOCS --> INSERR
+      INSERR --> AUDIT --> DSTORE
+      DSTORE -- yes --> DSSQL
+      DSTORE -- no --> ERDONE
+      DSSQL -- yes --> SSQL --> DSDOC
+      DSSQL -- no --> DSDOC
+      DSDOC -- yes --> SDOC --> ERDONE
+      DSDOC -- no --> ERDONE
+    end
+
+    SUCCESS --> FDEG
+    CATCH --> FDEG
+    ERDONE --> RET(["return Run"])
+
+    classDef decision fill:#fff4d6,stroke:#e8a400,color:#5a4500;
+    classDef err fill:#fdecec,stroke:#e03131,color:#7a1212;
+    classDef ok fill:#e9fbf0,stroke:#0ca678,color:#0a5c43;
+    classDef http fill:#e7f1ff,stroke:#1c7ed6,color:#0b4ea2;
+    classDef soap fill:#e9fbf0,stroke:#0ca678,color:#0a5c43;
+    classDef recurse fill:#f3e8ff,stroke:#7048e8,color:#4a1f9e;
+    class DLG,DG,DMODE,P1EVAL,P1NONE,P1RUNID,P1MORE,P2EACH,P2QXP,P2DOC,P2MORE,P3DO,P3HASQ,P3PROJV,P3BOX,P3PAGENUM,P3VIS,P3BOXMORE,P3EMPTY,DSC,DFULL,DDIRECT,SNEXT,DOVF,DSQL,DDOCST,DJPG,DPDFR,DQXPR,FDEG,DSTATUS,DSTORE,DSSQL,DSDOC decision;
+    class DMODEE,P1NONEE,P1EMPTYE,P2QXPE,P2DOCE,P2CATCH,P3HASQE,P3PROJE,P3PAGEW,P3BOXSKIP,P3VISSKIP,CATCH,FDEGE,UPDSTAT,LOADSKIP,P3SKIP err;
+    class SUCCESS,RET,ERDONE,BUILD ok;
+    class HTTP http;
+    class SOAP soap;
+    class P2REC recurse;

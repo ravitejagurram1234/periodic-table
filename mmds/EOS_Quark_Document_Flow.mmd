@@ -1,0 +1,335 @@
+flowchart TD
+%% ============================================================================
+%% EOS Quark Engine - DOCUMENT (DOC_EOS) document-generation flow (run start -> end)
+%% Exhaustive control flow, every if/else branch, all directions. Java + .NET refs.
+%% Render: https://mermaid.live  or  npx -p @mermaid-js/mermaid-cli mmdc -i this.mmd -o out.svg
+%% Legend: ([ ]) start/end · [ ] action · {  } decision (yes/no) · dashed "throws" -> CATCH
+%% DOC_EOS = embed an external file (PDF / IMG / DOC / RTF / XTG / QXP_DATA) into the gabarit.
+%% Universal spine (Start..End + mode-degrade gate + try/catch/finally) is shared with Plaquette;
+%% the DELTA for this type lives in ③b LOAD DOCS and ④ PROCESS (DocumentTaskProcessStrategy).
+%% ============================================================================
+
+    REST(["POST /processRun/{runId}"])
+    CTRL["EngineServiceController.processRun → runProcessor"]
+    INIT["Create Run · status=TO_GENERATE(1) · startDate=now<br/>sizeLimit=209715200, nbBoxMax=17500"]
+    REST --> CTRL --> INIT --> START
+
+    subgraph TRY["TRY — main run body (J: runProcessor · N: Run_Base.Launch)"]
+    direction TB
+
+      subgraph P1["① START (always)"]
+        START["status → RUNNING(4) · runStartUpdateBusiness.execute<br/>N: Run.Start → Start_Run proc"]
+      end
+
+      subgraph P2["② LOAD (always)  J: load() · N: Run_Base.Load"]
+        direction TB
+        LP["getRunProperties (typeRapport, storeDataType, poolPath, ...)"]
+        DGS{"gabaritSource?"}
+        GSOK["fetch gabarit (GABARIT / DOCUMENT_COURANT / _PRECEDENT_CERTIFIE / _SUIVI)"]
+        GSX["default → throw IllegalArgumentException"]
+        UPLOAD["filePoolPort.addFile(getFilePoolPath, data) — UNCONDITIONAL (pre-degrade)"]
+        DDEG{"evaluateModeDegrade?<br/>QXP and data!=null and len>limit"}
+        SETDEG["modeDegrade=true · skip XML+DID"]
+        LOADXML["load full gabarit XML + DID"]
+        DLG{"modeDegrade? (load substeps)"}
+        LOADREST["getInParams · loadTasks (+DID task) · loadTemplates"]
+        LOADSKIP["skip InParams/Tasks/Templates"]
+        LP --> DGS
+        DGS -- "GABARIT/DOC_*" --> GSOK
+        DGS -- other --> GSX
+        GSOK --> UPLOAD --> DDEG
+        DDEG -- yes --> SETDEG --> DLG
+        DDEG -- no --> LOADXML --> DLG
+        DLG -- no --> LOADREST
+        DLG -- yes --> LOADSKIP
+      end
+
+      DG{"modeDegrade?  master gate (skips ③..⑥)"}
+      LOADREST --> DG
+      LOADSKIP --> DG
+
+      subgraph P3["③ PREPARE (skipped if degraded)"]
+        PREP["prepareTasks: task.prepare() per task; catch → inError + RunError(CRITIQUE)<br/>TaskDocument.prepare resolves subType"]
+      end
+
+      %% ----------------- DELTA: LOAD DOCS -----------------
+      subgraph P3B["③b LOAD DOCS — DOCUMENT delta  J: LoadTaskDocumentsBusiness.loadDocumentTask · N: (Task_Document load)"]
+        direction TB
+        LDGUARD{"(toLoad or todo) and idSousCategorie != 0 ?"}
+        LDSKIP["skip task (not loadable)"]
+        LDFETCH["fetch document from DAO"]
+        LDNULL{"doc == null ?"}
+        LDNULLE["RunError(UNSPECIFIED Document_Null) · skip"]
+        LDSUB{"subType?"}
+        LDPDF["FILE_PDF → loadPdfPages: pdfSplitter.split → per page addFile(R_/D_id_pN.pdf) → doc.pdfFiles[] (abs paths)"]
+        LDQXP["FILE_QXP_DATA → addFile(source QXP) → initXmlFromContent (always)"]
+        LDQXPCS{"conserverStyle?"}
+        LDQXPPROJ["load QXP project DOM (getProject)"]
+        LDQXPSKIP["XML only"]
+        LDFILE["IMG / DOC / RTF / XTG → addFile as-is (fileFullPath set)"]
+        LDGUARD -- no --> LDSKIP
+        LDGUARD -- yes --> LDFETCH --> LDNULL
+        LDNULL -- yes --> LDNULLE
+        LDNULL -- no --> LDSUB
+        LDSUB -- PDF --> LDPDF
+        LDSUB -- QXP_DATA --> LDQXP --> LDQXPCS
+        LDQXPCS -- yes --> LDQXPPROJ
+        LDQXPCS -- no --> LDQXPSKIP
+        LDSUB -- "IMG/DOC/RTF/XTG" --> LDFILE
+      end
+
+      %% ----------------- DELTA: PROCESS -----------------
+      subgraph P4["④ PROCESS — DocumentTaskProcessStrategy  J: DocumentTaskProcessStrategy · N: Process_Document.cs"]
+        direction TB
+        PDNAME{"destinationBlocName blank?"}
+        PDNAMEE["log warn · return"]
+        PDSUBNULL{"subType == null?"}
+        PDSUB{"subType dispatch"}
+
+        %% IMG
+        IMG0{"doc == null?"}
+        IMGTB{"IMG template is TBox?"}
+        IMGC["set content.value = absolute file path (prototype IMG)"]
+        IMGROT{"rotationImage and picture!=null?"}
+        IMGROTY["picture.angle = 90"]
+        IMGBOX["BlocBox(srcBox, extraBox) → blocsModify (action NONE)"]
+
+        %% PDF
+        PDF0{"doc == null or pdfFiles empty?"}
+        PDFEX{"existing boxes for destName empty?"}
+        PDFEXE["RunError(UNSPECIFIED) · return"]
+        PDFINIT["init imageOffset (if offsetValues) · init imagePosition UNCONDITIONAL (null→DEFAULT, fix #15)<br/>maxPages = max(pdfCount, boxCount)"]
+        PDFLOOP{"loop i: i<boxCount and i>=pdfCount ? (more boxes than PDFs)"}
+        PDFREM["BlocPage REMOVE (relativePage=i) → blocsModify (pagination)"]
+        PDFT{"i == 0 ?"}
+        PDFT1["prototype PDF_1"]
+        PDFTN["prototype PDF_N"]
+        PDFTBOX{"template is TBox?"}
+        PDFTBOXN["log warn · next i"]
+        PDFC["set content.value = pdf page abs path · BlocBox(relativePage=i)"]
+        PDFPOS{"i>0 and geometry.position != null?"}
+        PDFPOSY["apply imagePosition L/T/R/B"]
+        PDFROT{"rotationImage?"}
+        PDFROTY["srcBox.picture.angle=90 · extraBox.offsetAcross"]
+        PDFROTN["extraBox.offsetDown"]
+        PDFACT{"i < boxCount ?"}
+        PDFUPD["action UPDATE → blocsModify"]
+        PDFCRE["BlocPage CREATE (P{i}_name) + BlocBox CREATE → blocsModify (pagination)"]
+
+        %% DOC/RTF/XTG
+        DOC0{"doc == null?"}
+        DOCTB{"RTF_DOC_XTG template is TBox?"}
+        DOCC["set content.value = 'file:' + abs path (prototype RTF_DOC_XTG)"]
+        DOCBOX["BlocBox → blocsModify (action NONE)"]
+
+        %% QXP_DATA
+        QD0{"source or dest blocName blank?"}
+        QD1{"doc == null?"}
+        QDCS0{"conserverStyle? (analyse project if true)"}
+        QDSPLIT["split source| and dest| (pipe)"]
+        QDLEN{"source.len != dest.len ?"}
+        QDLENE["RunError(CRITIQUE mismatch) · use safe overlap min()"]
+        QDLOOP{"loop pair: name empty?"}
+        QDMODE{"conserverStyle?"}
+        QDVAL["VALUE: BlocBox(dest, qxpXml.getValue(src)) action UPDATE → blocsUpdate"]
+        QDSTYLE{"element found in project?"}
+        QDSTYLEN["log warn · return"]
+        QDETYPE{"element type?"}
+        QDTBOX["TBox → getNewTBoxStyleValueFromTBox → BlocBox UPDATE"]
+        QDTTAB["TTable → getNewTTableStyleValueFromTTable → BlocTable UPDATE"]
+        QDTGRP["TGroup → not yet treated (no-op)"]
+        QDDUP{"name already in blocsModify?"}
+        QDDUPE["RunError(UNSPECIFIED BlocDuplique)"]
+        QDADD["add to blocsModify"]
+
+        PDNAME -- yes --> PDNAMEE
+        PDNAME -- no --> PDSUBNULL
+        PDSUBNULL -- yes --> PDNAMEE
+        PDSUBNULL -- no --> PDSUB
+
+        PDSUB -- IMG --> IMG0
+        IMG0 -- yes --> PDDONE["task processed"]
+        IMG0 -- no --> IMGTB
+        IMGTB -- no --> PDDONE
+        IMGTB -- yes --> IMGC --> IMGROT
+        IMGROT -- yes --> IMGROTY --> IMGBOX
+        IMGROT -- no --> IMGBOX --> PDDONE
+
+        PDSUB -- PDF --> PDF0
+        PDF0 -- yes --> PDDONE
+        PDF0 -- no --> PDFEX
+        PDFEX -- yes --> PDFEXE
+        PDFEX -- no --> PDFINIT --> PDFLOOP
+        PDFLOOP -- yes --> PDFREM --> PDFNEXT{"more pages?"}
+        PDFLOOP -- no --> PDFT
+        PDFT -- yes --> PDFT1 --> PDFTBOX
+        PDFT -- no --> PDFTN --> PDFTBOX
+        PDFTBOX -- no --> PDFTBOXN --> PDFNEXT
+        PDFTBOX -- yes --> PDFC --> PDFPOS
+        PDFPOS -- yes --> PDFPOSY --> PDFROT
+        PDFPOS -- no --> PDFROT
+        PDFROT -- yes --> PDFROTY --> PDFACT
+        PDFROT -- no --> PDFROTN --> PDFACT
+        PDFACT -- yes --> PDFUPD --> PDFNEXT
+        PDFACT -- no --> PDFCRE --> PDFNEXT
+        PDFNEXT -- yes --> PDFLOOP
+        PDFNEXT -- no --> PDDONE
+
+        PDSUB -- "DOC/RTF/XTG" --> DOC0
+        DOC0 -- yes --> PDDONE
+        DOC0 -- no --> DOCTB
+        DOCTB -- no --> PDDONE
+        DOCTB -- yes --> DOCC --> DOCBOX --> PDDONE
+
+        PDSUB -- QXP_DATA --> QD0
+        QD0 -- yes --> PDDONE
+        QD0 -- no --> QD1
+        QD1 -- yes --> PDDONE
+        QD1 -- no --> QDCS0 --> QDSPLIT --> QDLEN
+        QDLEN -- yes --> QDLENE --> QDLOOP
+        QDLEN -- no --> QDLOOP
+        QDLOOP -- "empty (skip)" --> QDMORE{"more pairs?"}
+        QDLOOP -- no --> QDMODE
+        QDMODE -- "false" --> QDVAL --> QDMORE
+        QDMODE -- "true" --> QDSTYLE
+        QDSTYLE -- no --> QDSTYLEN --> QDMORE
+        QDSTYLE -- yes --> QDETYPE
+        QDETYPE -- TBox --> QDTBOX --> QDDUP
+        QDETYPE -- TTable --> QDTTAB --> QDDUP
+        QDETYPE -- TGroup --> QDTGRP --> QDMORE
+        QDDUP -- yes --> QDDUPE --> QDMORE
+        QDDUP -- no --> QDADD --> QDMORE
+        QDMORE -- yes --> QDLOOP
+        QDMORE -- no --> PDDONE
+      end
+
+      %% ----------------- shared tail: STEPS, CHECK, RENDER -----------------
+      subgraph P5["⑤ STEPS  J: QxpsCallerBusiness.process · N: QXPS_Caller"]
+        direction TB
+        DSC{"modeDegrade? (short-circuit)"}
+        GETSTEPS["RunTask.getSteps: UPDATE(SOAP) + PAGINATION + MODIFY split@5000<br/>DOC_EOS produces mostly MODIFY + pagination (PDF pages)"]
+        SLOOP["per step: prepare (evaluateInfo + box limits)"]
+        DFULL{"fullExclude?"}
+        DDIRECT{"directCall?"}
+        HTTP["HTTP combined URL: ParamsValue + Modify(upload XML) + SaveAs + QxpRender"]
+        SOAP["QXPSM SOAP executeStep (value updates only)"]
+        POST["download new gabarit (literal) → update run.gabarit → inform"]
+        SNEXT{"more steps?"}
+        DSC -- yes --> SKIPSTEPS["return"]
+        DSC -- no --> GETSTEPS --> SLOOP --> DFULL
+        DFULL -- yes --> SNEXT
+        DFULL -- no --> DDIRECT
+        DDIRECT -- "yes (structural)" --> HTTP --> POST
+        DDIRECT -- "no (value)" --> SOAP --> POST
+        POST --> SNEXT
+        SNEXT -- yes --> SLOOP
+        SNEXT -- no --> SDONE["steps done"]
+      end
+
+      subgraph P6["⑥ CHECK  J: CheckServiceImpl.check"]
+        direction TB
+        REFRESH["refresh gabarit XML"]
+        DOVF{"hasControlOverflow? (Dynamique only — inert here)"}
+        DSQL{"store SQL flag?"}
+        SQLC["collect SQL data"]
+        DDOCST{"store DOCUMENT flag?"}
+        DOCC2["refresh XML → collect box values (skip Box*/[...])"]
+        REFRESH --> DOVF
+        DOVF -- yes --> DSQL
+        DOVF -- no --> DSQL
+        DSQL -- yes --> SQLC --> DDOCST
+        DSQL -- no --> DDOCST
+        DDOCST -- yes --> DOCC2 --> CDONE["check done"]
+        DDOCST -- no --> CDONE
+      end
+
+      subgraph P7["⑦ RENDER (always)"]
+        direction TB
+        DJPG{"renderJpg? (default off)"}
+        JPG["JPEG render — exception propagates"]
+        DPDFR{"renderPdf? (default on)"}
+        PDFR["PDF render — catch QxpsException swallow; else propagate"]
+        DQXPR{"renderQxp? (default on)"}
+        QXPF["QXP literal fetch — exception propagates"]
+        BUILD["buildRunResult → finalJpg/finalPdf/finalQxp"]
+        SUCCESS["status → GENERATED(2)"]
+        DJPG -- yes --> JPG --> DPDFR
+        DJPG -- no --> DPDFR
+        DPDFR -- yes --> PDFR --> DQXPR
+        DPDFR -- no --> DQXPR
+        DQXPR -- yes --> QXPF --> BUILD
+        DQXPR -- no --> BUILD
+        BUILD --> SUCCESS
+      end
+
+      %% intra-TRY wiring
+      START --> LP
+      DG -- "no (normal)" --> PREP
+      DG -- "yes (degraded)" --> DJPG
+      PREP --> LDGUARD
+      LDSKIP --> PDNAME
+      LDNULLE --> PDNAME
+      LDPDF --> PDNAME
+      LDQXPPROJ --> PDNAME
+      LDQXPSKIP --> PDNAME
+      LDFILE --> PDNAME
+      PDDONE --> DSC
+      PDNAMEE --> DSC
+      PDFEXE --> DSC
+      SDONE --> REFRESH
+      SKIPSTEPS --> CDONE
+      CDONE --> DJPG
+    end
+
+    CATCH["catch (Exception) → status ERROR(3) · RunError(BLOQUANTE)"]
+    START -.->|throws| CATCH
+    GSX -.->|throws| CATCH
+    HTTP -.->|throws| CATCH
+    SOAP -.->|throws| CATCH
+    JPG -.->|throws| CATCH
+    QXPF -.->|throws| CATCH
+
+    subgraph FIN["FINALLY (always)  J: runProcessor finally"]
+      direction TB
+      FDEG{"modeDegrade?"}
+      FDEGE["RunError(CRITIQUE RunInSafeMode)"]
+      ERSTART["endRunBusiness.execute · endDate=now"]
+      DSTATUS{"status == ERROR?"}
+      UPDSTAT["updateStatusRun (no doc insert)"]
+      INSDOCS["insert finalQXP(6)+finalPDF(7) → endRun proc"]
+      INSERR["insertErrors (blank→'aucun')"]
+      AUDIT["insertAuditRun (status label)"]
+      DSTORE{"status != ERROR?"}
+      DSSQL{"store SQL flag and data?"}
+      SSQL["insertData SQL (diff=false)"]
+      DSDOC{"store DOC flag and data?"}
+      SDOC["insertData DOCUMENT (diff=true)"]
+      ERDONE["commit"]
+      FDEG -- yes --> FDEGE --> ERSTART
+      FDEG -- no --> ERSTART
+      ERSTART --> DSTATUS
+      DSTATUS -- yes --> UPDSTAT --> INSERR
+      DSTATUS -- no --> INSDOCS --> INSERR
+      INSERR --> AUDIT --> DSTORE
+      DSTORE -- yes --> DSSQL
+      DSTORE -- no --> ERDONE
+      DSSQL -- yes --> SSQL --> DSDOC
+      DSSQL -- no --> DSDOC
+      DSDOC -- yes --> SDOC --> ERDONE
+      DSDOC -- no --> ERDONE
+    end
+
+    SUCCESS --> FDEG
+    CATCH --> FDEG
+    ERDONE --> RET(["return Run"])
+
+    classDef decision fill:#fff4d6,stroke:#e8a400,color:#5a4500;
+    classDef err fill:#fdecec,stroke:#e03131,color:#7a1212;
+    classDef ok fill:#e9fbf0,stroke:#0ca678,color:#0a5c43;
+    classDef http fill:#e7f1ff,stroke:#1c7ed6,color:#0b4ea2;
+    classDef soap fill:#e9fbf0,stroke:#0ca678,color:#0a5c43;
+    class DGS,DDEG,DLG,DG,LDGUARD,LDNULL,LDSUB,LDQXPCS,PDNAME,PDSUBNULL,PDSUB,IMG0,IMGTB,IMGROT,PDF0,PDFEX,PDFLOOP,PDFT,PDFTBOX,PDFPOS,PDFROT,PDFACT,PDFNEXT,DOC0,DOCTB,QD0,QD1,QDCS0,QDLEN,QDLOOP,QDMODE,QDSTYLE,QDETYPE,QDDUP,QDMORE,DSC,DFULL,DDIRECT,SNEXT,DOVF,DSQL,DDOCST,DJPG,DPDFR,DQXPR,FDEG,DSTATUS,DSTORE,DSSQL,DSDOC decision;
+    class GSX,SETDEG,LDNULLE,PDNAMEE,PDFEXE,PDFTBOXN,QDLENE,QDSTYLEN,QDDUPE,QDTGRP,CATCH,FDEGE,UPDSTAT,LOADSKIP err;
+    class SUCCESS,RET,ERDONE,BUILD ok;
+    class HTTP http;
+    class SOAP soap;
