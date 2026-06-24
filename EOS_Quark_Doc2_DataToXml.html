@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EOS Quark Engine — Doc 2: How Data Becomes XML</title>
+<style>
+  :root { --sg:#e60028; --ink:#1a1a2e; --muted:#5b6472; --bg:#f7f8fa; --card:#fff; --line:#e3e7ee; --code:#0b1021; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif; color:var(--ink); background:var(--bg); line-height:1.6; }
+  header { background:linear-gradient(135deg,#1a1a2e,#2d2d52); color:#fff; padding:32px 40px; }
+  header h1 { margin:0 0 6px; font-size:26px; }
+  header p { margin:0; color:#c7cbe0; font-size:14px; }
+  .wrap { display:flex; max-width:1280px; margin:0 auto; }
+  nav { width:280px; flex:none; padding:24px 16px; position:sticky; top:0; align-self:flex-start; max-height:100vh; overflow:auto; font-size:13px; }
+  nav a { display:block; color:var(--muted); text-decoration:none; padding:3px 8px; border-radius:6px; }
+  nav a:hover { background:#eef0f6; color:var(--ink); }
+  nav .h2 { margin-top:10px; font-weight:600; color:var(--ink); }
+  main { flex:1; padding:24px 40px 80px; min-width:0; }
+  section { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:24px 28px; margin-bottom:22px; }
+  h2 { color:var(--sg); border-bottom:2px solid var(--line); padding-bottom:8px; margin-top:0; }
+  h3 { color:var(--ink); margin-top:26px; }
+  h4 { color:#2d2d52; margin-bottom:6px; }
+  code { background:#eef0f6; padding:1px 6px; border-radius:4px; font-family:SFMono-Regular,Consolas,monospace; font-size:13px; }
+  pre { background:var(--code); color:#e6e6e6; padding:16px; border-radius:8px; overflow:auto; font-size:12.5px; line-height:1.5; }
+  pre code { background:none; padding:0; color:inherit; }
+  table { border-collapse:collapse; width:100%; margin:14px 0; font-size:13.5px; }
+  th,td { border:1px solid var(--line); padding:8px 10px; text-align:left; vertical-align:top; }
+  th { background:#f0f2f7; }
+  .tag { display:inline-block; background:#eef0f6; border:1px solid var(--line); border-radius:20px; padding:1px 10px; font-size:12px; margin:2px 2px 2px 0; }
+  .note { background:#fff8e6; border-left:4px solid #f0b400; padding:12px 16px; border-radius:6px; margin:14px 0; }
+  .kube { background:#e8f4ff; border-left:4px solid #1c7ed6; padding:12px 16px; border-radius:6px; margin:14px 0; }
+  .ok { background:#e9fbf0; border-left:4px solid #0ca678; padding:12px 16px; border-radius:6px; margin:14px 0; }
+  .step { border-left:3px solid var(--sg); padding:4px 0 4px 16px; margin:14px 0; }
+  .step b { color:var(--sg); }
+  .muted { color:var(--muted); font-size:13px; }
+  .flow { font-family:SFMono-Regular,Consolas,monospace; font-size:12.5px; background:#0b1021; color:#9fe8c0; padding:14px 16px; border-radius:8px; overflow:auto; white-space:pre; }
+  .pill { font-size:11px; padding:1px 7px; border-radius:10px; color:#fff; white-space:nowrap; }
+  .p-soap{background:#0ca678}.p-http{background:#1c7ed6}.p-val{background:#5b6472}.p-struct{background:#7048e8}
+  .lead { font-size:15px; color:var(--ink); }
+  .xmlkey { color:#ffd479; }
+</style>
+</head>
+<body>
+<header>
+  <h1>EOS Quark Engine — How Data Becomes XML</h1>
+  <p>Doc 2 of 4 · The serializer &amp; Modifier schema: how / why / what data turns into the payload sent to QuarkXPress · Java engine (<code>com.socgen.sgs.api.quark.engine</code>), ported from the .NET QXP.Engine</p>
+</header>
+<div class="wrap">
+<nav>
+  <div class="h2">Contents</div>
+  <a href="#why">1. Why this layer exists</a>
+  <a href="#bigpic">2. The big picture</a>
+  <a href="#stage1">3. Stage 1 — Acquire the data</a>
+  <a href="#stage2">4. Stage 2 — Format the text</a>
+  <a href="#stage3">5. Stage 3 — Attach to the model</a>
+  <a href="#stage4">6. Stage 4 — Split into steps</a>
+  <a href="#twopaths">7. The two payloads (the fork)</a>
+  <a href="#namevalue">7a. Name-value (value path)</a>
+  <a href="#modifier">7b. Modifier XML (structural path)</a>
+  <a href="#schema">8. The Modifier XML schema</a>
+  <a href="#serializer">9. The serializer itself</a>
+  <a href="#telement">10. The TElement model</a>
+  <a href="#readxml">11. Read-side: QxpXml</a>
+  <a href="#store">12. Store-data (historisation)</a>
+  <a href="#worked">13. Worked example</a>
+  <a href="#parity">14. .NET parity &amp; deviations</a>
+  <a href="#ref">15. Class &rarr; element reference</a>
+</nav>
+<main>
+
+<section id="why">
+  <h2>1. Why this layer exists</h2>
+  <p class="lead">QuarkXPress Server does not understand "set field <code>NAV_DATE</code> to 24/06/2026". It understands one thing: <b>an XML document that describes the boxes, tables and pages of a Quark project, and what to do to them.</b> Everything in this document is about the bridge between the engine's business data and that XML.</p>
+  <p>A run starts with raw material — rows from Oracle, literal system values, document files — and must end with a rendered PDF/JPG/QXP. In between, the engine has to answer one question for every piece of data: <b>"which box does this go into, and what XML do I emit to put it there?"</b> This doc traces that answer end-to-end.</p>
+  <div class="kube"><b>Kube constraint (why it's all remote XML):</b> the old .NET engine ran on the same host as QuarkXPress Server and could touch files directly. The Java engine runs in Kubernetes, <i>remote</i> from the Quark host. So <b>every</b> document mutation must travel as a payload over the wire — there is no local file path the engine can write. That is exactly why the serialized XML / name-value payload in this doc is the <i>only</i> way data reaches the document.</div>
+</section>
+
+<section id="bigpic">
+  <h2>2. The big picture</h2>
+  <p>Data flows through four stages and then forks into one of two transport payloads. Hold this diagram in mind — the rest of the doc zooms into each box.</p>
+  <div class="flow">RAW DATA                FORMAT                MODEL                     STEPS                    PAYLOAD &amp; TRANSPORT
+─────────              ────────              ───────                   ───────                  ────────────────────
+
+ SQL rows  ┐                                  BlocBox(value)  ┐         UPDATE step    ──&gt; name/value pairs   ──&gt; QXPSM  (SOAP)
+ (Oracle)  │   DataTypeHelper                 → blocsUpdate   │  RunTask  (all values, 1 step)                  Manager
+           ├─&gt; .outputToString() ─&gt; "string" ─┤                ├─.getSteps()
+ System    │   (fr-FR, €, %, dates)           BlocBox(srcBox) │         PAGINATION step ┐
+ values    ┘                                  → blocsModify   ┘         MODIFY step(s)  ┴&gt; QxpsModifier ─&gt; XML ─&gt; QXPS   (HTTP)
+                                                                        (structural, split @5000)                Server</div>
+  <p>The key fork — and the single most misunderstood thing about this engine — is at the right edge:</p>
+  <table>
+    <tr><th>What changed</th><th>Step type</th><th>Payload</th><th>Transport</th><th><code>directCall</code></th></tr>
+    <tr><td><b>A field's text/value</b> (a SQL result, a system value)</td><td>UPDATE</td><td><span class="pill p-val">name/value pairs</span></td><td><span class="pill p-soap">QXPSM — SOAP</span></td><td><code>false</code></td></tr>
+    <tr><td><b>Structure</b> (create/move/delete boxes, tables, pages)</td><td>MODIFY / PAGINATION</td><td><span class="pill p-struct">Modifier XML</span></td><td><span class="pill p-http">QXPS — HTTP</span></td><td><code>true</code> (default)</td></tr>
+  </table>
+  <div class="note"><b>Read this carefully — it is the opposite of the intuitive framing.</b> Plain value/text fills go over <b>SOAP (QXPSM)</b>; heavyweight structural edits go over <b>HTTP (QXPS)</b>. The decision is made once, in <code>RunTask.getSteps()</code>, by setting <code>step.setDirectCall(false)</code> on the value step and leaving it <code>true</code> on the structural steps. <code>QxpsCallerBusiness.executeStep()</code> then branches: <code>if (step.isDirectCall()) executeDirectCall(/*HTTP*/) else executeSoapCall(/*SOAP*/)</code>.</div>
+</section>
+
+<section id="stage1">
+  <h2>3. Stage 1 — Acquire the data &amp; decide its target box</h2>
+  <p>Two task types produce ordinary field values. Each one's <code>*ProcessStrategy</code> takes a value, formats it, wraps it in a <code>BlocBox</code>, and drops it into the task's <code>blocsUpdate</code> map keyed by <b>bloc name</b> (the box name in the Quark template).</p>
+
+  <h3>SYSTEM tasks — a single literal value</h3>
+  <p><code>SystemTaskProcessStrategy</code> has two modes:</p>
+  <ul>
+    <li><b>VALUE mode</b> — format <code>task.getValue()</code> and store it as <code>new BlocBox(task, destinationBlocName, formattedValue)</code> in <code>task.getBlocsUpdate()</code>. This is a pure text change &rarr; ends up on the SOAP path.</li>
+    <li><b>BOX mode</b> — the change is a <i>box</i> (a template element with geometry), not just text. It builds <code>BlocBox</code> from a <code>srcBox</code>/<code>srcExtraBox</code> SOAP <code>Box</code> and routes it to <code>blocsModify</code> &rarr; structural/HTTP path.</li>
+  </ul>
+
+  <h3>SQL tasks — one row → one box</h3>
+  <p><code>SqlTaskProcessStrategy</code> delegates to <code>ProcessSqlBusiness.addBlocs()</code>. The query is expected to return rows with these well-known columns:</p>
+  <table>
+    <tr><th>SQL column</th><th>Becomes</th><th>Role</th></tr>
+    <tr><td><code>NOM_BLOC</code></td><td><code>BlocBox.name</code></td><td>Which box in the template receives the value</td></tr>
+    <tr><td><code>VALEUR_BLOC</code></td><td><code>BlocBox.value</code> (after formatting)</td><td>The text to put in the box</td></tr>
+    <tr><td><code>DESCRIPTION_BLOC</code> / <code>INFO_BLOC</code></td><td><code>DataNameValue</code> metadata</td><td>Carried only into the <i>store-data</i> stream (§12), not the document</td></tr>
+  </table>
+  <p>For each row: <code>blocName = row[NOM_BLOC]</code>; the value is formatted (Stage 2); a <code>BlocBox</code> is created with <code>action = BlocActionEnum.UPDATE</code> and added to <code>task.getBlocsUpdate()</code>. So <b>one SQL row produces one named value fill.</b></p>
+  <p class="muted">Other task types (Document, QXP_Previous, Dynamique, Compartiment) build <i>structural</i> blocs (boxes/tables/pages with geometry) into <code>blocsModify</code> — those are covered as the structural path below and in Doc 1. This section focuses on the value-producing path because that is where "data → text → XML" is most concrete.</p>
+</section>
+
+<section id="stage2">
+  <h2>4. Stage 2 — Format the text (<code>DataTypeHelper</code>)</h2>
+  <p>Before a value can become XML it becomes a <b>string</b>, formatted exactly as it should appear in the rendered document. This is the job of <code>DataTypeHelper.outputToString(value, dataType, nbDecimal, showZero, nullString, decimalSignificative)</code> — the single chokepoint both SYSTEM and SQL strategies call.</p>
+  <table>
+    <tr><th>DataType</th><th>Transformation</th><th>Example out</th></tr>
+    <tr><td><code>INT</code></td><td>Parse to integer, group with fr-FR thousands separator</td><td><code>1&nbsp;234&nbsp;567</code></td></tr>
+    <tr><td><code>DECIMAL</code></td><td><code>BigDecimal</code> to <code>nbDecimal</code> places, HALF_UP rounding, fr-FR grouping; <code>decimalSignificative</code> toggles fixed trailing zeros vs suppression</td><td><code>1&nbsp;234,50</code></td></tr>
+    <tr><td><code>CURRENCY</code></td><td>Decimal core + <code>"&nbsp;€"</code> suffix (fr-FR symbol). <b>No ×100.</b></td><td><code>1&nbsp;234,50&nbsp;€</code></td></tr>
+    <tr><td><code>POURCENTAGE</code></td><td>Decimal core + single <code>"&nbsp;%"</code> suffix. <b>No ×100</b> — values are already stored scaled (15 = 15%).</td><td><code>15,00&nbsp;%</code></td></tr>
+    <tr><td><code>DATE</code></td><td><code>LocalDate</code> formatted <code>dd/MM/yyyy</code></td><td><code>24/06/2026</code></td></tr>
+    <tr><td><code>DATE_TIME</code></td><td><code>LocalDateTime</code> formatted <code>dd/MM/yyyy HH:mm:ss</code></td><td><code>24/06/2026 14:30:00</code></td></tr>
+    <tr><td>other</td><td>Raw <code>toString()</code></td><td>unchanged</td></tr>
+  </table>
+  <p><code>showZero=false</code> turns a zero into <code>nullString</code> (often blank); <code>nullString</code> substitutes for missing values. The result of this stage is a plain <code>String</code> — that string is what eventually appears as text content inside the XML.</p>
+  <div class="note"><b>Two documented behaviours worth knowing (from the verified fix batches):</b><br>
+  • <b>POURCENTAGE</b> emits a single <code>" %"</code> with no ×100. The legacy .NET <i>engine</i> path multiplied by 100 <i>and</i> doubled the suffix (rendering 15 as <code>"1&nbsp;500,00&nbsp;% %"</code> — an author-flagged bug). The user approved deviating to the correct output, which matches .NET's <i>other</i> formatter (<code>QXP_Format_Helper</code>).<br>
+  • <b>fr-FR grouping char</b>: JDK 17 / CLDR may use a narrow no-break space (U+202F) where .NET used U+00A0. This affects all grouped numbers and should be checked against a golden file.</div>
+</section>
+
+<section id="stage3">
+  <h2>5. Stage 3 — Attach to the model (<code>BlocBox</code> → task maps)</h2>
+  <p>The formatted value is now wrapped in a <code>BlocBox</code> and parked on the task in one of two maps. <b>Which map decides which transport.</b></p>
+  <table>
+    <tr><th>Map on <code>TaskBase</code></th><th>Holds</th><th>Key carried by <code>BlocBox</code></th><th>Destination</th></tr>
+    <tr><td><code>blocsUpdate : Map&lt;String,BlocBox&gt;</code></td><td>Text/value changes</td><td><code>name</code> + <code>value</code> (String)</td><td><span class="pill p-soap">SOAP</span> value path</td></tr>
+    <tr><td><code>blocsModify : Map&lt;String,BlocBase&gt;</code></td><td>Structural changes</td><td><code>name</code> + <code>srcBox</code> (SOAP <code>Box</code>) + <code>action</code> + <code>pageId</code></td><td><span class="pill p-http">HTTP</span> structural path</td></tr>
+  </table>
+  <p>The serializer / payload builder later reads exactly these fields. For a value bloc it reads <code>BlocBox.getValue()</code>. For a structural bloc it reads <code>BlocBox.getSrcBox()</code> — a fully-populated SOAP <code>Box</code> whose own text value lives at <code>srcBox.text.story.paragraphs[0].richText[0].value</code> and whose geometry lives at <code>srcBox.geometry.position</code>.</p>
+  <p class="muted"><code>BlocActionEnum</code> on each bloc (<code>UPDATE</code>, <code>CREATE</code>, <code>MOVE</code>, <code>REMOVE</code>/<code>NONE</code>) is what the serializer turns into the XML <code>OPERATION</code> attribute on the resulting element.</p>
+</section>
+
+<section id="stage4">
+  <h2>6. Stage 4 — Split into steps (<code>RunTask.getSteps()</code>)</h2>
+  <p>All of a run's blocs are reorganised into an ordered list of <code>RunTaskStep</code>s. This is where the SOAP-vs-HTTP decision is physically made by flipping <code>directCall</code>.</p>
+  <div class="flow">RunTask.getSteps()  →  ordered List&lt;RunTaskStep&gt;
+
+  [0] UPDATE step      setDirectCall(false)   ← ALL value blocs, never split — exactly ONE step
+  [1] PAGINATION step  directCall = true      ← page create/remove blocs
+  [2..] MODIFY step(s) directCall = true      ← structural blocs, split every `splitStepBoxNumber` (default 5000) boxes</div>
+  <ul>
+    <li>The <b>UPDATE step</b> collects every value bloc from every task into a <i>single</i> step (it is never batched), and marks it <code>directCall=false</code> &rarr; it will go over SOAP.</li>
+    <li><b>PAGINATION</b> and <b>MODIFY</b> steps keep the default <code>directCall=true</code> &rarr; HTTP. Big structural docs are chunked at <code>splitStepBoxNumber</code> so no single call is too large.</li>
+  </ul>
+  <p>Consequence: a SQL/System-only fact-sheet (no structural changes) produces <b>exactly one SOAP step</b> and zero HTTP modify calls. A heavy Dynamique/Compartiment doc produces several HTTP modify steps.</p>
+  <p class="muted">Per-step the engine also resolves each box's page &amp; layout via <code>TaskBase.evaluateInfo()</code> &rarr; <code>QxpXml.getPageNum/getLayoutName</code>, re-reading the latest saved document XML (each step saves a new version). A capacity guard (<code>RunTaskStep.evaluateLimitation</code>, against <code>nb-box-max</code> / <code>average-box-size</code>) only matters for very large structural docs.</p>
+</section>
+
+<section id="twopaths">
+  <h2>7. The two payloads (the fork in detail)</h2>
+  <p><code>QxpsCallerBusiness.executeStep(step, ...)</code> builds a <code>QxpsModifier</code> from the step's structural blocs and then branches on <code>step.isDirectCall()</code>:</p>
+  <pre><code>QxpsModifier modifier = new QxpsModifier();
+modifier.addRange(step.getBlocsModify());
+
+if (step.isDirectCall()) {
+    executeDirectCall(run, step, modifier, ...);   // HTTP / QXPS
+} else {
+    executeSoapCall(step, modifier, ...);           // SOAP / QXPSM
+}</code></pre>
+</section>
+
+<section id="namevalue">
+  <h3 id="na">7a. The value payload — name/value pairs <span class="pill p-soap">SOAP</span></h3>
+  <p>For the UPDATE step, <code>RunTaskStep.evaluateModifierAndValues()</code> walks <code>blocsUpdate</code> and emits a flat list of <code>NameValueParam(paramName, textValue)</code> — box name &rarr; formatted string:</p>
+  <pre><code>for (BlocBase bloc : blocsUpdate) {
+    if (bloc instanceof BlocBox b) {
+        NameValueParam nv = new NameValueParam();
+        nv.setParamName(b.getName());     // box name in the template
+        nv.setTextValue(b.getValue());    // the formatted string from Stage 2
+        nameValues.add(nv);
+    }
+}</code></pre>
+  <p>That list is handed to <code>QxpsmSoapClient.executeStep(documentName, nameValues, project /*usually null for UPDATE*/, saveAsPath, newGabaritName)</code>. The SOAP side carries the pairs as method parameters; QuarkXPress Manager finds each named box and replaces its text. <b>No box geometry is sent</b> — the box already exists in the template, we are only refilling it.</p>
+  <p class="muted">There are two serialized forms of name/value in the codebase: <code>NameValueSerializer</code> emits a compact <code>&lt;PARAMSVALUE&gt;&lt;NAMEVALUEPARAM PARAMNAME="…" TEXTVALUE="…"/&gt;…&lt;/PARAMSVALUE&gt;</code> XML; <code>ParamsValueMessage</code> emits the HTTP-GET query-string form <code>name1=value1&amp;name2=value2</code> used when value updates ride along on a combined HTTP call.</p>
+</section>
+
+<section id="modifier">
+  <h3 id="mo">7b. The structural payload — Modifier XML <span class="pill p-http">HTTP</span></h3>
+  <p>For MODIFY/PAGINATION steps, the structural blocs are folded into the <b>Modifier object tree</b> and serialized to XML. <code>QxpsModifier.add(bloc)</code> routes each bloc by type and walks/creates the nesting <code>Projet → Layout → Spread → {Box | Table | Page | Group}</code>:</p>
+  <pre><code>private void addBlocBox(BlocBox bloc) {
+    ModifierSpread spread = addGetSpread(bloc);     // find/create layout+spread
+    ModifierBox box = new ModifierBox();
+    box.setName(bloc.getName());
+    box.setAction(bloc.getAction());                // → OPERATION attribute
+    box.setPageId(bloc.getPageId());                // → GEOMETRY/@PAGE
+    box.setValue(bloc.getValue());
+    box.setSrcBox(getBox(bloc, false));             // the SOAP Box (text+geometry+style)
+    spread.getBoxes().put(box.getName(), box);
+}</code></pre>
+  <p>Then <code>modifier.getProject()</code> converts the whole tree into a SOAP <code>Project</code> (<code>ModifierProjet.getSdkProject()</code> &rarr; <code>ModifierLayout.getSdkSpreads()</code> &rarr; <code>ModifierSpread.getSdkBoxes()/getSdkTables()/getSdkPages()</code>, applying <code>OPERATION</code> = CREATE/MOVE/DELETE/NONE per bloc action). Finally <code>QxpsProjectSerializer.toBytes(project)</code> streams it to XML bytes.</p>
+  <p>On the HTTP side that XML is <b>uploaded to the document pool as its own file</b> and then referenced by name in one combined call (Kube can't hand the server a local file):</p>
+  <pre><code>byte[] modifyXml = QxpsProjectSerializer.toBytes(modifier.getProject());
+String modifyFileName = run.getRunProperties().getPoolPath(/* MODIFY_&lt;timestamp&gt; */);
+qxpsHttpClient.execute(modifyFileName, new AddFileMessage(modifyXml));   // 1) upload
+messages.add(new ModifyMessage(modifyFileName));                         // 2) reference
+messages.add(new ParamsValueMessage(nvArray));   // any inline value updates
+messages.add(new SaveAsMessage(saveAsPath, newGabaritName, true, false));
+messages.add(new QxpRenderMessage());
+qxpsHttpClient.executeCombined(documentName, messages);                  // 3) ONE call</code></pre>
+</section>
+
+<section id="schema">
+  <h2>8. The Modifier XML schema</h2>
+  <p>This is the actual document grammar QuarkXPress Server consumes. <b>All element and attribute names are UPPERCASE on the wire</b> (verified directly against the serializer's <code>writeStartElement("…")</code> / <code>writeAttr(w,"…")</code> literals — note the .NET source uses lowercase C# <i>property</i> names but emits the same uppercase XML). The serializer omits any attribute or element whose value is null/empty, so real payloads are much sparser than the full grammar below.</p>
+  <pre><code>&lt;PROJECT&gt;
+  &lt;LAYOUT NAME="…" UID="…"&gt;
+    &lt;SPREAD OPERATION="CREATE|…" UID="1"&gt;
+
+      &lt;PAGE OPERATION="CREATE|DELETE" MASTER="…" POSITION="…" UID="2"&gt;
+        &lt;ID NAME="Page2" UID=""/&gt;
+      &lt;/PAGE&gt;
+
+      &lt;BOX OPERATION="CREATE|MOVE|NONE" BOXTYPE="CT_TEXT|CT_PICT"
+           COLOR="" SHADE="" OPACITY="" ANCHOREDIN=""&gt;
+        &lt;ID NAME="NAV_DATE" UID=""/&gt;
+        &lt;TEXT VERTICALALIGNMENT="…" COLUMNS="…" …&gt;
+          &lt;INSET TOP="" BOTTOM="" LEFT="" RIGHT="" ALLEDGES=""/&gt;
+          &lt;STORY CLEAROLDTEXT="true" FITTEXTTOBOX="" CONVERTQUOTES="" INCLUDESTYLESHEETS=""&gt;
+            &lt;PARAGRAPH PARASTYLE="" PARACHAR="" MERGE=""&gt;
+              &lt;FORMAT ALIGNMENT="" LEADING="" SPACEBEFORE="" SPACEAFTER="" …/&gt;
+              &lt;RICHTEXT FONT="" SIZE="" BOLD="" ITALIC="" COLOR="" …&gt;24/06/2026&lt;/RICHTEXT&gt;
+            &lt;/PARAGRAPH&gt;
+          &lt;/STORY&gt;
+        &lt;/TEXT&gt;
+        &lt;PICTURE FIT="" SCALEACROSS="" OFFSETACROSS="" …/&gt;      &lt;!-- CT_PICT boxes --&gt;
+        &lt;GEOMETRY SHAPE="" PAGE="1" ANGLE="" LAYER=""&gt;
+          &lt;POSITION&gt;&lt;TOP&gt;100&lt;/TOP&gt;&lt;LEFT&gt;50&lt;/LEFT&gt;&lt;BOTTOM&gt;200&lt;/BOTTOM&gt;&lt;RIGHT&gt;150&lt;/RIGHT&gt;&lt;/POSITION&gt;
+          &lt;RUNAROUND TYPE="" …/&gt;
+          &lt;SPLINESHAPE …&gt;&lt;CONTOURS&gt;&lt;CONTOUR&gt;&lt;VERTICES&gt;&lt;VERTEX&gt;
+            &lt;LEFTCONTROLPOINT X="" Y=""/&gt;&lt;VERTEXPOINT X="" Y="" TAG=""/&gt;&lt;RIGHTCONTROLPOINT X="" Y=""/&gt;
+          &lt;/VERTEX&gt;&lt;/VERTICES&gt;&lt;/CONTOUR&gt;&lt;/CONTOURS&gt;&lt;/SPLINESHAPE&gt;
+        &lt;/GEOMETRY&gt;
+        &lt;CONTENT CONVERTQUOTES="" INCLUDESTYLESHEETS="" FONTNAME=""&gt;…&lt;/CONTENT&gt;
+        &lt;SHADOW COLOR="" ANGLE="" DISTANCE="" …/&gt;
+        &lt;FRAME STYLE="" WIDTH="" COLOR="" …/&gt;
+      &lt;/BOX&gt;
+
+      &lt;TABLE OPERATION="CREATE|DELETE" COLUMNCOUNT="" ROWCOUNT="" MAINTAINGEOMETRY="" AUTOFIT="" …&gt;
+        &lt;ID NAME="HOLDINGS" UID=""/&gt;
+        &lt;ADDCELLS TYPE="ROW" BASEINDEX="" INSERTCOUNT="" INSERTPOSITION="" KEEPATTRIBUTE=""/&gt;
+        &lt;DELETECELLS TYPE="ROW" BASEINDEX="0" DELETECOUNT="1"/&gt;      &lt;!-- ← ModifierLigne --&gt;
+        &lt;COLSPEC&gt;&lt;COLUMN COLUMNWIDTH="" COLOR="" …&gt;&lt;GRIDLINE STYLE="" WIDTH="" …/&gt;&lt;/COLUMN&gt;&lt;/COLSPEC&gt;
+        &lt;ROW ROWHEIGHT="" COLOR="" …&gt;
+          &lt;CELL BOXTYPE="" COLOR="" …&gt;
+            &lt;CONTENT …/&gt;
+            &lt;TEXT&gt;&lt;STORY CLEAROLDTEXT="true"&gt;&lt;PARAGRAPH&gt;&lt;RICHTEXT&gt;cell text&lt;/RICHTEXT&gt;&lt;/PARAGRAPH&gt;&lt;/STORY&gt;&lt;/TEXT&gt;
+          &lt;/CELL&gt;
+          &lt;GRIDLINE …/&gt;
+        &lt;/ROW&gt;
+        &lt;TABLEBREAK/&gt;&lt;FRAME …/&gt;&lt;GEOMETRY …/&gt;&lt;SHADOW …/&gt;
+      &lt;/TABLE&gt;
+
+    &lt;/SPREAD&gt;
+  &lt;/LAYOUT&gt;
+&lt;/PROJECT&gt;</code></pre>
+  <p>Notice the three places <b>your data</b> actually lands:</p>
+  <ul>
+    <li><b>Text value</b> &rarr; <code>BOX/TEXT/STORY/PARAGRAPH/RICHTEXT</code> text node (and the cell equivalent inside <code>TABLE/ROW/CELL</code>).</li>
+    <li><b>Which box</b> &rarr; <code>BOX/ID/@NAME</code> (matches the <code>NOM_BLOC</code> / destination bloc name).</li>
+    <li><b>Where on the page</b> &rarr; <code>BOX/GEOMETRY/@PAGE</code> + <code>POSITION/{TOP,LEFT,BOTTOM,RIGHT}</code>.</li>
+  </ul>
+  <p class="muted"><code>STORY/@CLEAROLDTEXT="true"</code> is what makes a fill replace (not append to) the box's existing text. Row deletions are expressed as <code>DELETECELLS</code> children built from <code>ModifierLigne</code> entries; a whole table marked <code>REMOVE</code> becomes <code>TABLE/@OPERATION="DELETE"</code>. A <code>Group</code> has no element of its own — its member boxes are unpacked into the spread as <code>BOX</code> elements with <code>OPERATION="CREATE"</code>.</p>
+</section>
+
+<section id="serializer">
+  <h2>9. The serializer itself (<code>QxpsProjectSerializer</code>)</h2>
+  <p>A streaming StAX writer — <code>infra/interop/qxps/helper/QxpsProjectSerializer.java</code>. Entry points: <code>toXml(Project)</code> &rarr; UTF-8 String, <code>toBytes(Project)</code> &rarr; bytes for the HTTP body. It walks the SOAP <code>Project</code> tree with one writer method per node: <code>writeProject → writeLayout → writeSpread → {writePage, writeBox, writeTable}</code> and downward into text/geometry.</p>
+  <table>
+    <tr><th>Rule (helper)</th><th>Behaviour</th></tr>
+    <tr><td><code>writeAttr(w,name,value)</code></td><td>Writes the attribute <b>only</b> if value is non-null and non-empty</td></tr>
+    <tr><td><code>writeElem(w,name,value)</code></td><td>Writes a simple text element only if non-null/non-empty</td></tr>
+    <tr><td><code>writeElemSkipFalse(...)</code></td><td>Skips <code>"false"</code> flags (e.g. <code>SUPPRESSOUTPUT</code>) — server default is false</td></tr>
+  </table>
+  <p>This "omit empties" policy is why the on-the-wire XML is far smaller than the full grammar — every box only carries the handful of attributes that differ from template defaults.</p>
+</section>
+
+<section id="telement">
+  <h2>10. The in-memory element model (<code>TElement</code>)</h2>
+  <p>Structural blocs don't carry loose strings — they carry <b><code>TElement</code></b> objects (the engine's representation of a template box/table/group), which wrap a SOAP element and add geometry. These feed the <code>Modifier*</code> classes.</p>
+  <table>
+    <tr><th>Class</th><th>Wraps</th><th>Carries</th></tr>
+    <tr><td><code>TElement</code> (abstract)</td><td>—</td><td><code>name</code>, geometry <code>left/top/right/bottom</code>, derived <code>width/height</code>, <code>evaluated</code> flag</td></tr>
+    <tr><td><code>TBox</code></td><td>SOAP <code>Box</code> (+ optional <code>srcExtraBox</code>)</td><td>type (<code>CT_TEXT</code>/<code>CT_PICT</code>/…), page; <code>evaluate()</code> reads <code>srcBox.geometry.position</code> into BigDecimals and computes size</td></tr>
+    <tr><td><code>TTable</code></td><td>SOAP <code>Table</code></td><td>geometry evaluation is a placeholder (no-op)</td></tr>
+    <tr><td><code>TGroup</code></td><td>SOAP <code>Group</code></td><td>resolves member boxes by name, computes a bounding box; nested sub-groups throw <code>ExceptionTElement</code></td></tr>
+  </table>
+  <p><code>TElementHelper</code> is the toolbox that mutates these: <code>updateNameValue(tBox, name, value)</code> sets <code>srcBox.name</code> and the rich-text value; <code>updatePosition(tBox, cell)</code> writes the POSITION coordinates; deep-clone helpers (<code>cloneTBox/cloneTGroup/cloneTTable</code> via in-memory serialization) give each repeated element an independent copy. It also holds the static template library — <code>EMPTY_BLOC</code>, <code>IMG</code>, <code>PDF_1</code>, <code>PDF_N</code>, <code>RTF_DOC_XTG</code>, <code>MOVE_BLOC</code>, <code>EMPTY_TABLE</code> — the prototype boxes Document/Dynamique tasks clone and fill.</p>
+</section>
+
+<section id="readxml">
+  <h2>11. The mirror image — reading XML back (<code>QxpXml</code>)</h2>
+  <p>Serialization is only half the conversation. After each step the engine downloads the document's current XML and <b>parses</b> it to learn where things ended up. <code>QxpXml</code> (<code>domain/xml/QxpXml.java</code>) is the read side — pure XPath queries over the returned document:</p>
+  <table>
+    <tr><th>Method</th><th>XPath gist</th><th>Used for</th></tr>
+    <tr><td><code>getValue(blocName)</code></td><td><code>//ID[@NAME='…']/..//RICHTEXT/text()</code></td><td>Read a box's current text (e.g. differential store)</td></tr>
+    <tr><td><code>getPageNum(blocName)</code></td><td><code>…/GEOMETRY/@PAGE</code></td><td>Which page a box landed on (per-step <code>evaluateInfo</code>)</td></tr>
+    <tr><td><code>getLayoutName(blocName)</code></td><td><code>/PROJECT/LAYOUT[//ID[@NAME='…']]/ID/@NAME</code></td><td>Which layout owns the box</td></tr>
+    <tr><td><code>getBlocInfo(blocName)</code></td><td>name+page+UID+POSITION bundle</td><td>Anchors / INCORPORATE geometry</td></tr>
+    <tr><td><code>getNamesValuesBoxes()</code></td><td>all <code>CT_TEXT</code> <code>ID/@NAME</code> + values</td><td>Differential document store (§12)</td></tr>
+  </table>
+  <div class="ok"><b>Write vs read in one line:</b> the <b>Modifier</b> path takes in-memory blocs and <i>produces</i> XML to send to the server; <b>QxpXml</b> takes the XML the server <i>returns</i> and extracts document state back into the engine. Same grammar, opposite direction.</div>
+</section>
+
+<section id="store">
+  <h2>12. The third stream — store-data (historisation)</h2>
+  <p>Not all data goes to Quark. When <code>store_data</code> is enabled, values are <b>also</b> captured into a separate audit stream for traceability — and the engine keeps <i>two different drawers</i> that legitimately differ:</p>
+  <table>
+    <tr><th>Drawer</th><th>Source</th><th>What it captures</th></tr>
+    <tr><td><b>SQL data</b></td><td><code>collectSqlData</code> from <code>run.sqlDataNamesValues</code> (simple, <code>diff=false</code>)</td><td>The raw query outputs as the engine computed them</td></tr>
+    <tr><td><b>DOCUMENT data</b></td><td><code>collectDocumentData</code> <i>after</i> <code>refreshGabaritXml</code> (differential, <code>diff=true</code>)</td><td>What is actually in the finished boxes — incl. non-SQL values &amp; formatting, read back via <code>QxpXml.getNamesValuesBoxes()</code></td></tr>
+  </table>
+  <p>The store stream is gated by a <b>bitwise flag</b>: <code>StoreDataType.hasFlag(run.getRunProperties().getStoreDataTypeCode(), StoreDataType.SQL | StoreDataType.DOCUMENT)</code> — the code <code>0x03</code> enables both. Captured rows are <code>DataNameValue(name, value, description, info)</code> on <code>task.dataNameValues</code>, persisted via the data-storage DAO; <b>they are never sent in the Quark transport call.</b></p>
+  <p class="muted">This is why the <code>DESCRIPTION_BLOC</code>/<code>INFO_BLOC</code> SQL columns exist — they ride only into this audit drawer, not into the document XML.</p>
+</section>
+
+<section id="worked">
+  <h2>13. Worked example — one SQL value, end to end</h2>
+  <p>A Plaquette fact-sheet has a SQL task returning a row that fills the box <code>NAV_DATE</code> with a date.</p>
+  <div class="step"><b>1 · Acquire.</b> <code>ProcessSqlBusiness.addBlocs()</code> reads the row: <code>NOM_BLOC = "NAV_DATE"</code>, <code>VALEUR_BLOC = 2026-06-24</code>, task <code>dataType = DATE</code>.</div>
+  <div class="step"><b>2 · Format.</b> <code>DataTypeHelper.outputToString(2026-06-24, DATE, …)</code> &rarr; <code>"24/06/2026"</code>.</div>
+  <div class="step"><b>3 · Attach.</b> <code>new BlocBox(task, "NAV_DATE", "24/06/2026")</code>, <code>action=UPDATE</code> &rarr; <code>task.blocsUpdate["NAV_DATE"]</code>. (If store-data on: also <code>DataNameValue("NAV_DATE","24/06/2026",…)</code>.)</div>
+  <div class="step"><b>4 · Step.</b> <code>RunTask.getSteps()</code> puts it in the single UPDATE step, <code>directCall=false</code>.</div>
+  <div class="step"><b>5 · Payload.</b> <code>evaluateModifierAndValues()</code> &rarr; <code>NameValueParam("NAV_DATE","24/06/2026")</code>.</div>
+  <div class="step"><b>6 · Transport.</b> <code>executeSoapCall</code> &rarr; <code>QxpsmSoapClient.executeStep(doc, [NAV_DATE=24/06/2026], project=null, saveAs…)</code>. QuarkXPress Manager finds the box named <code>NAV_DATE</code> and sets its text. No geometry sent.</div>
+  <p>Now contrast a <b>structural</b> example — INCORPORATE adds a new text box at a computed position:</p>
+  <div class="step"><b>3' · Attach.</b> bloc goes to <code>blocsModify</code> carrying a SOAP <code>Box</code> (text + <code>geometry.position</code>).</div>
+  <div class="step"><b>5' · Payload.</b> <code>QxpsModifier</code> nests it under <code>Projet→Layout→Spread→Box</code>; <code>QxpsProjectSerializer.toBytes()</code> emits:</div>
+  <pre><code>&lt;PROJECT&gt;&lt;LAYOUT NAME="L1"&gt;&lt;SPREAD UID="1"&gt;
+  &lt;BOX OPERATION="CREATE" BOXTYPE="CT_TEXT"&gt;
+    &lt;ID NAME="INC_42" UID=""/&gt;
+    &lt;TEXT&gt;&lt;STORY CLEAROLDTEXT="true"&gt;&lt;PARAGRAPH&gt;&lt;RICHTEXT&gt;…&lt;/RICHTEXT&gt;&lt;/PARAGRAPH&gt;&lt;/STORY&gt;&lt;/TEXT&gt;
+    &lt;GEOMETRY PAGE="3"&gt;&lt;POSITION&gt;&lt;TOP&gt;120&lt;/TOP&gt;&lt;LEFT&gt;40&lt;/LEFT&gt;&lt;BOTTOM&gt;180&lt;/BOTTOM&gt;&lt;RIGHT&gt;200&lt;/RIGHT&gt;&lt;/POSITION&gt;&lt;/GEOMETRY&gt;
+  &lt;/BOX&gt;
+&lt;/SPREAD&gt;&lt;/LAYOUT&gt;&lt;/PROJECT&gt;</code></pre>
+  <div class="step"><b>6' · Transport.</b> XML uploaded to pool as <code>MODIFY_&lt;ts&gt;</code>, referenced by <code>ModifyMessage</code>, sent with SaveAs+Render in <b>one combined HTTP</b> call to QXPS.</div>
+</section>
+
+<section id="parity">
+  <h2>14. .NET parity &amp; deliberate deviations</h2>
+  <p>The Java serializer is a faithful port of <code>QXP.Engine.Core/Business/QXP_Project_Serializer.cs</code> (its <code>Add_Project → Add_Layout → Add_Spread → Add_Box/Add_Table → … → Add_RichText/Add_Geometry/Add_Position</code> methods produce the identical element tree). The Modifier object model maps 1:1: .NET <code>QXPS_Modifier → Projet → Layout → Spread → Box/Table/Page/Group</code> &harr; Java <code>QxpsModifier → ModifierProjet → ModifierLayout → ModifierSpread → ModifierBox/ModifierTable/ModifierPage/ModifierGroup</code>. Transport messages match: <code>QXPS_Message_Modify</code> (structural XML file), <code>QXPS_Message_ParamsValue</code> (name=value query), <code>QXPS_Message_Xml</code> (read).</p>
+  <table>
+    <tr><th>Point</th><th>.NET</th><th>Java</th><th>Status</th></tr>
+    <tr><td>Modifier XML grammar</td><td><code>QXPSMSDK</code> uppercase elements/attrs</td><td>identical uppercase literals</td><td><b>parity</b></td></tr>
+    <tr><td>POURCENTAGE</td><td>engine path ×100 + double " %" (bug)</td><td>single " %", no ×100</td><td><b>approved deviation</b> (matches .NET <code>QXP_Format_Helper</code>)</td></tr>
+    <tr><td><code>SYMMVERTEX</code> attribute</td><td>written twice (dup-attr bug)</td><td>written once</td><td><b>fix</b></td></tr>
+    <tr><td>fr-FR grouping char</td><td>U+00A0</td><td>JDK17/CLDR may use U+202F</td><td><b>verify vs golden file</b></td></tr>
+    <tr><td>Combined-URL <code>encode()</code></td><td>literal <code>Uri</code> backslashes</td><td><code>UriComponentsBuilder.encode()</code></td><td><b>live-QXPS validation pending</b></td></tr>
+  </table>
+</section>
+
+<section id="ref">
+  <h2>15. Quick reference — class &rarr; XML element</h2>
+  <table>
+    <tr><th>Java class</th><th>XML element</th><th>Key attributes</th><th>Children</th></tr>
+    <tr><td><code>ModifierProjet</code></td><td><code>&lt;PROJECT&gt;</code></td><td>—</td><td><code>LAYOUT</code></td></tr>
+    <tr><td><code>ModifierLayout</code></td><td><code>&lt;LAYOUT&gt;</code></td><td>NAME, UID</td><td><code>SPREAD, BOX, TABLE</code></td></tr>
+    <tr><td><code>ModifierSpread</code></td><td><code>&lt;SPREAD&gt;</code></td><td>OPERATION, UID</td><td><code>PAGE, BOX, TABLE</code></td></tr>
+    <tr><td><code>ModifierPage</code></td><td><code>&lt;PAGE&gt;</code></td><td>OPERATION, MASTER, POSITION</td><td><code>ID</code></td></tr>
+    <tr><td><code>ModifierBox</code></td><td><code>&lt;BOX&gt;</code></td><td>OPERATION, BOXTYPE, COLOR, SHADE, OPACITY, ANCHOREDIN</td><td><code>ID, TEXT, PICTURE, GEOMETRY, CONTENT, SHADOW, FRAME</code></td></tr>
+    <tr><td><code>ModifierTable</code></td><td><code>&lt;TABLE&gt;</code></td><td>OPERATION, COLUMNCOUNT, ROWCOUNT, MAINTAINGEOMETRY, AUTOFIT…</td><td><code>ID, ADDCELLS, DELETECELLS, COLSPEC, ROW, …</code></td></tr>
+    <tr><td><code>ModifierLigne</code></td><td>(<code>&lt;DELETECELLS&gt;</code> in parent)</td><td>TYPE=ROW, BASEINDEX, DELETECOUNT</td><td>—</td></tr>
+    <tr><td><code>ModifierGroup</code></td><td>(unpacked as <code>&lt;BOX&gt;</code>s)</td><td>OPERATION=CREATE, UID=""</td><td>—</td></tr>
+    <tr><td><code>NameValueParam</code></td><td><code>&lt;NAMEVALUEPARAM&gt;</code> / query pair</td><td>PARAMNAME, TEXTVALUE</td><td>—</td></tr>
+  </table>
+  <p class="muted">Source of truth — Java: <code>domain/modifier/*</code>, <code>infra/interop/qxps/helper/QxpsProjectSerializer.java</code>, <code>domain/element/*</code>, <code>domain/helper/{TElementHelper,DataTypeHelper}.java</code>, <code>business/{ProcessSqlBusiness,QxpsCallerBusiness}.java</code>, <code>domain/{RunTask,RunTaskStep}.java</code>, <code>domain/xml/QxpXml.java</code>. .NET: <code>QXP.Engine.Core/Business/QXP_Project_Serializer.cs</code>, <code>BusinessObject/Modifier/*</code>, <code>QXP.Interop/.../QXPS/Message/{QXPS_Message_Modify,QXPS_Message_ParamsValue,QXPS_Message_Xml}.cs</code>.</p>
+</section>
+
+<p class="muted" style="max-width:1280px;margin:0 auto;padding:0 40px 40px;">EOS Quark Engine — Doc 2 of 4 · Generated from the working-copy source at <code>new java code eos quark/quark-engine</code> and the legacy .NET at <code>qxp/</code>. Companion: Doc 1 (flows), Doc 3 (testing scenarios), Doc 4 (QXPS/QXPSM request catalog).</p>
+
+</main>
+</div>
+</body>
+</html>
