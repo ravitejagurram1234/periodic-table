@@ -47,3 +47,30 @@ Then verify
 Select-String -Path "src\main\resources\wsdl\RequestService.wsdl" -Pattern "wsdl:binding name="
 Select-String -Path "src\main\resources\wsdl\RequestService.wsdl" -Pattern "wsdl:port name="
 Expected: exactly one binding (RequestServiceSoap11Binding) and one port (RequestServiceHttpSoap11Endpoint). Paste the output and we move to regenerate.
+
+
+
+
+PS C:\Users\rgurram062722\Documents\GitHub\engine service repo\quark-engine> $path = "src\main\resources\wsdl\RequestService.wsdl"
+PS C:\Users\rgurram062722\Documents\GitHub\engine service repo\quark-engine> $wsdl = Get-Content $path -Raw
+PS C:\Users\rgurram062722\Documents\GitHub\engine service repo\quark-engine> 
+PS C:\Users\rgurram062722\Documents\GitHub\engine service repo\quark-engine> $wsdl = [regex]::Replace($wsdl, '<wsdl:binding name="RequestServiceSoap12Binding".*?(?=<wsdl:binding name="RequestServiceSoap11Binding")', '', 'Singleline')                                                                                                                                                                                                                                 
+PS C:\Users\rgurram062722\Documents\GitHub\engine service repo\quark-engine> 
+PS C:\Users\rgurram062722\Documents\GitHub\engine service repo\quark-engine> $wsdl = [regex]::Replace($wsdl, '<wsdl:port name="RequestServiceHttpEndpoint".*?(?=<wsdl:port name="RequestServiceHttpSoap11Endpoint")', '', 'Singleline')                                                                                                                                                                                                                                   
+PS C:\Users\rgurram062722\Documents\GitHub\engine service repo\quark-engine> 
+PS C:\Users\rgurram062722\Documents\GitHub\engine service repo\quark-engine> $full = (Resolve-Path $path).Path
+PS C:\Users\rgurram062722\Documents\GitHub\engine service repo\quark-engine> [System.IO.File]::WriteAllText($full, $wsdl, (New-Object System.Text.UTF8Encoding($false)))
+PS C:\Users\rgurram062722\Documents\GitHub\engine service repo\quark-engine> 
+PS C:\Users\rgurram062722\Documents\GitHub\engine service repo\quark-engine> Write-Host "Trim done."
+Trim done.
+PS C:\Users\rgurram062722\Documents\GitHub\engine service repo\quark-engine> Select-String -Path "src\main\resources\wsdl\RequestService.wsdl" -Pattern "wsdl:binding name="
+
+src\main\resources\wsdl\RequestService.wsdl:4468:  <wsdl:binding name="RequestServiceSoap11Binding" type="ns:RequestServicePortType">
+
+
+PS C:\Users\rgurram062722\Documents\GitHub\engine service repo\quark-engine> Select-String -Path "src\main\resources\wsdl\RequestService.wsdl" -Pattern "wsdl:port name="
+
+src\main\resources\wsdl\RequestService.wsdl:4694:    <wsdl:port name="RequestServiceHttpSoap11Endpoint" binding="ns:RequestServiceSoap11Binding">
+
+
+PS C:\Users\rgurram062722\Documents\GitHub\engine service repo\quark-engine> 
