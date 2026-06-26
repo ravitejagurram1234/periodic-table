@@ -1,10 +1,521 @@
-C:\Users\rgurram062722\bin\jdk-17.0.16+8\bin\java.exe -javaagent:C:\Users\rgurram062722\bin\idea-IU-26.1\lib\idea_rt.jar=50361 -Dfile.encoding=UTF-8 @C:\Users\rgurram062722\AppData\Local\Temp\idea_arg_file1072040803 com.socgen.sgs.api.quark.engine.integration.soap.generated.QxpsmProbe
-== QXPSM probe against: http://srvcldvapd001.dns43.socgen:8090/qxpsm/services/RequestService
-Standard Commons Logging discovery in action with spring-jcl: please remove commons-logging.jar from classpath in order to avoid potential conflicts
-15:04:40.283 [main] WARN org.apache.axis.utils.JavaUtils -- Unable to find required classes (javax.activation.DataHandler and javax.mail.internet.MimeMultipart). Attachment support is disabled.
-[L1] getOpenSessions OK — sessions=0
-[L1] => endpoint + namespace + document/literal transport are CORRECT.
-[L2] processRequest(GetServerInfoRequest) OK — textData=﻿<?xml version="1.0" encoding="UTF-8" standalone="no" ?><SERVERINFO><VERSIONINFO><VERSIONSTR>21.0.2.0</VERSIONSTR></VERSIONINFO><PLATFORM>Windows</PLATFORM><PREFERENCESPATH>C:\windows\system32\config\systemprofile\AppData\Roaming\Quark\QuarkXPress Server Renderer 21\Preferences sub1</PREFERENCESPATH><INSTALLEDXTENSIONS><SXT><XTID>58434c52</XTID><NAME>Quark CMS</NAME><STATUS>Active</STATUS></SXT><SXT><XTID>51455050</XTID><NAME>EPS Filter</NAME><STATUS>Active</STATUS></SXT><SXT><XTID>51464154</XTID><NAME>Flattening</NAME><STATUS>Active</STATUS></SXT><SXT><XTID>51524a4a</XTID><NAME>Job Jacket</NAME><STATUS>Active</STATUS></SXT><SXT><XTID>514c5900</XTID><NAME>Layers</NAME><STATUS>Active</STATUS></SXT><SXT><XTID>5152504c</XTID><NAME>Placeholders</NAME><STATUS>Active</STATUS></SXT><SXT><XTID>51525700</XTID><NAME>QuarkXPress Server</NAME><STATUS>Active</STATUS></SXT><SXT><XTID>58505441</XTID><NAME>Table</NAME><STATUS>Active</STATUS></SXT><SXT><XTID>51504154</XTID><NAME>XTextFilter</NAME><STATUS>Active</STATUS></SXT><SXT><XTID>51417043</XTID><NAME>AppStudioCoreXT</NAME><STATUS>Active</STATUS></SXT><SXT><XTID>51415343</XTID><NAME>AppStudioDesigner</NAME><STATUS>Active</STATUS></SXT><SXT><XTID>514d4243</XTID><NAME>Bookmark</NAME><STATUS>Active</STATUS></SXT><SXT><XTID>51525765</XTID><NAME>BoxParamSXT</NAME><STATUS>Active</STATUS></SXT><SXT><XTID>51435443</XTID><NAME>Callout</NAME><STATUS>Active</STATUS></SXT><SXT><XTID>51434f5a</XTID><NAME>Composition Zone</NAME><STATUS>Active</STATUS></SXT><SXT><XTID>5158534f</XTID><NAME>CopyDeskArticleSXT</NAME><STATUS>Active</STATUS></SXT><SXT><XTID>51434446</XTID><NAME>CopyDeskArticle</NAME><STATUS>Active</STATUS></SXT><SXT><XTID>58534944</XTID><NAME>CoreRendererSXT</NAME><STATUS>Active</STATUS></SXT><SXT><XTID>5841424c</XTID><NAME>Custom Bleeds</NAME><STATUS>Active</STATUS></SXT><SXT><XTID>51444447</XTID><NAME>Design Grid</NAME><STATUS>Active</STATUS></SXT><SXT><XTID>51445043</XTID><NAME>Digital Publishing</NAME><STATUS>Active</STATUS></SXT><SXT><XTID>51504448</XTID><NAME>Hyphenation Dieckmann</NAME><STATUS>Active</STATUS></SXT><SXT><XTID>51464155</XTID><NAME>Drop Shadow</NAME><STATUS>Active</STATUS></SXT><SXT><XTID>45414658</XTID><NAME>EAText</NAME><STATUS>Active</STATUS></SXT><SXT><XTID>51455043</XTID><NAME>ePublication</NAME><STATUS>Active</STATUS></SXT><SXT><XTID>51435348</XTID><NAME>ErrorReporting</NAME><STATUS>Active</STATUS></SXT><SXT><XTID>51464354</XTID><NAME>FitBoxToContent</NAME><STATUS>Active</STATUS></SXT><SXT><XTID>51526b67</XTID><NAME>GIF Filter</NAME><STATUS>Active</STATUS></SXT><SXT><XTID>51585351</XTID><NAME>HiddenText</NAME><STATUS>Active</STATUS></SXT><SXT><XTID>58504854</XTID><NAME>HTML Export</NAME><STATUS>Active</STATUS></SXT><SXT><XTID>5f5f5f5f</XTID><NAME>Hunspell Hyphenation</NAME><STATUS>Inactive</STATUS></SXT><SXT><XTID>48595000</XTID><NAME>Hyperlinks</NAME><STATUS>Active</STATUS></SXT><SXT><XTID>51535332</XTID><NAME>Hyph_CNS_1</NAME><STATUS>Active</STATUS></SXT><SXT><XTID>51535337</XTID><NAME>Hyph_CNS_2</NAME><STATUS>Active</STATUS></SXT><SXT><XTID>5153536b</XTID><NAME>Hyph_CNS_3</NAME><STATUS>Active</STATUS></SXT><SXT><XTID>51435444</XTID><NAME>IDMLImport</NAME><STATUS>Active</STATUS></SXT><SXT><XTID>494e4400</XTID><NAME>Index</NAME><STATUS>Active</STATUS></SXT><SXT><XTID>434b554b</XTID><NAME>Item Styles</NAME><STATUS>Active</STATUS></SXT><SXT><XTID>584c4556</XTID><NAME>JobJacketSXT</NAME><STATUS>Active</STATUS></SXT><SXT><XTID>51586a70</XTID><NAME>JPEG Filter</NAME><STATUS>Active</STATUS></SXT><SXT><XTID>5144444b</XTID><NAME>ModifierCore</NAME><STATUS>Active</STATUS></SXT><SXT><XTID>514d5358</XTID><NAME>ModifierSXT</NAME><STATUS>Active</STATUS></SXT><SXT><XTID>514d4f47</XTID><NAME>Mojigumi</NAME><STATUS>Active</STATUS></SXT><SXT><XTID>514d4c53</XTID><NAME>MultilingualSupportXT</NAME><STATUS>Active</STATUS></SXT><SXT><XTID>51434441</XTID><NAME>NotesXT</NAME><STATUS>Active</STATUS></SXT><SXT><XTID>51434449</XTID><NAME>NotesSXT</NAME><STATUS>Active</STATUS></SXT><SXT><XTID>58504446</XTID><NAME>PDF Filter</NAME><STATUS>Active</STATUS></SXT><SXT><XTID>5850444e</XTID><NAME>PDFNormalizer XT</NAME><STATUS>Active</STATUS></SXT><SXT><XTID>51585350</XTID><NAME>PlaceholderSXT</NAME><STATUS>Active</STATUS></SXT><SXT><XTID>5158504e</XTID><NAME>PNG Filter</NAME><STATUS>Active</STATUS></SXT><SXT><XTID>58454c56</XTID><NAME>PreferencesSXT</NAME><STATUS>Active</STATUS></SXT><SXT><XTID>51505344</XTID><NAME>PSD Filter</NAME><STATUS>Active</STATUS></SXT><SXT><XTID>51584d43</XTID><NAME>QXML.xnt</NAME><STATUS>Active</STATUS></SXT><SXT><XTID>51444445</XTID><NAME>RedLine</NAME><STATUS>Active</STATUS></SXT><SXT><XTID>5143444c</XTID><NAME>RedLineSXT</NAME><STATUS>Active</STATUS></SXT><SXT><XTID>5152540d</XTID><NAME>RTF Filter</NAME><STATUS>Active</STATUS></SXT><SXT><XTID>53445358</XTID><NAME>SDSXT</NAME><STATUS>Active</STATUS></SXT><SXT><XTID>51534343</XTID><NAME>Smart Content</NAME><STATUS>Active</STATUS></SXT><SXT><XTID>51534353</XTID><NAME>SmartContentSXT.xnt</NAME><STATUS>Active</STATUS></SXT><SXT><XTID>584b4e53</XTID><NAME>SpecialLineBreak</NAME><STATUS>Active</STATUS></SXT><SXT><XTID>51443144</XTID><NAME>StyleSheetDeconstruct.xnt</NAME><STATUS>Active</STATUS></SXT><SXT><XTID>51526b5a</XTID><NAME>Type Tricks</NAME><STATUS>Active</STATUS></SXT><SXT><XTID>51525649</XTID><NAME>Vista</NAME><STATUS>Active</STATUS></SXT><SXT><XTID>57524430</XTID><NAME>Word Filter</NAME><STATUS>Active</STATUS></SXT><SXT><XTID>51524b52</XTID><NAME>XPress Tags Filter</NAME><STATUS>Active</STATUS></SXT></INSTALLEDXTENSIONS><INSTALLEDFONTS><FONT><MENUNAME>Marlett</MENUNAME></FONT><FONT><MENUNAME>Arial</MENUNAME></FONT><FONT><MENUNAME>Arial</MENUNAME></FONT><FONT><MENUNAME>Arial</MENUNAME></FONT><FONT><MENUNAME>Arial</MENUNAME></FONT><FONT><MENUNAME>Arial Black</MENUNAME></FONT><FONT><MENUNAME>Calibri</MENUNAME></FONT><FONT><MENUNAME>Calibri</MENUNAME></FONT><FONT><MENUNAME>Calibri</MENUNAME></FONT><FONT><MENUNAME>Calibri</MENUNAME></FONT><FONT><MENUNAME>Calibri Light</MENUNAME></FONT><FONT><MENUNAME>Calibri Light</MENUNAME></FONT><FONT><MENUNAME>Cambria</MENUNAME></FONT><FONT><MENUNAME>Cambria</MENUNAME></FONT><FONT><MENUNAME>Cambria</MENUNAME></FONT><FONT><MENUNAME>Cambria</MENUNAME></FONT><FONT><MENUNAME>Cambria Math</MENUNAME></FONT><FONT><MENUNAME>Candara</MENUNAME></FONT><FONT><MENUNAME>Candara</MENUNAME></FONT><FONT><MENUNAME>Candara</MENUNAME></FONT><FONT><MENUNAME>Candara</MENUNAME></FONT><FONT><MENUNAME>Comic Sans MS</MENUNAME></FONT><FONT><MENUNAME>Comic Sans MS</MENUNAME></FONT><FONT><MENUNAME>Comic Sans MS</MENUNAME></FONT><FONT><MENUNAME>Comic Sans MS</MENUNAME></FONT><FONT><MENUNAME>Consolas</MENUNAME></FONT><FONT><MENUNAME>Consolas</MENUNAME></FONT><FONT><MENUNAME>Consolas</MENUNAME></FONT><FONT><MENUNAME>Consolas</MENUNAME></FONT><FONT><MENUNAME>Constantia</MENUNAME></FONT><FONT><MENUNAME>Constantia</MENUNAME></FONT><FONT><MENUNAME>Constantia</MENUNAME></FONT><FONT><MENUNAME>Constantia</MENUNAME></FONT><FONT><MENUNAME>Corbel</MENUNAME></FONT><FONT><MENUNAME>Corbel</MENUNAME></FONT><FONT><MENUNAME>Corbel</MENUNAME></FONT><FONT><MENUNAME>Corbel</MENUNAME></FONT><FONT><MENUNAME>Courier New</MENUNAME></FONT><FONT><MENUNAME>Courier New</MENUNAME></FONT><FONT><MENUNAME>Courier New</MENUNAME></FONT><FONT><MENUNAME>Courier New</MENUNAME></FONT><FONT><MENUNAME>Ebrima</MENUNAME></FONT><FONT><MENUNAME>Ebrima</MENUNAME></FONT><FONT><MENUNAME>Franklin Gothic Medium</MENUNAME></FONT><FONT><MENUNAME>Franklin Gothic Medium</MENUNAME></FONT><FONT><MENUNAME>Gabriola</MENUNAME></FONT><FONT><MENUNAME>Gadugi</MENUNAME></FONT><FONT><MENUNAME>Gadugi</MENUNAME></FONT><FONT><MENUNAME>Georgia</MENUNAME></FONT><FONT><MENUNAME>Georgia</MENUNAME></FONT><FONT><MENUNAME>Georgia</MENUNAME></FONT><FONT><MENUNAME>Georgia</MENUNAME></FONT><FONT><MENUNAME>Gulim</MENUNAME></FONT><FONT><MENUNAME>GulimChe</MENUNAME></FONT><FONT><MENUNAME>Dotum</MENUNAME></FONT><FONT><MENUNAME>DotumChe</MENUNAME></FONT><FONT><MENUNAME>Impact</MENUNAME></FONT><FONT><MENUNAME>Javanese Text</MENUNAME></FONT><FONT><MENUNAME>Leelawadee UI</MENUNAME></FONT><FONT><MENUNAME>Leelawadee UI</MENUNAME></FONT><FONT><MENUNAME>Leelawadee UI Semilight</MENUNAME></FONT><FONT><MENUNAME>Lucida Console</MENUNAME></FONT><FONT><MENUNAME>Lucida Sans Unicode</MENUNAME></FONT><FONT><MENUNAME>Malgun Gothic</MENUNAME></FONT><FONT><MENUNAME>Malgun Gothic</MENUNAME></FONT><FONT><MENUNAME>Malgun Gothic Semilight</MENUNAME></FONT><FONT><MENUNAME>Microsoft Himalaya</MENUNAME></FONT><FONT><MENUNAME>Microsoft JhengHei</MENUNAME></FONT><FONT><MENUNAME>Microsoft JhengHei</MENUNAME></FONT><FONT><MENUNAME>Microsoft JhengHei UI</MENUNAME></FONT><FONT><MENUNAME>Microsoft JhengHei UI</MENUNAME></FONT><FONT><MENUNAME>Microsoft JhengHei Light</MENUNAME></FONT><FONT><MENUNAME>Microsoft JhengHei UI Light</MENUNAME></FONT><FONT><MENUNAME>Microsoft New Tai Lue</MENUNAME></FONT><FONT><MENUNAME>Microsoft New Tai Lue</MENUNAME></FONT><FONT><MENUNAME>Microsoft PhagsPa</MENUNAME></FONT><FONT><MENUNAME>Microsoft PhagsPa</MENUNAME></FONT><FONT><MENUNAME>Microsoft Sans Serif</MENUNAME></FONT><FONT><MENUNAME>Microsoft Tai Le</MENUNAME></FONT><FONT><MENUNAME>Microsoft Tai Le</MENUNAME></FONT><FONT><MENUNAME>Microsoft YaHei</MENUNAME></FONT><FONT><MENUNAME>Microsoft YaHei</MENUNAME></FONT><FONT><MENUNAME>Microsoft YaHei UI</MENUNAME></FONT><FONT><MENUNAME>Microsoft YaHei UI</MENUNAME></FONT><FONT><MENUNAME>Microsoft YaHei Light</MENUNAME></FONT><FONT><MENUNAME>Microsoft YaHei UI Light</MENUNAME></FONT><FONT><MENUNAME>Microsoft Yi Baiti</MENUNAME></FONT><FONT><MENUNAME>MingLiU</MENUNAME></FONT><FONT><MENUNAME>PMingLiU</MENUNAME></FONT><FONT><MENUNAME>MingLiU_HKSCS</MENUNAME></FONT><FONT><MENUNAME>MingLiU-ExtB</MENUNAME></FONT><FONT><MENUNAME>PMingLiU-ExtB</MENUNAME></FONT><FONT><MENUNAME>MingLiU_HKSCS-ExtB</MENUNAME></FONT><FONT><MENUNAME>Mongolian Baiti</MENUNAME></FONT><FONT><MENUNAME>MS Gothic</MENUNAME></FONT><FONT><MENUNAME>MS UI Gothic</MENUNAME></FONT><FONT><MENUNAME>MS PGothic</MENUNAME></FONT><FONT><MENUNAME>MV Boli</MENUNAME></FONT><FONT><MENUNAME>Myanmar Text</MENUNAME></FONT><FONT><MENUNAME>Myanmar Text</MENUNAME></FONT><FONT><MENUNAME>Nirmala UI</MENUNAME></FONT><FONT><MENUNAME>Nirmala UI</MENUNAME></FONT><FONT><MENUNAME>Nirmala UI Semilight</MENUNAME></FONT><FONT><MENUNAME>Palatino Linotype</MENUNAME></FONT><FONT><MENUNAME>Palatino Linotype</MENUNAME></FONT><FONT><MENUNAME>Palatino Linotype</MENUNAME></FONT><FONT><MENUNAME>Palatino Linotype</MENUNAME></FONT><FONT><MENUNAME>Segoe MDL2 Assets</MENUNAME></FONT><FONT><MENUNAME>Segoe Print</MENUNAME></FONT><FONT><MENUNAME>Segoe Print</MENUNAME></FONT><FONT><MENUNAME>Segoe Script</MENUNAME></FONT><FONT><MENUNAME>Segoe Script</MENUNAME></FONT><FONT><MENUNAME>Segoe UI</MENUNAME></FONT><FONT><MENUNAME>Segoe UI</MENUNAME></FONT><FONT><MENUNAME>Segoe UI</MENUNAME></FONT><FONT><MENUNAME>Segoe UI</MENUNAME></FONT><FONT><MENUNAME>Segoe UI Black</MENUNAME></FONT><FONT><MENUNAME>Segoe UI Black</MENUNAME></FONT><FONT><MENUNAME>Segoe UI Emoji</MENUNAME></FONT><FONT><MENUNAME>Segoe UI Historic</MENUNAME></FONT><FONT><MENUNAME>Segoe UI Light</MENUNAME></FONT><FONT><MENUNAME>Segoe UI Light</MENUNAME></FONT><FONT><MENUNAME>Segoe UI Semibold</MENUNAME></FONT><FONT><MENUNAME>Segoe UI Semibold</MENUNAME></FONT><FONT><MENUNAME>Segoe UI Semilight</MENUNAME></FONT><FONT><MENUNAME>Segoe UI Semilight</MENUNAME></FONT><FONT><MENUNAME>Segoe UI Symbol</MENUNAME></FONT><FONT><MENUNAME>SimSun</MENUNAME></FONT><FONT><MENUNAME>NSimSun</MENUNAME></FONT><FONT><MENUNAME>SimSun-ExtB</MENUNAME></FONT><FONT><MENUNAME>Sitka Small</MENUNAME></FONT><FONT><MENUNAME>Sitka Small</MENUNAME></FONT><FONT><MENUNAME>Sitka Small</MENUNAME></FONT><FONT><MENUNAME>Sitka Small</MENUNAME></FONT><FONT><MENUNAME>Sitka Text</MENUNAME></FONT><FONT><MENUNAME>Sitka Text</MENUNAME></FONT><FONT><MENUNAME>Sitka Text</MENUNAME></FONT><FONT><MENUNAME>Sitka Text</MENUNAME></FONT><FONT><MENUNAME>Sitka Subheading</MENUNAME></FONT><FONT><MENUNAME>Sitka Subheading</MENUNAME></FONT><FONT><MENUNAME>Sitka Subheading</MENUNAME></FONT><FONT><MENUNAME>Sitka Subheading</MENUNAME></FONT><FONT><MENUNAME>Sitka Heading</MENUNAME></FONT><FONT><MENUNAME>Sitka Heading</MENUNAME></FONT><FONT><MENUNAME>Sitka Heading</MENUNAME></FONT><FONT><MENUNAME>Sitka Heading</MENUNAME></FONT><FONT><MENUNAME>Sitka Display</MENUNAME></FONT><FONT><MENUNAME>Sitka Display</MENUNAME></FONT><FONT><MENUNAME>Sitka Display</MENUNAME></FONT><FONT><MENUNAME>Sitka Display</MENUNAME></FONT><FONT><MENUNAME>Sitka Banner</MENUNAME></FONT><FONT><MENUNAME>Sitka Banner</MENUNAME></FONT><FONT><MENUNAME>Sitka Banner</MENUNAME></FONT><FONT><MENUNAME>Sitka Banner</MENUNAME></FONT><FONT><MENUNAME>Sylfaen</MENUNAME></FONT><FONT><MENUNAME>Symbol</MENUNAME></FONT><FONT><MENUNAME>Tahoma</MENUNAME></FONT><FONT><MENUNAME>Tahoma</MENUNAME></FONT><FONT><MENUNAME>Times New Roman</MENUNAME></FONT><FONT><MENUNAME>Times New Roman</MENUNAME></FONT><FONT><MENUNAME>Times New Roman</MENUNAME></FONT><FONT><MENUNAME>Times New Roman</MENUNAME></FONT><FONT><MENUNAME>Trebuchet MS</MENUNAME></FONT><FONT><MENUNAME>Trebuchet MS</MENUNAME></FONT><FONT><MENUNAME>Trebuchet MS</MENUNAME></FONT><FONT><MENUNAME>Trebuchet MS</MENUNAME></FONT><FONT><MENUNAME>Verdana</MENUNAME></FONT><FONT><MENUNAME>Verdana</MENUNAME></FONT><FONT><MENUNAME>Verdana</MENUNAME></FONT><FONT><MENUNAME>Verdana</MENUNAME></FONT><FONT><MENUNAME>Webdings</MENUNAME></FONT><FONT><MENUNAME>Wingdings</MENUNAME></FONT><FONT><MENUNAME>Yu Gothic</MENUNAME></FONT><FONT><MENUNAME>Yu Gothic</MENUNAME></FONT><FONT><MENUNAME>Yu Gothic UI</MENUNAME></FONT><FONT><MENUNAME>Yu Gothic UI</MENUNAME></FONT><FONT><MENUNAME>Yu Gothic UI Semibold</MENUNAME></FONT><FONT><MENUNAME>Yu Gothic Light</MENUNAME></FONT><FONT><MENUNAME>Yu Gothic UI Light</MENUNAME></FONT><FONT><MENUNAME>Yu Gothic Medium</MENUNAME></FONT><FONT><MENUNAME>Yu Gothic UI Semilight</MENUNAME></FONT></INSTALLEDFONTS><OUTPUTSTYLES><OUTPUTSTYLE TYPE="other">Default HTML5 Output Style</OUTPUTSTYLE><OUTPUTSTYLE TYPE="other">Default App Studio Output Style</OUTPUTSTYLE><OUTPUTSTYLE TYPE="other">Default HTML5 Publication Output Style</OUTPUTSTYLE><OUTPUTSTYLE TYPE="other">Default HTML5 Reflow Output Style</OUTPUTSTYLE><OUTPUTSTYLE TYPE="PDF">Default PDF Output Style</OUTPUTSTYLE><OUTPUTSTYLE TYPE="PDF">Press - High Quality/High Resolution</OUTPUTSTYLE><OUTPUTSTYLE TYPE="PDF">Print - Medium Quality/Medium Resolution</OUTPUTSTYLE><OUTPUTSTYLE TYPE="PDF">Screen - Medium Quality/Low Resolution</OUTPUTSTYLE><OUTPUTSTYLE TYPE="PDF">Screen - Low Quality/Low Resolution</OUTPUTSTYLE><OUTPUTSTYLE TYPE="PDF">PDF/X-1a:2001</OUTPUTSTYLE><OUTPUTSTYLE TYPE="PDF">PDF/X-4</OUTPUTSTYLE><OUTPUTSTYLE TYPE="PDF">PDF/A-2b</OUTPUTSTYLE><OUTPUTSTYLE TYPE="PDF">PDF/X-4 &amp; PDF/A-2b</OUTPUTSTYLE><OUTPUTSTYLE TYPE="PDF">PDF/X-4 &amp; PDF/A-2a</OUTPUTSTYLE><OUTPUTSTYLE TYPE="PDF">PDF/A-2a</OUTPUTSTYLE><OUTPUTSTYLE TYPE="PDF">PDF/A-3a</OUTPUTSTYLE><OUTPUTSTYLE TYPE="Print">Default Print Output Style</OUTPUTSTYLE><OUTPUTSTYLE TYPE="EPS">Default EPS Output Style</OUTPUTSTYLE><OUTPUTSTYLE TYPE="ePub">Default ePub Output Style</OUTPUTSTYLE></OUTPUTSTYLES></SERVERINFO>
-[L2] => polymorphic request graph (xsi:type) is ACCEPTED. Full chain will work.
+C:\Users\rgurram062722\bin\jdk-17.0.16+8\bin\java.exe -Dspring.profiles.active=local -Dspring.config.location=classpath:/,file:./src/main/config/local/ -XX:TieredStopAtLevel=1 -Dspring.output.ansi.enabled=always -javaagent:C:\Users\rgurram062722\bin\idea-IU-26.1\lib\idea_rt.jar=53713 -Dfile.encoding=UTF-8 @C:\Users\rgurram062722\AppData\Local\Temp\idea_arg_file421782160 com.socgen.sgs.api.quark.engine.Application
 
-Process finished with exit code 0
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::                (v3.2.0)
+
+2026-06-26T16:01:37.286+05:30  INFO 33172 --- [quark-engine-service] [  restartedMain] [                                                 ] c.s.sgs.api.quark.engine.Application     : Starting Application using Java 17.0.16 with PID 33172 (C:\Users\rgurram062722\Documents\GitHub\engine service repo\quark-engine\target\classes started by rgurram062722 in C:\Users\rgurram062722\Documents\GitHub\engine service repo\quark-engine)
+2026-06-26T16:01:37.289+05:30  INFO 33172 --- [quark-engine-service] [  restartedMain] [                                                 ] c.s.sgs.api.quark.engine.Application     : The following 1 profile is active: "local"
+2026-06-26T16:01:37.462+05:30  INFO 33172 --- [quark-engine-service] [  restartedMain] [                                                 ] o.s.b.devtools.restart.ChangeableUrls    : The Class-Path manifest attribute in C:\Users\rgurram062722\.m2\repository\com\oracle\database\jdbc\ojdbc10\19.18.0.0\ojdbc10-19.18.0.0.jar referenced one or more files that do not exist: file:/C:/Users/rgurram062722/.m2/repository/com/oracle/database/jdbc/ojdbc10/19.18.0.0/oraclepki.jar
+2026-06-26T16:01:37.462+05:30  INFO 33172 --- [quark-engine-service] [  restartedMain] [                                                 ] o.s.b.devtools.restart.ChangeableUrls    : The Class-Path manifest attribute in C:\Users\rgurram062722\.m2\repository\com\sun\xml\bind\jaxb-impl\4.0.4\jaxb-impl-4.0.4.jar referenced one or more files that do not exist: file:/C:/Users/rgurram062722/.m2/repository/com/sun/xml/bind/jaxb-impl/4.0.4/jaxb-core.jar,file:/C:/Users/rgurram062722/.m2/repository/com/sun/xml/bind/jaxb-impl/4.0.4/angus-activation.jar
+2026-06-26T16:01:37.463+05:30  INFO 33172 --- [quark-engine-service] [  restartedMain] [                                                 ] o.s.b.devtools.restart.ChangeableUrls    : The Class-Path manifest attribute in C:\Users\rgurram062722\.m2\repository\com\sun\xml\bind\jaxb-core\4.0.4\jaxb-core-4.0.4.jar referenced one or more files that do not exist: file:/C:/Users/rgurram062722/.m2/repository/com/sun/xml/bind/jaxb-core/4.0.4/jakarta.activation-api.jar,file:/C:/Users/rgurram062722/.m2/repository/com/sun/xml/bind/jaxb-core/4.0.4/jakarta.xml.bind-api.jar
+2026-06-26T16:01:37.463+05:30  INFO 33172 --- [quark-engine-service] [  restartedMain] [                                                 ] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2026-06-26T16:01:37.463+05:30  INFO 33172 --- [quark-engine-service] [  restartedMain] [                                                 ] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2026-06-26T16:01:40.131+05:30  INFO 33172 --- [quark-engine-service] [  restartedMain] [                                                 ] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-06-26T16:01:40.194+05:30  INFO 33172 --- [quark-engine-service] [  restartedMain] [                                                 ] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 55 ms. Found 0 JPA repository interfaces.
+2026-06-26T16:01:40.572+05:30  WARN 33172 --- [quark-engine-service] [  restartedMain] [                                                 ] trationDelegate$BeanPostProcessorChecker : Bean 'com.socgen.apibank.autoconfigure.swaggerui.SwaggerUiAutoConfiguration' of type [com.socgen.apibank.autoconfigure.swaggerui.SwaggerUiAutoConfiguration] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). The currently created BeanPostProcessor [swaggerUiOptionsOptionsPropagator] is declared through a non-static factory method on that class; consider declaring it as static instead.
+2026-06-26T16:01:40.586+05:30  WARN 33172 --- [quark-engine-service] [  restartedMain] [                                                 ] trationDelegate$BeanPostProcessorChecker : Bean 'sg.swagger-ui3-com.socgen.apibank.autoconfigure.swaggerui.SwaggerUiProperties' of type [com.socgen.apibank.autoconfigure.swaggerui.SwaggerUiProperties] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected into a currently created BeanPostProcessor [swaggerUiOptionsOptionsPropagator]? Check the corresponding BeanPostProcessor declaration and its dependencies.
+2026-06-26T16:01:40.739+05:30  WARN 33172 --- [quark-engine-service] [  restartedMain] [                                                 ] trationDelegate$BeanPostProcessorChecker : Bean 'org.hibernate.validator.internal.constraintvalidators.bv.PatternValidator' of type [org.hibernate.validator.internal.constraintvalidators.bv.PatternValidator] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected into a currently created BeanPostProcessor [swaggerUiOptionsOptionsPropagator]? Check the corresponding BeanPostProcessor declaration and its dependencies.
+2026-06-26T16:01:40.743+05:30  WARN 33172 --- [quark-engine-service] [  restartedMain] [                                                 ] trationDelegate$BeanPostProcessorChecker : Bean 'org.hibernate.validator.internal.constraintvalidators.hv.URLValidator' of type [org.hibernate.validator.internal.constraintvalidators.hv.URLValidator] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected into a currently created BeanPostProcessor [swaggerUiOptionsOptionsPropagator]? Check the corresponding BeanPostProcessor declaration and its dependencies.
+2026-06-26T16:01:40.755+05:30  WARN 33172 --- [quark-engine-service] [  restartedMain] [                                                 ] trationDelegate$BeanPostProcessorChecker : Bean 'com.socgen.apibank.openapi.validation.EachFlowHasUrlValidator' of type [com.socgen.apibank.openapi.validation.EachFlowHasUrlValidator] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected into a currently created BeanPostProcessor [swaggerUiOptionsOptionsPropagator]? Check the corresponding BeanPostProcessor declaration and its dependencies.
+2026-06-26T16:01:40.756+05:30  WARN 33172 --- [quark-engine-service] [  restartedMain] [                                                 ] trationDelegate$BeanPostProcessorChecker : Bean 'com.socgen.apibank.openapi.validation.AtLeastOneFlowValidator' of type [com.socgen.apibank.openapi.validation.AtLeastOneFlowValidator] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected into a currently created BeanPostProcessor [swaggerUiOptionsOptionsPropagator]? Check the corresponding BeanPostProcessor declaration and its dependencies.
+2026-06-26T16:01:40.759+05:30  WARN 33172 --- [quark-engine-service] [  restartedMain] [                                                 ] trationDelegate$BeanPostProcessorChecker : Bean 'sg.openapi-com.socgen.apibank.openapi.OpenApiProperties' of type [com.socgen.apibank.openapi.OpenApiProperties] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected into a currently created BeanPostProcessor [swaggerUiOptionsOptionsPropagator]? Check the corresponding BeanPostProcessor declaration and its dependencies.
+2026-06-26T16:01:40.774+05:30  WARN 33172 --- [quark-engine-service] [  restartedMain] [                                                 ] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.ws.config.annotation.DelegatingWsConfiguration' of type [org.springframework.ws.config.annotation.DelegatingWsConfiguration$$SpringCGLIB$$0] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). The currently created BeanPostProcessor [annotationActionEndpointMapping] is declared through a non-static factory method on that class; consider declaring it as static instead.
+2026-06-26T16:01:40.803+05:30  INFO 33172 --- [quark-engine-service] [  restartedMain] [                                                 ] .w.s.a.s.AnnotationActionEndpointMapping : Supporting [WS-Addressing August 2004, WS-Addressing 1.0]
+2026-06-26T16:01:41.132+05:30  WARN 33172 --- [quark-engine-service] [  restartedMain] [                                                 ] trationDelegate$BeanPostProcessorChecker : Bean 'com.socgen.apibank.problem.servlet.SgConnectProblemConfiguration' of type [com.socgen.apibank.problem.servlet.SgConnectProblemConfiguration] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). The currently created BeanPostProcessor [problemSecurityBeanPostProcessor] is declared through a non-static factory method on that class; consider declaring it as static instead.
+2026-06-26T16:01:41.650+05:30  INFO 33172 --- [quark-engine-service] [  restartedMain] [                                                 ] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2026-06-26T16:01:41.661+05:30  INFO 33172 --- [quark-engine-service] [  restartedMain] [                                                 ] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-06-26T16:01:41.661+05:30  INFO 33172 --- [quark-engine-service] [  restartedMain] [                                                 ] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.16]
+2026-06-26T16:01:41.824+05:30  INFO 33172 --- [quark-engine-service] [  restartedMain] [                                                 ] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-06-26T16:01:41.825+05:30  INFO 33172 --- [quark-engine-service] [  restartedMain] [                                                 ] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 4361 ms
+2026-06-26T16:01:42.547+05:30  INFO 33172 --- [quark-engine-service] [  restartedMain] [                                                 ] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-06-26T16:01:42.553+05:30  WARN 33172 --- [quark-engine-service] [  restartedMain] [                                                 ] c.zaxxer.hikari.util.DriverDataSource    : Registered driver with driverClassName=oracle.jdbc.driver.OracleDriver was not found, trying direct instantiation.
+2026-06-26T16:01:43.007+05:30  INFO 33172 --- [quark-engine-service] [  restartedMain] [                                                 ] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection oracle.jdbc.driver.T4CConnection@1af78f1f
+2026-06-26T16:01:43.009+05:30  INFO 33172 --- [quark-engine-service] [  restartedMain] [                                                 ] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-06-26T16:01:43.017+05:30  INFO 33172 --- [quark-engine-service] [  restartedMain] [                                                 ] o.s.b.a.h2.H2ConsoleAutoConfiguration    : H2 console available at '/h2-console'. Database available at 'jdbc:oracle:thin:@osfreygp3dwpp.ocp.cloud.socgen:1522:YGP3DWPP'
+2026-06-26T16:01:43.382+05:30  INFO 33172 --- [quark-engine-service] [  restartedMain] [                                                 ] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-06-26T16:01:43.451+05:30  INFO 33172 --- [quark-engine-service] [  restartedMain] [                                                 ] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.3.1.Final
+2026-06-26T16:01:43.492+05:30  INFO 33172 --- [quark-engine-service] [  restartedMain] [                                                 ] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-06-26T16:01:43.739+05:30  INFO 33172 --- [quark-engine-service] [  restartedMain] [                                                 ] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-06-26T16:01:44.292+05:30  INFO 33172 --- [quark-engine-service] [  restartedMain] [                                                 ] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-06-26T16:01:44.298+05:30  INFO 33172 --- [quark-engine-service] [  restartedMain] [                                                 ] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-06-26T16:01:44.602+05:30  INFO 33172 --- [quark-engine-service] [  restartedMain] [                                                 ] c.s.s.a.q.e.s.t.i.TaskProcessServiceImpl : Registered 7 task process strategies: [class com.socgen.sgs.api.quark.engine.domain.task.TaskDocument, class com.socgen.sgs.api.quark.engine.domain.task.TaskDid, class com.socgen.sgs.api.quark.engine.domain.task.TaskDynamique, class com.socgen.sgs.api.quark.engine.domain.task.TaskCompartiment, class com.socgen.sgs.api.quark.engine.domain.task.TaskQxpPrevious, class com.socgen.sgs.api.quark.engine.domain.task.TaskSystem, class com.socgen.sgs.api.quark.engine.domain.task.TaskSql]
+2026-06-26T16:01:44.608+05:30  INFO 33172 --- [quark-engine-service] [  restartedMain] [                                                 ] s.a.q.e.s.t.i.TaskPostProcessServiceImpl : Registered 1 task post-process strategies: [class com.socgen.sgs.api.quark.engine.domain.task.TaskDid]
+2026-06-26T16:01:45.591+05:30  INFO 33172 --- [quark-engine-service] [  restartedMain] [                                                 ] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 13 endpoint(s) beneath base path '/actuator'
+2026-06-26T16:01:45.689+05:30  WARN 33172 --- [quark-engine-service] [  restartedMain] [                                                 ] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-06-26T16:01:56.068+05:30  INFO 33172 --- [quark-engine-service] [  restartedMain] [                                                 ] s.a.p.s.ProblemSecurityBeanPostProcessor : Register HttpSecurity's exceptionHandling
+2026-06-26T16:01:56.148+05:30  INFO 33172 --- [quark-engine-service] [  restartedMain] [                                                 ] o.s.s.w.a.c.ChannelProcessingFilter      : Validated configuration attributes
+2026-06-26T16:01:56.163+05:30  INFO 33172 --- [quark-engine-service] [  restartedMain] [                                                 ] o.s.s.web.DefaultSecurityFilterChain     : Will secure Or [Ant [pattern='/api-docs'], Ant [pattern='/v3/api-docs'], Ant [pattern='/favicon.ico'], Ant [pattern='/api-docs*'], Ant [pattern='/v3/api-docs*'], Ant [pattern='/api-docs/**'], Ant [pattern='/v3/api-docs/**'], Ant [pattern='/api-docs.yaml/*'], Ant [pattern='/swagger-ui.html'], Ant [pattern='/swagger-ui/**'], Ant [pattern='/sg/swagger-ui/**']] with [org.springframework.security.web.session.DisableEncodeUrlFilter@2e69eaac, org.springframework.security.web.access.channel.ChannelProcessingFilter@c7706b1, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@1049f36, org.springframework.security.web.context.SecurityContextHolderFilter@6513eeae, org.springframework.security.web.header.HeaderWriterFilter@70472a02, org.springframework.security.web.csrf.CsrfFilter@66fb0c20, org.springframework.security.web.authentication.logout.LogoutFilter@2427ee04, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@1b02187b, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@7eee9e6b, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@5884f25f, org.springframework.security.web.access.ExceptionTranslationFilter@481e13cc, org.springframework.security.web.access.intercept.AuthorizationFilter@556ba98b]
+2026-06-26T16:01:56.205+05:30  INFO 33172 --- [quark-engine-service] [  restartedMain] [                                                 ] s.a.p.s.ProblemSecurityBeanPostProcessor : Register HttpSecurity's exceptionHandling
+2026-06-26T16:01:56.218+05:30  INFO 33172 --- [quark-engine-service] [  restartedMain] [                                                 ] s.a.p.s.ProblemSecurityBeanPostProcessor : Register HttpSecurity's exceptionHandling
+2026-06-26T16:01:56.312+05:30  INFO 33172 --- [quark-engine-service] [  restartedMain] [                                                 ] s.a.p.s.ProblemSecurityBeanPostProcessor : Register BearerTokenAuthenticationFilter's authentication entry point
+2026-06-26T16:01:56.314+05:30  INFO 33172 --- [quark-engine-service] [  restartedMain] [                                                 ] o.s.s.w.a.c.ChannelProcessingFilter      : Validated configuration attributes
+2026-06-26T16:01:56.320+05:30  INFO 33172 --- [quark-engine-service] [  restartedMain] [                                                 ] o.s.s.web.DefaultSecurityFilterChain     : Will secure Or [DispatcherServletDelegating [ant = Ant [pattern='/api/**'], mvc = Mvc [pattern='/api/**']]] with [org.springframework.security.web.session.DisableEncodeUrlFilter@7fe8aafa, org.springframework.security.web.access.channel.ChannelProcessingFilter@184ec43a, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@2cdd4518, org.springframework.security.web.context.SecurityContextHolderFilter@358b7943, org.springframework.security.web.header.HeaderWriterFilter@2828e9f5, org.springframework.web.filter.CorsFilter@54257547, org.springframework.security.web.authentication.logout.LogoutFilter@3ca71822, com.socgen.apibank.autoconfigure.sgconnect.servlet.AuthenticationServiceUnavailableHandlerFilter@49e17077, org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter@75b5e0bf, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@5a027c6a, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@1158cb2d, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@73e4accb, org.springframework.security.web.session.SessionManagementFilter@29bad567, org.springframework.security.web.access.ExceptionTranslationFilter@5575d1a3, org.springframework.security.web.access.intercept.AuthorizationFilter@4592de89]
+2026-06-26T16:01:57.424+05:30  INFO 33172 --- [quark-engine-service] [  restartedMain] [                                                 ] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2026-06-26T16:01:57.541+05:30  INFO 33172 --- [quark-engine-service] [  restartedMain] [                                                 ] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path ''
+2026-06-26T16:01:57.545+05:30  INFO 33172 --- [quark-engine-service] [  restartedMain] [                                                 ] o.s.a.r.c.CachingConnectionFactory       : Attempting to connect to: [rabbitmq-vap-dev-965c0883.gslb2.trafficmanager.eu-fr-paris.cloud.socgen:5671]
+2026-06-26T16:01:57.712+05:30  INFO 33172 --- [quark-engine-service] [  restartedMain] [                                                 ] o.s.a.r.c.CachingConnectionFactory       : Created new connection: rabbitConnectionFactory#27ecac4a:0/SimpleConnection@32edb66d [delegate=amqp://quark_dev@182.8.28.27:5671/vap-quark-host, localPort=53729]
+2026-06-26T16:01:57.827+05:30  INFO 33172 --- [quark-engine-service] [  restartedMain] [                                                 ] c.s.sgs.api.quark.engine.Application     : Started Application in 21.128 seconds (process running for 25.017)
+2026-06-26T16:02:12.026+05:30  INFO 33172 --- [quark-engine-service] [nio-8080-exec-1] [                                                 ] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-06-26T16:02:12.026+05:30  INFO 33172 --- [quark-engine-service] [nio-8080-exec-1] [                                                 ] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-06-26T16:02:12.029+05:30  INFO 33172 --- [quark-engine-service] [nio-8080-exec-1] [                                                 ] o.s.web.servlet.DispatcherServlet        : Completed initialization in 2 ms
+2026-06-26T16:02:16.557+05:30  WARN 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-9b06e34d8b20396c] o.s.w.s.h.HandlerMappingIntrospector     : Cache miss for REQUEST dispatch to '/ap/v1/EngineService/processRun/509636' (previous null). Performing MatchableHandlerMapping lookup. This is logged once only at WARN level, and every time at TRACE.
+2026-06-26T16:02:16.580+05:30  INFO 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] .s.s.a.q.e.i.a.v.EngineServiceController : Processing run with runId: 509636
+2026-06-26T16:02:16.580+05:30  INFO 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Processing run with runId: 509636
+2026-06-26T16:02:16.583+05:30  INFO 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] c.s.s.a.q.e.b.RunStartUpdateBusiness     : Business layer: starting run with ID: 509636
+2026-06-26T16:02:16.584+05:30  INFO 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] c.s.s.a.q.e.i.d.i.RunStartUpdateDaoImpl  : Starting run with ID: 509636
+2026-06-26T16:02:16.651+05:30  INFO 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] c.s.s.a.q.e.i.d.i.RunStartUpdateDaoImpl  : Successfully started run with ID: 509636
+2026-06-26T16:02:16.652+05:30  INFO 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Run started successfully with runId: 509636
+2026-06-26T16:02:16.652+05:30  INFO 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Loading run with runId: 509636
+2026-06-26T16:02:16.652+05:30  INFO 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Retrieving properties for runId: 509636
+2026-06-26T16:02:16.653+05:30  INFO 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] c.s.s.a.q.e.b.GetRunPropertiesBusiness   : Business layer: fetching run properties for runId: 509636
+2026-06-26T16:02:16.653+05:30  INFO 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] .s.s.a.q.e.i.d.i.GetRunPropertiesDaoImpl : Fetching run properties for runId: 509636
+2026-06-26T16:02:16.686+05:30  INFO 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] .s.s.a.q.e.i.d.i.GetRunPropertiesDaoImpl : Successfully retrieved run properties for runId: 509636
+2026-06-26T16:02:16.686+05:30  INFO 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Successfully retrieved properties for runId: 509636
+2026-06-26T16:02:16.687+05:30  INFO 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] c.s.s.a.q.e.business.GetGabaritBusiness  : Fetching gabarit document courant for idSuivi: 81064
+2026-06-26T16:02:16.687+05:30  INFO 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] .s.a.q.e.i.d.i.GetGabaritDocumentDaoImpl : Fetching gabarit document for idSuivi: 81064
+2026-06-26T16:02:16.907+05:30  INFO 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] .s.a.q.e.i.d.i.GetGabaritDocumentDaoImpl : Successfully retrieved gabarit document for idSuivi: 81064
+2026-06-26T16:02:16.907+05:30  INFO 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] c.s.s.a.q.e.business.GetGabaritBusiness  : Prepared gabarit paths - poolPath: R_509636/DG_1059938.QXP, fullPath: D:\Documents\R_509636\DG_1059938.QXP
+2026-06-26T16:02:16.912+05:30  INFO 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] c.s.s.a.q.e.i.i.q.client.QxpsHttpClient  : QXPS call: POST http://srvcldvapd001.dns43.socgen:8080/addfile/R_509636/DG_1059938.QXP
+2026-06-26T16:02:17.512+05:30  INFO 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] c.s.s.a.q.e.i.i.qxps.helper.QxpsHelper   : File added to QXPS document pool: R_509636/DG_1059938.QXP
+2026-06-26T16:02:17.512+05:30  INFO 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] c.s.s.a.q.e.i.i.q.pool.FilePoolService   : File added to pool: R_509636/DG_1059938.QXP
+2026-06-26T16:02:17.513+05:30  INFO 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] c.s.s.a.q.e.i.i.q.client.QxpsHttpClient  : QXPS call: GET http://srvcldvapd001.dns43.socgen:8080/xml/R_509636/DG_1059938.QXP
+2026-06-26T16:02:19.184+05:30  INFO 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] .s.a.q.e.i.i.q.i.DocumentIdentityService : Fetching XML for document: R_509636/DG_1059938.QXP, box: DID
+2026-06-26T16:02:19.185+05:30  INFO 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] c.s.s.a.q.e.i.i.q.client.QxpsHttpClient  : QXPS call: GET http://srvcldvapd001.dns43.socgen:8080/xml/R_509636/DG_1059938.QXP?box=DID
+2026-06-26T16:02:19.474+05:30  INFO 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] .s.a.q.e.i.i.q.i.DocumentIdentityService : Successfully parsed document identity: DocumentIdentity{idFndCode='340293', idSuivi='81064', idRun='509636', idLangue='1', dueDate=2026-03-01T00:00, generationDateTime=2026-04-15T15:25:13, idUnitCode='null'}
+2026-06-26T16:02:19.478+05:30  INFO 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] c.s.s.a.q.e.b.GetInParamsBusiness        : Business layer: loading in-params for runId: 509636
+2026-06-26T16:02:19.478+05:30  INFO 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] c.s.s.a.q.e.i.d.impl.GetInParamsDaoImpl  : Fetching in-params for idSuivi: 81064
+2026-06-26T16:02:19.498+05:30  INFO 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] c.s.s.a.q.e.i.d.impl.GetInParamsDaoImpl  : Loaded 2 in-params for idSuivi: 81064
+2026-06-26T16:02:19.500+05:30  INFO 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Loading tasks for runId: 509636
+2026-06-26T16:02:19.500+05:30  INFO 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] c.s.s.a.q.e.business.GetTasksBusiness    : Business layer: loading tasks for runId: 509636
+2026-06-26T16:02:19.500+05:30  INFO 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] c.s.s.a.q.e.i.dao.impl.GetTasksDaoImpl   : Fetching tasks for runId: 509636
+2026-06-26T16:02:19.567+05:30  INFO 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] c.s.s.a.q.e.i.dao.impl.GetTasksDaoImpl   : Fetched 0 task rows for runId: 509636
+2026-06-26T16:02:19.567+05:30  INFO 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Loaded 0 tasks for runId: 509636
+2026-06-26T16:02:19.568+05:30  INFO 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Loading task exceptions for runId: 509636
+2026-06-26T16:02:19.568+05:30  INFO 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] c.s.s.a.q.e.b.GetTaskExceptionsBusiness  : Business layer: loading task exceptions for runId: 509636
+2026-06-26T16:02:19.568+05:30  INFO 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] s.s.a.q.e.i.d.i.GetTaskExceptionsDaoImpl : Fetching task exceptions for runId: 509636
+2026-06-26T16:02:19.596+05:30  INFO 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] s.s.a.q.e.i.d.i.GetTaskExceptionsDaoImpl : Fetched 0 task exception rows for runId: 509636
+2026-06-26T16:02:19.596+05:30  INFO 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Task exceptions loaded for runId: 509636
+2026-06-26T16:02:19.599+05:30  INFO 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : DID task added for runId: 509636
+2026-06-26T16:02:19.600+05:30  INFO 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] c.s.s.a.q.e.b.LoadTemplatesBusiness      : No TODO dynamic task for run [509636], skipping template loading
+2026-06-26T16:02:19.600+05:30  INFO 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Run loading completed for runId: 509636
+2026-06-26T16:02:19.600+05:30  INFO 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] c.s.s.a.q.e.s.i.ProcessTasksServiceImpl  : Preparing tasks for runId: 509636
+2026-06-26T16:02:19.600+05:30  INFO 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] c.s.s.a.q.e.s.i.ProcessTasksServiceImpl  : Task preparation completed for runId: 509636
+2026-06-26T16:02:19.601+05:30  INFO 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] c.s.s.a.q.e.s.i.ProcessTasksServiceImpl  : Processing tasks for runId: 509636
+2026-06-26T16:02:19.671+05:30  INFO 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] s.a.q.e.s.t.i.DidTaskPostProcessStrategy : DID update mode: NAME_VALUE for run [509636]
+2026-06-26T16:02:19.677+05:30  INFO 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] s.a.q.e.s.t.i.DidTaskPostProcessStrategy : DID task post-process completed for run [509636]
+2026-06-26T16:02:19.678+05:30  INFO 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] c.s.s.a.q.e.s.i.ProcessTasksServiceImpl  : Task processing completed for runId: 509636
+2026-06-26T16:02:19.678+05:30  INFO 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] c.s.s.a.q.e.business.QxpsCallerBusiness  : Starting step execution for run [509636] with 1 steps
+2026-06-26T16:02:19.678+05:30  INFO 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] c.s.s.a.q.e.business.QxpsCallerBusiness  : Preparing step [0] for run [509636]
+Standard Commons Logging discovery in action with spring-jcl: please remove commons-logging.jar from classpath in order to avoid potential conflicts
+2026-06-26T16:02:19.901+05:30  INFO 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] c.s.s.a.q.e.business.QxpsCallerBusiness  : Executing step [0]: add=0 update=1 excluded=0
+2026-06-26T16:02:19.904+05:30  INFO 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] c.s.s.a.q.e.i.i.qxpsm.QxpsmSoapClient    : QXPSM SOAP processRequest for document [R_509636/DG_1059938.QXP]
+2026-06-26T16:02:19.991+05:30  WARN 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] org.apache.axis.utils.JavaUtils          : Unable to find required classes (javax.activation.DataHandler and javax.mail.internet.MimeMultipart). Attachment support is disabled.
+2026-06-26T16:02:21.511+05:30 DEBUG 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] o.apache.axis.transport.http.HTTPSender  : Enter:  HTTPSender::invoke
+2026-06-26T16:02:21.544+05:30 DEBUG 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] o.apache.axis.transport.http.HTTPSender  : XML sent:
+2026-06-26T16:02:21.545+05:30 DEBUG 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] o.apache.axis.transport.http.HTTPSender  : ---------------------------------------------------
+2026-06-26T16:02:21.545+05:30 DEBUG 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] o.apache.axis.transport.http.HTTPSender  : POST /qxpsm/services/RequestService HTTP/1.0
+Content-Type: text/xml; charset=utf-8
+Accept: application/soap+xml, application/dime, multipart/related, text/*
+User-Agent: Axis/1.4
+Host: srvcldvapd001.dns43.socgen:8090
+Cache-Control: no-cache
+Pragma: no-cache
+SOAPAction: "urn:processRequest"
+Content-Length: 1621
+
+<?xml version="1.0" encoding="UTF-8"?><soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><soapenv:Body><processRequest xmlns="http://com.quark.qxpsm"><param0><bypassFileInfo>false</bypassFileInfo><context xsi:nil="true"/><documentName>R_509636/DG_1059938.QXP</documentName><maxRetries>0</maxRetries><request xsi:type="ns1:RequestParameters" xmlns:ns1="http://com.quark.qxpsm"><ns1:request xsi:type="ns1:SaveAsRequest"><ns1:request xsi:type="ns1:QuarkXPressRenderRequest"><ns1:request xsi:nil="true"/><ns1:afterPage xsi:nil="true"/><ns1:documentVersion xsi:nil="true"/><ns1:layout xsi:nil="true"/><ns1:movePages xsi:nil="true"/><ns1:saveAsTemplate xsi:nil="true"/><ns1:updateFullRes xsi:nil="true"/><ns1:updateImage xsi:nil="true"/></ns1:request><ns1:newFilePath>D:\Documents\R_509636\</ns1:newFilePath><ns1:newName>DG_1059938_1.QXP</ns1:newName><ns1:replaceFile>true</ns1:replaceFile><ns1:saveToPool>false</ns1:saveToPool></ns1:request><ns1:params><ns1:request xsi:nil="true"/><ns1:contentType xsi:nil="true"/><ns1:paramName>DID</ns1:paramName><ns1:streamValue xsi:nil="true"/><ns1:textValue>340293|81064|509636|1|03/01/2026 00:00:00|06/26/2026 16:02:19|</ns1:textValue></ns1:params><ns1:requestNamespace xsi:nil="true"/></request><requestTimeout>7200000</requestTimeout><responseAsURL>false</responseAsURL><serverName xsi:nil="true"/><serverPort>0</serverPort><useCache>false</useCache><userName></userName><userPassword></userPassword></param0></processRequest></soapenv:Body></soapenv:Envelope>
+2026-06-26T16:02:22.203+05:30 DEBUG 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] o.apache.axis.transport.http.HTTPSender  : HTTP/1.1 200 
+2026-06-26T16:02:22.203+05:30 DEBUG 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] o.apache.axis.transport.http.HTTPSender  : Content-Type text/xml;charset=utf-8
+2026-06-26T16:02:22.203+05:30 DEBUG 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] o.apache.axis.transport.http.HTTPSender  : Date Fri, 26 Jun 2026 10:32:22 GMT
+2026-06-26T16:02:22.203+05:30 DEBUG 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] o.apache.axis.transport.http.HTTPSender  : Connection close
+2026-06-26T16:02:22.204+05:30 DEBUG 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] o.apache.axis.transport.http.HTTPSender  : Server QXPS Manager
+2026-06-26T16:02:22.205+05:30 DEBUG 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] o.apache.axis.transport.http.HTTPSender  : 
+no Content-Length
+2026-06-26T16:02:22.205+05:30 DEBUG 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] o.apache.axis.transport.http.HTTPSender  : 
+XML received:
+2026-06-26T16:02:22.205+05:30 DEBUG 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] o.apache.axis.transport.http.HTTPSender  : -----------------------------------------------
+2026-06-26T16:02:22.217+05:30 DEBUG 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] o.apache.axis.transport.http.HTTPSender  : <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><soapenv:Body><processRequestResponse xmlns="http://com.quark.qxpsm"><return xsi:type="QContentData"><actualServerPortUsed>0</actualServerPortUsed><actualServerUsed xsi:nil="true"/><contentType>text/plain</contentType><encodingType>UTF-8</encodingType><headers xsi:nil="true"/><multipartResponse xsi:nil="true"/><responseURL xsi:nil="true"/><streamValue xsi:nil="true"/><textData>File 'R_509636/DG_1059938.QXP' saved to all active servers :</textData></return></processRequestResponse></soapenv:Body></soapenv:Envelope>
+2026-06-26T16:02:22.217+05:30 DEBUG 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] o.apache.axis.transport.http.HTTPSender  : Exit:  HTTPDispatchHandler::invoke
+2026-06-26T16:02:22.228+05:30  INFO 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] c.s.s.a.q.e.i.i.qxpsm.QxpsmSoapClient    : QXPSM processRequest completed for document [R_509636/DG_1059938.QXP]
+2026-06-26T16:02:22.229+05:30  INFO 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] c.s.s.a.q.e.i.i.q.client.QxpsHttpClient  : QXPS call: GET http://srvcldvapd001.dns43.socgen:8080/literal/R_509636/DG_1059938_1.QXP
+2026-06-26T16:02:22.341+05:30  INFO 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] c.s.s.a.q.e.business.QxpsCallerBusiness  : Step [0] completed for run [509636]
+2026-06-26T16:02:22.341+05:30  INFO 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] c.s.s.a.q.e.business.QxpsCallerBusiness  : All steps completed for run [509636]
+2026-06-26T16:02:22.342+05:30  INFO 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] c.s.s.a.q.e.s.impl.CheckServiceImpl      : Starting Check step for run [509636]
+2026-06-26T16:02:22.342+05:30  INFO 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] c.s.s.a.q.e.i.i.q.client.QxpsHttpClient  : QXPS call: GET http://srvcldvapd001.dns43.socgen:8080/xml/R_509636/DG_1059938_1.QXP
+2026-06-26T16:02:23.720+05:30  INFO 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] c.s.s.a.q.e.s.impl.CheckServiceImpl      : Check step completed for run [509636]
+2026-06-26T16:02:23.720+05:30  INFO 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] c.s.s.a.q.e.business.QxpsCallerBusiness  : Starting final renders for run [509636]
+2026-06-26T16:02:23.722+05:30  INFO 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] c.s.s.a.q.e.i.i.q.client.QxpsHttpClient  : QXPS call: GET http://srvcldvapd001.dns43.socgen:8080/pdf/R_509636/DG_1059938_1.QXP?colorimagedownsample=300&grayscaleimagedownsample=300&monochromeImagedownSample=300&colorcompression=true&grayscalecompression=true&monochromecompression=true
+2026-06-26T16:02:25.198+05:30 ERROR 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] c.s.s.a.q.e.business.QxpsCallerBusiness  : PDF render failed (QXPS) for run [509636]: QXPS call failed: http://srvcldvapd001.dns43.socgen:8080/pdf/R_509636/DG_1059938_1.QXP?colorimagedownsample=300&grayscaleimagedownsample=300&monochromeImagedownSample=300&colorcompression=true&grayscalecompression=true&monochromecompression=true - HTTP 500: <!doctype html><html lang="en"><head><title>HTTP Status 500 – Internal Server Error</title><style type="text/css">body {font-family:Tahoma,Arial,sans-serif;} h1, h2, h3, b {color:white;background-color:#525D76;} h1 {font-size:22px;} h2 {font-size:16px;} h3 {font-size:14px;} p {font-size:12px;} a {color:black;} .line {height:1px;background-color:#525D76;border:none;}</style></head><body><h1>HTTP Status 500 – Internal Server Error</h1><hr class="line" /><p><b>Type</b> Exception Report</p><p><b>Message</b> Error #10122 - No file produced. The document requested contains only blank pages. [10122]</p><p><b>Description</b> The server encountered an unexpected condition that prevented it from fulfilling the request.</p><p><b>Exception</b></p><pre>jakarta.servlet.ServletException: Error #10122 - No file produced. The document requested contains only blank pages. [10122]
+	com.quark.qxps.webapp.controller.ControllerInterceptor.postHandle(ControllerInterceptor.java:526)
+	org.springframework.web.servlet.HandlerExecutionChain.applyPostHandle(HandlerExecutionChain.java:163)
+	org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1096)
+	org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:979)
+	org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014)
+	org.springframework.web.servlet.FrameworkServlet.doGet(FrameworkServlet.java:903)
+	jakarta.servlet.http.HttpServlet.service(HttpServlet.java:633)
+	org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:885)
+	jakarta.servlet.http.HttpServlet.service(HttpServlet.java:723)
+	org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
+	org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	org.apache.logging.log4j.web.Log4jServletFilter.doFilter(Log4jServletFilter.java:70)
+</pre><p><b>Note</b> The full stack trace of the root cause is available in the server logs.</p><hr class="line" /><h3>Apache Tomcat/10.1.34</h3></body></html>
+
+com.socgen.sgs.api.quark.engine.infra.interop.qxps.exception.QxpsException: QXPS call failed: http://srvcldvapd001.dns43.socgen:8080/pdf/R_509636/DG_1059938_1.QXP?colorimagedownsample=300&grayscaleimagedownsample=300&monochromeImagedownSample=300&colorcompression=true&grayscalecompression=true&monochromecompression=true - HTTP 500: <!doctype html><html lang="en"><head><title>HTTP Status 500 – Internal Server Error</title><style type="text/css">body {font-family:Tahoma,Arial,sans-serif;} h1, h2, h3, b {color:white;background-color:#525D76;} h1 {font-size:22px;} h2 {font-size:16px;} h3 {font-size:14px;} p {font-size:12px;} a {color:black;} .line {height:1px;background-color:#525D76;border:none;}</style></head><body><h1>HTTP Status 500 – Internal Server Error</h1><hr class="line" /><p><b>Type</b> Exception Report</p><p><b>Message</b> Error #10122 - No file produced. The document requested contains only blank pages. [10122]</p><p><b>Description</b> The server encountered an unexpected condition that prevented it from fulfilling the request.</p><p><b>Exception</b></p><pre>jakarta.servlet.ServletException: Error #10122 - No file produced. The document requested contains only blank pages. [10122]
+	com.quark.qxps.webapp.controller.ControllerInterceptor.postHandle(ControllerInterceptor.java:526)
+	org.springframework.web.servlet.HandlerExecutionChain.applyPostHandle(HandlerExecutionChain.java:163)
+	org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1096)
+	org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:979)
+	org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014)
+	org.springframework.web.servlet.FrameworkServlet.doGet(FrameworkServlet.java:903)
+	jakarta.servlet.http.HttpServlet.service(HttpServlet.java:633)
+	org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:885)
+	jakarta.servlet.http.HttpServlet.service(HttpServlet.java:723)
+	org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
+	org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	org.apache.logging.log4j.web.Log4jServletFilter.doFilter(Log4jServletFilter.java:70)
+</pre><p><b>Note</b> The full stack trace of the root cause is available in the server logs.</p><hr class="line" /><h3>Apache Tomcat/10.1.34</h3></body></html>
+	at com.socgen.sgs.api.quark.engine.infra.interop.qxps.client.QxpsHttpClient.lambda$handleResponse$4(QxpsHttpClient.java:129)
+	at reactor.core.publisher.MonoFlatMap$FlatMapMain.onNext(MonoFlatMap.java:132)
+	at reactor.core.publisher.FluxDefaultIfEmpty$DefaultIfEmptySubscriber.onNext(FluxDefaultIfEmpty.java:122)
+	at reactor.core.publisher.FluxOnAssembly$OnAssemblySubscriber.onNext(FluxOnAssembly.java:539)
+	at reactor.core.publisher.FluxMapFuseable$MapFuseableSubscriber.onNext(FluxMapFuseable.java:129)
+	at reactor.core.publisher.FluxContextWrite$ContextWriteSubscriber.onNext(FluxContextWrite.java:107)
+	at reactor.core.publisher.FluxMapFuseable$MapFuseableConditionalSubscriber.onNext(FluxMapFuseable.java:299)
+	at reactor.core.publisher.FluxFilterFuseable$FilterFuseableConditionalSubscriber.onNext(FluxFilterFuseable.java:337)
+	at reactor.core.publisher.Operators$BaseFluxToMonoOperator.completePossiblyEmpty(Operators.java:2097)
+	at reactor.core.publisher.MonoCollect$CollectSubscriber.onComplete(MonoCollect.java:145)
+	at reactor.core.publisher.FluxMap$MapSubscriber.onComplete(FluxMap.java:144)
+	at reactor.core.publisher.FluxPeek$PeekSubscriber.onComplete(FluxPeek.java:260)
+	at reactor.core.publisher.FluxMap$MapSubscriber.onComplete(FluxMap.java:144)
+	at reactor.netty.channel.FluxReceive.onInboundComplete(FluxReceive.java:415)
+	at reactor.netty.channel.ChannelOperations.onInboundComplete(ChannelOperations.java:446)
+	at reactor.netty.channel.ChannelOperations.terminate(ChannelOperations.java:500)
+	at reactor.netty.http.client.HttpClientOperations.onInboundNext(HttpClientOperations.java:768)
+	at reactor.netty.channel.ChannelOperationsHandler.channelRead(ChannelOperationsHandler.java:114)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:444)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:420)
+	at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:412)
+	at io.netty.handler.timeout.IdleStateHandler.channelRead(IdleStateHandler.java:286)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:442)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:420)
+	at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:412)
+	at io.netty.handler.timeout.IdleStateHandler.channelRead(IdleStateHandler.java:286)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:442)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:420)
+	at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:412)
+	at io.netty.channel.CombinedChannelDuplexHandler$DelegatingChannelHandlerContext.fireChannelRead(CombinedChannelDuplexHandler.java:436)
+	at io.netty.handler.codec.ByteToMessageDecoder.fireChannelRead(ByteToMessageDecoder.java:346)
+	at io.netty.handler.codec.ByteToMessageDecoder.channelRead(ByteToMessageDecoder.java:318)
+	at io.netty.channel.CombinedChannelDuplexHandler.channelRead(CombinedChannelDuplexHandler.java:251)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:442)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:420)
+	at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:412)
+	at io.netty.channel.DefaultChannelPipeline$HeadContext.channelRead(DefaultChannelPipeline.java:1410)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:440)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:420)
+	at io.netty.channel.DefaultChannelPipeline.fireChannelRead(DefaultChannelPipeline.java:919)
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:166)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:788)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeysOptimized(NioEventLoop.java:724)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:650)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:562)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$4.run(SingleThreadEventExecutor.java:997)
+	at io.netty.util.internal.ThreadExecutorMap$2.run(ThreadExecutorMap.java:74)
+	at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+	Suppressed: java.lang.Exception: #block terminated with an error
+		at reactor.core.publisher.BlockingSingleSubscriber.blockingGet(BlockingSingleSubscriber.java:103)
+		at reactor.core.publisher.Mono.block(Mono.java:1728)
+		at com.socgen.sgs.api.quark.engine.infra.interop.qxps.client.QxpsHttpClient.executeGet(QxpsHttpClient.java:120)
+		at com.socgen.sgs.api.quark.engine.infra.interop.qxps.client.QxpsHttpClient.executeCombined(QxpsHttpClient.java:96)
+		at com.socgen.sgs.api.quark.engine.infra.interop.qxps.client.QxpsHttpClient.execute(QxpsHttpClient.java:81)
+		at com.socgen.sgs.api.quark.engine.business.QxpsCallerBusiness.render(QxpsCallerBusiness.java:230)
+		at com.socgen.sgs.api.quark.engine.service.impl.QxpsCallerServiceImpl.render(QxpsCallerServiceImpl.java:33)
+		at com.socgen.sgs.api.quark.engine.service.impl.ProcessRunServiceImpl.runProcessor(ProcessRunServiceImpl.java:95)
+		at com.socgen.sgs.api.quark.engine.infra.api.v1.EngineServiceController.processRun(EngineServiceController.java:27)
+		at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+		at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+		at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+		at java.base/java.lang.reflect.Method.invoke(Method.java:569)
+		at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:254)
+		at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:182)
+		at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:118)
+		at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:917)
+		at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:829)
+		at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:87)
+		at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1089)
+		at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:979)
+		at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014)
+		at org.springframework.web.servlet.FrameworkServlet.doPost(FrameworkServlet.java:914)
+		at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:590)
+		at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:885)
+		at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:658)
+		at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:205)
+		at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+		at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:51)
+		at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+		at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+		at com.socgen.apibank.http.ratelimiter.RateLimiterFilter.doFilter(RateLimiterFilter.java:38)
+		at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+		at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+		at org.springframework.security.web.ObservationFilterChainDecorator$FilterObservation$SimpleFilterObservation.lambda$wrap$1(ObservationFilterChainDecorator.java:479)
+		at org.springframework.security.web.ObservationFilterChainDecorator.lambda$wrapUnsecured$1(ObservationFilterChainDecorator.java:90)
+		at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:219)
+		at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:191)
+		at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:352)
+		at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:268)
+		at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+		at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+		at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
+		at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+		at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+		at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+		at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
+		at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+		at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+		at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+		at org.springframework.web.filter.ServerHttpObservationFilter.doFilterInternal(ServerHttpObservationFilter.java:109)
+		at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+		at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+		at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+		at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
+		at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+		at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+		at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+		at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:167)
+		at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:90)
+		at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:482)
+		at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:115)
+		at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:93)
+		at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74)
+		at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:340)
+		at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:391)
+		at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63)
+		at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:896)
+		at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1744)
+		at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52)
+		at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1191)
+		at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
+		at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+		... 1 common frames omitted
+
+2026-06-26T16:02:25.204+05:30  INFO 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] c.s.s.a.q.e.i.i.q.client.QxpsHttpClient  : QXPS call: GET http://srvcldvapd001.dns43.socgen:8080/literal/R_509636/DG_1059938_1.QXP
+2026-06-26T16:02:25.321+05:30  INFO 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] c.s.s.a.q.e.business.QxpsCallerBusiness  : QXP fetched (literal) for run [509636]
+2026-06-26T16:02:25.322+05:30  INFO 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] c.s.s.a.q.e.business.QxpsCallerBusiness  : All renders completed for run [509636]
+2026-06-26T16:02:25.335+05:30  INFO 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] c.s.s.a.q.e.business.EndRunBusiness      : Finalizing run [509636] with status [GENERATED]
+2026-06-26T16:02:25.353+05:30 ERROR 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : End_Run failed for run [509636]: CallableStatementCallback; uncategorized SQLException for SQL [{? = call QXP_PK_RUN.INSERT_DOCUMENT(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}]; SQL state [99999]; error code [17004]; Invalid column type
+
+org.springframework.jdbc.UncategorizedSQLException: CallableStatementCallback; uncategorized SQLException for SQL [{? = call QXP_PK_RUN.INSERT_DOCUMENT(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}]; SQL state [99999]; error code [17004]; Invalid column type
+	at org.springframework.jdbc.core.JdbcTemplate.translateException(JdbcTemplate.java:1549)
+	at org.springframework.jdbc.core.JdbcTemplate.execute(JdbcTemplate.java:1183)
+	at org.springframework.jdbc.core.JdbcTemplate.call(JdbcTemplate.java:1222)
+	at org.springframework.jdbc.core.simple.AbstractJdbcCall.executeCallInternal(AbstractJdbcCall.java:412)
+	at org.springframework.jdbc.core.simple.AbstractJdbcCall.doExecute(AbstractJdbcCall.java:395)
+	at org.springframework.jdbc.core.simple.SimpleJdbcCall.execute(SimpleJdbcCall.java:193)
+	at com.socgen.sgs.api.quark.engine.infra.dao.impl.InsertDocumentDaoImpl.insertDocument(InsertDocumentDaoImpl.java:74)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:569)
+	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:352)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:196)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163)
+	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:765)
+	at org.springframework.dao.support.PersistenceExceptionTranslationInterceptor.invoke(PersistenceExceptionTranslationInterceptor.java:137)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184)
+	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:765)
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:717)
+	at com.socgen.sgs.api.quark.engine.infra.dao.impl.InsertDocumentDaoImpl$$SpringCGLIB$$0.insertDocument(<generated>)
+	at com.socgen.sgs.api.quark.engine.business.EndRunBusiness.insertGeneratedDocument(EndRunBusiness.java:95)
+	at com.socgen.sgs.api.quark.engine.business.EndRunBusiness.execute(EndRunBusiness.java:66)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:569)
+	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:352)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:196)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163)
+	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:765)
+	at org.springframework.transaction.interceptor.TransactionInterceptor$1.proceedWithInvocation(TransactionInterceptor.java:123)
+	at org.springframework.transaction.interceptor.TransactionAspectSupport.invokeWithinTransaction(TransactionAspectSupport.java:385)
+	at org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:119)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184)
+	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:765)
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:717)
+	at com.socgen.sgs.api.quark.engine.business.EndRunBusiness$$SpringCGLIB$$0.execute(<generated>)
+	at com.socgen.sgs.api.quark.engine.service.impl.ProcessRunServiceImpl.runProcessor(ProcessRunServiceImpl.java:121)
+	at com.socgen.sgs.api.quark.engine.infra.api.v1.EngineServiceController.processRun(EngineServiceController.java:27)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:569)
+	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:254)
+	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:182)
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:118)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:917)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:829)
+	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:87)
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1089)
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:979)
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014)
+	at org.springframework.web.servlet.FrameworkServlet.doPost(FrameworkServlet.java:914)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:590)
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:885)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:658)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:205)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:51)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at com.socgen.apibank.http.ratelimiter.RateLimiterFilter.doFilter(RateLimiterFilter.java:38)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.springframework.security.web.ObservationFilterChainDecorator$FilterObservation$SimpleFilterObservation.lambda$wrap$1(ObservationFilterChainDecorator.java:479)
+	at org.springframework.security.web.ObservationFilterChainDecorator.lambda$wrapUnsecured$1(ObservationFilterChainDecorator.java:90)
+	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:219)
+	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:191)
+	at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:352)
+	at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:268)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.springframework.web.filter.ServerHttpObservationFilter.doFilterInternal(ServerHttpObservationFilter.java:109)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:167)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:90)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:482)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:115)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:93)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:340)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:391)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:896)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1744)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1191)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+Caused by: java.sql.SQLException: Invalid column type
+	at oracle.jdbc.driver.OraclePreparedStatement.setObjectCritical(OraclePreparedStatement.java:8148)
+	at oracle.jdbc.driver.OraclePreparedStatement.setObjectInternal(OraclePreparedStatement.java:7639)
+	at oracle.jdbc.driver.OraclePreparedStatement.setObjectInternal(OraclePreparedStatement.java:8220)
+	at oracle.jdbc.driver.OracleCallableStatement.setObject(OracleCallableStatement.java:4596)
+	at oracle.jdbc.driver.OraclePreparedStatementWrapper.setObject(OraclePreparedStatementWrapper.java:227)
+	at com.zaxxer.hikari.pool.HikariProxyCallableStatement.setObject(HikariProxyCallableStatement.java)
+	at org.springframework.jdbc.core.StatementCreatorUtils.setValue(StatementCreatorUtils.java:434)
+	at org.springframework.jdbc.core.StatementCreatorUtils.setParameterValueInternal(StatementCreatorUtils.java:241)
+	at org.springframework.jdbc.core.StatementCreatorUtils.setParameterValue(StatementCreatorUtils.java:157)
+	at org.springframework.jdbc.core.CallableStatementCreatorFactory$CallableStatementCreatorImpl.createCallableStatement(CallableStatementCreatorFactory.java:209)
+	at org.springframework.jdbc.core.JdbcTemplate.execute(JdbcTemplate.java:1162)
+	... 102 common frames omitted
+
+2026-06-26T16:02:25.355+05:30  INFO 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] c.s.s.a.q.e.business.EndRunBusiness      : Finalizing run [509636] with status [ERROR]
+2026-06-26T16:02:25.363+05:30  INFO 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] c.s.s.a.q.e.i.dao.impl.EndRunDaoImpl     : Update_Status_Run executed for run [509636] with status [3]
+2026-06-26T16:02:25.374+05:30  INFO 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] c.s.s.a.q.e.infra.dao.impl.AuditDaoImpl  : Audit row inserted for run [509636]
+2026-06-26T16:02:25.374+05:30  INFO 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] c.s.s.a.q.e.business.EndRunBusiness      : Run [509636] finalized successfully
+2026-06-26T16:02:25.382+05:30  INFO 33172 --- [quark-engine-service] [nio-8080-exec-2] [0b15ffce10b158dbf94e566e243c9a44-736f382cde3f1e5e] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Run completed for runId: 509636 with status: ERROR
+2026-06-26T16:02:27.308+05:30  WARN 33172 --- [quark-engine-service] [ctor-http-nio-1] [                                                 ] i.o.exporter.zipkin.ZipkinSpanExporter   : Failed to export spans
+
+org.springframework.web.reactive.function.client.WebClientRequestException: Connection refused: getsockopt: localhost/127.0.0.1:9411
+	at org.springframework.web.reactive.function.client.ExchangeFunctions$DefaultExchangeFunction.lambda$wrapException$9(ExchangeFunctions.java:136)
+	Suppressed: reactor.core.publisher.FluxOnAssembly$OnAssemblyException: 
+Error has been observed at the following site(s):
+	*__checkpoint ⇢ Request to POST http://localhost:9411/api/v2/spans [DefaultWebClient]
+Original Stack Trace:
+		at org.springframework.web.reactive.function.client.ExchangeFunctions$DefaultExchangeFunction.lambda$wrapException$9(ExchangeFunctions.java:136)
+		at reactor.core.publisher.MonoErrorSupplied.subscribe(MonoErrorSupplied.java:55)
+		at reactor.core.publisher.Mono.subscribe(Mono.java:4512)
+		at reactor.core.publisher.FluxOnErrorResume$ResumeSubscriber.onError(FluxOnErrorResume.java:103)
+		at reactor.core.publisher.FluxPeek$PeekSubscriber.onError(FluxPeek.java:222)
+		at reactor.core.publisher.FluxPeek$PeekSubscriber.onError(FluxPeek.java:222)
+		at reactor.core.publisher.FluxPeek$PeekSubscriber.onError(FluxPeek.java:222)
+		at reactor.core.publisher.MonoNext$NextSubscriber.onError(MonoNext.java:93)
+		at reactor.core.publisher.MonoFlatMapMany$FlatMapManyMain.onError(MonoFlatMapMany.java:204)
+		at reactor.core.publisher.SerializedSubscriber.onError(SerializedSubscriber.java:124)
+		at reactor.core.publisher.FluxRetryWhen$RetryWhenMainSubscriber.whenError(FluxRetryWhen.java:228)
+		at reactor.core.publisher.FluxRetryWhen$RetryWhenOtherSubscriber.onError(FluxRetryWhen.java:278)
+		at reactor.core.publisher.FluxContextWrite$ContextWriteSubscriber.onError(FluxContextWrite.java:121)
+		at reactor.core.publisher.FluxConcatMapNoPrefetch$FluxConcatMapNoPrefetchSubscriber.maybeOnError(FluxConcatMapNoPrefetch.java:326)
+		at reactor.core.publisher.FluxConcatMapNoPrefetch$FluxConcatMapNoPrefetchSubscriber.onNext(FluxConcatMapNoPrefetch.java:211)
+		at reactor.core.publisher.FluxContextWrite$ContextWriteSubscriber.onNext(FluxContextWrite.java:107)
+		at reactor.core.publisher.SinkManyEmitterProcessor.drain(SinkManyEmitterProcessor.java:476)
+		at reactor.core.publisher.SinkManyEmitterProcessor$EmitterInner.drainParent(SinkManyEmitterProcessor.java:620)
+		at reactor.core.publisher.FluxPublish$PubSubInner.request(FluxPublish.java:874)
+		at reactor.core.publisher.FluxContextWrite$ContextWriteSubscriber.request(FluxContextWrite.java:136)
+		at reactor.core.publisher.FluxConcatMapNoPrefetch$FluxConcatMapNoPrefetchSubscriber.request(FluxConcatMapNoPrefetch.java:336)
+		at reactor.core.publisher.FluxContextWrite$ContextWriteSubscriber.request(FluxContextWrite.java:136)
+		at reactor.core.publisher.Operators$DeferredSubscription.request(Operators.java:1743)
+		at reactor.core.publisher.FluxRetryWhen$RetryWhenMainSubscriber.onError(FluxRetryWhen.java:195)
+		at reactor.core.publisher.MonoCreate$DefaultMonoSink.error(MonoCreate.java:205)
+		at reactor.netty.http.client.HttpClientConnect$MonoHttpConnect$ClientTransportSubscriber.onError(HttpClientConnect.java:311)
+		at reactor.core.publisher.MonoCreate$DefaultMonoSink.error(MonoCreate.java:205)
+		at reactor.netty.resources.DefaultPooledConnectionProvider$DisposableAcquire.onError(DefaultPooledConnectionProvider.java:162)
+		at reactor.netty.internal.shaded.reactor.pool.AbstractPool$Borrower.fail(AbstractPool.java:475)
+		at reactor.netty.internal.shaded.reactor.pool.SimpleDequePool.lambda$drainLoop$9(SimpleDequePool.java:433)
+		at reactor.core.publisher.FluxDoOnEach$DoOnEachSubscriber.onError(FluxDoOnEach.java:186)
+		at reactor.core.publisher.MonoCreate$DefaultMonoSink.error(MonoCreate.java:205)
+		at reactor.netty.resources.DefaultPooledConnectionProvider$PooledConnectionAllocator$PooledConnectionInitializer.onError(DefaultPooledConnectionProvider.java:560)
+		at reactor.core.publisher.MonoFlatMap$FlatMapMain.secondError(MonoFlatMap.java:241)
+		at reactor.core.publisher.MonoFlatMap$FlatMapInner.onError(MonoFlatMap.java:315)
+		at reactor.core.publisher.FluxOnErrorResume$ResumeSubscriber.onError(FluxOnErrorResume.java:106)
+		at org.springframework.security.config.annotation.web.configuration.SecurityReactorContextConfiguration$SecurityReactorContextSubscriber.onError(SecurityReactorContextConfiguration.java:191)
+		at reactor.core.publisher.Operators.error(Operators.java:198)
+		at reactor.core.publisher.MonoError.subscribe(MonoError.java:53)
+		at reactor.core.publisher.Mono.subscribe(Mono.java:4512)
+		at reactor.core.publisher.FluxOnErrorResume$ResumeSubscriber.onError(FluxOnErrorResume.java:103)
+		at reactor.netty.transport.TransportConnector$MonoChannelPromise.tryFailure(TransportConnector.java:576)
+		at reactor.netty.transport.TransportConnector$MonoChannelPromise.setFailure(TransportConnector.java:522)
+		at reactor.netty.transport.TransportConnector.lambda$doConnect$7(TransportConnector.java:261)
+		at io.netty.util.concurrent.DefaultPromise.notifyListener0(DefaultPromise.java:590)
+		at io.netty.util.concurrent.DefaultPromise.notifyListeners0(DefaultPromise.java:583)
+		at io.netty.util.concurrent.DefaultPromise.notifyListenersNow(DefaultPromise.java:559)
+		at io.netty.util.concurrent.DefaultPromise.notifyListeners(DefaultPromise.java:492)
+		at io.netty.util.concurrent.DefaultPromise.setValue0(DefaultPromise.java:636)
+		at io.netty.util.concurrent.DefaultPromise.setFailure0(DefaultPromise.java:629)
+		at io.netty.util.concurrent.DefaultPromise.tryFailure(DefaultPromise.java:118)
+		at io.netty.channel.nio.AbstractNioChannel$AbstractNioUnsafe.fulfillConnectPromise(AbstractNioChannel.java:321)
+		at io.netty.channel.nio.AbstractNioChannel$AbstractNioUnsafe.finishConnect(AbstractNioChannel.java:337)
+		at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:776)
+		at io.netty.channel.nio.NioEventLoop.processSelectedKeysOptimized(NioEventLoop.java:724)
+		at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:650)
+		at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:562)
+		at io.netty.util.concurrent.SingleThreadEventExecutor$4.run(SingleThreadEventExecutor.java:997)
+		at io.netty.util.internal.ThreadExecutorMap$2.run(ThreadExecutorMap.java:74)
+		at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
+		at java.base/java.lang.Thread.run(Thread.java:840)
+Caused by: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: getsockopt: localhost/127.0.0.1:9411
+Caused by: java.net.ConnectException: Connection refused: getsockopt
+	at java.base/sun.nio.ch.Net.pollConnect(Native Method)
+	at java.base/sun.nio.ch.Net.pollConnectNow(Net.java:672)
+	at java.base/sun.nio.ch.SocketChannelImpl.finishConnect(SocketChannelImpl.java:946)
+	at io.netty.channel.socket.nio.NioSocketChannel.doFinishConnect(NioSocketChannel.java:337)
+	at io.netty.channel.nio.AbstractNioChannel$AbstractNioUnsafe.finishConnect(AbstractNioChannel.java:334)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:776)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeysOptimized(NioEventLoop.java:724)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:650)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:562)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$4.run(SingleThreadEventExecutor.java:997)
+	at io.netty.util.internal.ThreadExecutorMap$2.run(ThreadExecutorMap.java:74)
+	at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+
