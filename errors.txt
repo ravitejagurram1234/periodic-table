@@ -13,3 +13,15 @@ $full = (Resolve-Path $path).Path
 [System.IO.File]::WriteAllText($full, $wsdl, (New-Object System.Text.UTF8Encoding($false)))
 
 Write-Host "Trim done."
+
+PS C:\Users\rgurram062722\Documents\GitHub\engine service repo\quark-engine> $path = "src\main\resources\wsdl\RequestService.wsdl"
+PS C:\Users\rgurram062722\Documents\GitHub\engine service repo\quark-engine> $wsdl = Get-Content $path -Raw                       
+PS C:\Users\rgurram062722\Documents\GitHub\engine service repo\quark-engine> $wsdl = [regex]::Replace($wsdl,'<wsdl:binding name="RequestServiceSoap12Binding".*?(?=wsdl:binding name="RequestServiceHttpSoap11Binding")', '', 'Singleline')                                                                                                                                                                                                                               
+PS C:\Users\rgurram062722\Documents\GitHub\engine service repo\quark-engine> $wsdl = [regex]::Replace($wsdl, '<wsdl:port name="RequestServiceHttpEndpoint".*?(?=<wsdl:port name="RequestServiceHttpSoap11Endpoint")', '', 'Singleline')
+PS C:\Users\rgurram062722\Documents\GitHub\engine service repo\quark-engine> $full = (Resolve-Path $path).Path [System.IO.File]::WriteAllText($full, $wsdl, (New-Object System.Text.UTF8Encoding($false)))
+At line:1 char:35
++ ... ll = (Resolve-Path $path).Path [System.IO.File]::WriteAllText($full,  ...
++                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Unexpected token '[System.IO.File]::WriteAllText' in expression or statement.
+    + CategoryInfo          : ParserError: (:) [], ParentContainsErrorRecordException
+    + FullyQualifiedErrorId : UnexpectedToken
