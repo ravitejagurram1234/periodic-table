@@ -24,3 +24,43 @@ RequestServiceSoap11BindingStub.java
 
 
 PS C:\Users\rgurram062722\Documents\GitHub\engine service repo\quark-engine> 
+PS C:\Users\rgurram062722\Documents\GitHub\engine service repo\quark-engine> Get-ChildItem "src\main\java\com\socgen\sgs\api\quark\engine\integration\soap\generated" | Where-Object { $_.Name -match "Locator|Service|Stub|PortType|RequestService|SoapBinding" } | Select-Object Name                                                                                                                                                                                   
+
+Name                                
+----                                
+RequestService.java                 
+RequestServiceLocator.java          
+RequestServicePortType.java         
+RequestServiceSoap11BindingStub.java
+
+
+PS C:\Users\rgurram062722\Documents\GitHub\engine service repo\quark-engine> Select-String -Path "src\main\java\com\socgen\sgs\api\quark\engine\integration\soap\generated\RequestServiceLocator.java" -Pattern "public .*get.*\("
+
+src\main\java\com\socgen\sgs\api\quark\engine\integration\soap\generated\RequestServiceLocator.java:27:    public java.lang.String getRequestServiceHttpSoap11EndpointAddress() {
+src\main\java\com\socgen\sgs\api\quark\engine\integration\soap\generated\RequestServiceLocator.java:34:    public java.lang.String getRequestServiceHttpSoap11EndpointWSDDServiceName() {
+src\main\java\com\socgen\sgs\api\quark\engine\integration\soap\generated\RequestServiceLocator.java:42:    public com.socgen.sgs.api.quark.engine.integration.soap.generated.RequestServicePortType 
+getRequestServiceHttpSoap11Endpoint() throws javax.xml.rpc.ServiceException {
+src\main\java\com\socgen\sgs\api\quark\engine\integration\soap\generated\RequestServiceLocator.java:53:    public com.socgen.sgs.api.quark.engine.integration.soap.generated.RequestServicePortType 
+getRequestServiceHttpSoap11Endpoint(java.net.URL portAddress) throws javax.xml.rpc.ServiceException {
+src\main\java\com\socgen\sgs\api\quark\engine\integration\soap\generated\RequestServiceLocator.java:73:    public java.rmi.Remote getPort(Class serviceEndpointInterface) throws javax.xml.rpc.ServiceException {
+src\main\java\com\socgen\sgs\api\quark\engine\integration\soap\generated\RequestServiceLocator.java:92:    public java.rmi.Remote getPort(javax.xml.namespace.QName portName, Class serviceEndpointInterface) throws 
+javax.xml.rpc.ServiceException {
+src\main\java\com\socgen\sgs\api\quark\engine\integration\soap\generated\RequestServiceLocator.java:107:    public javax.xml.namespace.QName getServiceName() {
+src\main\java\com\socgen\sgs\api\quark\engine\integration\soap\generated\RequestServiceLocator.java:113:    public java.util.Iterator getPorts() {
+
+
+PS C:\Users\rgurram062722\Documents\GitHub\engine service repo\quark-engine> Select-String -Path "src\main\java\com\socgen\sgs\api\quark\engine\integration\soap\generated\RequestServicePortType.java" -Pattern "processRequest|getXPressDOM"
+
+src\main\java\com\socgen\sgs\api\quark\engine\integration\soap\generated\RequestServicePortType.java:12:    public com.socgen.sgs.api.quark.engine.integration.soap.generated.QContentData 
+processRequest(com.socgen.sgs.api.quark.engine.integration.soap.generated.QRequestContext param0) throws java.rmi.RemoteException, com.socgen.sgs.api.quark.engine.integration.soap.generated.QException;
+src\main\java\com\socgen\sgs\api\quark\engine\integration\soap\generated\RequestServicePortType.java:14:    public com.socgen.sgs.api.quark.engine.integration.soap.generated.Project getXPressDOMFromXML(java.lang.String param0) 
+throws java.rmi.RemoteException, com.socgen.sgs.api.quark.engine.integration.soap.generated.QException;
+src\main\java\com\socgen\sgs\api\quark\engine\integration\soap\generated\RequestServicePortType.java:15:    public com.socgen.sgs.api.quark.engine.integration.soap.generated.Project getXPressDOM(java.lang.String param0) throws 
+java.rmi.RemoteException, com.socgen.sgs.api.quark.engine.integration.soap.generated.QException;
+src\main\java\com\socgen\sgs\api\quark\engine\integration\soap\generated\RequestServicePortType.java:17:    public com.socgen.sgs.api.quark.engine.integration.soap.generated.QContentData 
+processRequestEx(com.socgen.sgs.api.quark.engine.integration.soap.generated.QRequestContext param0, java.lang.String param1) throws java.rmi.RemoteException, com.socgen.sgs.api.quark.engine.integration.soap.generated.QException;
+src\main\java\com\socgen\sgs\api\quark\engine\integration\soap\generated\RequestServicePortType.java:27:    public com.socgen.sgs.api.quark.engine.integration.soap.generated.Project getXPressDOMEx(java.lang.String param0, 
+com.socgen.sgs.api.quark.engine.integration.soap.generated.QXPressDOMOptions param1) throws java.rmi.RemoteException, com.socgen.sgs.api.quark.engine.integration.soap.generated.QException;
+
+
+PS C:\Users\rgurram062722\Documents\GitHub\engine service repo\quark-engine> 
