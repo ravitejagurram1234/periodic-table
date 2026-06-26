@@ -1,36 +1,13 @@
-C:\Users\rgurram062722\bin\idea-IU-26.1\plugins\maven\lib\maven3\bin\mvn.cmd -Didea.version=2026.1 -Dmaven.ext.class.path=C:\Users\rgurram062722\bin\idea-IU-26.1\plugins\maven\lib\intellij.maven.rt\maven-event-listener.jar -Djansi.passthrough=true -Dstyle.color=always -s C:\Users\rgurram062722\.m2\Settings.xml -Dmaven.repo.local=C:\Users\rgurram062722\.m2\repository clean generate-sources -f pom.xml
-[INFO] Scanning for projects...
-[INFO] 
-[INFO] --------------< com.socgen.sgs.api:quark-engine-service >---------------
-[INFO] Building quark-batch-job REST API 1.0.0-SNAPSHOT
-[INFO]   from pom.xml
-[INFO] --------------------------------[ jar ]---------------------------------
-[INFO] 
-[INFO] --- clean:3.2.0:clean (default-clean) @ quark-engine-service ---
-[INFO] Deleting C:\Users\rgurram062722\Documents\GitHub\engine service repo\quark-engine\target
-[INFO] 
-[INFO] --- build-helper:3.4.0:parse-version (parse-version) @ quark-engine-service ---
-[INFO] 
-[INFO] --- jacoco:0.8.8:prepare-agent (agent-for-ut) @ quark-engine-service ---
-[INFO] argLine set to "-javaagent:C:\\Users\\rgurram062722\\.m2\\repository\\org\\jacoco\\org.jacoco.agent\\0.8.8\\org.jacoco.agent-0.8.8-runtime.jar=destfile=C:\\Users\\rgurram062722\\Documents\\GitHub\\engine service repo\\quark-engine\\target\\jacoco.exec"
-[INFO] 
-[INFO] --- git-commit-id:6.0.0:revision (get-the-git-infos) @ quark-engine-service ---
-[INFO] 
-[INFO] --- jaxb2:0.15.3:generate (default) @ quark-engine-service ---
-[WARNING] No schemas to compile. Skipping XJC execution. 
-[INFO] 
-[INFO] --- build-helper:3.4.0:add-source (add-source) @ quark-engine-service ---
-[INFO] Source directory: C:\Users\rgurram062722\Documents\GitHub\engine service repo\quark-engine\target\generated-sources\xjc added.
-[INFO] Source directory: C:\Users\rgurram062722\Documents\GitHub\engine service repo\quark-engine\target\generated-sources\openapi\src\main\java added.
-[INFO] 
-[INFO] --- axistools:1.4:wsdl2java (generate-qxpsmsdk) @ quark-engine-service ---
-[INFO] about to add compile source root
-[INFO] Processing wsdl: C:\Users\rgurram062722\Documents\GitHub\engine service repo\quark-engine\src\main\resources\wsdl\RequestService.wsdl
-log4j:WARN No appenders could be found for logger (org.apache.axis.i18n.ProjectResourceBundle).
-log4j:WARN Please initialize the log4j system properly.
-[INFO] ------------------------------------------------------------------------
-[INFO] BUILD SUCCESS
-[INFO] ------------------------------------------------------------------------
-[INFO] Total time:  16.870 s
-[INFO] Finished at: 2026-06-26T09:40:25+05:30
-[INFO] ------------------------------------------------------------------------
+Get-ChildItem "src\main\java\com\socgen\sgs\api\quark\engine\integration\soap\generated" | Where-Object { $_.Name -match "Locator|Service|Stub|PortType|RequestService|SoapBinding" } | Select-Object Name
+
+Paste that list. I specifically need the names for:
+- the locator (predicted RequestServiceLocator),
+- the port interface (predicted RequestServicePortType),
+- the stub (predicted RequestServiceSoap11BindingStub),
+
+and I'll also want to confirm the locator's port-getter method. Once I see the list, run this to grab the method signatures:
+
+Select-String -Path "src\main\java\com\socgen\sgs\api\quark\engine\integration\soap\generated\RequestServiceLocator.java" -Pattern "public .*get.*\("
+Select-String -Path "src\main\java\com\socgen\sgs\api\quark\engine\integration\soap\generated\RequestServicePortType.java" -Pattern "processRequest|getXPressDOM"
+
+(If the file names differ from the predictions, just adjust the paths in those two commands to match what the Get-ChildItem list shows.)
