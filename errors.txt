@@ -11,3 +11,16 @@ Select-String -Path "src\main\java\com\socgen\sgs\api\quark\engine\integration\s
 Select-String -Path "src\main\java\com\socgen\sgs\api\quark\engine\integration\soap\generated\RequestServicePortType.java" -Pattern "processRequest|getXPressDOM"
 
 (If the file names differ from the predictions, just adjust the paths in those two commands to match what the Get-ChildItem list shows.)
+
+
+PS C:\Users\rgurram062722\Documents\GitHub\engine service repo\quark-engine> Get-ChildItem "src\main\java\com\socgen\sgs\api\quark\engine\integration\soap\generated" | Where-Object { $_.Name -match "Locator|Service|Stub|PortType|RequestService|SoapBinding" } | Select-Object Name                                                                                                                                                                                   
+
+Name                                
+----                                
+RequestService.java                 
+RequestServiceLocator.java          
+RequestServicePortType.java         
+RequestServiceSoap11BindingStub.java
+
+
+PS C:\Users\rgurram062722\Documents\GitHub\engine service repo\quark-engine> 
