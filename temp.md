@@ -1,230 +1,248 @@
-# EOS Quark — QXPSM SOAP fix: disable Axis multi-ref (+ temp wire debug)
+# EOS Quark — QXPSM SOAP Fix (Wrong WSDL + Endpoint Env Mismatch)
 
-Next step after the buffer fix. The live run now reaches the **QXPSM SOAP update step** and fails there:
-```
-AxisFault: namespace mismatch require http://com.quark.qxpsm found http://webservice.manager.quark.com
-```
-
-## Diagnosis (why)
-- Namespace **and** endpoint match the **working .NET** client exactly:
-  `http://webservice.manager.quark.com` + `…:8090/qxpsm/services/RequestService`.
-- `http://com.quark.qxpsm` is in **none** of our WSDL / stub / config — it appears only in the server's
-  **fault response** at runtime. So the **server is faulting on our request**, and Axis then chokes parsing
-  that fault.
-- The request is a chained object graph (`RequestParameters → Modifier → SaveAs → QXPRender`, linked via
-  `QRequestContext.request`). **Axis 1.x defaults to SOAP multi-reference encoding** (`id=`/`href=` pointers);
-  **.NET inlines** everything. Quark's server expects the inlined form and rejects Axis's multi-ref XML.
-  → Same namespace, same endpoint, only the request *shape* differs. Classic Axis↔.NET RPC/encoded break.
-
-> Environment note: the legacy .NET client and Quark run on the **same Windows host**; this Java app runs
-> locally (and later in the cloud). This issue is **serialization-level**, independent of where the client
-> runs — the fix carries to the cloud unchanged.
+**Date:** 2026-06-26
+**Supersedes:** `EOS_Quark_QxpsmSoap_MultiRef_Fix.md` (the multi-ref hypothesis is now disproven — see below).
+**Blocker fixed:** `AxisFault: namespace mismatch require http://com.quark.qxpsm found http://webservice.manager.quark.com`
 
 ---
 
-## STEP 1 — Confirm with a temporary wire log (yaml only; delete afterwards)
+## 1. Root cause (decisive — from the live WSDL)
 
-Add to your active profile yaml (e.g. `src/main/config/local/application.yaml` or `application.yaml`):
+We fetched the **live** server WSDL:
+
+```
+http://srvcldqxpu001.dns43.socgen:8090/qxpsm/services/RequestService?wsdl
+```
+
+and compared it to the WSDL our stub is generated from
+(`src/main/resources/wsdl/qxpsmsdk.wsdl`):
+
+| Aspect | Repo `qxpsmsdk.wsdl` (current) | **Live deployed server** |
+|---|---|---|
+| SOAP stack | Apache **Axis 1.x** | Apache **Axis 2** |
+| Style / use | **RPC / encoded** | **document / literal** |
+| Target namespace | `http://webservice.manager.quark.com` | **`http://com.quark.qxpsm`** |
+| Types namespace | `http://ro.clientsdk.manager.quark.com` | `http://com.quark.qxpsm` |
+| Service name | `QManagerSDKSvcService` | `RequestService` |
+| Port name | `qxpsmsdk` | `RequestServiceHttpSoap11Endpoint` (+ Soap12, Http) |
+| PortType | `QManagerSDKSvc` | `RequestServicePortType` |
+| Binding | `qxpsmsdkSoapBinding` | `RequestServiceSoap11Binding` |
+
+**Conclusion:** our generated stub talks the wrong dialect on *every* axis — wrong
+operation namespace **and** wrong encoding style. The Axis2 server's
+`RPCUtil.invokeServiceClass` reads our operation wrapper
+`<processRequest xmlns="http://webservice.manager.quark.com">` and rejects it because
+the deployed service namespace is `http://com.quark.qxpsm`.
+
+> **The multi-ref disable (Step 2) is irrelevant.** SOAP multi-reference (`href`/`id`)
+> only exists in **RPC/encoded**. The live server is **document/literal**, which never
+> uses multi-ref. That earlier change should be **removed**, not kept.
+
+**Why .NET still works:** the deployed .NET runs co-located and points at its own
+QXPSM instance with the old namespace. The endpoint our Java targets is a newer Axis2
+QXPSM. The repo WSDL matches the *old* server, not the one we call.
+
+The good news: the **data model is unchanged**. The live WSDL contains the same types
+we already use — `QRequestContext`, `RequestParameters`, `NameValueParam`,
+`ModifierRequest`, `SaveAsRequest`, `QuarkXPressRenderRequest`, `Project`,
+`QContentData` — with the same fields. So once we regenerate, `QxpsmSoapClient`'s
+request-chain logic stays the same; only the **locator / port / stub class names**
+change.
+
+---
+
+## 2. Second problem — endpoint environment mismatch (must also fix)
+
+Hostnames (confirmed by you): `srvcldqxpu001` = **UAT**, `srvcldvapd001` = **DEV**.
+
+Current `application.yaml`:
+
+| Property | Host | Env |
+|---|---|---|
+| `qxps.server.url` | `http://srvcldvapd001.dns43.socgen:8080` | **DEV** |
+| `qxpsm.soap.endpoint` | `http://srvcldqxpu001.dns43.socgen:8090/...` | **UAT** |
+
+QXPS (HTTP) **adds the gabarit to DEV's document pool**, then QXPSM (SOAP) tries to
+**modify it on UAT** — where the file does not exist. The two services for a single run
+must live on the **same Quark host**. QXPS Server (`:8080`) and QXPSM Manager (`:8090`)
+are two ports of the **same** Quark deployment.
+
+**Fix:** point `qxpsm.soap.endpoint` at the **same host** as `qxps.server.url`
+(DEV `srvcldvapd001:8090`). Then **regenerate the stub from that host's WSDL**
+(`http://srvcldvapd001.dns43.socgen:8090/qxpsm/services/RequestService?wsdl`) and
+confirm it is the same `document/literal` + `com.quark.qxpsm` shape (it should be —
+same Quark version across envs).
+
+> Pick **one** environment end-to-end. Simplest for your current run (509636, already
+> pooling on DEV): make **both** DEV.
+
+---
+
+## 3. Fix — step by step
+
+### Step 1 — Add the live WSDL to the repo (byte-exact)
+
+Do **not** hand-copy the WSDL — `wsdl2java` needs the exact bytes. Fetch it raw from the
+environment you will actually target (DEV, to match QXPS):
+
+```bash
+curl -s "http://srvcldvapd001.dns43.socgen:8090/qxpsm/services/RequestService?wsdl" \
+  -o src/main/resources/wsdl/RequestService.wsdl
+```
+
+(If DEV's QXPSM is unreachable, use the UAT URL you already opened — but then also point
+the endpoint in Step 4 at UAT so both match.)
+
+Quick sanity check on the saved file:
+
+```bash
+grep -m1 'targetNamespace' src/main/resources/wsdl/RequestService.wsdl   # → http://com.quark.qxpsm
+grep -m1 'soap:binding'    src/main/resources/wsdl/RequestService.wsdl   # → style="document"
+```
+
+### Step 2 — Point the build at the new WSDL
+
+In `pom.xml`, the `axistools-maven-plugin` config:
+
+```xml
+<sourceDirectory>${project.basedir}/src/main/resources/wsdl</sourceDirectory>
+<wsdlFiles>
+    <wsdlFile>RequestService.wsdl</wsdlFile>   <!-- was: qxpsmsdk.wsdl -->
+</wsdlFiles>
+```
+
+Also update the stale comment above the plugin:
+`Generate Java classes from the QXPSM WSDL (document/literal, Axis2 server)` —
+(was "RPC/encoded style").
+
+> The `<dependencies>` on `org.apache.axis:axis*` (1.x) stay. Axis 1.x can consume a
+> wrapped document/literal WSDL and will generate a synchronous client stub. It ignores
+> the `soap12` binding and the `wsaw:Action` (WS-Addressing) attributes.
+
+### Step 3 — Delete the old generated stub so it regenerates clean
+
+The plugin writes **into `src/main/java`** (the generated classes are committed). The old
+classes use the wrong namespace and old service names; they must be removed or they'll
+linger as stale/dead source:
+
+```bash
+rm -rf src/main/java/com/socgen/sgs/api/quark/engine/integration/soap/generated/
+```
+
+Then a clean build regenerates the full set from `RequestService.wsdl`:
+
+```bash
+mvn clean install
+```
+
+> If `wsdl2java` errors on the `soap12` binding or the three-port service, trim the saved
+> WSDL to just the SOAP 1.1 parts: keep `RequestServiceSoap11Binding` and the
+> `RequestServiceHttpSoap11Endpoint` port; delete the `<wsdl:binding ...Soap12Binding>`,
+> `<wsdl:binding ...HttpBinding>` blocks and their two `<wsdl:port>` entries in
+> `<wsdl:service>`. The `<wsdl:types>` and `RequestServicePortType` stay untouched.
+
+### Step 4 — Fix the endpoint env mismatch (`application.yaml`)
+
 ```yaml
-logging:
-  level:
-    # TEMP-DEBUG-RT: dump the raw SOAP request + response/fault to confirm multi-ref. REMOVE after diagnosis.
-    org.apache.axis.transport.http: DEBUG
+qxpsm:
+  soap:
+    # Same Quark host as qxps.server.url (DEV). QXPS Server :8080 and QXPSM Manager :8090
+    # are the same deployment — they MUST point at the same host so the pooled document
+    # is visible to the SOAP modify call.
+    endpoint: http://srvcldvapd001.dns43.socgen:8090/qxpsm/services/RequestService
+    timeout: 7200000
+    max-retries: 0
 ```
-Re-run `runId 509636` and inspect the **outgoing** SOAP request in the console:
-- If you see attributes like `href="#id0"` and elements carrying `id="id0"` → **multi-ref confirmed** (apply Step 2).
-- You'll also see the server's real fault text, in case it's something else.
 
-*(Tip: if console DEBUG is too noisy or the envelope isn't clearly printed, run `org.apache.axis.utils.tcpmon`
-or Fiddler as a local proxy to capture the exact request/response XML.)*
+(If you instead standardise on UAT, set **both** `qxps.server.url` → `srvcldqxpu001:8080`
+**and** `qxpsm.soap.endpoint` → `srvcldqxpu001:8090`, and regenerate from the UAT WSDL.)
 
----
+### Step 5 — Update `QxpsmSoapClient` to the new generated names
 
-## STEP 2 — The fix: disable Axis multi-ref (one statement in `QxpsmSoapClient`)
+The class names change with the new WSDL. Replace the locator/stub lookups and **remove
+the multi-ref line**. Predicted Axis 1.x names (verify against the freshly generated
+`integration/soap/generated/` after Step 3 — adjust if they differ):
 
-Right after the stub is created in `executeStep(...)`:
+| Old (rpc/encoded) | New (doc/literal) |
+|---|---|
+| `QManagerSDKSvcServiceLocator` | `RequestServiceLocator` |
+| `QManagerSDKSvc` | `RequestServicePortType` |
+| `locator.getqxpsmsdk(url)` | `locator.getRequestServiceHttpSoap11Endpoint(url)` |
+
+**`executeStep(...)`** — replace lines 52–61:
+
 ```java
-QManagerSDKSvc stub = locator.getqxpsmsdk(new URL(qxpsmProperties.getEndpoint()));
+            // Get the Axis-generated stub (regenerated from the live document/literal WSDL).
+            RequestServiceLocator locator = new RequestServiceLocator();
+            RequestServicePortType stub =
+                    locator.getRequestServiceHttpSoap11Endpoint(new URL(qxpsmProperties.getEndpoint()));
 
-// Axis 1.x defaults to SOAP multi-reference encoding (id=/href=) for object graphs, which the QuarkXPress
-// Manager server rejects (it expects values inlined). Disable multi-ref to match the legacy client.
-((org.apache.axis.client.Stub) stub)._setProperty(
-        org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
+            // NOTE: the deployed QXPSM is document/literal (Axis2). It does NOT use SOAP
+            // multi-reference encoding, so no PROP_DOMULTIREFS handling is needed here.
 ```
-`QxpsmsdkSoapBindingStub extends org.apache.axis.client.Stub`, so the cast is safe. Fully-qualified names are
-used so no new imports are needed.
 
-### Full file — `infra/interop/qxpsm/QxpsmSoapClient.java`
+**`getProject(...)`** — replace lines 140–142:
+
 ```java
-package com.socgen.sgs.api.quark.engine.infra.interop.qxpsm;
-
-import com.socgen.sgs.api.quark.engine.integration.soap.generated.*;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
-
-import java.net.URL;
-import java.util.List;
-
-/**
- * SOAP client for communicating with QuarkXPress Server Manager (QXPSM).
- * Uses the Axis 1.x generated stub to call processRequest.
- *
- * <p>Used for UPDATE steps (directCall=false) where text value changes
- * and structural modifications are sent via SOAP.
- *
- * <p>Request chain built inside QRequestContext:
- * RequestParameters → ModifierRequest → SaveAsRequest → QuarkXPressRenderRequest
- * (each linked via the inherited QRequest.request field)
- *
- * Cross-reference: .NET QXPSM_Call.SDKCall() / QXPS_Caller.Execute()
- */
-@Component
-@Slf4j
-public class QxpsmSoapClient {
-
-    private final QxpsmProperties qxpsmProperties;
-
-    public QxpsmSoapClient(QxpsmProperties qxpsmProperties) {
-        this.qxpsmProperties = qxpsmProperties;
-    }
-
-    /**
-     * Execute a complete step via SOAP using the Axis-generated stub.
-     * Builds the QRequest chain and calls processRequest on the QXPSM web service.
-     *
-     * @param documentName  the current document name in the pool
-     * @param nameValues    name-value params to set (may be null or empty)
-     * @param project       modification project (may be null if no structural changes)
-     * @param saveAsPath    path for saving (e.g., pool absolute path)
-     * @param saveAsName    new file name for the saved document
-     * @return QContentData response containing streamValue (QXP binary) and/or textData
-     */
-    public QContentData executeStep(String documentName,
-                                    List<NameValueParam> nameValues,
-                                    Project project,
-                                    String saveAsPath,
-                                    String saveAsName) {
-        log.info("QXPSM SOAP processRequest for document [{}]", documentName);
-
-        try {
-            // Get the Axis-generated stub
-            QManagerSDKSvcServiceLocator locator = new QManagerSDKSvcServiceLocator();
-            QManagerSDKSvc stub = locator.getqxpsmsdk(new URL(qxpsmProperties.getEndpoint()));
-
-            // The request is an object graph (RequestParameters -> Modifier -> SaveAs -> QXPRender chained via
-            // QRequestContext.request). Axis 1.x defaults to SOAP multi-reference encoding (id=/href= pointers),
-            // which the QuarkXPress Manager server does not accept (it expects the values inlined). Disable
-            // multi-ref so the request is serialized inline, matching the request the legacy client sends.
-            ((org.apache.axis.client.Stub) stub)._setProperty(
-                    org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
-
-            // Build the request chain (last → first, then link)
-            // 4. QXP Render (last in chain)
-            QuarkXPressRenderRequest qxpRender = new QuarkXPressRenderRequest();
-
-            // 3. SaveAs → chains to QXP Render
-            SaveAsRequest saveAs = new SaveAsRequest();
-            saveAs.setNewFilePath(saveAsPath);
-            saveAs.setNewName(saveAsName);
-            saveAs.setReplaceFile("true");
-            saveAs.setSaveToPool("false");
-            saveAs.setRequest(qxpRender);
-
-            // 2. Modifier → chains to SaveAs (only if project has modifications)
-            QRequest currentHead = saveAs;
-            if (project != null && project.getLayouts() != null && project.getLayouts().length > 0) {
-                ModifierRequest modifier = new ModifierRequest();
-                modifier.setProject(project);
-                modifier.setRequest(saveAs);
-                currentHead = modifier;
-            }
-
-            // 1. RequestParameters → chains to Modifier or SaveAs (only if there are name-values)
-            if (nameValues != null && !nameValues.isEmpty()) {
-                RequestParameters params = new RequestParameters();
-                params.setParams(nameValues.toArray(new NameValueParam[0]));
-                params.setRequest(currentHead);
-                currentHead = params;
-            }
-
-            // Build QRequestContext — set the same fields as .NET QXPSM_Call.InitContext.
-            QRequestContext context = new QRequestContext();
-            context.setDocumentName(documentName);
-            context.setRequest(currentHead);
-            // .NET QXPS_Call_Info defaults (set explicitly to document intent / match the wire).
-            context.setResponseAsURL(false);
-            context.setUseCache(false);
-            context.setBypassFileInfo(false);
-            // .NET leaves credentials as string.Empty (serialized as empty elements, not nil). Finding #66.
-            context.setUserName("");
-            context.setUserPassword("");
-            // .NET does not set MaxRetries at runtime — leave the SDK default unless explicitly configured
-            // (>0). Finding #33.
-            if (qxpsmProperties.getMaxRetries() > 0) {
-                context.setMaxRetries(qxpsmProperties.getMaxRetries());
-            }
-            // .NET: if no timeout is configured, use 3600s (1h) instead of the SOAP default of 100s.
-            int timeout = qxpsmProperties.getTimeout();
-            context.setRequestTimeout(timeout > 0 ? timeout : 3600 * 1000);
-
-            // Execute SOAP call
-            log.debug("QXPSM calling processRequest with chain: {} → ... → QXPRender",
-                    currentHead.getClass().getSimpleName());
-
-            QContentData result = stub.processRequest(context);
-
-            log.info("QXPSM processRequest completed for document [{}]", documentName);
-            return result;
-
-        } catch (Exception e) {
-            log.error("QXPSM SOAP call failed for document [{}]: {}", documentName, e.getMessage(), e);
-            throw new RuntimeException("QXPSM SOAP call failed for document: " + documentName, e);
-        }
-    }
-
-    /**
-     * Fetch the QuarkXPress DOM (Project) of a pooled document via getXPressDOM.
-     * Used to read a child run's generated QXP structure for compartiment incorporation.
-     *
-     * <p>Cross-reference: .NET QXPS_File_Manager.Get_Project / Document.QXPProject.
-     * NOTE: this is a live QuarkXPress Server Manager call — must be validated against a running server.
-     *
-     * @param documentName the pool path / document name of the saved QXP
-     * @return the QuarkXPress DOM as a SOAP Project
-     */
-    public Project getProject(String documentName) {
-        log.info("QXPSM getXPressDOM for document [{}]", documentName);
-        try {
-            QManagerSDKSvcServiceLocator locator = new QManagerSDKSvcServiceLocator();
-            QManagerSDKSvc stub = locator.getqxpsmsdk(new URL(qxpsmProperties.getEndpoint()));
+            RequestServiceLocator locator = new RequestServiceLocator();
+            RequestServicePortType stub =
+                    locator.getRequestServiceHttpSoap11Endpoint(new URL(qxpsmProperties.getEndpoint()));
             return stub.getXPressDOM(documentName);
-        } catch (Exception e) {
-            log.error("QXPSM getXPressDOM failed for document [{}]: {}", documentName, e.getMessage(), e);
-            throw new RuntimeException("QXPSM getXPressDOM failed for document: " + documentName, e);
-        }
-    }
-}
 ```
+
+Everything in between (the `RequestParameters → ModifierRequest → SaveAsRequest →
+QuarkXPressRenderRequest` chain and the `QRequestContext` field setters) is **unchanged**
+— those types exist with identical fields in the new WSDL.
+
+> **Method signatures to confirm post-regen:** for wrapped doc/literal, Axis 1.x usually
+> generates `QContentData processRequest(QRequestContext param0)` and
+> `Project getXPressDOM(String param0)` — matching today's calls. If the generated port
+> exposes a request/response *wrapper* type instead, tell me the exact signatures and
+> I'll adjust the chain code.
 
 ---
 
-## STEP 3 — Rebuild, re-run, verify, clean up
-1. `mvn clean install`
-2. Re-run a Plaquette `runId` (ideally one **with** SQL/System tasks so an update step fires).
-3. Expect the QXPSM `processRequest` to succeed (no `AxisFault`); the run should proceed to render/EndRun.
-4. **Remove the `TEMP-DEBUG-RT` logging block** from Step 1.
+## 4. Build & verify
 
-## If it still fails after Step 2 (fallback)
-The wire log decides the next move:
-- Multi-ref gone but server still faults → capture **.NET's** outgoing SOAP request (Fiddler/tcpmon on the
-  Windows host where .NET works) and **diff** it against the Java request. Likely secondary differences:
-  - `xsi:type` attributes — suppress with
-    `((org.apache.axis.client.Stub) stub)._setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);`
-  - empty vs nil elements (e.g. `userName`/`userPassword`), element ordering, or SOAP 1.1 vs 1.2.
-- Share the captured request + fault and I'll pinpoint the exact remaining difference.
+```bash
+mvn clean install
+```
 
-## Apply checklist
-- [ ] STEP 1: add `TEMP-DEBUG-RT` Axis DEBUG logging (yaml), re-run, confirm multi-ref in the request
-- [ ] STEP 2: `QxpsmSoapClient` multi-ref disable
-- [ ] `mvn clean install` + re-run + verify QXPSM succeeds
-- [ ] STEP 3: remove the temp logging block
+Then re-run **runId 509636** (Plaquette, DOCUMENT_COURANT). Expected progression past the
+previous blocker:
+
+1. QXPS `addfile` → pool `R_509636/` on **DEV** ✅ (already works)
+2. QXPS `/xml` fetch ✅ (already works — buffer fix in place)
+3. **QXPSM `processRequest`** → now accepted (correct namespace + same host as the pool)
+4. SaveAs in pool → render
+
+Keep the temporary `TEMP-DEBUG-RT` logging until the SOAP round-trip succeeds end-to-end;
+remove it afterward.
+
+---
+
+## 5. Files changed (for the air-gapped repo)
+
+| File | Change |
+|---|---|
+| `src/main/resources/wsdl/RequestService.wsdl` | **NEW** — raw live WSDL (curl, Step 1) |
+| `src/main/resources/wsdl/qxpsmsdk.wsdl` | delete (or leave unused) |
+| `src/main/java/.../integration/soap/generated/` | **deleted then regenerated** by the build |
+| `pom.xml` | `wsdlFile` → `RequestService.wsdl`; comment updated |
+| `application.yaml` | `qxpsm.soap.endpoint` → DEV host (`srvcldvapd001:8090`) |
+| `.../infra/interop/qxpsm/QxpsmSoapClient.java` | new locator/port/stub names; multi-ref line removed |
+
+---
+
+## 6. Open items / risks
+
+- **Axis 1.x ↔ Axis2 doc/literal:** generation is expected to work, but if `wsdl2java`
+  stumbles on the multi-binding service, trim the WSDL to the SOAP 1.1 port (Step 3 note).
+- **Generated names:** the table in Step 5 is predicted; confirm against the regenerated
+  sources and adjust `QxpsmSoapClient` if needed.
+- **DEV QXPSM availability:** confirm `srvcldvapd001:8090` answers `?wsdl`. If only UAT is
+  reachable, standardise both QXPS + QXPSM on UAT instead (Step 4 alternative).
+- **Long-term option:** the deployed service is plain SOAP 1.1 document/literal — a natural
+  fit for **JAX-WS / Apache CXF** (`wsimport`/`cxf-codegen`). That's cleaner than Axis 1.x
+  but a larger change; Axis-regen above is the minimal path that reuses existing code.
+```
