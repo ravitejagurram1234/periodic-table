@@ -1,43 +1,15 @@
-C:\Users\rgurram062722\bin\idea-IU-26.1\plugins\maven\lib\maven3\bin\mvn.cmd -Didea.version=2026.1 -Dmaven.ext.class.path=C:\Users\rgurram062722\bin\idea-IU-26.1\plugins\maven\lib\intellij.maven.rt\maven-event-listener.jar -Djansi.passthrough=true -Dstyle.color=always -s C:\Users\rgurram062722\.m2\Settings.xml -Dmaven.repo.local=C:\Users\rgurram062722\.m2\repository clean generate-sources -f pom.xml
-[INFO] Scanning for projects...
-[INFO] 
-[INFO] --------------< com.socgen.sgs.api:quark-engine-service >---------------
-[INFO] Building quark-batch-job REST API 1.0.0-SNAPSHOT
-[INFO]   from pom.xml
-[INFO] --------------------------------[ jar ]---------------------------------
-[INFO] 
-[INFO] --- clean:3.2.0:clean (default-clean) @ quark-engine-service ---
-[INFO] Deleting C:\Users\rgurram062722\Documents\GitHub\engine service repo\quark-engine\target
-[INFO] 
-[INFO] --- build-helper:3.4.0:parse-version (parse-version) @ quark-engine-service ---
-[INFO] 
-[INFO] --- jacoco:0.8.8:prepare-agent (agent-for-ut) @ quark-engine-service ---
-[INFO] argLine set to "-javaagent:C:\\Users\\rgurram062722\\.m2\\repository\\org\\jacoco\\org.jacoco.agent\\0.8.8\\org.jacoco.agent-0.8.8-runtime.jar=destfile=C:\\Users\\rgurram062722\\Documents\\GitHub\\engine service repo\\quark-engine\\target\\jacoco.exec"
-[INFO] 
-[INFO] --- git-commit-id:6.0.0:revision (get-the-git-infos) @ quark-engine-service ---
-[INFO] 
-[INFO] --- jaxb2:0.15.3:generate (default) @ quark-engine-service ---
-[WARNING] No schemas to compile. Skipping XJC execution. 
-[INFO] 
-[INFO] --- build-helper:3.4.0:add-source (add-source) @ quark-engine-service ---
-[INFO] Source directory: C:\Users\rgurram062722\Documents\GitHub\engine service repo\quark-engine\target\generated-sources\xjc added.
-[INFO] Source directory: C:\Users\rgurram062722\Documents\GitHub\engine service repo\quark-engine\target\generated-sources\openapi\src\main\java added.
-[INFO] 
-[INFO] --- axistools:1.4:wsdl2java (generate-qxpsmsdk) @ quark-engine-service ---
-[INFO] about to add compile source root
-[INFO] Processing wsdl: C:\Users\rgurram062722\Documents\GitHub\engine service repo\quark-engine\src\main\resources\wsdl\RequestService.wsdl
-log4j:WARN No appenders could be found for logger (org.apache.axis.i18n.ProjectResourceBundle).
-log4j:WARN Please initialize the log4j system properly.
-[INFO] ------------------------------------------------------------------------
-[INFO] BUILD FAILURE
-[INFO] ------------------------------------------------------------------------
-[INFO] Total time:  20.626 s
-[INFO] Finished at: 2026-06-26T09:01:22+05:30
-[INFO] ------------------------------------------------------------------------
-[ERROR] Failed to execute goal org.codehaus.mojo:axistools-maven-plugin:1.4:wsdl2java (generate-qxpsmsdk) on project quark-engine-service: Error generating Java code from WSDL.: Error running Axis: ERROR: Missing <soap:fault> element inFault "QException" in operation "QException", in binding getAppStudioConfig -> [Help 1]
-[ERROR] 
-[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
-[ERROR] Re-run Maven using the -X switch to enable full debug logging.
-[ERROR] 
-[ERROR] For more information about the errors and possible solutions, please read the following articles:
-[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoExecutionException
+# Remove the SOAP 1.2 + HTTP bindings
+$wsdl = [regex]::Replace($wsdl,
+    '<wsdl:binding name="RequestServiceSoap12Binding".*?(?=<wsdl:binding name="RequestServiceSoap11Binding")',
+    '', 'Singleline')
+
+# Remove the HTTP + SOAP 1.2 ports
+$wsdl = [regex]::Replace($wsdl,
+    '<wsdl:port name="RequestServiceHttpEndpoint".*?(?=<wsdl:port name="RequestServiceHttpSoap11Endpoint")',
+    '', 'Singleline')
+
+# Save back as UTF-8 (no BOM)
+$full = (Resolve-Path $path).Path
+[System.IO.File]::WriteAllText($full, $wsdl, (New-Object System.Text.UTF8Encoding($false)))
+
+Write-Host "Trim done."
