@@ -25,3 +25,25 @@ At line:1 char:35
 Unexpected token '[System.IO.File]::WriteAllText' in expression or statement.
     + CategoryInfo          : ParserError: (:) [], ParentContainsErrorRecordException
     + FullyQualifiedErrorId : UnexpectedToken
+
+
+
+$path = "src\main\resources\wsdl\RequestService.wsdl"
+$wsdl = Get-Content $path -Raw
+
+$wsdl = [regex]::Replace($wsdl, '<wsdl:binding name="RequestServiceSoap12Binding".*?(?=<wsdl:binding name="RequestServiceSoap11Binding")', '', 'Singleline')
+
+$wsdl = [regex]::Replace($wsdl, '<wsdl:port name="RequestServiceHttpEndpoint".*?(?=<wsdl:port name="RequestServiceHttpSoap11Endpoint")', '', 'Singleline')
+
+$full = (Resolve-Path $path).Path
+[System.IO.File]::WriteAllText($full, $wsdl, (New-Object System.Text.UTF8Encoding($false)))
+
+Write-Host "Trim done."
+
+Note the $full = ... and [System.IO.File]... are on separate lines — keep them that way.
+
+Then verify
+
+Select-String -Path "src\main\resources\wsdl\RequestService.wsdl" -Pattern "wsdl:binding name="
+Select-String -Path "src\main\resources\wsdl\RequestService.wsdl" -Pattern "wsdl:port name="
+Expected: exactly one binding (RequestServiceSoap11Binding) and one port (RequestServiceHttpSoap11Endpoint). Paste the output and we move to regenerate.
