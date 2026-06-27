@@ -1,150 +1,172 @@
-package com.socgen.sgs.api.quark.engine.infra.interop.qxpsm;
+package com.socgen.sgs.api.quark.engine.infra.dao.impl;
 
-import com.socgen.sgs.api.quark.engine.integration.soap.generated.*;
+import com.socgen.sgs.api.quark.engine.domain.DocumentDomain;
+import com.socgen.sgs.api.quark.engine.infra.dao.InsertDocumentDao;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
+import org.springframework.jdbc.core.SqlOutParameter;
+import org.springframework.jdbc.core.SqlParameter;
+import org.springframework.jdbc.core.SqlTypeValue;
+import org.springframework.jdbc.core.simple.SimpleJdbcCall;
+import org.springframework.stereotype.Repository;
 
-import java.net.URL;
-import java.util.List;
+import javax.sql.DataSource;
+import java.io.ByteArrayInputStream;
+import java.sql.Types;
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * SOAP client for communicating with QuarkXPress Server Manager (QXPSM).
- * Uses the Axis 1.x generated stub (regenerated from the deployed server's
- * document/literal WSDL — service RequestService, namespace http://com.quark.qxpsm)
- * to call processRequest / getXPressDOM.
- *
- * <p>Used for UPDATE steps (directCall=false) where text value changes
- * and structural modifications are sent via SOAP.
- *
- * <p>Request chain built inside QRequestContext:
- * RequestParameters → ModifierRequest → SaveAsRequest → QuarkXPressRenderRequest
- * (each linked via the inherited QRequest.request field)
- *
- * Cross-reference: .NET QXPSM_Call.SDKCall() / QXPS_Caller.Execute()
+ * Oracle implementation: QXP_PK_RUN.Insert_Document
  */
-@Component
+@Repository
+@RequiredArgsConstructor
 @Slf4j
-public class QxpsmSoapClient {
+public class InsertDocumentDaoImpl implements InsertDocumentDao {
 
-    private final QxpsmProperties qxpsmProperties;
+    private final DataSource dataSource;
 
-    public QxpsmSoapClient(QxpsmProperties qxpsmProperties) {
-        this.qxpsmProperties = qxpsmProperties;
+    @Override
+    public int insertDocument(DocumentDomain document, int idSousCategorie,
+                              String idFndCode, String idUnitCode,
+                              LocalDate dateEcheance, int idRun) {
+        if (document == null || document.getData() == null) {
+            return Integer.MIN_VALUE;
+        }
+
+        SimpleJdbcCall jdbcCall = new SimpleJdbcCall(dataSource)
+                .withCatalogName("QXP_PK_RUN")
+                .withFunctionName("Insert_Document")
+                // Bind solely from the explicit declareParameters list (no JDBC metadata lookup),
+                // matching AuditDao and the rest of the DAO layer — deterministic RETURN/param
+                // resolution across drivers. Declared order matches the proc in ora.txt. Findings #47/#90.
+                .withoutProcedureColumnMetaDataAccess()
+                .declareParameters(
+                        new SqlOutParameter("RETURN", Types.NUMERIC),
+                        new SqlParameter("p_code_port", Types.VARCHAR),
+                        new SqlParameter("p_id_unit_code", Types.VARCHAR),
+                        new SqlParameter("p_id_sous_categorie", Types.NUMERIC),
+                        new SqlParameter("p_format", Types.VARCHAR),
+                        new SqlParameter("p_id_langue", Types.NUMERIC),
+                        new SqlParameter("p_date_document", Types.DATE),
+                        new SqlParameter("p_nom_document", Types.VARCHAR),
+                        new SqlParameter("p_id_utilisateur", Types.NUMERIC),
+                        new SqlParameter("p_contenu", Types.BLOB),
+                        new SqlParameter("p_taille_document", Types.NUMERIC),
+                        new SqlParameter("p_is_actif", Types.NUMERIC),
+                        new SqlParameter("p_id_run", Types.NUMERIC)
+                );
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("p_code_port", idFndCode);
+        params.put("p_id_unit_code", idUnitCode);
+        params.put("p_id_sous_categorie", idSousCategorie);
+        params.put("p_format", document.getFormat());
+        params.put("p_id_langue", document.getIdLangue() != null ? document.getIdLangue() : 1);
+        // Null-safe (p_date_document is Types.DATE); mirrors GetDocumentDaoImpl's guard. Finding #89.
+        params.put("p_date_document", dateEcheance != null ? java.sql.Date.valueOf(dateEcheance) : null);
+        params.put("p_nom_document", document.getFileName());
+        params.put("p_id_utilisateur", 0);
+        // Oracle rejects a byte[] bound to a BLOB IN-param via setObject (SQLException 17004
+        // "Invalid column type"). Stream the bytes through a SqlTypeValue (setBinaryStream),
+        // which bypasses setObject and handles large (100 MB+) QXP/PDF payloads.
+        final byte[] contenu = document.getData();
+        params.put("p_contenu", (SqlTypeValue) (ps, paramIndex, sqlType, typeName) ->
+                ps.setBinaryStream(paramIndex, new ByteArrayInputStream(contenu), contenu.length));
+        params.put("p_taille_document", contenu.length);
+        params.put("p_is_actif", 1);
+        params.put("p_id_run", idRun);
+
+        Map<String, Object> result = jdbcCall.execute(params);
+        Number idDoc = (Number) result.get("RETURN");
+
+        log.debug("Inserted document [{}] with id [{}] for run [{}]",
+                document.getFileName(), idDoc, idRun);
+
+        return idDoc != null ? idDoc.intValue() : Integer.MIN_VALUE;
     }
 
-    /**
-     * Execute a complete step via SOAP using the Axis-generated stub.
-     * Builds the QRequest chain and calls processRequest on the QXPSM web service.
-     *
-     * @param documentName  the current document name in the pool
-     * @param nameValues    name-value params to set (may be null or empty)
-     * @param project       modification project (may be null if no structural changes)
-     * @param saveAsPath    path for saving (e.g., pool absolute path)
-     * @param saveAsName    new file name for the saved document
-     * @return QContentData response containing streamValue (QXP binary) and/or textData
-     */
-    public QContentData executeStep(String documentName,
-                                    List<NameValueParam> nameValues,
-                                    Project project,
-                                    String saveAsPath,
-                                    String saveAsName) {
-        log.info("QXPSM SOAP processRequest for document [{}]", documentName);
 
-        try {
-            // Get the Axis-generated stub (regenerated from the live document/literal WSDL).
-            RequestServiceLocator locator = new RequestServiceLocator();
-            RequestServicePortType stub =
-                    locator.getRequestServiceHttpSoap11Endpoint(new URL(qxpsmProperties.getEndpoint()));
 
-            // Long QXPSM modify/render calls on large (100 MB+) docs: set the Axis client socket
-            // timeout from config (ms); 0 = infinite, matching .NET (_sdk_service.Timeout = Infinite).
-            int stubTimeoutMs = qxpsmProperties.getTimeout();
-            ((org.apache.axis.client.Stub) stub).setTimeout(stubTimeoutMs > 0 ? stubTimeoutMs : 0);
 
-            // Build the request chain (last → first, then link)
-            // 4. QXP Render (last in chain)
-            QuarkXPressRenderRequest qxpRender = new QuarkXPressRenderRequest();
 
-            // 3. SaveAs → chains to QXP Render
-            SaveAsRequest saveAs = new SaveAsRequest();
-            saveAs.setNewFilePath(saveAsPath);
-            saveAs.setNewName(saveAsName);
-            saveAs.setReplaceFile("true");
-            saveAs.setSaveToPool("false");
-            saveAs.setRequest(qxpRender);
 
-            // 2. Modifier → chains to SaveAs (only if project has modifications)
-            QRequest currentHead = saveAs;
-            if (project != null && project.getLayouts() != null && project.getLayouts().length > 0) {
-                ModifierRequest modifier = new ModifierRequest();
-                modifier.setProject(project);
-                modifier.setRequest(saveAs);
-                currentHead = modifier;
-            }
 
-            // 1. RequestParameters → chains to Modifier or SaveAs (only if there are name-values)
-            if (nameValues != null && !nameValues.isEmpty()) {
-                RequestParameters params = new RequestParameters();
-                params.setParams(nameValues.toArray(new NameValueParam[0]));
-                params.setRequest(currentHead);
-                currentHead = params;
-            }
 
-            // Build QRequestContext — set the same fields as .NET QXPSM_Call.InitContext.
-            QRequestContext context = new QRequestContext();
-            context.setDocumentName(documentName);
-            context.setRequest(currentHead);
-            // .NET QXPS_Call_Info defaults (set explicitly to document intent / match the wire).
-            context.setResponseAsURL(false);
-            context.setUseCache(false);
-            context.setBypassFileInfo(false);
-            // .NET leaves credentials as string.Empty (serialized as empty elements, not nil). Finding #66.
-            context.setUserName("");
-            context.setUserPassword("");
-            // .NET does not set MaxRetries at runtime — leave the SDK default unless explicitly configured
-            // (>0). Finding #33.
-            if (qxpsmProperties.getMaxRetries() > 0) {
-                context.setMaxRetries(qxpsmProperties.getMaxRetries());
-            }
-            // .NET: if no timeout is configured, use 3600s (1h) instead of the SOAP default of 100s.
-            int timeout = qxpsmProperties.getTimeout();
-            context.setRequestTimeout(timeout > 0 ? timeout : 3600 * 1000);
 
-            // Execute SOAP call
-            log.debug("QXPSM calling processRequest with chain: {} → ... → QXPRender",
-                    currentHead.getClass().getSimpleName());
 
-            QContentData result = stub.processRequest(context);
 
-            log.info("QXPSM processRequest completed for document [{}]", documentName);
-            return result;
 
-        } catch (Exception e) {
-            log.error("QXPSM SOAP call failed for document [{}]: {}", documentName, e.getMessage(), e);
-            throw new RuntimeException("QXPSM SOAP call failed for document: " + documentName, e);
+
+package com.socgen.sgs.api.quark.engine.domain.dynamic.report;
+
+import lombok.Getter;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/** A single break rule defining which row-levels trigger a page/column break and which levels to bring along. */
+@Getter
+public class DBreakRule {
+
+    public static final DBreakRule DEFAULT = new DBreakRule(Integer.MIN_VALUE);
+
+    private final List<Integer> levels = new ArrayList<>();
+    private final List<Integer> bringLevels = new ArrayList<>();
+
+    public DBreakRule(int... levels) {
+        for (int level : levels) {
+            this.levels.add(level);
         }
     }
 
+    public DBreakRule(String rule) {
+        analyseRule(rule);
+    }
+
+    public DBreakRule(int level, List<Integer> bringLevels) {
+        this.levels.add(level);
+        this.bringLevels.addAll(bringLevels);
+    }
+
     /**
-     * Fetch the QuarkXPress DOM (Project) of a pooled document via getXPressDOM.
-     * Used to read a child run's generated QXP structure for compartiment incorporation.
-     *
-     * <p>Cross-reference: .NET QXPS_File_Manager.Get_Project / Document.QXPProject.
-     * NOTE: this is a live QuarkXPress Server Manager call — must be validated against a running server.
-     *
-     * @param documentName the pool path / document name of the saved QXP
-     * @return the QuarkXPress DOM as a SOAP Project
+     * Parses a rule string in the format "X:Y" where X = levels triggering break, Y = levels to bring.
+     * X and Y can be comma-separated values, ranges (e.g. 1-3), or LZ notation (bring Z lines).
      */
-    public Project getProject(String documentName) {
-        log.info("QXPSM getXPressDOM for document [{}]", documentName);
-        try {
-            RequestServiceLocator locator = new RequestServiceLocator();
-            RequestServicePortType stub =
-                    locator.getRequestServiceHttpSoap11Endpoint(new URL(qxpsmProperties.getEndpoint()));
-            return stub.getXPressDOM(documentName);
-        } catch (Exception e) {
-            log.error("QXPSM getXPressDOM failed for document [{}]: {}", documentName, e.getMessage(), e);
-            throw new RuntimeException("QXPSM getXPressDOM failed for document: " + documentName, e);
+    private void analyseRule(String rule) {
+        String[] ruleInfos = rule.split(":");
+        if (ruleInfos.length == 2) {
+            levels.addAll(parseRuleValues(ruleInfos[0]));
+            bringLevels.addAll(parseRuleValues(ruleInfos[1]));
         }
+    }
+
+    private List<Integer> parseRuleValues(String input) {
+        List<Integer> values = new ArrayList<>();
+        String[] parts = input.split(",");
+
+        for (String part : parts) {
+            String[] rangeParts = part.split("-");
+
+            if (rangeParts.length == 2 && !part.startsWith("L")) {
+                int start = Integer.parseInt(rangeParts[0].trim());
+                int end = Integer.parseInt(rangeParts[1].trim());
+                for (int i = start; i <= end; i++) {
+                    values.add(i);
+                }
+            } else {
+                String level = rangeParts[0].trim();
+                if (level.startsWith("L")) {
+                    // LZ notation: negative value means "bring Z lines above regardless of row_level"
+                    int nbLigne = Integer.parseInt(level.substring(1));
+                    values.add(-nbLigne);
+                } else {
+                    values.add(Integer.parseInt(level));
+                }
+            }
+        }
+        return values;
     }
 }
+
