@@ -1,248 +1,218 @@
-# EOS Quark — QXPSM SOAP Fix (Wrong WSDL + Endpoint Env Mismatch)
+# EOS Quark — New Repo Verification & Remaining Changes (27-06)
 
-**Date:** 2026-06-26
-**Supersedes:** `EOS_Quark_QxpsmSoap_MultiRef_Fix.md` (the multi-ref hypothesis is now disproven — see below).
-**Blocker fixed:** `AxisFault: namespace mismatch require http://com.quark.qxpsm found http://webservice.manager.quark.com`
-
----
-
-## 1. Root cause (decisive — from the live WSDL)
-
-We fetched the **live** server WSDL:
-
-```
-http://srvcldqxpu001.dns43.socgen:8090/qxpsm/services/RequestService?wsdl
-```
-
-and compared it to the WSDL our stub is generated from
-(`src/main/resources/wsdl/qxpsmsdk.wsdl`):
-
-| Aspect | Repo `qxpsmsdk.wsdl` (current) | **Live deployed server** |
-|---|---|---|
-| SOAP stack | Apache **Axis 1.x** | Apache **Axis 2** |
-| Style / use | **RPC / encoded** | **document / literal** |
-| Target namespace | `http://webservice.manager.quark.com` | **`http://com.quark.qxpsm`** |
-| Types namespace | `http://ro.clientsdk.manager.quark.com` | `http://com.quark.qxpsm` |
-| Service name | `QManagerSDKSvcService` | `RequestService` |
-| Port name | `qxpsmsdk` | `RequestServiceHttpSoap11Endpoint` (+ Soap12, Http) |
-| PortType | `QManagerSDKSvc` | `RequestServicePortType` |
-| Binding | `qxpsmsdkSoapBinding` | `RequestServiceSoap11Binding` |
-
-**Conclusion:** our generated stub talks the wrong dialect on *every* axis — wrong
-operation namespace **and** wrong encoding style. The Axis2 server's
-`RPCUtil.invokeServiceClass` reads our operation wrapper
-`<processRequest xmlns="http://webservice.manager.quark.com">` and rejects it because
-the deployed service namespace is `http://com.quark.qxpsm`.
-
-> **The multi-ref disable (Step 2) is irrelevant.** SOAP multi-reference (`href`/`id`)
-> only exists in **RPC/encoded**. The live server is **document/literal**, which never
-> uses multi-ref. That earlier change should be **removed**, not kept.
-
-**Why .NET still works:** the deployed .NET runs co-located and points at its own
-QXPSM instance with the old namespace. The endpoint our Java targets is a newer Axis2
-QXPSM. The repo WSDL matches the *old* server, not the one we call.
-
-The good news: the **data model is unchanged**. The live WSDL contains the same types
-we already use — `QRequestContext`, `RequestParameters`, `NameValueParam`,
-`ModifierRequest`, `SaveAsRequest`, `QuarkXPressRenderRequest`, `Project`,
-`QContentData` — with the same fields. So once we regenerate, `QxpsmSoapClient`'s
-request-chain logic stays the same; only the **locator / port / stub class names**
-change.
+**Repo verified:** `/Users/tejaswigurram/Documents/eos quark/java repo 27-06/quark-engine`
+**Date:** 2026-06-27
+**Method:** every documented change checked against the actual file (matched on real code — method bodies, sentinels, guards, renamed symbols — not just comments).
 
 ---
 
-## 2. Second problem — endpoint environment mismatch (must also fix)
+## 0. TL;DR
 
-Hostnames (confirmed by you): `srvcldqxpu001` = **UAT**, `srvcldvapd001` = **DEV**.
-
-Current `application.yaml`:
-
-| Property | Host | Env |
-|---|---|---|
-| `qxps.server.url` | `http://srvcldvapd001.dns43.socgen:8080` | **DEV** |
-| `qxpsm.soap.endpoint` | `http://srvcldqxpu001.dns43.socgen:8090/...` | **UAT** |
-
-QXPS (HTTP) **adds the gabarit to DEV's document pool**, then QXPSM (SOAP) tries to
-**modify it on UAT** — where the file does not exist. The two services for a single run
-must live on the **same Quark host**. QXPS Server (`:8080`) and QXPSM Manager (`:8090`)
-are two ports of the **same** Quark deployment.
-
-**Fix:** point `qxpsm.soap.endpoint` at the **same host** as `qxps.server.url`
-(DEV `srvcldvapd001:8090`). Then **regenerate the stub from that host's WSDL**
-(`http://srvcldvapd001.dns43.socgen:8090/qxpsm/services/RequestService?wsdl`) and
-confirm it is the same `document/literal` + `com.quark.qxpsm` shape (it should be —
-same Quark version across envs).
-
-> Pick **one** environment end-to-end. Simplest for your current run (509636, already
-> pooling on DEV): make **both** DEV.
-
----
-
-## 3. Fix — step by step
-
-### Step 1 — Add the live WSDL to the repo (byte-exact)
-
-Do **not** hand-copy the WSDL — `wsdl2java` needs the exact bytes. Fetch it raw from the
-environment you will actually target (DEV, to match QXPS):
-
-```bash
-curl -s "http://srvcldvapd001.dns43.socgen:8090/qxpsm/services/RequestService?wsdl" \
-  -o src/main/resources/wsdl/RequestService.wsdl
-```
-
-(If DEV's QXPSM is unreachable, use the UAT URL you already opened — but then also point
-the endpoint in Step 4 at UAT so both match.)
-
-Quick sanity check on the saved file:
-
-```bash
-grep -m1 'targetNamespace' src/main/resources/wsdl/RequestService.wsdl   # → http://com.quark.qxpsm
-grep -m1 'soap:binding'    src/main/resources/wsdl/RequestService.wsdl   # → style="document"
-```
-
-### Step 2 — Point the build at the new WSDL
-
-In `pom.xml`, the `axistools-maven-plugin` config:
-
-```xml
-<sourceDirectory>${project.basedir}/src/main/resources/wsdl</sourceDirectory>
-<wsdlFiles>
-    <wsdlFile>RequestService.wsdl</wsdlFile>   <!-- was: qxpsmsdk.wsdl -->
-</wsdlFiles>
-```
-
-Also update the stale comment above the plugin:
-`Generate Java classes from the QXPSM WSDL (document/literal, Axis2 server)` —
-(was "RPC/encoded style").
-
-> The `<dependencies>` on `org.apache.axis:axis*` (1.x) stay. Axis 1.x can consume a
-> wrapped document/literal WSDL and will generate a synchronous client stub. It ignores
-> the `soap12` binding and the `wsaw:Action` (WS-Addressing) attributes.
-
-### Step 3 — Delete the old generated stub so it regenerates clean
-
-The plugin writes **into `src/main/java`** (the generated classes are committed). The old
-classes use the wrong namespace and old service names; they must be removed or they'll
-linger as stale/dead source:
-
-```bash
-rm -rf src/main/java/com/socgen/sgs/api/quark/engine/integration/soap/generated/
-```
-
-Then a clean build regenerates the full set from `RequestService.wsdl`:
-
-```bash
-mvn clean install
-```
-
-> If `wsdl2java` errors on the `soap12` binding or the three-port service, trim the saved
-> WSDL to just the SOAP 1.1 parts: keep `RequestServiceSoap11Binding` and the
-> `RequestServiceHttpSoap11Endpoint` port; delete the `<wsdl:binding ...Soap12Binding>`,
-> `<wsdl:binding ...HttpBinding>` blocks and their two `<wsdl:port>` entries in
-> `<wsdl:service>`. The `<wsdl:types>` and `RequestServicePortType` stay untouched.
-
-### Step 4 — Fix the endpoint env mismatch (`application.yaml`)
-
-```yaml
-qxpsm:
-  soap:
-    # Same Quark host as qxps.server.url (DEV). QXPS Server :8080 and QXPSM Manager :8090
-    # are the same deployment — they MUST point at the same host so the pooled document
-    # is visible to the SOAP modify call.
-    endpoint: http://srvcldvapd001.dns43.socgen:8090/qxpsm/services/RequestService
-    timeout: 7200000
-    max-retries: 0
-```
-
-(If you instead standardise on UAT, set **both** `qxps.server.url` → `srvcldqxpu001:8080`
-**and** `qxpsm.soap.endpoint` → `srvcldqxpu001:8090`, and regenerate from the UAT WSDL.)
-
-### Step 5 — Update `QxpsmSoapClient` to the new generated names
-
-The class names change with the new WSDL. Replace the locator/stub lookups and **remove
-the multi-ref line**. Predicted Axis 1.x names (verify against the freshly generated
-`integration/soap/generated/` after Step 3 — adjust if they differ):
-
-| Old (rpc/encoded) | New (doc/literal) |
+| Area | Status |
 |---|---|
-| `QManagerSDKSvcServiceLocator` | `RequestServiceLocator` |
-| `QManagerSDKSvc` | `RequestServicePortType` |
-| `locator.getqxpsmsdk(url)` | `locator.getRequestServiceHttpSoap11Endpoint(url)` |
+| Batches 10, 11, 12, 13 | ✅ **fully implemented** (31/31 changes) |
+| QXPSM SOAP migration (WSDL, stub, client, pom, yaml) | ✅ **in place** |
+| BLOB insert fix (`InsertDocumentDaoImpl`) | ✅ **already applied** |
+| `DBreakRule` lenient parse | ❌ **MISSING — must apply** (crashes run 488654) |
+| 3 date null-guards (defensive) | ❌ **MISSING — recommended** |
+| Cleanup (DEBUG logging, old wsdl, pom comment) | ⚠️ **optional** |
 
-**`executeStep(...)`** — replace lines 52–61:
+**Only one functional fix is still required: `DBreakRule` (§3.1).** The rest is defensive or cosmetic.
+
+---
+
+## 1. Batch verification (10 → 13) — ALL PRESENT
+
+> **Independently re-verified by direct grep on the new repo (2026-06-27).** Final tally:
+> **Batch 10 = 4/4, Batch 11 = 9/9, Batch 12 = 6/6, Batch 13 = 6/6 → 25/25 documented
+> changes IMPLEMENTED.** Two checks that look like anomalies but are correct:
+> `netLabel` is **absent** from `RunStatus.java` (rename to `auditStatusLabel` done, #87 ✅);
+> `setRunTask(new RunTask(...))` exists **only in an explanatory comment** in
+> `CheckServiceImpl.java:186` (the actual redundant call + `RunTask` import are removed, #59 ✅).
+
+### Batch 10 — DocumentIdentityService (DID lenient parsing) — 4/4 ✅
+| change (finding) | status |
+|---|---|
+| null/blank XML & absent element → `""` (#16) | ✅ |
+| null/blank identity → empty `DocumentIdentity` (#23) | ✅ |
+| `<6` parts → empty identity (#41) | ✅ |
+| `parseDateTime` empty/unparseable → `DATE_MIN` (`0001-01-01`), lenient `M/d/uuuu H:mm:ss` (#42) | ✅ |
+
+### Batch 11 (redo) — 9/9 ✅
+`RunStatus` (#83/#87), `AuditDaoImpl` (#53/#82/#87), `InsertDocumentDaoImpl` (#47/#90/#89), `EndRunDaoImpl` (#91), `DocumentDomain` (#92/#57), `QxpsCallerBusiness` (#92/#57), `GetDocumentDaoImpl` (#73), `GetDocumentByIdDaoImpl` (#84), `DocumentDomainTest` (#57) — all present. `netLabel` fully gone; intentionally-kept class-header `.NET` cross-refs still present per policy.
+
+### Batch 12 — QxpXml.java — 6/6 ✅
+`getPageNum`→MIN_VALUE (#46), lenient `parseIntSafe` (#78), `!= MIN_VALUE` guards (#77), `getOwnerElement()` cell counting (#45), `.//*` descendants (#79), keep blank names (#80) — all present.
+
+### Batch 13 — 6/6 ✅
+`CheckServiceImpl` redundant `setRunTask` removed (#59), `DocumentIdentityHelper` null due-date→`0001-01-01` (#71), `TElementHelper.newBlocName` `[…]` wrap (#74) + `parseDecimal` sentinel (#75), `BlocPage.getNbBox` no swallow try/catch (#76), `ProcessSqlBusiness` comment (#94) — all present.
+
+> Deferred items (#86, #88, #60, #61, #70, #72, #10) remain intentionally not implemented, per the batch docs + register. No action.
+
+---
+
+## 2. QXPSM SOAP migration — PRESENT ✅
+
+| item | status |
+|---|---|
+| `pom.xml` `<wsdlFile>` = `RequestService.wsdl` | ✅ (stale comment at pom.xml:290 still says "qxpsmsdk.wsdl" — cosmetic) |
+| `RequestService.wsdl` trimmed: 1 binding (`RequestServiceSoap11Binding`), 1 port (`RequestServiceHttpSoap11Endpoint`), ns `com.quark.qxpsm`, **0** `<wsdl:fault>` | ✅ |
+| Regenerated stub (`RequestServiceLocator`/`RequestServicePortType`/`RequestServiceSoap11BindingStub`); no old `QManagerSDKSvc*`; `QxpsmProbe` deleted | ✅ |
+| `QxpsmSoapClient` new locator/port + `setTimeout`, no multi-ref | ✅ |
+| Endpoints all on **DEV `srvcldvapd001`**: `qxps.server.url`=`:8080`, `qxpsm.soap.endpoint`=`:8090/qxpsm/services/RequestService`, `qxp.thirdparty.url`=`:8080/saveas/pdf/` | ✅ consistent |
+
+---
+
+## 3. REMAINING CHANGES TO APPLY
+
+### 3.1 `DBreakRule.java` — REQUIRED (crashes run 488654) ❌→✅
+Path: `src/main/java/com/socgen/sgs/api/quark/engine/domain/dynamic/report/DBreakRule.java`
+Currently still uses strict `Integer.parseInt` (lines 52, 53, 61, 64) → `NumberFormatException` on tokens like `"5L1"`. .NET `Conversion.ToInt` is lenient (→ `int.MinValue`). **Replace the whole file with:**
 
 ```java
-            // Get the Axis-generated stub (regenerated from the live document/literal WSDL).
-            RequestServiceLocator locator = new RequestServiceLocator();
-            RequestServicePortType stub =
-                    locator.getRequestServiceHttpSoap11Endpoint(new URL(qxpsmProperties.getEndpoint()));
+package com.socgen.sgs.api.quark.engine.domain.dynamic.report;
 
-            // NOTE: the deployed QXPSM is document/literal (Axis2). It does NOT use SOAP
-            // multi-reference encoding, so no PROP_DOMULTIREFS handling is needed here.
+import lombok.Getter;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/** A single break rule defining which row-levels trigger a page/column break and which levels to bring along. */
+@Getter
+public class DBreakRule {
+
+    public static final DBreakRule DEFAULT = new DBreakRule(Integer.MIN_VALUE);
+
+    private final List<Integer> levels = new ArrayList<>();
+    private final List<Integer> bringLevels = new ArrayList<>();
+
+    public DBreakRule(int... levels) {
+        for (int level : levels) {
+            this.levels.add(level);
+        }
+    }
+
+    public DBreakRule(String rule) {
+        analyseRule(rule);
+    }
+
+    public DBreakRule(int level, List<Integer> bringLevels) {
+        this.levels.add(level);
+        this.bringLevels.addAll(bringLevels);
+    }
+
+    /**
+     * Parses a rule string in the format "X:Y" where X = levels triggering break, Y = levels to bring.
+     * X and Y can be comma-separated values, ranges (e.g. 1-3), or LZ notation (bring Z lines).
+     */
+    private void analyseRule(String rule) {
+        String[] ruleInfos = rule.split(":");
+        if (ruleInfos.length == 2) {
+            levels.addAll(parseRuleValues(ruleInfos[0]));
+            bringLevels.addAll(parseRuleValues(ruleInfos[1]));
+        }
+    }
+
+    private List<Integer> parseRuleValues(String input) {
+        List<Integer> values = new ArrayList<>();
+        String[] parts = input.split(",");
+
+        for (String part : parts) {
+            String[] rangeParts = part.split("-");
+
+            if (rangeParts.length == 2 && !part.startsWith("L")) {
+                int start = toInt(rangeParts[0].trim());
+                int end = toInt(rangeParts[1].trim());
+                for (int i = start; i <= end; i++) {
+                    values.add(i);
+                }
+            } else {
+                String level = rangeParts[0].trim();
+                if (level.startsWith("L")) {
+                    // LZ notation: negative value means "bring Z lines above regardless of row_level"
+                    int nbLigne = toInt(level.substring(1));
+                    values.add(-nbLigne);
+                } else {
+                    values.add(toInt(level));
+                }
+            }
+        }
+        return values;
+    }
+
+    /**
+     * Lenient string-to-int conversion. A non-numeric or malformed break-rule token
+     * (e.g. "5L1") yields Integer.MIN_VALUE (the wildcard level) instead of throwing,
+     * so a bad rule degrades gracefully rather than failing the whole run. Spaces are
+     * stripped and decimals are truncated toward zero.
+     */
+    private static int toInt(String value) {
+        if (value == null) {
+            return Integer.MIN_VALUE;
+        }
+        String v = value.replace(" ", "").trim();
+        if (v.isEmpty()) {
+            return Integer.MIN_VALUE;
+        }
+        try {
+            return new java.math.BigDecimal(v).intValue();
+        } catch (NumberFormatException e) {
+            return Integer.MIN_VALUE;
+        }
+    }
+}
 ```
 
-**`getProject(...)`** — replace lines 140–142:
+### 3.2 Date null-guards — RECOMMENDED (defensive; matches `AuditDaoImpl` convention) ❌→✅
 
+**(a)** `infra/dao/impl/GetCompartimentRunsDaoImpl.java` (~line 93):
 ```java
-            RequestServiceLocator locator = new RequestServiceLocator();
-            RequestServicePortType stub =
-                    locator.getRequestServiceHttpSoap11Endpoint(new URL(qxpsmProperties.getEndpoint()));
-            return stub.getXPressDOM(documentName);
+// FROM
+                .addValue("p_date_echeance", java.sql.Date.valueOf(dateEcheance))
+// TO
+                .addValue("p_date_echeance",
+                        dateEcheance != null ? java.sql.Date.valueOf(dateEcheance) : null,
+                        java.sql.Types.DATE)
 ```
 
-Everything in between (the `RequestParameters → ModifierRequest → SaveAsRequest →
-QuarkXPressRenderRequest` chain and the `QRequestContext` field setters) is **unchanged**
-— those types exist with identical fields in the new WSDL.
-
-> **Method signatures to confirm post-regen:** for wrapped doc/literal, Axis 1.x usually
-> generates `QContentData processRequest(QRequestContext param0)` and
-> `Project getXPressDOM(String param0)` — matching today's calls. If the generated port
-> exposes a request/response *wrapper* type instead, tell me the exact signatures and
-> I'll adjust the chain code.
-
----
-
-## 4. Build & verify
-
-```bash
-mvn clean install
+**(b)** `infra/dao/impl/EndRunDaoImpl.java` — BOTH occurrences (~line 57 and ~line 86):
+```java
+// FROM
+        params.put("p_date_fin", Timestamp.valueOf(dateFin));
+// TO
+        params.put("p_date_fin", dateFin != null ? Timestamp.valueOf(dateFin) : null);
 ```
 
-Then re-run **runId 509636** (Plaquette, DOCUMENT_COURANT). Expected progression past the
-previous blocker:
+**(c)** `infra/dao/impl/InsertDataStorageDaoImpl.java` (~line 45):
+```java
+// FROM
+                ops.setTimestamp(3, Timestamp.valueOf(dateGeneration));
+// TO
+                ops.setTimestamp(3, dateGeneration != null ? Timestamp.valueOf(dateGeneration) : null);
+```
 
-1. QXPS `addfile` → pool `R_509636/` on **DEV** ✅ (already works)
-2. QXPS `/xml` fetch ✅ (already works — buffer fix in place)
-3. **QXPSM `processRequest`** → now accepted (correct namespace + same host as the pool)
-4. SaveAs in pool → render
-
-Keep the temporary `TEMP-DEBUG-RT` logging until the SOAP round-trip succeeds end-to-end;
-remove it afterward.
-
----
-
-## 5. Files changed (for the air-gapped repo)
-
-| File | Change |
-|---|---|
-| `src/main/resources/wsdl/RequestService.wsdl` | **NEW** — raw live WSDL (curl, Step 1) |
-| `src/main/resources/wsdl/qxpsmsdk.wsdl` | delete (or leave unused) |
-| `src/main/java/.../integration/soap/generated/` | **deleted then regenerated** by the build |
-| `pom.xml` | `wsdlFile` → `RequestService.wsdl`; comment updated |
-| `application.yaml` | `qxpsm.soap.endpoint` → DEV host (`srvcldvapd001:8090`) |
-| `.../infra/interop/qxpsm/QxpsmSoapClient.java` | new locator/port/stub names; multi-ref line removed |
+### 3.3 Cleanup — OPTIONAL ⚠️
+- **Remove the temp Axis DEBUG block** in `src/main/resources/application.yaml` (~lines 70-73):
+  ```yaml
+  logging:
+    level:
+      org.apache.axis.transport.http: DEBUG   # delete this block (diagnosis done)
+  ```
+  (Keep it only if you still want SOAP wire dumps during the next runs.)
+- **Delete** the now-unused `src/main/resources/wsdl/qxpsmsdk.wsdl` (the build uses `RequestService.wsdl`). Keep `RequestService.full.wsdl` as the vendor backup.
+- **Fix the stale comment** at `pom.xml:290` ("qxpsmsdk.wsdl" → "RequestService.wsdl"). Cosmetic.
 
 ---
 
-## 6. Open items / risks
+## 4. Known-good but UNTESTED live paths (watch, no change)
+- `InsertDataStorageDaoImpl` (`setPlsqlIndexTable`) and `EndRunDaoImpl.insertRunErrors` (array binds) — correct Oracle idiom mirroring .NET ODP.NET, but not yet exercised by a run. A run that stores SQL/DOCUMENT data or records multiple errors is the real test.
+- Final PDF render returned `#10122 blank pages` on run 509636 — that run has 0 content tasks; not a code defect (our `/pdf` is byte-identical to .NET). Validate rendering on a content-ful run (e.g. 488654, 24 tasks) after applying §3.1.
 
-- **Axis 1.x ↔ Axis2 doc/literal:** generation is expected to work, but if `wsdl2java`
-  stumbles on the multi-binding service, trim the WSDL to the SOAP 1.1 port (Step 3 note).
-- **Generated names:** the table in Step 5 is predicted; confirm against the regenerated
-  sources and adjust `QxpsmSoapClient` if needed.
-- **DEV QXPSM availability:** confirm `srvcldvapd001:8090` answers `?wsdl`. If only UAT is
-  reachable, standardise both QXPS + QXPSM on UAT instead (Step 4 alternative).
-- **Long-term option:** the deployed service is plain SOAP 1.1 document/literal — a natural
-  fit for **JAX-WS / Apache CXF** (`wsimport`/`cxf-codegen`). That's cleaner than Axis 1.x
-  but a larger change; Axis-regen above is the minimal path that reuses existing code.
+---
+
+## 5. Apply order
+1. **§3.1 `DBreakRule`** (required) + **§3.2** null-guards (recommended) + **§3.3** cleanup (optional).
+2. `mvn clean install` → expect `BUILD SUCCESS`.
+3. Run **488654** (Dynamique, 24 tasks) — should now pass task mapping, render a real PDF, and insert the document (BLOB fix already in).
+4. Watch the data-storage / multi-error array-bind paths if that run exercises them.
 ```
