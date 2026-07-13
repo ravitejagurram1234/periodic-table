@@ -1,257 +1,175 @@
-# EOS Quark — Dynamic-SQL Date Failure (ORA-01843 / ORA-01830) — Root Cause & Fix
+# EOS Quark — Consolidated Change Log (post-batch stabilization)
 
-**Run that exposed it:** 488654 (Dynamique, 24 tasks). The pipeline now completes end-to-end
-(SOAP modify → QXP saved → PDF render → End_Run → `GENERATED`), **but every dynamic task SQL failed**
-with `ORA-01843: not a valid month` / `ORA-01830: date format picture ends before converting entire
-input string`, so each task logged "has no blocs after processing" and the PDF came out empty
-(36 boxes in overflow). The HTTP run still reported success because the per-task failures are recorded
-as run errors (166 inserted) rather than failing the run — see §4.
+**Scope:** every code/config change made after the batch port (Batches 1–13) while stabilizing live runs —
+the dynamic-SQL date fix, the QXPSM SOAP client migration, the QXPS buffer/timeout fix, DAO/parse
+robustness, and cleanup. Consolidated from the individual fix docs so you don't have to track them
+separately.
 
----
+**Two live runs drove all of this:**
+- **509636** (Plaquette, QXPSM SOAP path) → exposed the buffer limit + the wrong-WSDL/namespace SOAP fault.
+- **488654** (Dynamique, 24 tasks) → exposed the ORA-01843/01830 date failures + the `DBreakRule` parse crash.
 
-## 1. Root cause (two independent date problems, both required to fix)
-
-The failing statements are the **gabarit (task) SQL** stored in the DB and shared verbatim by .NET and
-Java. Both faces are about Oracle dates.
-
-### 1a. Session NLS_DATE_FORMAT is wrong for this SQL
-The SQL contains **hardcoded day-first date literals** compared against DATE columns, e.g.
-`rf.fnd_end_validity='31/12/2199'`, `qsm.date_campagne in '31/12/2199'`, `rf.FND_END_VALIDITY = '31/12/2199'`.
-Oracle implicitly evaluates `to_date('31/12/2199', <session NLS_DATE_FORMAT>)`. That string **only parses
-under `NLS_DATE_FORMAT='DD/MM/YYYY'`** (month 31 / "12 not a month" otherwise).
-
-- **.NET production** ran with a day-first (European) Oracle session → literals parse → OK.
-- **Java** sets **no NLS** (verified: nothing in the codebase). The Oracle thin driver derives
-  `NLS_DATE_FORMAT` from the JVM locale (commonly `DD-MON-RR`/US-ish) → `'31/12/2199'` →
-  **ORA-01843 / ORA-01830**.
-
-`DD/MM/YYYY` is **dictated by the literals in the SQL itself** — it is not a guess.
-
-### 1b. Date in-params are bound as the wrong Oracle type
-Confirmed against .NET source:
-`InParam.cs` → `Data_Type_Helper.InputToTypedValue` → `ConversionInvariante.ToDateTime` parses a **Date(4)**
-param string (US `MM/dd/yyyy`, InvariantCulture) into a `System.DateTime`; `InParams.cs` binds that value;
-ODP.NET sends a `System.DateTime` as an **Oracle DATE**. So `to_date(?)` in the SQL receives a DATE and
-round-trips cleanly.
-
-Java's `InParamSqlMapper` bound the Date(4) param as a **`java.sql.Timestamp`** → the driver sends an
-Oracle **TIMESTAMP** → `to_date(TIMESTAMP)` forces a TIMESTAMP→string→date conversion whose time/fractional
-component the DATE format can't consume → **ORA-01830 / ORA-01843**.
-
-**Why both fixes are needed (neither alone suffices):** there is no single `NLS_DATE_FORMAT` that makes
-both a bare-date literal (`'31/12/2199'`, no time) **and** a timestamp-with-time bind parse through the same
-`to_date`. Binding the param as a true Oracle **DATE** makes `to_date(DATE)` round-trip under
-`NLS_DATE_FORMAT='DD/MM/YYYY'`, and that same format parses the literals. Both satisfied.
+**Precedence note:** for the QXPSM SOAP work, `EOS_Quark_QXPSM_FINAL.md` is the single source of truth;
+it supersedes the earlier QXPSM WSDL / MultiRef / SoapClient / Correctness docs. The old **multi-ref
+(`PROP_DOMULTIREFS`) hypothesis was disproven and reverted** — do not reintroduce it.
 
 ---
 
-## 2. Changes (apply all)
+## Status at a glance
 
-### 2.1 `InParamSqlMapper.java` — bind DATE as Oracle DATE (not Timestamp)  *(REQUIRED)*
-Path: `src/main/java/com/socgen/sgs/api/quark/engine/mapper/InParamSqlMapper.java`
-Whole file:
-
-```java
-package com.socgen.sgs.api.quark.engine.mapper;
-
-import com.socgen.sgs.api.quark.engine.domain.InParam;
-import com.socgen.sgs.api.quark.engine.enums.DataTypeEnum;
-import org.springframework.stereotype.Component;
-
-import java.math.BigDecimal;
-import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.LinkedHashMap;
-import java.util.Map;
-
-/**
- * Maps run InParams to a flat parameter map for the dynamic-SQL named binds.
- *
- * <p>Binds the TYPED value for each param, mirroring .NET
- * {@code Data_Type_Helper.InputToTypedValue} + {@code ConversionInvariante} (InParam.cs:54 sets
- * {@code _value = InputToTypedValue(_string_value, _type)}, InParams.cs:69 binds {@code inParam.Value}):
- * <ul>
- *   <li>INT      → {@link Integer} (Int32 truncation; {@code int.MinValue} sentinel when unset/unparseable)</li>
- *   <li>DECIMAL  → {@link BigDecimal} ({@code decimal.MinValue} sentinel when unset/unparseable)</li>
- *   <li>DATE     → an Oracle {@code DATE} ({@link oracle.sql.DATE}, time-preserving; {@code DateTime.MinValue}
- *       sentinel). .NET binds the parsed {@code System.DateTime} which ODP.NET sends as an Oracle DATE, so
- *       the gabarit SQL's {@code to_date(?)} round-trips cleanly under any session NLS_DATE_FORMAT. Binding a
- *       {@code java.sql.Timestamp} instead would send an Oracle TIMESTAMP, and {@code to_date(TIMESTAMP)} fails
- *       (ORA-01830 / ORA-01843) because the timestamp's implicit string carries time the DATE format can't
- *       consume. Finding #50 / date-binding fix.</li>
- *   <li>DATE_TIME and every other type → the RAW STRING — .NET's switch has no case for DateTime(5)
- *       (nor Text/Currency/Pourcentage), so it falls to {@code default: return value}.</li>
- * </ul>
- * Findings #21, #49, #50, #51.
- */
-@Component
-public class InParamSqlMapper {
-
-    /** Format the date value arrives in from Oracle Get_In_Params (M/d/yyyy HH:mm:ss). */
-    private static final DateTimeFormatter INPUT_FORMAT = DateTimeFormatter.ofPattern("M/d/yyyy HH:mm:ss");
-
-    /** .NET {@code decimal.MinValue} — the sentinel ConversionInvariante.ToDecimal returns when unset/unparseable. */
-    private static final BigDecimal DECIMAL_MIN_VALUE = new BigDecimal("-79228162514264337593543950335");
-
-    /** .NET {@code DateTime.MinValue} (0001-01-01 00:00:00) — the sentinel ToDateTime returns when unset/unparseable. */
-    private static final Timestamp DATETIME_MIN_VALUE = Timestamp.valueOf(LocalDateTime.of(1, 1, 1, 0, 0, 0));
-
-    public Map<String, Object> toParameterMap(Map<String, InParam> inParams) {
-        Map<String, Object> params = new LinkedHashMap<>();
-        for (Map.Entry<String, InParam> entry : inParams.entrySet()) {
-            params.put(entry.getKey(), toTypedValue(entry.getValue()));
-        }
-        return params;
-    }
-
-    private Object toTypedValue(InParam inParam) {
-        String value = inParam.getStringValue();
-        DataTypeEnum type = inParam.getType();
-        if (type == null) {
-            return value;
-        }
-        switch (type) {
-            case INT:
-                return toInt(value);
-            case DECIMAL:
-                return toDecimal(value);
-            case DATE:
-                return toOracleDate(value);
-            default:
-                // DATE_TIME (5), TEXT, CURRENCY, POURCENTAGE, UNSPECIFIED, CUSTOM → raw string
-                // (.NET Data_Type_Helper.InputToTypedValue `default: return value`).
-                return value;
-        }
-    }
-
-    /** .NET ConversionInvariante.ToInt: Decimal.TryParse(value w/o spaces, NumberStyles.Any) cast to Int32; else int.MinValue. */
-    private Integer toInt(String value) {
-        BigDecimal d = parseNumber(value);
-        return d == null ? Integer.MIN_VALUE : d.intValue(); // intValue() truncates toward zero, like (int)decimal
-    }
-
-    /** .NET ConversionInvariante.ToDecimal: Decimal.TryParse(value w/o spaces, NumberStyles.Any); else decimal.MinValue. */
-    private BigDecimal toDecimal(String value) {
-        BigDecimal d = parseNumber(value);
-        return d == null ? DECIMAL_MIN_VALUE : d;
-    }
-
-    /** Returns the parsed number, or null to signal the caller to bind its sentinel. */
-    private BigDecimal parseNumber(String value) {
-        if (value == null) {
-            return null;
-        }
-        String v = value.replace(" ", ""); // .NET ToInt/ToDecimal do value.Replace(" ", "")
-        if (v.isEmpty()) {
-            return null;
-        }
-        try {
-            return new BigDecimal(v);
-        } catch (NumberFormatException e) {
-            return null;
-        }
-    }
-
-    /**
-     * Binds a DATE param as an Oracle {@code DATE} (time-preserving), matching ODP.NET which sends the
-     * parsed {@code System.DateTime} as an Oracle DATE. This makes {@code to_date(?)} in the gabarit SQL
-     * round-trip cleanly regardless of the session NLS_DATE_FORMAT (unlike a {@code java.sql.Timestamp},
-     * which the driver sends as TIMESTAMP and {@code to_date(TIMESTAMP)} cannot parse → ORA-01830/01843).
-     */
-    private oracle.sql.DATE toOracleDate(String value) {
-        return new oracle.sql.DATE(toSqlTimestamp(value));
-    }
-
-    /**
-     * Parses a DATE param string to a time-preserving {@link Timestamp}. Parity: .NET
-     * ConversionInvariante.ToDateTime returns the parsed DateTime, or DateTime.MinValue when
-     * unset/unparseable (it does NOT throw).
-     */
-    private Timestamp toSqlTimestamp(String value) {
-        if (value == null || value.trim().isEmpty()) {
-            return DATETIME_MIN_VALUE;
-        }
-        String v = value.trim();
-        try {
-            return Timestamp.valueOf(LocalDateTime.parse(v, INPUT_FORMAT));
-        } catch (Exception e) {
-            try {
-                return Timestamp.valueOf(LocalDate.parse(v).atStartOfDay());
-            } catch (Exception e2) {
-                return DATETIME_MIN_VALUE;
-            }
-        }
-    }
-}
-```
-
-### 2.2 `application.yaml` — pin the session date format  *(REQUIRED)*
-Path: `src/main/resources/application.yaml`. Under `spring.datasource`, add the `hikari` block:
-
-```yaml
-  datasource:
-    driver-class-name: oracle.jdbc.driver.OracleDriver
-    url: jdbc:oracle:thin:@osfreygp3dwpp.ocp.cloud.socgen:1522:YGP3DWPP
-    username: qxp
-    password: ******** - commented since it's a secret
-    hikari:
-      # Pin the Oracle session date format on every pooled connection. The gabarit (task) SQL contains
-      # hardcoded day-first date literals compared against DATE columns (e.g. '31/12/2199'), which Oracle
-      # parses with the session NLS_DATE_FORMAT. The .NET production app ran with a day-first session; the
-      # Java thin driver otherwise derives the format from the JVM locale, so those literals (and to_date(?))
-      # fail with ORA-01843 / ORA-01830. DD/MM/YYYY is dictated by the literals in the SQL itself.
-      connection-init-sql: ALTER SESSION SET NLS_DATE_FORMAT='DD/MM/YYYY'
-```
-
-> Belt-and-suspenders verification (optional, run once): on a Java-app connection vs the .NET app's
-> connection, compare `SELECT parameter, value FROM nls_session_parameters WHERE parameter LIKE 'NLS_DATE%'`.
-> If .NET shows anything other than `DD/MM/YYYY`, set ours to match that exact value instead.
-
-### 2.3 `InParamSqlMapperTest.java` — update DATE assertions to Oracle DATE
-Path: `src/test/java/com/socgen/sgs/api/quark/engine/mapper/InParamSqlMapperTest.java`
-Replace the `dateTimePreserving` test:
-
-```java
-    @Test
-    @DisplayName("#50 DATE binds a time-preserving Oracle DATE; DateTime.MinValue sentinel on unparseable")
-    void dateTimePreserving() throws java.sql.SQLException {
-        // Bound as oracle.sql.DATE (Oracle DATE) so the gabarit SQL's to_date(?) round-trips; assert via
-        // its timestampValue() to keep the time component check.
-        Object parsed = map(DataTypeEnum.DATE, "12/29/2023 14:30:00");
-        assertEquals(Timestamp.valueOf(LocalDateTime.of(2023, 12, 29, 14, 30, 0)),
-                ((oracle.sql.DATE) parsed).timestampValue());
-        assertEquals(DATETIME_MIN, ((oracle.sql.DATE) map(DataTypeEnum.DATE, "")).timestampValue());
-    }
-```
-
-### 2.4 Delete two dead SOAP stubs  *(cleanup — you asked)*
-Both are empty stubs still naming the **old** `qxpsmsdk.wsdl` / `QManagerSDKSvc` that no longer exists; the
-real client is `infra/interop/qxpsm/QxpsmSoapClient`. Nothing references them. Delete:
-- `src/main/java/com/socgen/sgs/api/quark/engine/integration/soap/client/EngineSoapClient.java`
-- `src/main/java/com/socgen/sgs/api/quark/engine/integration/soap/config/SoapConfig.java`
-
-(The `integration/soap/generated/` package is the Axis-generated QXPS model — leave it alone.)
+| Area | What | Applied (Mac copy) | In new repo `java repo 27-06` | Verified |
+|---|---|---|---|---|
+| A. Dynamic SQL date | NLS session format + Oracle DATE bind | ✅ | ❓ not confirmed by 27-06 verification | NLS-safety audit ✅ (this session) |
+| B. QXPSM SOAP | Correct WSDL/namespace, client, endpoints | ✅ | ✅ verified present | Probe L1+L2 PASSED on DEV |
+| C. QXPS buffer/timeout | 500 MB codec buffer, 2h timeouts | ✅ | ✅ verified present | — |
+| D. DAO/parse robustness | `DBreakRule` lenient parse + date null-guards | ✅ (Mac) | ❌ **still missing — REQUIRED, crashes 488654** | — |
+| E. Cleanup | remove temp DEBUG log, dead files | partial | pending | — |
 
 ---
 
-## 3. Apply order
-1. Apply §2.1, §2.2, §2.3; delete §2.4 files.
-2. `mvn clean install` → expect `BUILD SUCCESS`.
-3. Re-run **488654**. Expect the per-task `ORA-01843 / ORA-01830` errors to disappear, tasks to produce
-   blocs, and the rendered PDF to contain real content.
+## A. Dynamic-SQL date fix — ORA-01843 / ORA-01830 (run 488654)
+
+**Symptom:** every Dynamique task SQL failed with `ORA-01843: not a valid month` / `ORA-01830: date
+format picture ends before converting entire input string`; each task produced "no blocs", PDF came out
+empty. The run still finalized `GENERATED` with 166 recorded errors (see open item O-1).
+
+**Root cause — two independent date problems, BOTH required (neither alone fixes it):**
+1. The gabarit SQL (stored in DB, shared verbatim with .NET) has hardcoded **day-first literals**
+   (`'31/12/2199'`) compared to DATE columns → Oracle does `to_date(literal, <session NLS_DATE_FORMAT>)`,
+   which only parses under `DD/MM/YYYY`. .NET ran a day-first session; Java set no NLS → thin driver took
+   it from the JVM locale → failure.
+2. DATE in-params were bound as `java.sql.Timestamp` → Oracle TIMESTAMP → `to_date(TIMESTAMP)` breaks.
+   .NET binds them as native Oracle DATE.
+
+| # | File | Action | Change | Type |
+|---|---|---|---|---|
+| A1 | `src/main/java/.../mapper/InParamSqlMapper.java` | EDIT | DATE case now `return toOracleDate(value)` → `new oracle.sql.DATE(toSqlTimestamp(value))` (time-preserving) instead of `java.sql.Timestamp`. Other types & sentinels unchanged. | code (REQUIRED) |
+| A2 | `src/main/resources/application.yaml` | EDIT | Add `spring.datasource.hikari.connection-init-sql: ALTER SESSION SET NLS_DATE_FORMAT='DD/MM/YYYY'` — pins the date format on every pooled connection. | **config** (REQUIRED) |
+| A3 | `src/test/java/.../mapper/InParamSqlMapperTest.java` | EDIT | Assert via `((oracle.sql.DATE) parsed).timestampValue()`; empty → DATETIME_MIN via `.timestampValue()`. | test |
+| A4 | `src/main/java/.../integration/soap/client/EngineSoapClient.java`<br>`src/main/java/.../integration/soap/config/SoapConfig.java` | DELETE | Dead empty stubs naming the removed `qxpsmsdk.wsdl`; nothing references them. (Leave `integration/soap/generated/` alone.) | cleanup |
+
+**NLS-safety audit (this session — is the `NLS_DATE_FORMAT` session setting safe?): YES.** Two passes over
+the .NET tree confirmed:
+- .NET **never** sets NLS / `ALTER SESSION` anywhere (0 hits); it inherits day-first implicitly from the
+  Windows Oracle client (`NLS_LANG` registry / OS locale). Making it explicit in Java replaces a hidden
+  dependency — it does not diverge from .NET.
+- The whole codebase is **uniformly day-first**: 48 implicit `'31/12/2199'`-style literals, all DD/MM;
+  every explicit mask is `dd/mm/yyyy`/`dd-mm-yyyy`/`mm/yyyy`. **Zero** month-first, **zero** ISO literals.
+- All C# `DateTime` params bind as native `OracleDbType.Date` (binary, NLS-irrelevant); C# never builds a
+  date literal into SQL text. So the session setting cannot break any other code path.
+- Caveats: `NLS_DATE_FORMAT` covers DATE only (TIMESTAMP uses a separate `NLS_TIMESTAMP_FORMAT` — none in
+  the shared SQL); one unmasked `to_date(p_date_exec)` at `QXP_PK_KII_BODY.sql:1857` is a DATE→DATE
+  round-trip (drops the time component; behavior-preserving).
+- **Not yet done:** sweep the Java repo for implicit date→string reads (`ResultSet.getString` on DATE
+  columns, unmasked `to_char`/`to_date` in Java) that would now render DD/MM/YYYY. The .NET side is fully verified.
 
 ---
 
-## 4. Separate item — "endpoint reports success though the run failed" (verify, do not guess)
-The run finalized `GENERATED` while inserting 166 errors and producing no blocs. Recording per-task SQL
-failures as run errors and still finalizing **may be .NET-faithful** (that is how .NET surfaces partial
-failures — via the run error table, not a hard fail). Before changing the status/HTTP semantics I want to
-confirm against the .NET `End_Run` / run-status logic. The date fix above removes the failures for this run,
-so the question is moot here; it is tracked as a follow-up, not changed blindly.
+## B. QXPSM SOAP client migration — wrong WSDL / namespace (run 509636)
 
-## 5. Side note — host inconsistency in this repo's application.yaml
-`qxps.server.url` = DEV `srvcldvapd001` (matches the run logs), but `qxp.thirdparty.url` and
-`qxpsm.soap.endpoint` point at `srvcldqxpu001` (UAT). Not related to the date errors, but worth aligning all
-three to the same environment before a real campaign.
+**Symptom:** `AxisFault: namespace mismatch require http://com.quark.qxpsm found
+http://webservice.manager.quark.com`.
+
+**Root cause:** the Java stub was generated from the wrong WSDL (`qxpsmsdk.wsdl` — Axis 1.x, RPC/encoded,
+namespace `http://webservice.manager.quark.com`). The live deployed server is **Axis 2, document/literal,
+namespace `http://com.quark.qxpsm`, service `RequestService`**. (Verified: .NET's real compiled proxy is
+also `com.quark.qxpsm`/`RequestService`; the `webservice.manager.quark.com` file was a stale, never-compiled
+leftover.) Secondary issue: the three Quark endpoints pointed at different environments (DEV vs UAT) so the
+SOAP step couldn't see the DEV-pooled document.
+
+| # | File | Action | Change | Type |
+|---|---|---|---|---|
+| B1 | `src/main/resources/wsdl/RequestService.wsdl` | CREATE | Fetched byte-exact from live server `…:8090/qxpsm/services/RequestService?wsdl`. Then **trimmed to the single SOAP 1.1 binding/port**, and **`<wsdl:fault name="QException">` stripped** from portType+binding (Axis 1.x couldn't generate `QException` → 42 `cannot find symbol` errors; faults still arrive as `AxisFault`). Final: 1 binding, 1 port, ns `com.quark.qxpsm`, 0 faults. | config/build |
+| B2 | `src/main/resources/wsdl/RequestService.full.wsdl` | CREATE | Untouched vendor original kept as reference backup. | build |
+| B3 | `pom.xml` (`axistools-maven-plugin`) | EDIT | `<wsdlFile>qxpsmsdk.wsdl</wsdlFile>` → `<wsdlFile>RequestService.wsdl</wsdlFile>`; stale comment updated. | build |
+| B4 | `src/main/java/.../integration/soap/generated/` | REGEN | Deleted old wrong-namespace package, regenerated via `mvn clean install` → `RequestService`, `RequestServiceLocator`, `RequestServicePortType`, `RequestServiceSoap11BindingStub` + type beans. | build output |
+| B5 | `infra/interop/qxpsm/QxpsmSoapClient.java` | EDIT | New locator/port names: `RequestServiceLocator.getRequestServiceHttpSoap11Endpoint(URL) → RequestServicePortType` (was `QManagerSDKSvcServiceLocator.getqxpsmsdk`). Added Axis client socket timeout `((org.apache.axis.client.Stub) stub).setTimeout(...)` (`0` = infinite, matching .NET `Timeout = Infinite`). **Multi-ref line removed.** Request logic unchanged. | code |
+| B6 | `application.yaml` | EDIT | Align all three Quark URLs to the same env (DEV `srvcldvapd001`): `qxps.server.url`, `qxpsm.soap.endpoint` (`…:8090/qxpsm/services/RequestService`), `qxp.thirdparty.url` (`…:8080/saveas/pdf/`). `qxpsm.soap.max-retries: 0`. | **config** |
+
+**Verified:** `QxpsmProbe` (throwaway `main()`, since deleted) ran L1 (`getOpenSessions` handshake) +
+L2 (`processRequest` doc/literal polymorphism) — **both PASSED** on DEV `srvcldvapd001:8090`, server
+QuarkXPress Server 21.0.2.0. The `java repo 27-06` verification confirmed this whole migration is present.
+
+> Note: the final PDF is produced via the QXPS HTTP `/pdf` endpoint (`qxp.thirdparty.url`), not the SOAP
+> `QuarkXPressRenderRequest`. Long-term option (deferred): migrate Axis 1.x → JAX-WS/CXF for this doc/literal service.
+
+---
+
+## C. QXPS buffer + timeout fix (run 509636)
+
+**Root cause:** `QxpsHttpClient` built its `WebClient` with no buffer limit → framework default 256 KB →
+`DataBufferLimitException: Exceeded limit on max bytes to buffer : 262144` on multi-MB responses
+(`/xml`, `/pdf`, literal QXP). Config gap, not a parity issue. Documents can be 100 MB+.
+
+| # | File | Action | Change | Type |
+|---|---|---|---|---|
+| C1 | `infra/interop/qxps/config/QxpsProperties.java` | EDIT | Added `Server.maxInMemorySizeBytes` (default `524288000` = 500 MB). | code |
+| C2 | `infra/interop/qxps/client/QxpsHttpClient.java` | EDIT | In `init()`, wire the limit: `.exchangeStrategies(ExchangeStrategies.builder().codecs(c -> c.defaultCodecs().maxInMemorySize(maxInMemory)).build())`. | code |
+| C3 | `application.yaml` | EDIT | `qxps.server.timeout` 1h→**2h** (`7200000`); **new** `qxps.server.max-in-memory-size-bytes: 524288000`; `qxpsm.soap.timeout` 1h→**2h**. (2h is finite & above .NET's 1h; safer than .NET's client-side infinite for a Kube pod.) | **config** |
+
+**Verified:** present in `java repo 27-06`.
+
+---
+
+## D. DAO / parse robustness — pending in new repo ❌
+
+Found during the `java repo 27-06` verification; **not yet applied there.** D1 is REQUIRED — it crashes 488654.
+
+| # | File | Action | Change | Type |
+|---|---|---|---|---|
+| D1 | `src/main/java/.../domain/dynamic/report/DBreakRule.java` | EDIT | Strict `Integer.parseInt` throws `NumberFormatException` on tokens like `"5L1"`. Add lenient `toInt(String)` via `new java.math.BigDecimal(v).intValue()`, returning `Integer.MIN_VALUE` on null/empty/parse-fail (mirrors .NET `Conversion.ToInt`). `parseRuleValues`/`analyseRule` use `toInt`. | code **(REQUIRED)** |
+| D2a | `infra/dao/impl/GetCompartimentRunsDaoImpl.java` (~L93) | EDIT | `p_date_echeance` null-guard: `dateEcheance != null ? java.sql.Date.valueOf(...) : null` with explicit `java.sql.Types.DATE`. | code (recommended) |
+| D2b | `infra/dao/impl/EndRunDaoImpl.java` (~L57 and ~L86, BOTH) | EDIT | `p_date_fin` → `dateFin != null ? Timestamp.valueOf(dateFin) : null`. | code (recommended) |
+| D2c | `infra/dao/impl/InsertDataStorageDaoImpl.java` (~L45) | EDIT | `ops.setTimestamp(3, dateGeneration != null ? Timestamp.valueOf(dateGeneration) : null)`. | code (recommended) |
+
+---
+
+## E. Cleanup / temporary items to remove
+
+| # | File | Action | Note |
+|---|---|---|---|
+| E1 | `application.yaml` (~L70-73) | REMOVE | Temp `logging.level.org.apache.axis.transport.http: DEBUG` (`TEMP-DEBUG-RT`) — remove once SOAP diagnosis is done. |
+| E2 | `src/main/resources/wsdl/qxpsmsdk.wsdl` | DELETE | Obsolete, no longer referenced. Keep `RequestService.full.wsdl` backup. |
+| E3 | `pom.xml:290` | EDIT | Stale comment `qxpsmsdk.wsdl` → `RequestService.wsdl` (cosmetic). |
+| E4 | `.../integration/soap/generated/QxpsmProbe.java` | DELETE | Throwaway probe — already deleted per verification. |
+
+---
+
+## Complete file-touch index
+
+**Created:** `wsdl/RequestService.wsdl`, `wsdl/RequestService.full.wsdl`, (throwaway) `generated/QxpsmProbe.java`
+**Edited (code):** `InParamSqlMapper.java`, `QxpsProperties.java`, `QxpsHttpClient.java`, `QxpsmSoapClient.java`,
+`DBreakRule.java`†, `GetCompartimentRunsDaoImpl.java`†, `EndRunDaoImpl.java`†, `InsertDataStorageDaoImpl.java`†
+**Edited (build/config):** `pom.xml`, `application.yaml`
+**Regenerated:** `integration/soap/generated/` package
+**Deleted:** `wsdl/qxpsmsdk.wsdl`, `generated/QxpsmProbe.java`, `soap/client/EngineSoapClient.java`, `soap/config/SoapConfig.java`
+**Test:** `InParamSqlMapperTest.java`
+† = still pending in `java repo 27-06`.
+
+---
+
+## Config that must live in yaml (application.yaml / env overlay)
+
+`qxps.server.timeout=7200000` · `qxps.server.max-in-memory-size-bytes=524288000` ·
+`qxpsm.soap.timeout=7200000` · `qxpsm.soap.endpoint` · `qxpsm.soap.max-retries=0` ·
+`qxp.thirdparty.url` · `qxps.server.url` ·
+`spring.datasource.hikari.connection-init-sql` (NLS_DATE_FORMAT) ·
+(temporary) `logging.level.org.apache.axis.transport.http`
+
+All three Quark endpoints (`qxps.server.url`, `qxpsm.soap.endpoint`, `qxp.thirdparty.url`) must point at the
+**same environment** or the SOAP step can't see the pooled document.
+
+---
+
+## Open items / next steps
+
+- **O-1 (verify, don't guess):** endpoint reports `GENERATED` even though per-task SQL failed (166 errors,
+  empty PDF on 488654). May be .NET-faithful — check .NET `End_Run` before changing run/HTTP status semantics.
+- **O-2:** apply D1 (**required**) + D2a-c to `java repo 27-06`, and confirm the Group-A date fixes are in
+  that repo (the 27-06 verification predates/omits them).
+- **O-3:** run the Java-side implicit-date-read sweep (see Group A audit caveat).
+- **O-4:** `mvn clean install` + **re-run 488654** (date fix + DBreakRule) and **509636** (QXPSM path);
+  509636 previously gave blank pages because it had 0 content tasks — validate rendering on content-ful 488654.
+- **O-5:** untested live array-bind paths: `InsertDataStorageDaoImpl.setPlsqlIndexTable`,
+  `EndRunDaoImpl.insertRunErrors`.
+- **O-6:** do the Group-E cleanup once diagnosis is complete.
