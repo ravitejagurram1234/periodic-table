@@ -26,10 +26,54 @@ but dropped the .NET step that converts that sentinel to **SQL NULL** before bin
 
 ---
 
-## Confirmations performed before patching
+## Scope: this fix is universal, not id_structure- or document-type-specific
 
-Both were read directly from the .NET source at
-`eos quark whole application code/qxp` (`QXP.Engine.Core` / `QXP.Framework`).
+`id_structure` is merely one INT-declared bind parameter; the defect is in the **shared InParam→SQL
+binding layer** (`InParamSqlMapper`), used by every run of every report type:
+- Both SQL execution paths route through it — `ProcessSqlBusiness` (SQL tasks) and `DynamicQueryPortImpl`
+  (Dynamique).
+- InParams are loaded per-run via `Get_In_Params` for **all** document types (Plaquette / DICI / KIID /
+  Annual / Dynamique / Compartiment).
+- The mapper never inspects column type or document type — it binds exactly what .NET binds for the
+  param's declared `DataTypeEnum`. So any run binding an INT/DECIMAL/DATE param whose value is the unset
+  sentinel is covered. It surfaced in 488654 (Dynamique) but is not specific to it.
+
+## Confirmations performed before patching (full .NET + ora.txt cross-check)
+
+Read directly from the .NET source at `eos quark whole application code/qxp`
+(`QXP.Engine.Core` / `QXP.Framework`) and the Oracle package bodies in `ora.txt`.
+
+### Completeness of the sentinel→NULL rule — ALL typed cases verified (not just INT)
+The Oracle-parameter layer (`OracleParameter.cs`) applies the same `Validation.IsSet(value) ?
+value : DBNull.Value` gate for **every** type `Data_Type_Helper.InputToTypedValue` can emit:
+
+| Produced CLR type | .NET overload | Gate | Sentinel → NULL |
+|---|---|---|---|
+| Int32   | `GetParameter(Int32)` `OracleParameter.cs:509-521` | `IsSet(int)` `Validation.cs:71`  | `int.MinValue` |
+| Decimal | `GetParameter(decimal)` `OracleParameter.cs:523-535` | `IsSet(decimal)` `Validation.cs:122` | `decimal.MinValue` |
+| DateTime| `GetParameter(DateTime)` `OracleParameter.cs:537-549` (`OracleDbType.Date`) | `IsSet(DateTime)` `Validation.cs:171` | `DateTime.MinValue` |
+| String / other | generic fallback `new OracleParameter(name, value)` `OracleParameter.cs:118-121` | **none** | — (raw value bound verbatim) |
+
+→ The Java mapper mirrors this exactly: INT/DECIMAL/DATE unset sentinel → typed SQL NULL (types
+`NUMERIC`/`NUMERIC`/`DATE`); every other type → raw string (no gate), matching the .NET fallback. The
+sentinels are identical (`Integer.MIN_VALUE`, `decimal.MinValue` = `-79228162514264337593543950335`,
+`DateTime.MinValue` = 0001-01-01). DECIMAL uses `compareTo` to match .NET's scale-insensitive `!=`; the
+DATE null uses `Types.DATE` to mirror `OracleDbType.Date`.
+
+### ora.txt (package bodies) cross-check
+- **`Get_In_Params`** (`ora.txt:9186`): the cursor selects `p.INPUT_DATA_TYPE` as a **stored column** of
+  the parameter-definition table `qxp_params_type_rapport` — data-driven per parameter, never computed.
+  So a param's type is a fixed DB attribute; only the *binding* is ours to fix. Cursor columns
+  (`nom_parametre`, `input_data_type`, `valeur`) match what `InParamMapper` reads.
+- **`End_Run`** (`ora.txt:9350`): `PROCEDURE End_Run(p_id_run, p_run_status, p_id_suivi, p_suivi_status,
+  p_date_fin, p_log_trace, p_id_doc_pdf, p_id_doc_qxp, p_id_doc_doc)` — all `IN NUMBER`, **no DEFAULTs**,
+  doc-ids are the last three in that order. This matches `EndRunDaoImpl.declareParameters` exactly, so the
+  NULLs land on `QXP_RUN.ID_DOC_PDF/QXP/DOC` (`UPDATE` at `ora.txt:9407`). The FK that raised ORA-02291 is
+  in table DDL (not in this package-body-only dump); the body itself nulls those columns in its cleanup
+  block, confirming NULL is a valid value. `Insert_Document` is a FUNCTION returning a positive NUMBER id,
+  consistent with `int.MinValue` = "absent".
+
+### Original two confirmations
 
 ### (a) Why the id_structure InParam is INT — and how .NET actually binds it
 - The InParam type is **DB-metadata-driven**: it is read from the `QXP_PK_RUN.Get_In_Params` cursor
@@ -152,12 +196,13 @@ public class InParamSqlMapper {
                 return i == Integer.MIN_VALUE ? new SqlParameterValue(Types.NUMERIC, null) : i;
             }
             case DECIMAL: {
+                // compareTo (not equals) so an unset value is caught regardless of its scale.
                 BigDecimal d = toDecimal(value);
-                return DECIMAL_MIN_VALUE.equals(d) ? new SqlParameterValue(Types.NUMERIC, null) : d;
+                return DECIMAL_MIN_VALUE.compareTo(d) == 0 ? new SqlParameterValue(Types.NUMERIC, null) : d;
             }
             case DATE: {
                 Timestamp ts = toSqlTimestamp(value);
-                return DATETIME_MIN_VALUE.equals(ts) ? new SqlParameterValue(Types.TIMESTAMP, null) : ts;
+                return DATETIME_MIN_VALUE.equals(ts) ? new SqlParameterValue(Types.DATE, null) : ts;
             }
             default:
                 // DATE_TIME (5), TEXT, CURRENCY, POURCENTAGE, UNSPECIFIED, CUSTOM → raw string
@@ -217,11 +262,15 @@ public class InParamSqlMapper {
 }
 ```
 
-> **Residual assumption (please confirm from the 488654 log if convenient):** this resolves ORA-01722
-> when bind `:7`'s value is the **unset sentinel** (empty / non-numeric → NULL, as .NET does). If `:7`
-> were instead a *real numeric* structure id, both engines would bind that number and both would hit
-> `TO_NUMBER(id_structure)` — a data/gabarit issue affecting .NET equally. Either way this change is
-> pure .NET parity and safe; it only alters behaviour for the sentinel case.
+> **Correctness is settled; one symptom-specific note.** The change is proven **byte-for-byte .NET
+> parity** — it emits the identical typed NULL the .NET Oracle-parameter layer emits for an unset
+> sentinel (verified for INT/DECIMAL/DATE above), so it is not a bet on Oracle's NULL-comparison
+> behaviour: whatever the live DB does with .NET's bind, it does identically with ours. The only
+> value-dependent point is whether it *clears the specific 488654 ORA-01722*: that holds when bind `:7`'s
+> value is the unset sentinel (empty / non-numeric → NULL, as .NET does). If `:7` were instead a *real
+> numeric* structure id, both engines bind that number and both apply `TO_NUMBER(id_structure)` — a
+> data/gabarit issue affecting .NET equally, not a port defect. The 488654 log's in-param dump would
+> confirm `:7`'s value/type, but it changes nothing about the fix's correctness.
 
 ---
 
@@ -450,7 +499,7 @@ class InParamSqlMapperTest {
     void dateTimePreserving() {
         assertEquals(Timestamp.valueOf(LocalDateTime.of(2023, 12, 29, 14, 30, 0)),
                 map(DataTypeEnum.DATE, "12/29/2023 14:30:00"));
-        assertTypedNull(Types.TIMESTAMP, map(DataTypeEnum.DATE, ""));
+        assertTypedNull(Types.DATE, map(DataTypeEnum.DATE, ""));
     }
 
     @Test
