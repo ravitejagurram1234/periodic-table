@@ -1,4 +1,4 @@
-C:\Users\rgurram062722\bin\jdk-17.0.16+8\bin\java.exe -Dspring.profiles.active=local -Dspring.config.location=classpath:/,file:./src/main/config/local/ -XX:TieredStopAtLevel=1 -Dspring.output.ansi.enabled=always -javaagent:C:\Users\rgurram062722\bin\idea-IU-26.1\lib\idea_rt.jar=53027 -Dfile.encoding=UTF-8 @C:\Users\rgurram062722\AppData\Local\Temp\idea_arg_file31730003 com.socgen.sgs.api.quark.engine.Application
+C:\Users\rgurram062722\bin\jdk-17.0.16+8\bin\java.exe -Dspring.profiles.active=local -Dspring.config.location=classpath:/,file:./src/main/config/local/ -XX:TieredStopAtLevel=1 -Dspring.output.ansi.enabled=always -javaagent:C:\Users\rgurram062722\bin\idea-IU-26.1\lib\idea_rt.jar=63257 -Dfile.encoding=UTF-8 @C:\Users\rgurram062722\AppData\Local\Temp\idea_arg_file16623707 com.socgen.sgs.api.quark.engine.Application
 
   .   ____          _            __ _ _
  /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
@@ -8,62 +8,62 @@ C:\Users\rgurram062722\bin\jdk-17.0.16+8\bin\java.exe -Dspring.profiles.active=l
  =========|_|==============|___/=/_/_/_/
  :: Spring Boot ::                (v3.2.0)
 
-2026-07-15T07:13:05.627+05:30  INFO 19788 --- [quark-engine-service] [  restartedMain] [                                                 ] c.s.sgs.api.quark.engine.Application     : Starting Application using Java 17.0.16 with PID 19788 (C:\Users\rgurram062722\Documents\GitHub\engine service repo\quark-engine\target\classes started by rgurram062722 in C:\Users\rgurram062722\Documents\GitHub\engine service repo\quark-engine)
-2026-07-15T07:13:05.631+05:30  INFO 19788 --- [quark-engine-service] [  restartedMain] [                                                 ] c.s.sgs.api.quark.engine.Application     : The following 1 profile is active: "local"
-2026-07-15T07:13:05.800+05:30  INFO 19788 --- [quark-engine-service] [  restartedMain] [                                                 ] o.s.b.devtools.restart.ChangeableUrls    : The Class-Path manifest attribute in C:\Users\rgurram062722\.m2\repository\com\oracle\database\jdbc\ojdbc10\19.18.0.0\ojdbc10-19.18.0.0.jar referenced one or more files that do not exist: file:/C:/Users/rgurram062722/.m2/repository/com/oracle/database/jdbc/ojdbc10/19.18.0.0/oraclepki.jar
-2026-07-15T07:13:05.801+05:30  INFO 19788 --- [quark-engine-service] [  restartedMain] [                                                 ] o.s.b.devtools.restart.ChangeableUrls    : The Class-Path manifest attribute in C:\Users\rgurram062722\.m2\repository\com\sun\xml\bind\jaxb-impl\4.0.4\jaxb-impl-4.0.4.jar referenced one or more files that do not exist: file:/C:/Users/rgurram062722/.m2/repository/com/sun/xml/bind/jaxb-impl/4.0.4/jaxb-core.jar,file:/C:/Users/rgurram062722/.m2/repository/com/sun/xml/bind/jaxb-impl/4.0.4/angus-activation.jar
-2026-07-15T07:13:05.801+05:30  INFO 19788 --- [quark-engine-service] [  restartedMain] [                                                 ] o.s.b.devtools.restart.ChangeableUrls    : The Class-Path manifest attribute in C:\Users\rgurram062722\.m2\repository\com\sun\xml\bind\jaxb-core\4.0.4\jaxb-core-4.0.4.jar referenced one or more files that do not exist: file:/C:/Users/rgurram062722/.m2/repository/com/sun/xml/bind/jaxb-core/4.0.4/jakarta.activation-api.jar,file:/C:/Users/rgurram062722/.m2/repository/com/sun/xml/bind/jaxb-core/4.0.4/jakarta.xml.bind-api.jar
-2026-07-15T07:13:05.801+05:30  INFO 19788 --- [quark-engine-service] [  restartedMain] [                                                 ] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
-2026-07-15T07:13:05.801+05:30  INFO 19788 --- [quark-engine-service] [  restartedMain] [                                                 ] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
-2026-07-15T07:13:08.465+05:30  INFO 19788 --- [quark-engine-service] [  restartedMain] [                                                 ] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
-2026-07-15T07:13:08.529+05:30  INFO 19788 --- [quark-engine-service] [  restartedMain] [                                                 ] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 56 ms. Found 0 JPA repository interfaces.
-2026-07-15T07:13:08.909+05:30  WARN 19788 --- [quark-engine-service] [  restartedMain] [                                                 ] trationDelegate$BeanPostProcessorChecker : Bean 'com.socgen.apibank.autoconfigure.swaggerui.SwaggerUiAutoConfiguration' of type [com.socgen.apibank.autoconfigure.swaggerui.SwaggerUiAutoConfiguration] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). The currently created BeanPostProcessor [swaggerUiOptionsOptionsPropagator] is declared through a non-static factory method on that class; consider declaring it as static instead.
-2026-07-15T07:13:08.922+05:30  WARN 19788 --- [quark-engine-service] [  restartedMain] [                                                 ] trationDelegate$BeanPostProcessorChecker : Bean 'sg.swagger-ui3-com.socgen.apibank.autoconfigure.swaggerui.SwaggerUiProperties' of type [com.socgen.apibank.autoconfigure.swaggerui.SwaggerUiProperties] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected into a currently created BeanPostProcessor [swaggerUiOptionsOptionsPropagator]? Check the corresponding BeanPostProcessor declaration and its dependencies.
-2026-07-15T07:13:09.066+05:30  WARN 19788 --- [quark-engine-service] [  restartedMain] [                                                 ] trationDelegate$BeanPostProcessorChecker : Bean 'org.hibernate.validator.internal.constraintvalidators.bv.PatternValidator' of type [org.hibernate.validator.internal.constraintvalidators.bv.PatternValidator] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected into a currently created BeanPostProcessor [swaggerUiOptionsOptionsPropagator]? Check the corresponding BeanPostProcessor declaration and its dependencies.
-2026-07-15T07:13:09.070+05:30  WARN 19788 --- [quark-engine-service] [  restartedMain] [                                                 ] trationDelegate$BeanPostProcessorChecker : Bean 'org.hibernate.validator.internal.constraintvalidators.hv.URLValidator' of type [org.hibernate.validator.internal.constraintvalidators.hv.URLValidator] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected into a currently created BeanPostProcessor [swaggerUiOptionsOptionsPropagator]? Check the corresponding BeanPostProcessor declaration and its dependencies.
-2026-07-15T07:13:09.082+05:30  WARN 19788 --- [quark-engine-service] [  restartedMain] [                                                 ] trationDelegate$BeanPostProcessorChecker : Bean 'com.socgen.apibank.openapi.validation.AtLeastOneFlowValidator' of type [com.socgen.apibank.openapi.validation.AtLeastOneFlowValidator] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected into a currently created BeanPostProcessor [swaggerUiOptionsOptionsPropagator]? Check the corresponding BeanPostProcessor declaration and its dependencies.
-2026-07-15T07:13:09.083+05:30  WARN 19788 --- [quark-engine-service] [  restartedMain] [                                                 ] trationDelegate$BeanPostProcessorChecker : Bean 'com.socgen.apibank.openapi.validation.EachFlowHasUrlValidator' of type [com.socgen.apibank.openapi.validation.EachFlowHasUrlValidator] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected into a currently created BeanPostProcessor [swaggerUiOptionsOptionsPropagator]? Check the corresponding BeanPostProcessor declaration and its dependencies.
-2026-07-15T07:13:09.085+05:30  WARN 19788 --- [quark-engine-service] [  restartedMain] [                                                 ] trationDelegate$BeanPostProcessorChecker : Bean 'sg.openapi-com.socgen.apibank.openapi.OpenApiProperties' of type [com.socgen.apibank.openapi.OpenApiProperties] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected into a currently created BeanPostProcessor [swaggerUiOptionsOptionsPropagator]? Check the corresponding BeanPostProcessor declaration and its dependencies.
-2026-07-15T07:13:09.110+05:30  WARN 19788 --- [quark-engine-service] [  restartedMain] [                                                 ] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.ws.config.annotation.DelegatingWsConfiguration' of type [org.springframework.ws.config.annotation.DelegatingWsConfiguration$$SpringCGLIB$$0] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). The currently created BeanPostProcessor [annotationActionEndpointMapping] is declared through a non-static factory method on that class; consider declaring it as static instead.
-2026-07-15T07:13:09.139+05:30  INFO 19788 --- [quark-engine-service] [  restartedMain] [                                                 ] .w.s.a.s.AnnotationActionEndpointMapping : Supporting [WS-Addressing August 2004, WS-Addressing 1.0]
-2026-07-15T07:13:09.453+05:30  WARN 19788 --- [quark-engine-service] [  restartedMain] [                                                 ] trationDelegate$BeanPostProcessorChecker : Bean 'com.socgen.apibank.problem.servlet.SgConnectProblemConfiguration' of type [com.socgen.apibank.problem.servlet.SgConnectProblemConfiguration] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). The currently created BeanPostProcessor [problemSecurityBeanPostProcessor] is declared through a non-static factory method on that class; consider declaring it as static instead.
-2026-07-15T07:13:09.968+05:30  INFO 19788 --- [quark-engine-service] [  restartedMain] [                                                 ] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
-2026-07-15T07:13:09.978+05:30  INFO 19788 --- [quark-engine-service] [  restartedMain] [                                                 ] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2026-07-15T07:13:09.979+05:30  INFO 19788 --- [quark-engine-service] [  restartedMain] [                                                 ] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.16]
-2026-07-15T07:13:10.139+05:30  INFO 19788 --- [quark-engine-service] [  restartedMain] [                                                 ] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
-2026-07-15T07:13:10.139+05:30  INFO 19788 --- [quark-engine-service] [  restartedMain] [                                                 ] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 4338 ms
-2026-07-15T07:13:10.928+05:30  INFO 19788 --- [quark-engine-service] [  restartedMain] [                                                 ] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
-2026-07-15T07:13:10.935+05:30  WARN 19788 --- [quark-engine-service] [  restartedMain] [                                                 ] c.zaxxer.hikari.util.DriverDataSource    : Registered driver with driverClassName=oracle.jdbc.driver.OracleDriver was not found, trying direct instantiation.
-2026-07-15T07:13:11.483+05:30  INFO 19788 --- [quark-engine-service] [  restartedMain] [                                                 ] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection oracle.jdbc.driver.T4CConnection@5dad57b8
-2026-07-15T07:13:11.485+05:30  INFO 19788 --- [quark-engine-service] [  restartedMain] [                                                 ] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
-2026-07-15T07:13:11.493+05:30  INFO 19788 --- [quark-engine-service] [  restartedMain] [                                                 ] o.s.b.a.h2.H2ConsoleAutoConfiguration    : H2 console available at '/h2-console'. Database available at 'jdbc:oracle:thin:@osfreygp3dwpp.ocp.cloud.socgen:1522:YGP3DWPP'
-2026-07-15T07:13:11.877+05:30  INFO 19788 --- [quark-engine-service] [  restartedMain] [                                                 ] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
-2026-07-15T07:13:11.943+05:30  INFO 19788 --- [quark-engine-service] [  restartedMain] [                                                 ] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.3.1.Final
-2026-07-15T07:13:11.983+05:30  INFO 19788 --- [quark-engine-service] [  restartedMain] [                                                 ] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
-2026-07-15T07:13:12.231+05:30  INFO 19788 --- [quark-engine-service] [  restartedMain] [                                                 ] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
-2026-07-15T07:13:12.752+05:30  INFO 19788 --- [quark-engine-service] [  restartedMain] [                                                 ] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
-2026-07-15T07:13:12.758+05:30  INFO 19788 --- [quark-engine-service] [  restartedMain] [                                                 ] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
-2026-07-15T07:13:13.074+05:30  INFO 19788 --- [quark-engine-service] [  restartedMain] [                                                 ] c.s.s.a.q.e.s.t.i.TaskProcessServiceImpl : Registered 7 task process strategies: [class com.socgen.sgs.api.quark.engine.domain.task.TaskCompartiment, class com.socgen.sgs.api.quark.engine.domain.task.TaskSql, class com.socgen.sgs.api.quark.engine.domain.task.TaskDid, class com.socgen.sgs.api.quark.engine.domain.task.TaskQxpPrevious, class com.socgen.sgs.api.quark.engine.domain.task.TaskSystem, class com.socgen.sgs.api.quark.engine.domain.task.TaskDocument, class com.socgen.sgs.api.quark.engine.domain.task.TaskDynamique]
-2026-07-15T07:13:13.083+05:30  INFO 19788 --- [quark-engine-service] [  restartedMain] [                                                 ] s.a.q.e.s.t.i.TaskPostProcessServiceImpl : Registered 1 task post-process strategies: [class com.socgen.sgs.api.quark.engine.domain.task.TaskDid]
-2026-07-15T07:13:14.187+05:30  INFO 19788 --- [quark-engine-service] [  restartedMain] [                                                 ] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 13 endpoint(s) beneath base path '/actuator'
-2026-07-15T07:13:14.300+05:30  WARN 19788 --- [quark-engine-service] [  restartedMain] [                                                 ] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
-2026-07-15T07:13:24.507+05:30  INFO 19788 --- [quark-engine-service] [  restartedMain] [                                                 ] s.a.p.s.ProblemSecurityBeanPostProcessor : Register HttpSecurity's exceptionHandling
-2026-07-15T07:13:24.588+05:30  INFO 19788 --- [quark-engine-service] [  restartedMain] [                                                 ] o.s.s.w.a.c.ChannelProcessingFilter      : Validated configuration attributes
-2026-07-15T07:13:24.603+05:30  INFO 19788 --- [quark-engine-service] [  restartedMain] [                                                 ] o.s.s.web.DefaultSecurityFilterChain     : Will secure Or [Ant [pattern='/api-docs'], Ant [pattern='/v3/api-docs'], Ant [pattern='/favicon.ico'], Ant [pattern='/api-docs*'], Ant [pattern='/v3/api-docs*'], Ant [pattern='/api-docs/**'], Ant [pattern='/v3/api-docs/**'], Ant [pattern='/api-docs.yaml/*'], Ant [pattern='/swagger-ui.html'], Ant [pattern='/swagger-ui/**'], Ant [pattern='/sg/swagger-ui/**']] with [org.springframework.security.web.session.DisableEncodeUrlFilter@99fe9ad, org.springframework.security.web.access.channel.ChannelProcessingFilter@7e58e157, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@4fb21e88, org.springframework.security.web.context.SecurityContextHolderFilter@4cf6675b, org.springframework.security.web.header.HeaderWriterFilter@5381ccf1, org.springframework.security.web.csrf.CsrfFilter@4a5bdbfb, org.springframework.security.web.authentication.logout.LogoutFilter@7129d577, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@70ec14db, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@17924bcf, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@52217ca2, org.springframework.security.web.access.ExceptionTranslationFilter@7bf7eff1, org.springframework.security.web.access.intercept.AuthorizationFilter@5dc43391]
-2026-07-15T07:13:24.644+05:30  INFO 19788 --- [quark-engine-service] [  restartedMain] [                                                 ] s.a.p.s.ProblemSecurityBeanPostProcessor : Register HttpSecurity's exceptionHandling
-2026-07-15T07:13:24.657+05:30  INFO 19788 --- [quark-engine-service] [  restartedMain] [                                                 ] s.a.p.s.ProblemSecurityBeanPostProcessor : Register HttpSecurity's exceptionHandling
-2026-07-15T07:13:24.748+05:30  INFO 19788 --- [quark-engine-service] [  restartedMain] [                                                 ] s.a.p.s.ProblemSecurityBeanPostProcessor : Register BearerTokenAuthenticationFilter's authentication entry point
-2026-07-15T07:13:24.750+05:30  INFO 19788 --- [quark-engine-service] [  restartedMain] [                                                 ] o.s.s.w.a.c.ChannelProcessingFilter      : Validated configuration attributes
-2026-07-15T07:13:24.756+05:30  INFO 19788 --- [quark-engine-service] [  restartedMain] [                                                 ] o.s.s.web.DefaultSecurityFilterChain     : Will secure Or [DispatcherServletDelegating [ant = Ant [pattern='/api/**'], mvc = Mvc [pattern='/api/**']]] with [org.springframework.security.web.session.DisableEncodeUrlFilter@3532b27f, org.springframework.security.web.access.channel.ChannelProcessingFilter@52883251, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@3ea17e7b, org.springframework.security.web.context.SecurityContextHolderFilter@68c24ca5, org.springframework.security.web.header.HeaderWriterFilter@b9558da, org.springframework.web.filter.CorsFilter@57e750f6, org.springframework.security.web.authentication.logout.LogoutFilter@60425bfc, com.socgen.apibank.autoconfigure.sgconnect.servlet.AuthenticationServiceUnavailableHandlerFilter@60d3eb57, org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter@4b4fcd3d, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@6e8daff9, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@2db1f31a, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@40d20c78, org.springframework.security.web.session.SessionManagementFilter@24098a49, org.springframework.security.web.access.ExceptionTranslationFilter@140d2223, org.springframework.security.web.access.intercept.AuthorizationFilter@750fd2f0]
-2026-07-15T07:13:25.845+05:30  INFO 19788 --- [quark-engine-service] [  restartedMain] [                                                 ] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
-2026-07-15T07:13:25.970+05:30  INFO 19788 --- [quark-engine-service] [  restartedMain] [                                                 ] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path ''
-2026-07-15T07:13:25.975+05:30  INFO 19788 --- [quark-engine-service] [  restartedMain] [                                                 ] o.s.a.r.c.CachingConnectionFactory       : Attempting to connect to: [rabbitmq-vap-dev-965c0883.gslb2.trafficmanager.eu-fr-paris.cloud.socgen:5671]
-2026-07-15T07:13:26.254+05:30  INFO 19788 --- [quark-engine-service] [  restartedMain] [                                                 ] o.s.a.r.c.CachingConnectionFactory       : Created new connection: rabbitConnectionFactory#63dc00ec:0/SimpleConnection@24a2594c [delegate=amqp://quark_dev@182.8.28.27:5671/vap-quark-host, localPort=51742]
-2026-07-15T07:13:26.362+05:30  INFO 19788 --- [quark-engine-service] [  restartedMain] [                                                 ] c.s.sgs.api.quark.engine.Application     : Started Application in 21.348 seconds (process running for 25.169)
-2026-07-15T07:14:12.314+05:30  INFO 19788 --- [quark-engine-service] [nio-8080-exec-1] [                                                 ] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
-2026-07-15T07:14:12.314+05:30  INFO 19788 --- [quark-engine-service] [nio-8080-exec-1] [                                                 ] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
-2026-07-15T07:14:12.317+05:30  INFO 19788 --- [quark-engine-service] [nio-8080-exec-1] [                                                 ] o.s.web.servlet.DispatcherServlet        : Completed initialization in 2 ms
-2026-07-15T07:14:16.000+05:30  WARN 19788 --- [quark-engine-service] [ctor-http-nio-2] [                                                 ] i.o.exporter.zipkin.ZipkinSpanExporter   : Failed to export spans
+2026-07-15T09:45:37.954+05:30  INFO 27620 --- [quark-engine-service] [  restartedMain] [                                                 ] c.s.sgs.api.quark.engine.Application     : Starting Application using Java 17.0.16 with PID 27620 (C:\Users\rgurram062722\Documents\GitHub\engine service repo\quark-engine\target\classes started by rgurram062722 in C:\Users\rgurram062722\Documents\GitHub\engine service repo\quark-engine)
+2026-07-15T09:45:37.958+05:30  INFO 27620 --- [quark-engine-service] [  restartedMain] [                                                 ] c.s.sgs.api.quark.engine.Application     : The following 1 profile is active: "local"
+2026-07-15T09:45:38.136+05:30  INFO 27620 --- [quark-engine-service] [  restartedMain] [                                                 ] o.s.b.devtools.restart.ChangeableUrls    : The Class-Path manifest attribute in C:\Users\rgurram062722\.m2\repository\com\oracle\database\jdbc\ojdbc10\19.18.0.0\ojdbc10-19.18.0.0.jar referenced one or more files that do not exist: file:/C:/Users/rgurram062722/.m2/repository/com/oracle/database/jdbc/ojdbc10/19.18.0.0/oraclepki.jar
+2026-07-15T09:45:38.137+05:30  INFO 27620 --- [quark-engine-service] [  restartedMain] [                                                 ] o.s.b.devtools.restart.ChangeableUrls    : The Class-Path manifest attribute in C:\Users\rgurram062722\.m2\repository\com\sun\xml\bind\jaxb-impl\4.0.4\jaxb-impl-4.0.4.jar referenced one or more files that do not exist: file:/C:/Users/rgurram062722/.m2/repository/com/sun/xml/bind/jaxb-impl/4.0.4/jaxb-core.jar,file:/C:/Users/rgurram062722/.m2/repository/com/sun/xml/bind/jaxb-impl/4.0.4/angus-activation.jar
+2026-07-15T09:45:38.137+05:30  INFO 27620 --- [quark-engine-service] [  restartedMain] [                                                 ] o.s.b.devtools.restart.ChangeableUrls    : The Class-Path manifest attribute in C:\Users\rgurram062722\.m2\repository\com\sun\xml\bind\jaxb-core\4.0.4\jaxb-core-4.0.4.jar referenced one or more files that do not exist: file:/C:/Users/rgurram062722/.m2/repository/com/sun/xml/bind/jaxb-core/4.0.4/jakarta.activation-api.jar,file:/C:/Users/rgurram062722/.m2/repository/com/sun/xml/bind/jaxb-core/4.0.4/jakarta.xml.bind-api.jar
+2026-07-15T09:45:38.137+05:30  INFO 27620 --- [quark-engine-service] [  restartedMain] [                                                 ] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2026-07-15T09:45:38.137+05:30  INFO 27620 --- [quark-engine-service] [  restartedMain] [                                                 ] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2026-07-15T09:45:41.101+05:30  INFO 27620 --- [quark-engine-service] [  restartedMain] [                                                 ] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-07-15T09:45:41.165+05:30  INFO 27620 --- [quark-engine-service] [  restartedMain] [                                                 ] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 57 ms. Found 0 JPA repository interfaces.
+2026-07-15T09:45:41.552+05:30  WARN 27620 --- [quark-engine-service] [  restartedMain] [                                                 ] trationDelegate$BeanPostProcessorChecker : Bean 'com.socgen.apibank.autoconfigure.swaggerui.SwaggerUiAutoConfiguration' of type [com.socgen.apibank.autoconfigure.swaggerui.SwaggerUiAutoConfiguration] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). The currently created BeanPostProcessor [swaggerUiOptionsOptionsPropagator] is declared through a non-static factory method on that class; consider declaring it as static instead.
+2026-07-15T09:45:41.567+05:30  WARN 27620 --- [quark-engine-service] [  restartedMain] [                                                 ] trationDelegate$BeanPostProcessorChecker : Bean 'sg.swagger-ui3-com.socgen.apibank.autoconfigure.swaggerui.SwaggerUiProperties' of type [com.socgen.apibank.autoconfigure.swaggerui.SwaggerUiProperties] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected into a currently created BeanPostProcessor [swaggerUiOptionsOptionsPropagator]? Check the corresponding BeanPostProcessor declaration and its dependencies.
+2026-07-15T09:45:41.720+05:30  WARN 27620 --- [quark-engine-service] [  restartedMain] [                                                 ] trationDelegate$BeanPostProcessorChecker : Bean 'org.hibernate.validator.internal.constraintvalidators.bv.PatternValidator' of type [org.hibernate.validator.internal.constraintvalidators.bv.PatternValidator] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected into a currently created BeanPostProcessor [swaggerUiOptionsOptionsPropagator]? Check the corresponding BeanPostProcessor declaration and its dependencies.
+2026-07-15T09:45:41.724+05:30  WARN 27620 --- [quark-engine-service] [  restartedMain] [                                                 ] trationDelegate$BeanPostProcessorChecker : Bean 'org.hibernate.validator.internal.constraintvalidators.hv.URLValidator' of type [org.hibernate.validator.internal.constraintvalidators.hv.URLValidator] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected into a currently created BeanPostProcessor [swaggerUiOptionsOptionsPropagator]? Check the corresponding BeanPostProcessor declaration and its dependencies.
+2026-07-15T09:45:41.737+05:30  WARN 27620 --- [quark-engine-service] [  restartedMain] [                                                 ] trationDelegate$BeanPostProcessorChecker : Bean 'com.socgen.apibank.openapi.validation.AtLeastOneFlowValidator' of type [com.socgen.apibank.openapi.validation.AtLeastOneFlowValidator] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected into a currently created BeanPostProcessor [swaggerUiOptionsOptionsPropagator]? Check the corresponding BeanPostProcessor declaration and its dependencies.
+2026-07-15T09:45:41.738+05:30  WARN 27620 --- [quark-engine-service] [  restartedMain] [                                                 ] trationDelegate$BeanPostProcessorChecker : Bean 'com.socgen.apibank.openapi.validation.EachFlowHasUrlValidator' of type [com.socgen.apibank.openapi.validation.EachFlowHasUrlValidator] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected into a currently created BeanPostProcessor [swaggerUiOptionsOptionsPropagator]? Check the corresponding BeanPostProcessor declaration and its dependencies.
+2026-07-15T09:45:41.740+05:30  WARN 27620 --- [quark-engine-service] [  restartedMain] [                                                 ] trationDelegate$BeanPostProcessorChecker : Bean 'sg.openapi-com.socgen.apibank.openapi.OpenApiProperties' of type [com.socgen.apibank.openapi.OpenApiProperties] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected into a currently created BeanPostProcessor [swaggerUiOptionsOptionsPropagator]? Check the corresponding BeanPostProcessor declaration and its dependencies.
+2026-07-15T09:45:41.766+05:30  WARN 27620 --- [quark-engine-service] [  restartedMain] [                                                 ] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.ws.config.annotation.DelegatingWsConfiguration' of type [org.springframework.ws.config.annotation.DelegatingWsConfiguration$$SpringCGLIB$$0] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). The currently created BeanPostProcessor [annotationActionEndpointMapping] is declared through a non-static factory method on that class; consider declaring it as static instead.
+2026-07-15T09:45:41.796+05:30  INFO 27620 --- [quark-engine-service] [  restartedMain] [                                                 ] .w.s.a.s.AnnotationActionEndpointMapping : Supporting [WS-Addressing August 2004, WS-Addressing 1.0]
+2026-07-15T09:45:42.127+05:30  WARN 27620 --- [quark-engine-service] [  restartedMain] [                                                 ] trationDelegate$BeanPostProcessorChecker : Bean 'com.socgen.apibank.problem.servlet.SgConnectProblemConfiguration' of type [com.socgen.apibank.problem.servlet.SgConnectProblemConfiguration] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). The currently created BeanPostProcessor [problemSecurityBeanPostProcessor] is declared through a non-static factory method on that class; consider declaring it as static instead.
+2026-07-15T09:45:42.675+05:30  INFO 27620 --- [quark-engine-service] [  restartedMain] [                                                 ] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2026-07-15T09:45:42.685+05:30  INFO 27620 --- [quark-engine-service] [  restartedMain] [                                                 ] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-07-15T09:45:42.685+05:30  INFO 27620 --- [quark-engine-service] [  restartedMain] [                                                 ] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.16]
+2026-07-15T09:45:42.852+05:30  INFO 27620 --- [quark-engine-service] [  restartedMain] [                                                 ] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-07-15T09:45:42.853+05:30  INFO 27620 --- [quark-engine-service] [  restartedMain] [                                                 ] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 4715 ms
+2026-07-15T09:45:43.614+05:30  INFO 27620 --- [quark-engine-service] [  restartedMain] [                                                 ] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-07-15T09:45:43.620+05:30  WARN 27620 --- [quark-engine-service] [  restartedMain] [                                                 ] c.zaxxer.hikari.util.DriverDataSource    : Registered driver with driverClassName=oracle.jdbc.driver.OracleDriver was not found, trying direct instantiation.
+2026-07-15T09:45:44.121+05:30  INFO 27620 --- [quark-engine-service] [  restartedMain] [                                                 ] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection oracle.jdbc.driver.T4CConnection@1c50838d
+2026-07-15T09:45:44.123+05:30  INFO 27620 --- [quark-engine-service] [  restartedMain] [                                                 ] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-07-15T09:45:44.131+05:30  INFO 27620 --- [quark-engine-service] [  restartedMain] [                                                 ] o.s.b.a.h2.H2ConsoleAutoConfiguration    : H2 console available at '/h2-console'. Database available at 'jdbc:oracle:thin:@osfreygp3dwpp.ocp.cloud.socgen:1522:YGP3DWPP'
+2026-07-15T09:45:44.513+05:30  INFO 27620 --- [quark-engine-service] [  restartedMain] [                                                 ] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-07-15T09:45:44.581+05:30  INFO 27620 --- [quark-engine-service] [  restartedMain] [                                                 ] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.3.1.Final
+2026-07-15T09:45:44.623+05:30  INFO 27620 --- [quark-engine-service] [  restartedMain] [                                                 ] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-07-15T09:45:44.864+05:30  INFO 27620 --- [quark-engine-service] [  restartedMain] [                                                 ] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-07-15T09:45:45.404+05:30  INFO 27620 --- [quark-engine-service] [  restartedMain] [                                                 ] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-07-15T09:45:45.409+05:30  INFO 27620 --- [quark-engine-service] [  restartedMain] [                                                 ] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-07-15T09:45:45.730+05:30  INFO 27620 --- [quark-engine-service] [  restartedMain] [                                                 ] c.s.s.a.q.e.s.t.i.TaskProcessServiceImpl : Registered 7 task process strategies: [class com.socgen.sgs.api.quark.engine.domain.task.TaskQxpPrevious, class com.socgen.sgs.api.quark.engine.domain.task.TaskSystem, class com.socgen.sgs.api.quark.engine.domain.task.TaskSql, class com.socgen.sgs.api.quark.engine.domain.task.TaskDocument, class com.socgen.sgs.api.quark.engine.domain.task.TaskDid, class com.socgen.sgs.api.quark.engine.domain.task.TaskDynamique, class com.socgen.sgs.api.quark.engine.domain.task.TaskCompartiment]
+2026-07-15T09:45:45.737+05:30  INFO 27620 --- [quark-engine-service] [  restartedMain] [                                                 ] s.a.q.e.s.t.i.TaskPostProcessServiceImpl : Registered 1 task post-process strategies: [class com.socgen.sgs.api.quark.engine.domain.task.TaskDid]
+2026-07-15T09:45:46.778+05:30  INFO 27620 --- [quark-engine-service] [  restartedMain] [                                                 ] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 13 endpoint(s) beneath base path '/actuator'
+2026-07-15T09:45:46.881+05:30  WARN 27620 --- [quark-engine-service] [  restartedMain] [                                                 ] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-07-15T09:45:57.098+05:30  INFO 27620 --- [quark-engine-service] [  restartedMain] [                                                 ] s.a.p.s.ProblemSecurityBeanPostProcessor : Register HttpSecurity's exceptionHandling
+2026-07-15T09:45:57.182+05:30  INFO 27620 --- [quark-engine-service] [  restartedMain] [                                                 ] o.s.s.w.a.c.ChannelProcessingFilter      : Validated configuration attributes
+2026-07-15T09:45:57.197+05:30  INFO 27620 --- [quark-engine-service] [  restartedMain] [                                                 ] o.s.s.web.DefaultSecurityFilterChain     : Will secure Or [Ant [pattern='/api-docs'], Ant [pattern='/v3/api-docs'], Ant [pattern='/favicon.ico'], Ant [pattern='/api-docs*'], Ant [pattern='/v3/api-docs*'], Ant [pattern='/api-docs/**'], Ant [pattern='/v3/api-docs/**'], Ant [pattern='/api-docs.yaml/*'], Ant [pattern='/swagger-ui.html'], Ant [pattern='/swagger-ui/**'], Ant [pattern='/sg/swagger-ui/**']] with [org.springframework.security.web.session.DisableEncodeUrlFilter@22303e0c, org.springframework.security.web.access.channel.ChannelProcessingFilter@41b09877, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@1b5b3144, org.springframework.security.web.context.SecurityContextHolderFilter@56cf4dd9, org.springframework.security.web.header.HeaderWriterFilter@6485f913, org.springframework.security.web.csrf.CsrfFilter@734e9633, org.springframework.security.web.authentication.logout.LogoutFilter@3cf43a52, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@7213b2e0, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@4c525634, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@67bb5061, org.springframework.security.web.access.ExceptionTranslationFilter@4a5bdbfb, org.springframework.security.web.access.intercept.AuthorizationFilter@361b7874]
+2026-07-15T09:45:57.242+05:30  INFO 27620 --- [quark-engine-service] [  restartedMain] [                                                 ] s.a.p.s.ProblemSecurityBeanPostProcessor : Register HttpSecurity's exceptionHandling
+2026-07-15T09:45:57.254+05:30  INFO 27620 --- [quark-engine-service] [  restartedMain] [                                                 ] s.a.p.s.ProblemSecurityBeanPostProcessor : Register HttpSecurity's exceptionHandling
+2026-07-15T09:45:57.363+05:30  INFO 27620 --- [quark-engine-service] [  restartedMain] [                                                 ] s.a.p.s.ProblemSecurityBeanPostProcessor : Register BearerTokenAuthenticationFilter's authentication entry point
+2026-07-15T09:45:57.366+05:30  INFO 27620 --- [quark-engine-service] [  restartedMain] [                                                 ] o.s.s.w.a.c.ChannelProcessingFilter      : Validated configuration attributes
+2026-07-15T09:45:57.374+05:30  INFO 27620 --- [quark-engine-service] [  restartedMain] [                                                 ] o.s.s.web.DefaultSecurityFilterChain     : Will secure Or [DispatcherServletDelegating [ant = Ant [pattern='/api/**'], mvc = Mvc [pattern='/api/**']]] with [org.springframework.security.web.session.DisableEncodeUrlFilter@e7c10d5, org.springframework.security.web.access.channel.ChannelProcessingFilter@16f2de1, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@61c6727c, org.springframework.security.web.context.SecurityContextHolderFilter@49abab3f, org.springframework.security.web.header.HeaderWriterFilter@779ed88b, org.springframework.web.filter.CorsFilter@1f3fb757, org.springframework.security.web.authentication.logout.LogoutFilter@279af317, com.socgen.apibank.autoconfigure.sgconnect.servlet.AuthenticationServiceUnavailableHandlerFilter@1941c39d, org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter@358b7943, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@24fac108, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@13b2af73, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@775592d8, org.springframework.security.web.session.SessionManagementFilter@5dcc8eae, org.springframework.security.web.access.ExceptionTranslationFilter@1c455066, org.springframework.security.web.access.intercept.AuthorizationFilter@5ed3d25e]
+2026-07-15T09:45:58.445+05:30  INFO 27620 --- [quark-engine-service] [  restartedMain] [                                                 ] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2026-07-15T09:45:58.566+05:30  INFO 27620 --- [quark-engine-service] [  restartedMain] [                                                 ] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path ''
+2026-07-15T09:45:58.570+05:30  INFO 27620 --- [quark-engine-service] [  restartedMain] [                                                 ] o.s.a.r.c.CachingConnectionFactory       : Attempting to connect to: [rabbitmq-vap-dev-965c0883.gslb2.trafficmanager.eu-fr-paris.cloud.socgen:5671]
+2026-07-15T09:45:58.744+05:30  INFO 27620 --- [quark-engine-service] [  restartedMain] [                                                 ] o.s.a.r.c.CachingConnectionFactory       : Created new connection: rabbitConnectionFactory#3cb4ebde:0/SimpleConnection@4418a1cc [delegate=amqp://quark_dev@182.8.28.27:5671/vap-quark-host, localPort=60152]
+2026-07-15T09:45:58.857+05:30  INFO 27620 --- [quark-engine-service] [  restartedMain] [                                                 ] c.s.sgs.api.quark.engine.Application     : Started Application in 21.494 seconds (process running for 25.355)
+2026-07-15T09:48:53.260+05:30  INFO 27620 --- [quark-engine-service] [nio-8080-exec-1] [                                                 ] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-07-15T09:48:53.261+05:30  INFO 27620 --- [quark-engine-service] [nio-8080-exec-1] [                                                 ] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-07-15T09:48:53.264+05:30  INFO 27620 --- [quark-engine-service] [nio-8080-exec-1] [                                                 ] o.s.web.servlet.DispatcherServlet        : Completed initialization in 3 ms
+2026-07-15T09:48:53.908+05:30  WARN 27620 --- [quark-engine-service] [ctor-http-nio-2] [                                                 ] i.o.exporter.zipkin.ZipkinSpanExporter   : Failed to export spans
 
 org.springframework.web.reactive.function.client.WebClientRequestException: Connection refused: getsockopt: localhost/127.0.0.1:9411
 	at org.springframework.web.reactive.function.client.ExchangeFunctions$DefaultExchangeFunction.lambda$wrapException$9(ExchangeFunctions.java:136)
@@ -148,256 +148,119 @@ Caused by: java.net.ConnectException: Connection refused: getsockopt
 	at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
 	at java.base/java.lang.Thread.run(Thread.java:840)
 
-2026-07-15T07:14:17.674+05:30  INFO 19788 --- [quark-engine-service] [nio-8080-exec-1] [6eb7a0bf84dae735cfa163afaecebb84-4a0752fd500f2f44] o.springdoc.api.AbstractOpenApiResource  : Init duration for springdoc-openapi is: 410 ms
-2026-07-15T07:14:21.174+05:30  INFO 19788 --- [quark-engine-service] [nio-8080-exec-2] [5f74a044f616fbf7746128cb73faa12d-6a858e88d8757b9d] o.springdoc.api.AbstractOpenApiResource  : Init duration for springdoc-openapi is: 545 ms
-2026-07-15T07:31:08.980+05:30  WARN 19788 --- [quark-engine-service] [nio-8080-exec-1] [db681e9db9d032d8e1857eefa88ac039-95337f89c851073c] o.s.w.s.h.HandlerMappingIntrospector     : Cache miss for REQUEST dispatch to '/ap/v1/EngineService/processRun/493497' (previous null). Performing MatchableHandlerMapping lookup. This is logged once only at WARN level, and every time at TRACE.
-2026-07-15T07:31:08.988+05:30  INFO 19788 --- [quark-engine-service] [nio-8080-exec-1] [db681e9db9d032d8e1857eefa88ac039-00e4618743c9aa97] .s.s.a.q.e.i.a.v.EngineServiceController : Processing run with runId: 493497
-2026-07-15T07:31:08.989+05:30  INFO 19788 --- [quark-engine-service] [nio-8080-exec-1] [db681e9db9d032d8e1857eefa88ac039-00e4618743c9aa97] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Processing run with runId: 493497
-2026-07-15T07:31:08.992+05:30  INFO 19788 --- [quark-engine-service] [nio-8080-exec-1] [db681e9db9d032d8e1857eefa88ac039-00e4618743c9aa97] c.s.s.a.q.e.b.RunStartUpdateBusiness     : Business layer: starting run with ID: 493497
-2026-07-15T07:31:08.995+05:30  INFO 19788 --- [quark-engine-service] [nio-8080-exec-1] [db681e9db9d032d8e1857eefa88ac039-00e4618743c9aa97] c.s.s.a.q.e.i.d.i.RunStartUpdateDaoImpl  : Starting run with ID: 493497
-2026-07-15T07:31:09.072+05:30  INFO 19788 --- [quark-engine-service] [nio-8080-exec-1] [db681e9db9d032d8e1857eefa88ac039-00e4618743c9aa97] c.s.s.a.q.e.i.d.i.RunStartUpdateDaoImpl  : Successfully started run with ID: 493497
-2026-07-15T07:31:09.073+05:30  INFO 19788 --- [quark-engine-service] [nio-8080-exec-1] [db681e9db9d032d8e1857eefa88ac039-00e4618743c9aa97] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Run started successfully with runId: 493497
-2026-07-15T07:31:09.073+05:30  INFO 19788 --- [quark-engine-service] [nio-8080-exec-1] [db681e9db9d032d8e1857eefa88ac039-00e4618743c9aa97] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Loading run with runId: 493497
-2026-07-15T07:31:09.073+05:30  INFO 19788 --- [quark-engine-service] [nio-8080-exec-1] [db681e9db9d032d8e1857eefa88ac039-00e4618743c9aa97] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Retrieving properties for runId: 493497
-2026-07-15T07:31:09.073+05:30  INFO 19788 --- [quark-engine-service] [nio-8080-exec-1] [db681e9db9d032d8e1857eefa88ac039-00e4618743c9aa97] c.s.s.a.q.e.b.GetRunPropertiesBusiness   : Business layer: fetching run properties for runId: 493497
-2026-07-15T07:31:09.074+05:30  INFO 19788 --- [quark-engine-service] [nio-8080-exec-1] [db681e9db9d032d8e1857eefa88ac039-00e4618743c9aa97] .s.s.a.q.e.i.d.i.GetRunPropertiesDaoImpl : Fetching run properties for runId: 493497
-2026-07-15T07:31:09.108+05:30  INFO 19788 --- [quark-engine-service] [nio-8080-exec-1] [db681e9db9d032d8e1857eefa88ac039-00e4618743c9aa97] .s.s.a.q.e.i.d.i.GetRunPropertiesDaoImpl : Successfully retrieved run properties for runId: 493497
-2026-07-15T07:31:09.108+05:30  INFO 19788 --- [quark-engine-service] [nio-8080-exec-1] [db681e9db9d032d8e1857eefa88ac039-00e4618743c9aa97] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Successfully retrieved properties for runId: 493497
-2026-07-15T07:31:09.109+05:30  INFO 19788 --- [quark-engine-service] [nio-8080-exec-1] [db681e9db9d032d8e1857eefa88ac039-00e4618743c9aa97] c.s.s.a.q.e.business.GetGabaritBusiness  : Fetching gabarit for idGabarit: 161
-2026-07-15T07:31:09.110+05:30  INFO 19788 --- [quark-engine-service] [nio-8080-exec-1] [db681e9db9d032d8e1857eefa88ac039-00e4618743c9aa97] c.s.s.a.q.e.i.d.impl.GetGabaritDaoImpl   : Fetching gabarit for idGabarit: 161
-2026-07-15T07:31:09.127+05:30 ERROR 19788 --- [quark-engine-service] [nio-8080-exec-1] [db681e9db9d032d8e1857eefa88ac039-00e4618743c9aa97] c.s.s.a.q.e.i.d.impl.GetGabaritDaoImpl   : No gabarit found for idGabarit: 161
-2026-07-15T07:31:09.130+05:30 ERROR 19788 --- [quark-engine-service] [nio-8080-exec-1] [db681e9db9d032d8e1857eefa88ac039-00e4618743c9aa97] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Run [493497] failed: No gabarit found for idGabarit: 161
+2026-07-15T09:48:58.716+05:30  WARN 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-29e1d42b2f20e773] o.s.w.s.h.HandlerMappingIntrospector     : Cache miss for REQUEST dispatch to '/ap/v1/EngineService/processRun/467500' (previous null). Performing MatchableHandlerMapping lookup. This is logged once only at WARN level, and every time at TRACE.
+2026-07-15T09:48:58.735+05:30  INFO 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] .s.s.a.q.e.i.a.v.EngineServiceController : Processing run with runId: 467500
+2026-07-15T09:48:58.735+05:30  INFO 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Processing run with runId: 467500
+2026-07-15T09:48:58.738+05:30  INFO 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] c.s.s.a.q.e.b.RunStartUpdateBusiness     : Business layer: starting run with ID: 467500
+2026-07-15T09:48:58.740+05:30  INFO 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] c.s.s.a.q.e.i.d.i.RunStartUpdateDaoImpl  : Starting run with ID: 467500
+2026-07-15T09:48:58.806+05:30  INFO 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] c.s.s.a.q.e.i.d.i.RunStartUpdateDaoImpl  : Successfully started run with ID: 467500
+2026-07-15T09:48:58.807+05:30  INFO 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Run started successfully with runId: 467500
+2026-07-15T09:48:58.807+05:30  INFO 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Loading run with runId: 467500
+2026-07-15T09:48:58.807+05:30  INFO 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Retrieving properties for runId: 467500
+2026-07-15T09:48:58.808+05:30  INFO 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] c.s.s.a.q.e.b.GetRunPropertiesBusiness   : Business layer: fetching run properties for runId: 467500
+2026-07-15T09:48:58.808+05:30  INFO 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] .s.s.a.q.e.i.d.i.GetRunPropertiesDaoImpl : Fetching run properties for runId: 467500
+2026-07-15T09:48:58.827+05:30  INFO 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] .s.s.a.q.e.i.d.i.GetRunPropertiesDaoImpl : Successfully retrieved run properties for runId: 467500
+2026-07-15T09:48:58.827+05:30  INFO 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Successfully retrieved properties for runId: 467500
+2026-07-15T09:48:58.828+05:30  INFO 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] c.s.s.a.q.e.business.GetGabaritBusiness  : Fetching gabarit document courant for idSuivi: 72646
+2026-07-15T09:48:58.828+05:30  INFO 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] .s.a.q.e.i.d.i.GetGabaritDocumentDaoImpl : Fetching gabarit document for idSuivi: 72646
+2026-07-15T09:48:59.180+05:30  INFO 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] .s.a.q.e.i.d.i.GetGabaritDocumentDaoImpl : Successfully retrieved gabarit document for idSuivi: 72646
+2026-07-15T09:48:59.187+05:30  INFO 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] c.s.s.a.q.e.business.GetGabaritBusiness  : Prepared gabarit paths - poolPath: R_467500/DG_975776.QXP, fullPath: D:\Documents\R_467500\DG_975776.QXP
+2026-07-15T09:48:59.189+05:30  INFO 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] c.s.s.a.q.e.i.i.q.client.QxpsHttpClient  : QXPS call: POST http://srvcldvapd001.dns43.socgen:8080/addfile/R_467500/DG_975776.QXP
+2026-07-15T09:48:59.515+05:30  INFO 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] c.s.s.a.q.e.i.i.qxps.helper.QxpsHelper   : File added to QXPS document pool: R_467500/DG_975776.QXP
+2026-07-15T09:48:59.516+05:30  INFO 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] c.s.s.a.q.e.i.i.q.pool.FilePoolService   : File added to pool: R_467500/DG_975776.QXP
+2026-07-15T09:48:59.517+05:30  INFO 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] c.s.s.a.q.e.i.i.q.client.QxpsHttpClient  : QXPS call: GET http://srvcldvapd001.dns43.socgen:8080/xml/R_467500/DG_975776.QXP
+2026-07-15T09:49:02.892+05:30  INFO 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] .s.a.q.e.i.i.q.i.DocumentIdentityService : Fetching XML for document: R_467500/DG_975776.QXP, box: DID
+2026-07-15T09:49:02.894+05:30  INFO 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] c.s.s.a.q.e.i.i.q.client.QxpsHttpClient  : QXPS call: GET http://srvcldvapd001.dns43.socgen:8080/xml/R_467500/DG_975776.QXP?box=DID
+2026-07-15T09:49:03.380+05:30  INFO 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] .s.a.q.e.i.i.q.i.DocumentIdentityService : Successfully parsed document identity: DocumentIdentity{idFndCode='310088', idSuivi='72646', idRun='467500', idLangue='1', dueDate=2023-12-01T00:00, generationDateTime=2024-04-10T14:54:44, idUnitCode='null'}
+2026-07-15T09:49:03.383+05:30  INFO 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] c.s.s.a.q.e.b.GetInParamsBusiness        : Business layer: loading in-params for runId: 467500
+2026-07-15T09:49:03.383+05:30  INFO 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] c.s.s.a.q.e.i.d.impl.GetInParamsDaoImpl  : Fetching in-params for idSuivi: 72646
+2026-07-15T09:49:03.416+05:30  INFO 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] c.s.s.a.q.e.i.d.impl.GetInParamsDaoImpl  : Loaded 2 in-params for idSuivi: 72646
+2026-07-15T09:49:03.416+05:30  INFO 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Loading tasks for runId: 467500
+2026-07-15T09:49:03.416+05:30  INFO 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] c.s.s.a.q.e.business.GetTasksBusiness    : Business layer: loading tasks for runId: 467500
+2026-07-15T09:49:03.417+05:30  INFO 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] c.s.s.a.q.e.i.dao.impl.GetTasksDaoImpl   : Fetching tasks for runId: 467500
+2026-07-15T09:49:03.486+05:30  INFO 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] c.s.s.a.q.e.i.dao.impl.GetTasksDaoImpl   : Fetched 0 task rows for runId: 467500
+2026-07-15T09:49:03.487+05:30  INFO 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Loaded 0 tasks for runId: 467500
+2026-07-15T09:49:03.487+05:30  INFO 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Loading task exceptions for runId: 467500
+2026-07-15T09:49:03.487+05:30  INFO 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] c.s.s.a.q.e.b.GetTaskExceptionsBusiness  : Business layer: loading task exceptions for runId: 467500
+2026-07-15T09:49:03.487+05:30  INFO 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] s.s.a.q.e.i.d.i.GetTaskExceptionsDaoImpl : Fetching task exceptions for runId: 467500
+2026-07-15T09:49:03.507+05:30  INFO 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] s.s.a.q.e.i.d.i.GetTaskExceptionsDaoImpl : Fetched 0 task exception rows for runId: 467500
+2026-07-15T09:49:03.507+05:30  INFO 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Task exceptions loaded for runId: 467500
+2026-07-15T09:49:03.516+05:30  INFO 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : DID task added for runId: 467500
+2026-07-15T09:49:03.517+05:30  INFO 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] c.s.s.a.q.e.b.LoadTemplatesBusiness      : No TODO dynamic task for run [467500], skipping template loading
+2026-07-15T09:49:03.517+05:30  INFO 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Run loading completed for runId: 467500
+2026-07-15T09:49:03.518+05:30  INFO 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] c.s.s.a.q.e.s.i.ProcessTasksServiceImpl  : Preparing tasks for runId: 467500
+2026-07-15T09:49:03.518+05:30  INFO 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] c.s.s.a.q.e.s.i.ProcessTasksServiceImpl  : Task preparation completed for runId: 467500
+2026-07-15T09:49:03.518+05:30  INFO 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] c.s.s.a.q.e.s.i.ProcessTasksServiceImpl  : Processing tasks for runId: 467500
+2026-07-15T09:49:03.632+05:30  INFO 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] s.a.q.e.s.t.i.DidTaskPostProcessStrategy : DID update mode: NAME_VALUE for run [467500]
+2026-07-15T09:49:03.637+05:30  INFO 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] s.a.q.e.s.t.i.DidTaskPostProcessStrategy : DID task post-process completed for run [467500]
+2026-07-15T09:49:03.638+05:30  INFO 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] c.s.s.a.q.e.s.i.ProcessTasksServiceImpl  : Task processing completed for runId: 467500
+2026-07-15T09:49:03.638+05:30  INFO 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] c.s.s.a.q.e.business.QxpsCallerBusiness  : Starting step execution for run [467500] with 1 steps
+2026-07-15T09:49:03.638+05:30  INFO 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] c.s.s.a.q.e.business.QxpsCallerBusiness  : Preparing step [0] for run [467500]
+Standard Commons Logging discovery in action with spring-jcl: please remove commons-logging.jar from classpath in order to avoid potential conflicts
+2026-07-15T09:49:04.176+05:30  INFO 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] c.s.s.a.q.e.business.QxpsCallerBusiness  : Executing step [0]: add=0 update=1 excluded=0
+2026-07-15T09:49:04.186+05:30  INFO 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] c.s.s.a.q.e.i.i.qxpsm.QxpsmSoapClient    : QXPSM SOAP processRequest for document [R_467500/DG_975776.QXP]
+2026-07-15T09:49:04.262+05:30  WARN 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] org.apache.axis.utils.JavaUtils          : Unable to find required classes (javax.activation.DataHandler and javax.mail.internet.MimeMultipart). Attachment support is disabled.
+2026-07-15T09:49:05.850+05:30 DEBUG 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] o.apache.axis.transport.http.HTTPSender  : Enter:  HTTPSender::invoke
+2026-07-15T09:49:05.890+05:30 DEBUG 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] o.apache.axis.transport.http.HTTPSender  : XML sent:
+2026-07-15T09:49:05.890+05:30 DEBUG 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] o.apache.axis.transport.http.HTTPSender  : ---------------------------------------------------
+2026-07-15T09:49:05.891+05:30 DEBUG 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] o.apache.axis.transport.http.HTTPSender  : POST /qxpsm/services/RequestService HTTP/1.0
+Content-Type: text/xml; charset=utf-8
+Accept: application/soap+xml, application/dime, multipart/related, text/*
+User-Agent: Axis/1.4
+Host: srvcldvapd001.dns43.socgen:8090
+Cache-Control: no-cache
+Pragma: no-cache
+SOAPAction: "urn:processRequest"
+Content-Length: 1619
 
-org.springframework.dao.InvalidDataAccessApiUsageException: No gabarit found for idGabarit: 161
-	at org.springframework.orm.jpa.EntityManagerFactoryUtils.convertJpaAccessExceptionIfPossible(EntityManagerFactoryUtils.java:371)
-	at org.springframework.orm.jpa.vendor.HibernateJpaDialect.translateExceptionIfPossible(HibernateJpaDialect.java:246)
-	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.translateExceptionIfPossible(AbstractEntityManagerFactoryBean.java:550)
-	at org.springframework.dao.support.ChainedPersistenceExceptionTranslator.translateExceptionIfPossible(ChainedPersistenceExceptionTranslator.java:61)
-	at org.springframework.dao.support.DataAccessUtils.translateIfNecessary(DataAccessUtils.java:335)
-	at org.springframework.dao.support.PersistenceExceptionTranslationInterceptor.invoke(PersistenceExceptionTranslationInterceptor.java:152)
-	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184)
-	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:765)
-	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:717)
-	at com.socgen.sgs.api.quark.engine.infra.dao.impl.GetGabaritDaoImpl$$SpringCGLIB$$0.getGabarit(<generated>)
-	at com.socgen.sgs.api.quark.engine.business.GetGabaritBusiness.getAndPrepareGabarit(GetGabaritBusiness.java:40)
-	at com.socgen.sgs.api.quark.engine.domain.Run.prepareGabarit(Run.java:140)
-	at com.socgen.sgs.api.quark.engine.service.impl.ProcessRunServiceImpl.load(ProcessRunServiceImpl.java:174)
-	at com.socgen.sgs.api.quark.engine.service.impl.ProcessRunServiceImpl.runProcessor(ProcessRunServiceImpl.java:67)
-	at com.socgen.sgs.api.quark.engine.infra.api.v1.EngineServiceController.processRun(EngineServiceController.java:27)
-	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
-	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:569)
-	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:254)
-	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:182)
-	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:118)
-	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:917)
-	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:829)
-	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:87)
-	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1089)
-	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:979)
-	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014)
-	at org.springframework.web.servlet.FrameworkServlet.doPost(FrameworkServlet.java:914)
-	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:590)
-	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:885)
-	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:658)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:205)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
-	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:51)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
-	at com.socgen.apibank.http.ratelimiter.RateLimiterFilter.doFilter(RateLimiterFilter.java:38)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
-	at org.springframework.security.web.ObservationFilterChainDecorator$FilterObservation$SimpleFilterObservation.lambda$wrap$1(ObservationFilterChainDecorator.java:479)
-	at org.springframework.security.web.ObservationFilterChainDecorator.lambda$wrapUnsecured$1(ObservationFilterChainDecorator.java:90)
-	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:219)
-	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:191)
-	at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:352)
-	at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:268)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
-	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
-	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
-	at org.springframework.web.filter.ServerHttpObservationFilter.doFilterInternal(ServerHttpObservationFilter.java:109)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
-	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
-	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:167)
-	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:90)
-	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:482)
-	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:115)
-	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:93)
-	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74)
-	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:340)
-	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:391)
-	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63)
-	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:896)
-	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1744)
-	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52)
-	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1191)
-	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
-	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
-	at java.base/java.lang.Thread.run(Thread.java:840)
-Caused by: java.lang.IllegalArgumentException: No gabarit found for idGabarit: 161
-	at com.socgen.sgs.api.quark.engine.infra.dao.impl.GetGabaritDaoImpl.getGabarit(GetGabaritDaoImpl.java:61)
-	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
-	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:569)
-	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:352)
-	at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:196)
-	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163)
-	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:765)
-	at org.springframework.dao.support.PersistenceExceptionTranslationInterceptor.invoke(PersistenceExceptionTranslationInterceptor.java:137)
-	... 74 common frames omitted
-
-2026-07-15T07:31:09.139+05:30  INFO 19788 --- [quark-engine-service] [nio-8080-exec-1] [db681e9db9d032d8e1857eefa88ac039-00e4618743c9aa97] c.s.s.a.q.e.business.EndRunBusiness      : Finalizing run [493497] with status [ERROR]
-2026-07-15T07:31:09.159+05:30  INFO 19788 --- [quark-engine-service] [nio-8080-exec-1] [db681e9db9d032d8e1857eefa88ac039-00e4618743c9aa97] c.s.s.a.q.e.i.dao.impl.EndRunDaoImpl     : Update_Status_Run executed for run [493497] with status [3]
-2026-07-15T07:31:09.175+05:30  INFO 19788 --- [quark-engine-service] [nio-8080-exec-1] [db681e9db9d032d8e1857eefa88ac039-00e4618743c9aa97] c.s.s.a.q.e.i.dao.impl.EndRunDaoImpl     : Inserted 1 errors for run [493497]
-2026-07-15T07:31:09.189+05:30  INFO 19788 --- [quark-engine-service] [nio-8080-exec-1] [db681e9db9d032d8e1857eefa88ac039-00e4618743c9aa97] c.s.s.a.q.e.infra.dao.impl.AuditDaoImpl  : Audit row inserted for run [493497]
-2026-07-15T07:31:09.189+05:30  INFO 19788 --- [quark-engine-service] [nio-8080-exec-1] [db681e9db9d032d8e1857eefa88ac039-00e4618743c9aa97] c.s.s.a.q.e.business.EndRunBusiness      : Run [493497] finalized successfully
-2026-07-15T07:31:09.199+05:30  INFO 19788 --- [quark-engine-service] [nio-8080-exec-1] [db681e9db9d032d8e1857eefa88ac039-00e4618743c9aa97] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Run completed for runId: 493497 with status: ERROR
-2026-07-15T08:24:00.339+05:30  INFO 19788 --- [quark-engine-service] [nio-8080-exec-6] [29782bfde652f89231bf64a553bffd75-edbab28228519a97] .s.s.a.q.e.i.a.v.EngineServiceController : Processing run with runId: 470017
-2026-07-15T08:24:00.339+05:30  INFO 19788 --- [quark-engine-service] [nio-8080-exec-6] [29782bfde652f89231bf64a553bffd75-edbab28228519a97] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Processing run with runId: 470017
-2026-07-15T08:24:00.340+05:30  INFO 19788 --- [quark-engine-service] [nio-8080-exec-6] [29782bfde652f89231bf64a553bffd75-edbab28228519a97] c.s.s.a.q.e.b.RunStartUpdateBusiness     : Business layer: starting run with ID: 470017
-2026-07-15T08:24:00.340+05:30  INFO 19788 --- [quark-engine-service] [nio-8080-exec-6] [29782bfde652f89231bf64a553bffd75-edbab28228519a97] c.s.s.a.q.e.i.d.i.RunStartUpdateDaoImpl  : Starting run with ID: 470017
-2026-07-15T08:24:00.357+05:30  INFO 19788 --- [quark-engine-service] [nio-8080-exec-6] [29782bfde652f89231bf64a553bffd75-edbab28228519a97] c.s.s.a.q.e.i.d.i.RunStartUpdateDaoImpl  : Successfully started run with ID: 470017
-2026-07-15T08:24:00.358+05:30  INFO 19788 --- [quark-engine-service] [nio-8080-exec-6] [29782bfde652f89231bf64a553bffd75-edbab28228519a97] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Run started successfully with runId: 470017
-2026-07-15T08:24:00.358+05:30  INFO 19788 --- [quark-engine-service] [nio-8080-exec-6] [29782bfde652f89231bf64a553bffd75-edbab28228519a97] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Loading run with runId: 470017
-2026-07-15T08:24:00.358+05:30  INFO 19788 --- [quark-engine-service] [nio-8080-exec-6] [29782bfde652f89231bf64a553bffd75-edbab28228519a97] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Retrieving properties for runId: 470017
-2026-07-15T08:24:00.358+05:30  INFO 19788 --- [quark-engine-service] [nio-8080-exec-6] [29782bfde652f89231bf64a553bffd75-edbab28228519a97] c.s.s.a.q.e.b.GetRunPropertiesBusiness   : Business layer: fetching run properties for runId: 470017
-2026-07-15T08:24:00.358+05:30  INFO 19788 --- [quark-engine-service] [nio-8080-exec-6] [29782bfde652f89231bf64a553bffd75-edbab28228519a97] .s.s.a.q.e.i.d.i.GetRunPropertiesDaoImpl : Fetching run properties for runId: 470017
-2026-07-15T08:24:00.373+05:30 ERROR 19788 --- [quark-engine-service] [nio-8080-exec-6] [29782bfde652f89231bf64a553bffd75-edbab28228519a97] .s.s.a.q.e.i.d.i.GetRunPropertiesDaoImpl : No run properties found for runId: 470017
-2026-07-15T08:24:00.373+05:30 ERROR 19788 --- [quark-engine-service] [nio-8080-exec-6] [29782bfde652f89231bf64a553bffd75-edbab28228519a97] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Run [470017] failed: No run properties found for runId: 470017
-
-org.springframework.dao.InvalidDataAccessApiUsageException: No run properties found for runId: 470017
-	at org.springframework.orm.jpa.EntityManagerFactoryUtils.convertJpaAccessExceptionIfPossible(EntityManagerFactoryUtils.java:371)
-	at org.springframework.orm.jpa.vendor.HibernateJpaDialect.translateExceptionIfPossible(HibernateJpaDialect.java:246)
-	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.translateExceptionIfPossible(AbstractEntityManagerFactoryBean.java:550)
-	at org.springframework.dao.support.ChainedPersistenceExceptionTranslator.translateExceptionIfPossible(ChainedPersistenceExceptionTranslator.java:61)
-	at org.springframework.dao.support.DataAccessUtils.translateIfNecessary(DataAccessUtils.java:335)
-	at org.springframework.dao.support.PersistenceExceptionTranslationInterceptor.invoke(PersistenceExceptionTranslationInterceptor.java:152)
-	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184)
-	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:765)
-	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:717)
-	at com.socgen.sgs.api.quark.engine.infra.dao.impl.GetRunPropertiesDaoImpl$$SpringCGLIB$$0.getRunProperties(<generated>)
-	at com.socgen.sgs.api.quark.engine.business.GetRunPropertiesBusiness.execute(GetRunPropertiesBusiness.java:28)
-	at com.socgen.sgs.api.quark.engine.service.impl.ProcessRunServiceImpl.getRunProperties(ProcessRunServiceImpl.java:197)
-	at com.socgen.sgs.api.quark.engine.service.impl.ProcessRunServiceImpl.load(ProcessRunServiceImpl.java:167)
-	at com.socgen.sgs.api.quark.engine.service.impl.ProcessRunServiceImpl.runProcessor(ProcessRunServiceImpl.java:67)
-	at com.socgen.sgs.api.quark.engine.infra.api.v1.EngineServiceController.processRun(EngineServiceController.java:27)
-	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
-	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:569)
-	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:254)
-	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:182)
-	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:118)
-	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:917)
-	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:829)
-	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:87)
-	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1089)
-	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:979)
-	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014)
-	at org.springframework.web.servlet.FrameworkServlet.doPost(FrameworkServlet.java:914)
-	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:590)
-	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:885)
-	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:658)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:205)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
-	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:51)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
-	at com.socgen.apibank.http.ratelimiter.RateLimiterFilter.doFilter(RateLimiterFilter.java:38)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
-	at org.springframework.security.web.ObservationFilterChainDecorator$FilterObservation$SimpleFilterObservation.lambda$wrap$1(ObservationFilterChainDecorator.java:479)
-	at org.springframework.security.web.ObservationFilterChainDecorator.lambda$wrapUnsecured$1(ObservationFilterChainDecorator.java:90)
-	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:219)
-	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:191)
-	at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:352)
-	at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:268)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
-	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
-	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
-	at org.springframework.web.filter.ServerHttpObservationFilter.doFilterInternal(ServerHttpObservationFilter.java:109)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
-	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
-	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:167)
-	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:90)
-	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:482)
-	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:115)
-	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:93)
-	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74)
-	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:340)
-	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:391)
-	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63)
-	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:896)
-	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1744)
-	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52)
-	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1191)
-	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
-	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
-	at java.base/java.lang.Thread.run(Thread.java:840)
-Caused by: java.lang.IllegalArgumentException: No run properties found for runId: 470017
-	at com.socgen.sgs.api.quark.engine.infra.dao.impl.GetRunPropertiesDaoImpl.getRunProperties(GetRunPropertiesDaoImpl.java:72)
-	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
-	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:569)
-	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:352)
-	at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:196)
-	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163)
-	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:765)
-	at org.springframework.dao.support.PersistenceExceptionTranslationInterceptor.invoke(PersistenceExceptionTranslationInterceptor.java:137)
-	... 74 common frames omitted
-
-2026-07-15T08:24:00.375+05:30  INFO 19788 --- [quark-engine-service] [nio-8080-exec-6] [29782bfde652f89231bf64a553bffd75-edbab28228519a97] c.s.s.a.q.e.business.EndRunBusiness      : Finalizing run [470017] with status [ERROR]
-2026-07-15T08:24:00.382+05:30  INFO 19788 --- [quark-engine-service] [nio-8080-exec-6] [29782bfde652f89231bf64a553bffd75-edbab28228519a97] c.s.s.a.q.e.i.dao.impl.EndRunDaoImpl     : Update_Status_Run executed for run [470017] with status [3]
-2026-07-15T08:24:00.391+05:30  INFO 19788 --- [quark-engine-service] [nio-8080-exec-6] [29782bfde652f89231bf64a553bffd75-edbab28228519a97] c.s.s.a.q.e.i.dao.impl.EndRunDaoImpl     : Inserted 1 errors for run [470017]
-2026-07-15T08:24:00.409+05:30 ERROR 19788 --- [quark-engine-service] [nio-8080-exec-6] [29782bfde652f89231bf64a553bffd75-edbab28228519a97] c.s.s.a.q.e.infra.dao.impl.AuditDaoImpl  : Failed to insert audit row for run [470017]: CallableStatementCallback; SQL [{call QXP_PK_AUDIT.INSERTAUDITRUN(?, ?, ?, ?, ?, ?, ?, ?)}]; ORA-01400: cannot insert NULL into ("QXP"."QXP_AUDIT_RUN"."ID_SUIVI")
-ORA-06512: at "QXP.QXP_PK_AUDIT", line 203
-ORA-06512: at "QXP.QXP_PK_AUDIT", line 199
+<?xml version="1.0" encoding="UTF-8"?><soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><soapenv:Body><processRequest xmlns="http://com.quark.qxpsm"><param0><bypassFileInfo>false</bypassFileInfo><context xsi:nil="true"/><documentName>R_467500/DG_975776.QXP</documentName><maxRetries>0</maxRetries><request xsi:type="ns1:RequestParameters" xmlns:ns1="http://com.quark.qxpsm"><ns1:request xsi:type="ns1:SaveAsRequest"><ns1:request xsi:type="ns1:QuarkXPressRenderRequest"><ns1:request xsi:nil="true"/><ns1:afterPage xsi:nil="true"/><ns1:documentVersion xsi:nil="true"/><ns1:layout xsi:nil="true"/><ns1:movePages xsi:nil="true"/><ns1:saveAsTemplate xsi:nil="true"/><ns1:updateFullRes xsi:nil="true"/><ns1:updateImage xsi:nil="true"/></ns1:request><ns1:newFilePath>D:\Documents\R_467500\</ns1:newFilePath><ns1:newName>DG_975776_1.QXP</ns1:newName><ns1:replaceFile>true</ns1:replaceFile><ns1:saveToPool>false</ns1:saveToPool></ns1:request><ns1:params><ns1:request xsi:nil="true"/><ns1:contentType xsi:nil="true"/><ns1:paramName>DID</ns1:paramName><ns1:streamValue xsi:nil="true"/><ns1:textValue>310088|72646|467500|1|12/01/2023 00:00:00|07/15/2026 09:49:03|</ns1:textValue></ns1:params><ns1:requestNamespace xsi:nil="true"/></request><requestTimeout>7200000</requestTimeout><responseAsURL>false</responseAsURL><serverName xsi:nil="true"/><serverPort>0</serverPort><useCache>false</useCache><userName></userName><userPassword></userPassword></param0></processRequest></soapenv:Body></soapenv:Envelope>
+2026-07-15T09:49:07.141+05:30 DEBUG 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] o.apache.axis.transport.http.HTTPSender  : HTTP/1.1 200 
+2026-07-15T09:49:07.142+05:30 DEBUG 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] o.apache.axis.transport.http.HTTPSender  : Content-Type text/xml;charset=utf-8
+2026-07-15T09:49:07.142+05:30 DEBUG 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] o.apache.axis.transport.http.HTTPSender  : Date Wed, 15 Jul 2026 04:19:07 GMT
+2026-07-15T09:49:07.142+05:30 DEBUG 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] o.apache.axis.transport.http.HTTPSender  : Connection close
+2026-07-15T09:49:07.142+05:30 DEBUG 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] o.apache.axis.transport.http.HTTPSender  : Server QXPS Manager
+2026-07-15T09:49:07.144+05:30 DEBUG 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] o.apache.axis.transport.http.HTTPSender  : 
+no Content-Length
+2026-07-15T09:49:07.144+05:30 DEBUG 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] o.apache.axis.transport.http.HTTPSender  : 
+XML received:
+2026-07-15T09:49:07.144+05:30 DEBUG 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] o.apache.axis.transport.http.HTTPSender  : -----------------------------------------------
+2026-07-15T09:49:07.159+05:30 DEBUG 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] o.apache.axis.transport.http.HTTPSender  : <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><soapenv:Body><processRequestResponse xmlns="http://com.quark.qxpsm"><return xsi:type="QContentData"><actualServerPortUsed>0</actualServerPortUsed><actualServerUsed xsi:nil="true"/><contentType>text/plain</contentType><encodingType>UTF-8</encodingType><headers xsi:nil="true"/><multipartResponse xsi:nil="true"/><responseURL xsi:nil="true"/><streamValue xsi:nil="true"/><textData>File 'R_467500/DG_975776.QXP' saved to all active servers :</textData></return></processRequestResponse></soapenv:Body></soapenv:Envelope>
+2026-07-15T09:49:07.159+05:30 DEBUG 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] o.apache.axis.transport.http.HTTPSender  : Exit:  HTTPDispatchHandler::invoke
+2026-07-15T09:49:07.175+05:30  INFO 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] c.s.s.a.q.e.i.i.qxpsm.QxpsmSoapClient    : QXPSM processRequest completed for document [R_467500/DG_975776.QXP]
+2026-07-15T09:49:07.177+05:30  INFO 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] c.s.s.a.q.e.i.i.q.client.QxpsHttpClient  : QXPS call: GET http://srvcldvapd001.dns43.socgen:8080/literal/R_467500/DG_975776_1.QXP
+2026-07-15T09:49:07.320+05:30  INFO 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] c.s.s.a.q.e.business.QxpsCallerBusiness  : Step [0] completed for run [467500]
+2026-07-15T09:49:07.320+05:30  INFO 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] c.s.s.a.q.e.business.QxpsCallerBusiness  : All steps completed for run [467500]
+2026-07-15T09:49:07.320+05:30  INFO 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] c.s.s.a.q.e.s.impl.CheckServiceImpl      : Starting Check step for run [467500]
+2026-07-15T09:49:07.321+05:30  INFO 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] c.s.s.a.q.e.i.i.q.client.QxpsHttpClient  : QXPS call: GET http://srvcldvapd001.dns43.socgen:8080/xml/R_467500/DG_975776_1.QXP
+2026-07-15T09:49:09.822+05:30  INFO 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] c.s.s.a.q.e.s.impl.CheckServiceImpl      : Check step completed for run [467500]
+2026-07-15T09:49:09.822+05:30  INFO 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] c.s.s.a.q.e.business.QxpsCallerBusiness  : Starting final renders for run [467500]
+2026-07-15T09:49:09.823+05:30  INFO 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] c.s.s.a.q.e.i.i.q.client.QxpsHttpClient  : QXPS call: GET http://srvcldvapd001.dns43.socgen:8080/pdf/R_467500/DG_975776_1.QXP?colorimagedownsample=300&grayscaleimagedownsample=300&monochromeImagedownSample=300&colorcompression=true&grayscalecompression=true&monochromecompression=true
+2026-07-15T09:49:23.780+05:30  INFO 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] c.s.s.a.q.e.business.QxpsCallerBusiness  : PDF render completed for run [467500]
+2026-07-15T09:49:23.781+05:30  INFO 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] c.s.s.a.q.e.i.i.q.client.QxpsHttpClient  : QXPS call: GET http://srvcldvapd001.dns43.socgen:8080/literal/R_467500/DG_975776_1.QXP
+2026-07-15T09:49:23.911+05:30  INFO 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] c.s.s.a.q.e.business.QxpsCallerBusiness  : QXP fetched (literal) for run [467500]
+2026-07-15T09:49:23.911+05:30  INFO 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] c.s.s.a.q.e.business.QxpsCallerBusiness  : All renders completed for run [467500]
+2026-07-15T09:49:23.924+05:30  INFO 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] c.s.s.a.q.e.business.EndRunBusiness      : Finalizing run [467500] with status [GENERATED]
+2026-07-15T09:49:27.076+05:30 ERROR 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : End_Run failed for run [467500]: CallableStatementCallback; SQL [{call QXP_PK_RUN.END_RUN(?, ?, ?, ?, ?, ?, ?, ?, ?)}]; ORA-01403: no data found
+ORA-06512: at "QXP.QXP_PK_RUN", line 754
+ORA-06512: at "QXP.QXP_PK_RUN", line 721
 ORA-06512: at line 1
 
 
-org.springframework.dao.DataIntegrityViolationException: CallableStatementCallback; SQL [{call QXP_PK_AUDIT.INSERTAUDITRUN(?, ?, ?, ?, ?, ?, ?, ?)}]; ORA-01400: cannot insert NULL into ("QXP"."QXP_AUDIT_RUN"."ID_SUIVI")
-ORA-06512: at "QXP.QXP_PK_AUDIT", line 203
-ORA-06512: at "QXP.QXP_PK_AUDIT", line 199
+org.springframework.dao.DataIntegrityViolationException: CallableStatementCallback; SQL [{call QXP_PK_RUN.END_RUN(?, ?, ?, ?, ?, ?, ?, ?, ?)}]; ORA-01403: no data found
+ORA-06512: at "QXP.QXP_PK_RUN", line 754
+ORA-06512: at "QXP.QXP_PK_RUN", line 721
 ORA-06512: at line 1
 
-	at org.springframework.jdbc.support.SQLExceptionSubclassTranslator.doTranslate(SQLExceptionSubclassTranslator.java:97)
+	at org.springframework.jdbc.support.SQLStateSQLExceptionTranslator.doTranslate(SQLStateSQLExceptionTranslator.java:118)
 	at org.springframework.jdbc.support.AbstractFallbackSQLExceptionTranslator.translate(AbstractFallbackSQLExceptionTranslator.java:107)
+	at org.springframework.jdbc.support.AbstractFallbackSQLExceptionTranslator.translate(AbstractFallbackSQLExceptionTranslator.java:116)
 	at org.springframework.jdbc.core.JdbcTemplate.translateException(JdbcTemplate.java:1548)
 	at org.springframework.jdbc.core.JdbcTemplate.execute(JdbcTemplate.java:1183)
 	at org.springframework.jdbc.core.JdbcTemplate.call(JdbcTemplate.java:1222)
 	at org.springframework.jdbc.core.simple.AbstractJdbcCall.executeCallInternal(AbstractJdbcCall.java:412)
-	at org.springframework.jdbc.core.simple.AbstractJdbcCall.doExecute(AbstractJdbcCall.java:372)
-	at org.springframework.jdbc.core.simple.SimpleJdbcCall.execute(SimpleJdbcCall.java:198)
-	at com.socgen.sgs.api.quark.engine.infra.dao.impl.AuditDaoImpl.insertAuditRun(AuditDaoImpl.java:71)
+	at org.springframework.jdbc.core.simple.AbstractJdbcCall.doExecute(AbstractJdbcCall.java:395)
+	at org.springframework.jdbc.core.simple.SimpleJdbcCall.execute(SimpleJdbcCall.java:193)
+	at com.socgen.sgs.api.quark.engine.infra.dao.impl.EndRunDaoImpl.endRun(EndRunDaoImpl.java:63)
 	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
 	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
@@ -410,8 +273,8 @@ ORA-06512: at line 1
 	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184)
 	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:765)
 	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:717)
-	at com.socgen.sgs.api.quark.engine.infra.dao.impl.AuditDaoImpl$$SpringCGLIB$$0.insertAuditRun(<generated>)
-	at com.socgen.sgs.api.quark.engine.business.EndRunBusiness.execute(EndRunBusiness.java:81)
+	at com.socgen.sgs.api.quark.engine.infra.dao.impl.EndRunDaoImpl$$SpringCGLIB$$0.endRun(<generated>)
+	at com.socgen.sgs.api.quark.engine.business.EndRunBusiness.execute(EndRunBusiness.java:70)
 	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
 	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
@@ -494,9 +357,9 @@ ORA-06512: at line 1
 	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
 	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
 	at java.base/java.lang.Thread.run(Thread.java:840)
-Caused by: java.sql.SQLIntegrityConstraintViolationException: ORA-01400: cannot insert NULL into ("QXP"."QXP_AUDIT_RUN"."ID_SUIVI")
-ORA-06512: at "QXP.QXP_PK_AUDIT", line 203
-ORA-06512: at "QXP.QXP_PK_AUDIT", line 199
+Caused by: java.sql.SQLException: ORA-01403: no data found
+ORA-06512: at "QXP.QXP_PK_RUN", line 754
+ORA-06512: at "QXP.QXP_PK_RUN", line 721
 ORA-06512: at line 1
 
 	at oracle.jdbc.driver.T4CTTIoer11.processError(T4CTTIoer11.java:509)
@@ -519,460 +382,16 @@ ORA-06512: at line 1
 	at org.springframework.jdbc.core.JdbcTemplate.lambda$call$5(JdbcTemplate.java:1223)
 	at org.springframework.jdbc.core.JdbcTemplate.execute(JdbcTemplate.java:1164)
 	... 101 common frames omitted
-Caused by: oracle.jdbc.OracleDatabaseException: ORA-01400: cannot insert NULL into ("QXP"."QXP_AUDIT_RUN"."ID_SUIVI")
-ORA-06512: at "QXP.QXP_PK_AUDIT", line 203
-ORA-06512: at "QXP.QXP_PK_AUDIT", line 199
+Caused by: oracle.jdbc.OracleDatabaseException: ORA-01403: no data found
+ORA-06512: at "QXP.QXP_PK_RUN", line 754
+ORA-06512: at "QXP.QXP_PK_RUN", line 721
 ORA-06512: at line 1
 
 	at oracle.jdbc.driver.T4CTTIoer11.processError(T4CTTIoer11.java:513)
 	... 119 common frames omitted
 
-2026-07-15T08:24:00.424+05:30 ERROR 19788 --- [quark-engine-service] [nio-8080-exec-6] [29782bfde652f89231bf64a553bffd75-edbab28228519a97] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : End_Run failed for run [470017]: Failed to insert audit row for run: 470017
-
-java.lang.RuntimeException: Failed to insert audit row for run: 470017
-	at com.socgen.sgs.api.quark.engine.infra.dao.impl.AuditDaoImpl.insertAuditRun(AuditDaoImpl.java:75)
-	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
-	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:569)
-	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:352)
-	at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:196)
-	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163)
-	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:765)
-	at org.springframework.dao.support.PersistenceExceptionTranslationInterceptor.invoke(PersistenceExceptionTranslationInterceptor.java:137)
-	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184)
-	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:765)
-	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:717)
-	at com.socgen.sgs.api.quark.engine.infra.dao.impl.AuditDaoImpl$$SpringCGLIB$$0.insertAuditRun(<generated>)
-	at com.socgen.sgs.api.quark.engine.business.EndRunBusiness.execute(EndRunBusiness.java:81)
-	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
-	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:569)
-	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:352)
-	at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:196)
-	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163)
-	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:765)
-	at org.springframework.transaction.interceptor.TransactionInterceptor$1.proceedWithInvocation(TransactionInterceptor.java:123)
-	at org.springframework.transaction.interceptor.TransactionAspectSupport.invokeWithinTransaction(TransactionAspectSupport.java:385)
-	at org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:119)
-	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184)
-	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:765)
-	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:717)
-	at com.socgen.sgs.api.quark.engine.business.EndRunBusiness$$SpringCGLIB$$0.execute(<generated>)
-	at com.socgen.sgs.api.quark.engine.service.impl.ProcessRunServiceImpl.runProcessor(ProcessRunServiceImpl.java:121)
-	at com.socgen.sgs.api.quark.engine.infra.api.v1.EngineServiceController.processRun(EngineServiceController.java:27)
-	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
-	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:569)
-	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:254)
-	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:182)
-	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:118)
-	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:917)
-	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:829)
-	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:87)
-	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1089)
-	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:979)
-	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014)
-	at org.springframework.web.servlet.FrameworkServlet.doPost(FrameworkServlet.java:914)
-	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:590)
-	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:885)
-	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:658)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:205)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
-	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:51)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
-	at com.socgen.apibank.http.ratelimiter.RateLimiterFilter.doFilter(RateLimiterFilter.java:38)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
-	at org.springframework.security.web.ObservationFilterChainDecorator$FilterObservation$SimpleFilterObservation.lambda$wrap$1(ObservationFilterChainDecorator.java:479)
-	at org.springframework.security.web.ObservationFilterChainDecorator.lambda$wrapUnsecured$1(ObservationFilterChainDecorator.java:90)
-	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:219)
-	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:191)
-	at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:352)
-	at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:268)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
-	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
-	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
-	at org.springframework.web.filter.ServerHttpObservationFilter.doFilterInternal(ServerHttpObservationFilter.java:109)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
-	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
-	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:167)
-	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:90)
-	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:482)
-	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:115)
-	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:93)
-	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74)
-	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:340)
-	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:391)
-	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63)
-	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:896)
-	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1744)
-	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52)
-	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1191)
-	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
-	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
-	at java.base/java.lang.Thread.run(Thread.java:840)
-Caused by: org.springframework.dao.DataIntegrityViolationException: CallableStatementCallback; SQL [{call QXP_PK_AUDIT.INSERTAUDITRUN(?, ?, ?, ?, ?, ?, ?, ?)}]; ORA-01400: cannot insert NULL into ("QXP"."QXP_AUDIT_RUN"."ID_SUIVI")
-ORA-06512: at "QXP.QXP_PK_AUDIT", line 203
-ORA-06512: at "QXP.QXP_PK_AUDIT", line 199
-ORA-06512: at line 1
-
-	at org.springframework.jdbc.support.SQLExceptionSubclassTranslator.doTranslate(SQLExceptionSubclassTranslator.java:97)
-	at org.springframework.jdbc.support.AbstractFallbackSQLExceptionTranslator.translate(AbstractFallbackSQLExceptionTranslator.java:107)
-	at org.springframework.jdbc.core.JdbcTemplate.translateException(JdbcTemplate.java:1548)
-	at org.springframework.jdbc.core.JdbcTemplate.execute(JdbcTemplate.java:1183)
-	at org.springframework.jdbc.core.JdbcTemplate.call(JdbcTemplate.java:1222)
-	at org.springframework.jdbc.core.simple.AbstractJdbcCall.executeCallInternal(AbstractJdbcCall.java:412)
-	at org.springframework.jdbc.core.simple.AbstractJdbcCall.doExecute(AbstractJdbcCall.java:372)
-	at org.springframework.jdbc.core.simple.SimpleJdbcCall.execute(SimpleJdbcCall.java:198)
-	at com.socgen.sgs.api.quark.engine.infra.dao.impl.AuditDaoImpl.insertAuditRun(AuditDaoImpl.java:71)
-	... 96 common frames omitted
-Caused by: java.sql.SQLIntegrityConstraintViolationException: ORA-01400: cannot insert NULL into ("QXP"."QXP_AUDIT_RUN"."ID_SUIVI")
-ORA-06512: at "QXP.QXP_PK_AUDIT", line 203
-ORA-06512: at "QXP.QXP_PK_AUDIT", line 199
-ORA-06512: at line 1
-
-	at oracle.jdbc.driver.T4CTTIoer11.processError(T4CTTIoer11.java:509)
-	at oracle.jdbc.driver.T4CTTIoer11.processError(T4CTTIoer11.java:461)
-	at oracle.jdbc.driver.T4C8Oall.processError(T4C8Oall.java:1104)
-	at oracle.jdbc.driver.T4CTTIfun.receive(T4CTTIfun.java:553)
-	at oracle.jdbc.driver.T4CTTIfun.doRPC(T4CTTIfun.java:269)
-	at oracle.jdbc.driver.T4C8Oall.doOALL(T4C8Oall.java:655)
-	at oracle.jdbc.driver.T4CCallableStatement.doOall8(T4CCallableStatement.java:265)
-	at oracle.jdbc.driver.T4CCallableStatement.doOall8(T4CCallableStatement.java:86)
-	at oracle.jdbc.driver.T4CCallableStatement.executeForRows(T4CCallableStatement.java:965)
-	at oracle.jdbc.driver.OracleStatement.doExecuteWithTimeout(OracleStatement.java:1205)
-	at oracle.jdbc.driver.OraclePreparedStatement.executeInternal(OraclePreparedStatement.java:3666)
-	at oracle.jdbc.driver.T4CCallableStatement.executeInternal(T4CCallableStatement.java:1358)
-	at oracle.jdbc.driver.OraclePreparedStatement.execute(OraclePreparedStatement.java:3778)
-	at oracle.jdbc.driver.OracleCallableStatement.execute(OracleCallableStatement.java:4251)
-	at oracle.jdbc.driver.OraclePreparedStatementWrapper.execute(OraclePreparedStatementWrapper.java:1081)
-	at com.zaxxer.hikari.pool.ProxyPreparedStatement.execute(ProxyPreparedStatement.java:44)
-	at com.zaxxer.hikari.pool.HikariProxyCallableStatement.execute(HikariProxyCallableStatement.java)
-	at org.springframework.jdbc.core.JdbcTemplate.lambda$call$5(JdbcTemplate.java:1223)
-	at org.springframework.jdbc.core.JdbcTemplate.execute(JdbcTemplate.java:1164)
-	... 101 common frames omitted
-Caused by: oracle.jdbc.OracleDatabaseException: ORA-01400: cannot insert NULL into ("QXP"."QXP_AUDIT_RUN"."ID_SUIVI")
-ORA-06512: at "QXP.QXP_PK_AUDIT", line 203
-ORA-06512: at "QXP.QXP_PK_AUDIT", line 199
-ORA-06512: at line 1
-
-	at oracle.jdbc.driver.T4CTTIoer11.processError(T4CTTIoer11.java:513)
-	... 119 common frames omitted
-
-2026-07-15T08:24:00.425+05:30  INFO 19788 --- [quark-engine-service] [nio-8080-exec-6] [29782bfde652f89231bf64a553bffd75-edbab28228519a97] c.s.s.a.q.e.business.EndRunBusiness      : Finalizing run [470017] with status [ERROR]
-2026-07-15T08:24:00.433+05:30  INFO 19788 --- [quark-engine-service] [nio-8080-exec-6] [29782bfde652f89231bf64a553bffd75-edbab28228519a97] c.s.s.a.q.e.i.dao.impl.EndRunDaoImpl     : Update_Status_Run executed for run [470017] with status [3]
-2026-07-15T08:24:00.439+05:30  INFO 19788 --- [quark-engine-service] [nio-8080-exec-6] [29782bfde652f89231bf64a553bffd75-edbab28228519a97] c.s.s.a.q.e.i.dao.impl.EndRunDaoImpl     : Inserted 1 errors for run [470017]
-2026-07-15T08:24:00.452+05:30 ERROR 19788 --- [quark-engine-service] [nio-8080-exec-6] [29782bfde652f89231bf64a553bffd75-edbab28228519a97] c.s.s.a.q.e.infra.dao.impl.AuditDaoImpl  : Failed to insert audit row for run [470017]: CallableStatementCallback; SQL [{call QXP_PK_AUDIT.INSERTAUDITRUN(?, ?, ?, ?, ?, ?, ?, ?)}]; ORA-01400: cannot insert NULL into ("QXP"."QXP_AUDIT_RUN"."ID_SUIVI")
-ORA-06512: at "QXP.QXP_PK_AUDIT", line 203
-ORA-06512: at "QXP.QXP_PK_AUDIT", line 199
-ORA-06512: at line 1
-
-
-org.springframework.dao.DataIntegrityViolationException: CallableStatementCallback; SQL [{call QXP_PK_AUDIT.INSERTAUDITRUN(?, ?, ?, ?, ?, ?, ?, ?)}]; ORA-01400: cannot insert NULL into ("QXP"."QXP_AUDIT_RUN"."ID_SUIVI")
-ORA-06512: at "QXP.QXP_PK_AUDIT", line 203
-ORA-06512: at "QXP.QXP_PK_AUDIT", line 199
-ORA-06512: at line 1
-
-	at org.springframework.jdbc.support.SQLExceptionSubclassTranslator.doTranslate(SQLExceptionSubclassTranslator.java:97)
-	at org.springframework.jdbc.support.AbstractFallbackSQLExceptionTranslator.translate(AbstractFallbackSQLExceptionTranslator.java:107)
-	at org.springframework.jdbc.core.JdbcTemplate.translateException(JdbcTemplate.java:1548)
-	at org.springframework.jdbc.core.JdbcTemplate.execute(JdbcTemplate.java:1183)
-	at org.springframework.jdbc.core.JdbcTemplate.call(JdbcTemplate.java:1222)
-	at org.springframework.jdbc.core.simple.AbstractJdbcCall.executeCallInternal(AbstractJdbcCall.java:412)
-	at org.springframework.jdbc.core.simple.AbstractJdbcCall.doExecute(AbstractJdbcCall.java:372)
-	at org.springframework.jdbc.core.simple.SimpleJdbcCall.execute(SimpleJdbcCall.java:198)
-	at com.socgen.sgs.api.quark.engine.infra.dao.impl.AuditDaoImpl.insertAuditRun(AuditDaoImpl.java:71)
-	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
-	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:569)
-	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:352)
-	at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:196)
-	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163)
-	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:765)
-	at org.springframework.dao.support.PersistenceExceptionTranslationInterceptor.invoke(PersistenceExceptionTranslationInterceptor.java:137)
-	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184)
-	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:765)
-	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:717)
-	at com.socgen.sgs.api.quark.engine.infra.dao.impl.AuditDaoImpl$$SpringCGLIB$$0.insertAuditRun(<generated>)
-	at com.socgen.sgs.api.quark.engine.business.EndRunBusiness.execute(EndRunBusiness.java:81)
-	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
-	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:569)
-	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:352)
-	at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:196)
-	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163)
-	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:765)
-	at org.springframework.transaction.interceptor.TransactionInterceptor$1.proceedWithInvocation(TransactionInterceptor.java:123)
-	at org.springframework.transaction.interceptor.TransactionAspectSupport.invokeWithinTransaction(TransactionAspectSupport.java:385)
-	at org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:119)
-	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184)
-	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:765)
-	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:717)
-	at com.socgen.sgs.api.quark.engine.business.EndRunBusiness$$SpringCGLIB$$0.execute(<generated>)
-	at com.socgen.sgs.api.quark.engine.service.impl.ProcessRunServiceImpl.runProcessor(ProcessRunServiceImpl.java:127)
-	at com.socgen.sgs.api.quark.engine.infra.api.v1.EngineServiceController.processRun(EngineServiceController.java:27)
-	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
-	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:569)
-	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:254)
-	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:182)
-	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:118)
-	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:917)
-	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:829)
-	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:87)
-	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1089)
-	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:979)
-	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014)
-	at org.springframework.web.servlet.FrameworkServlet.doPost(FrameworkServlet.java:914)
-	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:590)
-	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:885)
-	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:658)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:205)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
-	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:51)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
-	at com.socgen.apibank.http.ratelimiter.RateLimiterFilter.doFilter(RateLimiterFilter.java:38)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
-	at org.springframework.security.web.ObservationFilterChainDecorator$FilterObservation$SimpleFilterObservation.lambda$wrap$1(ObservationFilterChainDecorator.java:479)
-	at org.springframework.security.web.ObservationFilterChainDecorator.lambda$wrapUnsecured$1(ObservationFilterChainDecorator.java:90)
-	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:219)
-	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:191)
-	at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:352)
-	at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:268)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
-	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
-	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
-	at org.springframework.web.filter.ServerHttpObservationFilter.doFilterInternal(ServerHttpObservationFilter.java:109)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
-	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
-	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:167)
-	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:90)
-	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:482)
-	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:115)
-	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:93)
-	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74)
-	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:340)
-	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:391)
-	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63)
-	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:896)
-	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1744)
-	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52)
-	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1191)
-	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
-	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
-	at java.base/java.lang.Thread.run(Thread.java:840)
-Caused by: java.sql.SQLIntegrityConstraintViolationException: ORA-01400: cannot insert NULL into ("QXP"."QXP_AUDIT_RUN"."ID_SUIVI")
-ORA-06512: at "QXP.QXP_PK_AUDIT", line 203
-ORA-06512: at "QXP.QXP_PK_AUDIT", line 199
-ORA-06512: at line 1
-
-	at oracle.jdbc.driver.T4CTTIoer11.processError(T4CTTIoer11.java:509)
-	at oracle.jdbc.driver.T4CTTIoer11.processError(T4CTTIoer11.java:461)
-	at oracle.jdbc.driver.T4C8Oall.processError(T4C8Oall.java:1104)
-	at oracle.jdbc.driver.T4CTTIfun.receive(T4CTTIfun.java:553)
-	at oracle.jdbc.driver.T4CTTIfun.doRPC(T4CTTIfun.java:269)
-	at oracle.jdbc.driver.T4C8Oall.doOALL(T4C8Oall.java:655)
-	at oracle.jdbc.driver.T4CCallableStatement.doOall8(T4CCallableStatement.java:265)
-	at oracle.jdbc.driver.T4CCallableStatement.doOall8(T4CCallableStatement.java:86)
-	at oracle.jdbc.driver.T4CCallableStatement.executeForRows(T4CCallableStatement.java:965)
-	at oracle.jdbc.driver.OracleStatement.doExecuteWithTimeout(OracleStatement.java:1205)
-	at oracle.jdbc.driver.OraclePreparedStatement.executeInternal(OraclePreparedStatement.java:3666)
-	at oracle.jdbc.driver.T4CCallableStatement.executeInternal(T4CCallableStatement.java:1358)
-	at oracle.jdbc.driver.OraclePreparedStatement.execute(OraclePreparedStatement.java:3778)
-	at oracle.jdbc.driver.OracleCallableStatement.execute(OracleCallableStatement.java:4251)
-	at oracle.jdbc.driver.OraclePreparedStatementWrapper.execute(OraclePreparedStatementWrapper.java:1081)
-	at com.zaxxer.hikari.pool.ProxyPreparedStatement.execute(ProxyPreparedStatement.java:44)
-	at com.zaxxer.hikari.pool.HikariProxyCallableStatement.execute(HikariProxyCallableStatement.java)
-	at org.springframework.jdbc.core.JdbcTemplate.lambda$call$5(JdbcTemplate.java:1223)
-	at org.springframework.jdbc.core.JdbcTemplate.execute(JdbcTemplate.java:1164)
-	... 101 common frames omitted
-Caused by: oracle.jdbc.OracleDatabaseException: ORA-01400: cannot insert NULL into ("QXP"."QXP_AUDIT_RUN"."ID_SUIVI")
-ORA-06512: at "QXP.QXP_PK_AUDIT", line 203
-ORA-06512: at "QXP.QXP_PK_AUDIT", line 199
-ORA-06512: at line 1
-
-	at oracle.jdbc.driver.T4CTTIoer11.processError(T4CTTIoer11.java:513)
-	... 119 common frames omitted
-
-2026-07-15T08:24:00.461+05:30 ERROR 19788 --- [quark-engine-service] [nio-8080-exec-6] [29782bfde652f89231bf64a553bffd75-edbab28228519a97] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : End_Run retry failed for run [470017]: Failed to insert audit row for run: 470017
-
-java.lang.RuntimeException: Failed to insert audit row for run: 470017
-	at com.socgen.sgs.api.quark.engine.infra.dao.impl.AuditDaoImpl.insertAuditRun(AuditDaoImpl.java:75)
-	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
-	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:569)
-	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:352)
-	at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:196)
-	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163)
-	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:765)
-	at org.springframework.dao.support.PersistenceExceptionTranslationInterceptor.invoke(PersistenceExceptionTranslationInterceptor.java:137)
-	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184)
-	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:765)
-	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:717)
-	at com.socgen.sgs.api.quark.engine.infra.dao.impl.AuditDaoImpl$$SpringCGLIB$$0.insertAuditRun(<generated>)
-	at com.socgen.sgs.api.quark.engine.business.EndRunBusiness.execute(EndRunBusiness.java:81)
-	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
-	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:569)
-	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:352)
-	at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:196)
-	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163)
-	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:765)
-	at org.springframework.transaction.interceptor.TransactionInterceptor$1.proceedWithInvocation(TransactionInterceptor.java:123)
-	at org.springframework.transaction.interceptor.TransactionAspectSupport.invokeWithinTransaction(TransactionAspectSupport.java:385)
-	at org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:119)
-	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184)
-	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:765)
-	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:717)
-	at com.socgen.sgs.api.quark.engine.business.EndRunBusiness$$SpringCGLIB$$0.execute(<generated>)
-	at com.socgen.sgs.api.quark.engine.service.impl.ProcessRunServiceImpl.runProcessor(ProcessRunServiceImpl.java:127)
-	at com.socgen.sgs.api.quark.engine.infra.api.v1.EngineServiceController.processRun(EngineServiceController.java:27)
-	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
-	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:569)
-	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:254)
-	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:182)
-	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:118)
-	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:917)
-	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:829)
-	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:87)
-	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1089)
-	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:979)
-	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014)
-	at org.springframework.web.servlet.FrameworkServlet.doPost(FrameworkServlet.java:914)
-	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:590)
-	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:885)
-	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:658)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:205)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
-	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:51)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
-	at com.socgen.apibank.http.ratelimiter.RateLimiterFilter.doFilter(RateLimiterFilter.java:38)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
-	at org.springframework.security.web.ObservationFilterChainDecorator$FilterObservation$SimpleFilterObservation.lambda$wrap$1(ObservationFilterChainDecorator.java:479)
-	at org.springframework.security.web.ObservationFilterChainDecorator.lambda$wrapUnsecured$1(ObservationFilterChainDecorator.java:90)
-	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:219)
-	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:191)
-	at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:352)
-	at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:268)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
-	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
-	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
-	at org.springframework.web.filter.ServerHttpObservationFilter.doFilterInternal(ServerHttpObservationFilter.java:109)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
-	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
-	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:167)
-	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:90)
-	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:482)
-	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:115)
-	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:93)
-	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74)
-	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:340)
-	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:391)
-	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63)
-	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:896)
-	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1744)
-	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52)
-	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1191)
-	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
-	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
-	at java.base/java.lang.Thread.run(Thread.java:840)
-Caused by: org.springframework.dao.DataIntegrityViolationException: CallableStatementCallback; SQL [{call QXP_PK_AUDIT.INSERTAUDITRUN(?, ?, ?, ?, ?, ?, ?, ?)}]; ORA-01400: cannot insert NULL into ("QXP"."QXP_AUDIT_RUN"."ID_SUIVI")
-ORA-06512: at "QXP.QXP_PK_AUDIT", line 203
-ORA-06512: at "QXP.QXP_PK_AUDIT", line 199
-ORA-06512: at line 1
-
-	at org.springframework.jdbc.support.SQLExceptionSubclassTranslator.doTranslate(SQLExceptionSubclassTranslator.java:97)
-	at org.springframework.jdbc.support.AbstractFallbackSQLExceptionTranslator.translate(AbstractFallbackSQLExceptionTranslator.java:107)
-	at org.springframework.jdbc.core.JdbcTemplate.translateException(JdbcTemplate.java:1548)
-	at org.springframework.jdbc.core.JdbcTemplate.execute(JdbcTemplate.java:1183)
-	at org.springframework.jdbc.core.JdbcTemplate.call(JdbcTemplate.java:1222)
-	at org.springframework.jdbc.core.simple.AbstractJdbcCall.executeCallInternal(AbstractJdbcCall.java:412)
-	at org.springframework.jdbc.core.simple.AbstractJdbcCall.doExecute(AbstractJdbcCall.java:372)
-	at org.springframework.jdbc.core.simple.SimpleJdbcCall.execute(SimpleJdbcCall.java:198)
-	at com.socgen.sgs.api.quark.engine.infra.dao.impl.AuditDaoImpl.insertAuditRun(AuditDaoImpl.java:71)
-	... 96 common frames omitted
-Caused by: java.sql.SQLIntegrityConstraintViolationException: ORA-01400: cannot insert NULL into ("QXP"."QXP_AUDIT_RUN"."ID_SUIVI")
-ORA-06512: at "QXP.QXP_PK_AUDIT", line 203
-ORA-06512: at "QXP.QXP_PK_AUDIT", line 199
-ORA-06512: at line 1
-
-	at oracle.jdbc.driver.T4CTTIoer11.processError(T4CTTIoer11.java:509)
-	at oracle.jdbc.driver.T4CTTIoer11.processError(T4CTTIoer11.java:461)
-	at oracle.jdbc.driver.T4C8Oall.processError(T4C8Oall.java:1104)
-	at oracle.jdbc.driver.T4CTTIfun.receive(T4CTTIfun.java:553)
-	at oracle.jdbc.driver.T4CTTIfun.doRPC(T4CTTIfun.java:269)
-	at oracle.jdbc.driver.T4C8Oall.doOALL(T4C8Oall.java:655)
-	at oracle.jdbc.driver.T4CCallableStatement.doOall8(T4CCallableStatement.java:265)
-	at oracle.jdbc.driver.T4CCallableStatement.doOall8(T4CCallableStatement.java:86)
-	at oracle.jdbc.driver.T4CCallableStatement.executeForRows(T4CCallableStatement.java:965)
-	at oracle.jdbc.driver.OracleStatement.doExecuteWithTimeout(OracleStatement.java:1205)
-	at oracle.jdbc.driver.OraclePreparedStatement.executeInternal(OraclePreparedStatement.java:3666)
-	at oracle.jdbc.driver.T4CCallableStatement.executeInternal(T4CCallableStatement.java:1358)
-	at oracle.jdbc.driver.OraclePreparedStatement.execute(OraclePreparedStatement.java:3778)
-	at oracle.jdbc.driver.OracleCallableStatement.execute(OracleCallableStatement.java:4251)
-	at oracle.jdbc.driver.OraclePreparedStatementWrapper.execute(OraclePreparedStatementWrapper.java:1081)
-	at com.zaxxer.hikari.pool.ProxyPreparedStatement.execute(ProxyPreparedStatement.java:44)
-	at com.zaxxer.hikari.pool.HikariProxyCallableStatement.execute(HikariProxyCallableStatement.java)
-	at org.springframework.jdbc.core.JdbcTemplate.lambda$call$5(JdbcTemplate.java:1223)
-	at org.springframework.jdbc.core.JdbcTemplate.execute(JdbcTemplate.java:1164)
-	... 101 common frames omitted
-Caused by: oracle.jdbc.OracleDatabaseException: ORA-01400: cannot insert NULL into ("QXP"."QXP_AUDIT_RUN"."ID_SUIVI")
-ORA-06512: at "QXP.QXP_PK_AUDIT", line 203
-ORA-06512: at "QXP.QXP_PK_AUDIT", line 199
-ORA-06512: at line 1
-
-	at oracle.jdbc.driver.T4CTTIoer11.processError(T4CTTIoer11.java:513)
-	... 119 common frames omitted
-
-2026-07-15T08:24:00.462+05:30  INFO 19788 --- [quark-engine-service] [nio-8080-exec-6] [29782bfde652f89231bf64a553bffd75-edbab28228519a97] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Run completed for runId: 470017 with status: ERROR
+2026-07-15T09:49:27.081+05:30  INFO 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] c.s.s.a.q.e.business.EndRunBusiness      : Finalizing run [467500] with status [ERROR]
+2026-07-15T09:49:27.089+05:30  INFO 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] c.s.s.a.q.e.i.dao.impl.EndRunDaoImpl     : Update_Status_Run executed for run [467500] with status [3]
+2026-07-15T09:49:27.097+05:30  INFO 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] c.s.s.a.q.e.infra.dao.impl.AuditDaoImpl  : Audit row inserted for run [467500]
+2026-07-15T09:49:27.097+05:30  INFO 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] c.s.s.a.q.e.business.EndRunBusiness      : Run [467500] finalized successfully
+2026-07-15T09:49:27.105+05:30  INFO 27620 --- [quark-engine-service] [nio-8080-exec-2] [08c441e6cccfe8288b58696505262e8c-912be67b950489f5] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Run completed for runId: 467500 with status: ERROR
