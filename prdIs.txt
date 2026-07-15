@@ -42,45 +42,108 @@ Msg:
 - 16:46:50.2017 [1]  Src:R_514986 Msg: Fin du Run 514986 Etape:End Status:Error avec 1 erreurs
 
 
+DB-only remediation runbook — gabarit_template 3
 
--- 0. Confirm the gabarit_template this run actually uses (should be 3)
+Step 1 — Confirm the run really uses gabarit_template 3
+
 SELECT r.id_run, g.id_gabarit, g.id_gabarit_template
 FROM   QXP_RUN r
 JOIN   QXP_SUIVI s   ON r.id_suivi = s.id_suivi
 JOIN   QXP_GABARIT g ON g.id_gabarit = s.id_gabarit
 WHERE  r.id_run = 514986;
+Use the returned id_gabarit_template (expected 3) everywhere below.
 
--- 1. THE ROOT-CAUSE CHECK: duplicate template NAMES for gabarit_template 3
---    Any row returned here == the ArgumentException that kills the run.
+Step 2 — Find the duplicate name(s)
+
 SELECT t.nom, COUNT(*) AS cnt
 FROM   QXP_TEMPLATE t
 JOIN   QXP_ASSO_GABARIT_TEMPLATES g_t ON t.id_template = g_t.id_template
 WHERE  g_t.id_gabarit_template = 3
 GROUP  BY t.nom
 HAVING COUNT(*) > 1;
+Every row here is a collision that crashes the load. (Usually exactly one.)
 
--- 2. Duplicate ASSOCIATION rows (same template linked twice to the gabarit_template)
---    This is the most common way the duplicate appears after an edit/import.
-SELECT g_t.id_template, COUNT(*) AS cnt
-FROM   QXP_ASSO_GABARIT_TEMPLATES g_t
-WHERE  g_t.id_gabarit_template = 3
-GROUP  BY g_t.id_template
-HAVING COUNT(*) > 1;
+Step 3 — Inspect the colliding rows and check reuse
 
--- 3. NULL / blank names (two of these also collide -> both map to "")
-SELECT t.id_template, t.nom
-FROM   QXP_TEMPLATE t
-JOIN   QXP_ASSO_GABARIT_TEMPLATES g_t ON t.id_template = g_t.id_template
-WHERE  g_t.id_gabarit_template = 3
-AND    (t.nom IS NULL OR TRIM(t.nom) IS NULL);
-
--- 4. Full listing exactly as the C# loop sees it — eyeball the NOM collisions
+-- 3a. See the two (or more) rows side by side. Higher ID_TEMPLATE = inserted later = usual stray.
 SELECT t.id_template, t.nom, t.src_nom, t.src_nom_overflow,
        t.absolute, t.absolute_repeat, t."LEFT", t."TOP",
        t.width, t.height, t.page_break, t.column_break
 FROM   QXP_TEMPLATE t
 JOIN   QXP_ASSO_GABARIT_TEMPLATES g_t ON t.id_template = g_t.id_template
 WHERE  g_t.id_gabarit_template = 3
+AND    t.nom IN (
+         SELECT t2.nom
+         FROM   QXP_TEMPLATE t2
+         JOIN   QXP_ASSO_GABARIT_TEMPLATES a2 ON t2.id_template = a2.id_template
+         WHERE  a2.id_gabarit_template = 3
+         GROUP BY t2.nom HAVING COUNT(*) > 1)
 ORDER  BY t.nom, t.id_template;
-(If t."LEFT"/t."TOP" error out because the columns aren't quoted-case in your schema, just replace with t.left, t.top.)
 
+-- 3b. Is either template ALSO linked to other gabarit_templates?
+--     If YES -> only detach the association, never DELETE the template row.
+SELECT a.id_template, COUNT(*) AS nb_gabarit_templates,
+       LISTAGG(a.id_gabarit_template, ',') WITHIN GROUP (ORDER BY a.id_gabarit_template) AS used_by
+FROM   QXP_ASSO_GABARIT_TEMPLATES a
+WHERE  a.id_template IN (
+         SELECT t.id_template FROM QXP_TEMPLATE t
+         JOIN QXP_ASSO_GABARIT_TEMPLATES g_t ON t.id_template = g_t.id_template
+         WHERE g_t.id_gabarit_template = 3
+         AND t.nom IN (SELECT t2.nom FROM QXP_TEMPLATE t2
+                       JOIN QXP_ASSO_GABARIT_TEMPLATES a2 ON t2.id_template = a2.id_template
+                       WHERE a2.id_gabarit_template = 3
+                       GROUP BY t2.nom HAVING COUNT(*) > 1))
+GROUP  BY a.id_template;
+
+Deciding which row to keep: the valid template is the one whose SRC_NOM matches a real box name in the gabarit-template layout (the log says it has 55 boxes on 6 pages). If both rows are identical or the newer one was added by mistake, keep the lower ID_TEMPLATE and remove the higher. If you're unsure, prefer rename (Step 4, Option B) over delete — it's fully reversible and still unblocks the run.
+
+Step 4 — Apply the fix (pick ONE option)
+
+First take a safety snapshot:
+CREATE TABLE QXP_TEMPLATE_BKP_514986      AS SELECT * FROM QXP_TEMPLATE;
+CREATE TABLE QXP_ASSO_GT_BKP_514986       AS SELECT * FROM QXP_ASSO_GABARIT_TEMPLATES;
+
+Option A — Detach the stray association (use when 3b shows the template is NOT shared, or you want the template row gone). Replace <STRAY_ID> with the id you decided to drop:
+DELETE FROM QXP_ASSO_GABARIT_TEMPLATES
+WHERE  id_gabarit_template = 3
+AND    id_template = <STRAY_ID>;
+
+-- Optional: if 3b shows this template is used by NO other gabarit_template, remove the orphan row too:
+DELETE FROM QXP_TEMPLATE
+WHERE  id_template = <STRAY_ID>
+AND    NOT EXISTS (SELECT 1 FROM QXP_ASSO_GABARIT_TEMPLATES a WHERE a.id_template = QXP_TEMPLATE.id_template);
+
+COMMIT;   -- run the verify query below BEFORE committing if your tool allows
+
+Option B — Rename the stray (safest, reversible; use when the template is shared or you're unsure).
+UPDATE QXP_TEMPLATE
+SET    nom = nom || '_DUP_' || id_template   -- makes it unique without losing data
+WHERE  id_template = <STRAY_ID>;
+COMMIT;
+This makes the name unique so the Dictionary load succeeds. If the renamed template was never actually referenced (likely, since it was a duplicate), rendering is unaffected; if it was the one being used, you'll see a missing-box warning and can swap which name carries the _DUP_ suffix.
+
+Step 5 — Verify the collision is gone (before committing, ideally)
+
+SELECT t.nom, COUNT(*) AS cnt
+FROM   QXP_TEMPLATE t
+JOIN   QXP_ASSO_GABARIT_TEMPLATES g_t ON t.id_template = g_t.id_template
+WHERE  g_t.id_gabarit_template = 3
+GROUP  BY t.nom
+HAVING COUNT(*) > 1;
+Zero rows = fixed. Re-run 514986; it should pass "Chargement des Templates".
+
+Step 6 — Prevent recurrence, DB-only (optional but recommended)
+
+Since no code enforces uniqueness, add a database-level guard so a future manual insert can't reintroduce this. First check nothing existing would violate it:
+-- Pre-check: any gabarit_template with duplicate template names anywhere?
+SELECT g_t.id_gabarit_template, t.nom, COUNT(*) AS cnt
+FROM   QXP_TEMPLATE t
+JOIN   QXP_ASSO_GABARIT_TEMPLATES g_t ON t.id_template = g_t.id_template
+GROUP  BY g_t.id_gabarit_template, t.nom
+HAVING COUNT(*) > 1;
+If that returns zero rows (after your fix), you can enforce "unique template name per gabarit_template" with a fast-refresh materialized view + unique constraint, or the simplest guard — a unique index on QXP_TEMPLATE(NOM) only if template names are globally unique in your data (check first):
+-- Only if template NOM is meant to be globally unique (verify no legit reuse first):
+SELECT nom, COUNT(*) FROM QXP_TEMPLATE GROUP BY nom HAVING COUNT(*) > 1;
+-- If that is empty:
+CREATE UNIQUE INDEX QXP_TEMPLATE_NOM_UK ON QXP_TEMPLATE (NOM);
+If names legitimately repeat across different gabarit_templates, do not add the global index — the per-gabarit_template pre-check above is your monitoring query; run it periodically (or as a scheduled check) to catch a bad insert before it hits production runs.
