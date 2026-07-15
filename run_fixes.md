@@ -1,530 +1,165 @@
-# EOS Quark — Run-Analysis Fix Batch (runs 488654 & 505244)
+# EOS Quark — Audit NULL-`id_suivi` fix + corrected test-run query (copy-paste ready)
 
-**Repo of record:** `14-07 engine service repo/quark-engine`
-**Scope:** three code fixes (#1, #2, #4) + one flagged data/run item (#3), all traced to the
-488654 (Dynamique, gabarit G_168 / template GT_6) and 505244 (Plaquette, `gabaritSource=DOCUMENT_COURANT`)
-runs. This is a **new, standalone batch**, separate from the verified-list Batches 1–13 and from
-`EOS_Quark_Consolidated_Changes.md`.
+**Repo:** `14-07 engine service repo/quark-engine`.
 
-Working-style conventions honoured: whole-file listings for the small classes; targeted snippets for
-the ~1200-line `DynamiqueTaskProcessStrategy` (as done for Batch 2); **no .NET identifiers/comments in
-new code** — all .NET traceability lives in this document; inherited (earlier-batch) comments left as-is.
+## Brief: issues & fixes
 
----
-
-## Summary
-
-| # | Symptom (run) | Root cause | Fix | Files |
-|---|---|---|---|---|
-| **1** | `ORA-01722 invalid number` on `srq_photo.id_structure = :7` (488654) | Java replicates .NET's `int.MinValue` **unset sentinel** but binds it as the literal number `-2147483648`; Oracle then applies `TO_NUMBER(id_structure)` against it → ORA-01722 on the first non-numeric column value | Bind an unset numeric/date sentinel as a **typed SQL NULL** (mirrors .NET's Oracle-parameter layer) | `mapper/InParamSqlMapper.java` (+ test) |
-| **2** | thousands of `Template element [X] not found` → all dynamic tables emptied (488654) | TElements resolved against the **main gabarit** project (never even populated); specimen boxes live in the **gabarit-template** doc (`GT_6`), whose project was never parsed | Parse the gabarit-template document's project (via the existing QXPSM DOM bridge) and resolve TElements against **it** | `service/task/impl/DynamiqueTaskProcessStrategy.java` |
-| **4** | `ORA-02291` FK violation in `QXP_PK_RUN.End_Run` on every successful finalize (505244) | Absent generated-document ids (`Integer.MIN_VALUE`) passed verbatim to the FK doc-id columns → no parent row | Bind an absent doc-id as **SQL NULL** (the FK columns are nullable) | `infra/dao/impl/EndRunDaoImpl.java` |
-| **3** | PDF `Error #10122 … document contains only blank pages` (505244) | **Not a port defect** — the run has 0 content tasks (DID only) → empty document → Quark `/pdf` refuses. Our `/pdf` params are byte-identical to .NET. | **Flagged only** — re-run with a content-ful Plaquette (SQL/System tasks). Optional parity Q below. | — |
-
-**#1 and #4 are the same class of defect:** the Java port copied .NET's `int.MinValue` *sentinel value*
-but dropped the .NET step that converts that sentinel to **SQL NULL** before binding.
-
----
-
-## Scope: this fix is universal, not id_structure- or document-type-specific
-
-`id_structure` is merely one INT-declared bind parameter; the defect is in the **shared InParam→SQL
-binding layer** (`InParamSqlMapper`), used by every run of every report type:
-- Both SQL execution paths route through it — `ProcessSqlBusiness` (SQL tasks) and `DynamicQueryPortImpl`
-  (Dynamique).
-- InParams are loaded per-run via `Get_In_Params` for **all** document types (Plaquette / DICI / KIID /
-  Annual / Dynamique / Compartiment).
-- The mapper never inspects column type or document type — it binds exactly what .NET binds for the
-  param's declared `DataTypeEnum`. So any run binding an INT/DECIMAL/DATE param whose value is the unset
-  sentinel is covered. It surfaced in 488654 (Dynamique) but is not specific to it.
-
-## Confirmations performed before patching (full .NET + ora.txt cross-check)
-
-Read directly from the .NET source at `eos quark whole application code/qxp`
-(`QXP.Engine.Core` / `QXP.Framework`) and the Oracle package bodies in `ora.txt`.
-
-### Completeness of the sentinel→NULL rule — ALL typed cases verified (not just INT)
-The Oracle-parameter layer (`OracleParameter.cs`) applies the same `Validation.IsSet(value) ?
-value : DBNull.Value` gate for **every** type `Data_Type_Helper.InputToTypedValue` can emit:
-
-| Produced CLR type | .NET overload | Gate | Sentinel → NULL |
+| # | Issue (from runs 493497 / 470017) | Kind | Fix |
 |---|---|---|---|
-| Int32   | `GetParameter(Int32)` `OracleParameter.cs:509-521` | `IsSet(int)` `Validation.cs:71`  | `int.MinValue` |
-| Decimal | `GetParameter(decimal)` `OracleParameter.cs:523-535` | `IsSet(decimal)` `Validation.cs:122` | `decimal.MinValue` |
-| DateTime| `GetParameter(DateTime)` `OracleParameter.cs:537-549` (`OracleDbType.Date`) | `IsSet(DateTime)` `Validation.cs:171` | `DateTime.MinValue` |
-| String / other | generic fallback `new OracleParameter(name, value)` `OracleParameter.cs:118-121` | **none** | — (raw value bound verbatim) |
+| **A** | **Run finalize rolls back on an early failure.** When a run fails *before* its properties load, `run.getRunProperties()` is null, so `AuditDaoImpl` bound `p_id_suivi = NULL` into `QXP_AUDIT_RUN.ID_SUIVI` (a `NOT NULL` column) → `ORA-01400`. Because `EndRunBusiness.execute` is one `@Transactional` unit, the audit failure **rolled back the status update + error insert**, the retry repeated it, and errors were double-inserted. | 🔴 code | Bind `id_suivi = 0` (not NULL) when properties are absent — the audit then inserts and the finalize commits. |
+| **B** | **493497** points at gabarit `161`, which exists but is **`is_actif = 0`**. `Get_Run_Properties` (no `is_actif` filter) loads, but `Get_Gabarit` (`WHERE is_actif = 1`) finds nothing → run fails at load. | 🟠 data / query | Query fix: require the run's gabarit be `is_actif = 1`. |
+| **C** | **470017** has **no `Get_Run_Properties` row** — its own `r.id_suivi → suivi → gabarit/langue/asso` chain is incomplete in DEV. The earlier query only checked the *task* linkage (`s.id_run_suivant`), not the *load* linkage (`r.id_suivi = s.id_suivi`). | 🟠 data / query | Query fix: anchor on the `Get_Run_Properties` join chain so only loadable runs are returned. |
 
-→ The Java mapper mirrors this exactly: INT/DECIMAL/DATE unset sentinel → typed SQL NULL (types
-`NUMERIC`/`NUMERIC`/`DATE`); every other type → raw string (no gate), matching the .NET fallback. The
-sentinels are identical (`Integer.MIN_VALUE`, `decimal.MinValue` = `-79228162514264337593543950335`,
-`DateTime.MinValue` = 0001-01-01). DECIMAL uses `compareTo` to match .NET's scale-insensitive `!=`; the
-DATE null uses `Types.DATE` to mirror `OracleDbType.Date`.
+**Why fix A the way we did (verified against .NET):** .NET's `End_Run` is *also* a single transaction whose audit failure rolls back + re-throws — so making the audit "best-effort" would **diverge** from .NET. The real difference is that .NET constructs `Run` with `new Run_Properties()` whose `int _id_Suivi` defaults to **0**, so an early-failed run audits with `p_id_suivi = 0` (a non-null value) and commits cleanly. Binding `0` in Java is exact parity — the audit *succeeds* instead of failing, so nothing rolls back. (.NET refs: `Proxy_Run.cs:284-351` single tx; `Proxy_Audit.cs:96-97` binds `Run.Properties.ID_Suivi`; `Run_Base.cs:80-86` default `Run_Properties`; `Run_Properties.cs:23` `int _id_Suivi` default 0.)
 
-### ora.txt (package bodies) cross-check
-- **`Get_In_Params`** (`ora.txt:9186`): the cursor selects `p.INPUT_DATA_TYPE` as a **stored column** of
-  the parameter-definition table `qxp_params_type_rapport` — data-driven per parameter, never computed.
-  So a param's type is a fixed DB attribute; only the *binding* is ours to fix. Cursor columns
-  (`nom_parametre`, `input_data_type`, `valeur`) match what `InParamMapper` reads.
-- **`End_Run`** (`ora.txt:9350`): `PROCEDURE End_Run(p_id_run, p_run_status, p_id_suivi, p_suivi_status,
-  p_date_fin, p_log_trace, p_id_doc_pdf, p_id_doc_qxp, p_id_doc_doc)` — all `IN NUMBER`, **no DEFAULTs**,
-  doc-ids are the last three in that order. This matches `EndRunDaoImpl.declareParameters` exactly, so the
-  NULLs land on `QXP_RUN.ID_DOC_PDF/QXP/DOC` (`UPDATE` at `ora.txt:9407`). The FK that raised ORA-02291 is
-  in table DDL (not in this package-body-only dump); the body itself nulls those columns in its cleanup
-  block, confirming NULL is a valid value. `Insert_Document` is a FUNCTION returning a positive NUMBER id,
-  consistent with `int.MinValue` = "absent".
-
-### Original two confirmations
-
-### (a) Why the id_structure InParam is INT — and how .NET actually binds it
-- The InParam type is **DB-metadata-driven**: it is read from the `QXP_PK_RUN.Get_In_Params` cursor
-  column `input_data_type` (`InParamMapper.mapFromResultSet` → `DataTypeEnum.fromCode`). It is **not**
-  engine/context-set. So id_structure being INT (code 2) comes from the parameter-definition row.
-- **.NET binds an INT InParam as a NUMBER, not a string.** `Data_Type_Helper.InputToTypedValue`
-  (`Helper/Data_Type_Helper.cs:154-167`) → `case Data_Type.Int: return ConversionInvariante.ToInt(value)`
-  (a boxed `Int32`); the value is bound via `InParams.cs:69` → `OraParameter(name, inParam.Value)`.
-- **The real parity gap:** the Oracle-parameter layer converts the unset sentinel to `DBNull`:
-  `OracleParameter.cs:509-521` — `GetParameter(string, Int32)` does
-  `if (Validation.IsSet(value)) Value = value; else Value = DBNull.Value;`, and
-  `Validation.cs:67-71` — `IsSet(int)` returns `false` for `int.MinValue`.
-  Since `ToInt("_P0_…")` returns `int.MinValue`, .NET binds **SQL NULL**. Java produced the same
-  sentinel but bound the literal `-2147483648` → `TO_NUMBER(id_structure) = -2147483648` → ORA-01722.
-  *(The only place .NET binds `id_structure` as a string is the unrelated `Proxy_Run.Get_Compartiment_Runs`
-  stored proc, where its C# parameter is declared `string`.)*
-  → **The originally-queued "bind id_structure as String" fix was based on a wrong premise and is not
-  used.** The correct, faithful fix is sentinel → typed SQL NULL.
-
-### (b) Which project .NET's Evaluate_TElement sources template TElements from
-- `TElement_Helper.cs:116-146` — `Evaluate_TElement(task, cell)` looks the box up in
-  `task.Run.Gabarit_Template.QXPProject.Elements` (**line 121**), i.e. the **gabarit-TEMPLATE**
-  `Document`, *not* `task.Run.Gabarit`. `Gabarit` and `Gabarit_Template` are separate `Document`
-  fields on `Run_Base` (`Run_Base.cs:859` vs `:868`), loaded independently
-  (`Run.cs:89` vs `Run.cs:152`).
-- The template `Document.QXPProject` is lazily parsed from **its own** pool file via
-  `Document.cs:385-414` → `QXPS_File_Manager.Get_Project` → `getXPressDOM(documentName)`
-  (`QXPSM_Request_Dom.cs:42`). It is a distinct, separately-cached project.
-  → Java must parse the gabarit-template document's project and resolve TElements against it. Confirmed.
-
-### (c) (issue #4) What .NET passes to End_Run for an absent document
-- `Proxy_Document.Insert_Document` returns `int.MinValue` when the document is null
-  (`Proxy_Document.cs:242-245`). Those ids flow into `End_Run`'s `p_id_doc_pdf/qxp/doc`
-  (`Proxy_Run.cs:274-276, 310-318`) and hit the **same** `GetParameter(Int32)` → `Validation.IsSet`
-  gate, so **End_Run receives SQL NULL** for an absent id. Java bound the literal `MIN_VALUE` → ORA-02291.
+> Note: fix A only changes behavior for runs that fail *before* properties load; a normal run already has a real `id_suivi`, so its audit was always fine (493497 audited OK). After the fix, an unloadable run (like 470017) still ends `ERROR` — but cleanly, with the status/error rows committed and one audit row (`id_suivi = 0`), no rollback, no retry, no duplicate errors.
 
 ---
 
-## Fix #1 — `InParamSqlMapper`: unset sentinel → typed SQL NULL
-
-**Path:** `src/main/java/com/socgen/sgs/api/quark/engine/mapper/InParamSqlMapper.java`
-**.NET parity:** `OracleParameter.GetParameter(Int32/…)` + `Validation.IsSet` (unset → `DBNull.Value`).
-**Covers both SQL paths:** the SQL-query task (`ProcessSqlBusiness`) and the Dynamique query
-(`DynamicQueryPortImpl`) both bind through this mapper.
-
-**Mechanism:** a typed SQL NULL is emitted as a `SqlParameterValue(java.sql.Types.…, null)` map value.
-`NamedParameterJdbcTemplate` (via `StatementCreatorUtils.setParameterValue`) unwraps `SqlParameterValue`
-and binds `setNull(idx, <declaredType>)` — the exact analogue of .NET's `DBNull` + `OracleDbType.Int32`.
-This avoids Oracle "unable to determine type" issues that a bare Java `null` could raise.
-
-**Whole file (post-change):**
+## Fix A — `AuditDaoImpl.java` *(paste whole file)*
+Path: `src/main/java/com/socgen/sgs/api/quark/engine/infra/dao/impl/AuditDaoImpl.java`
 
 ```java
-package com.socgen.sgs.api.quark.engine.mapper;
+package com.socgen.sgs.api.quark.engine.infra.dao.impl;
 
-import com.socgen.sgs.api.quark.engine.domain.InParam;
-import com.socgen.sgs.api.quark.engine.enums.DataTypeEnum;
-import org.springframework.jdbc.core.SqlParameterValue;
-import org.springframework.stereotype.Component;
+import com.socgen.sgs.api.quark.engine.domain.Run;
+import com.socgen.sgs.api.quark.engine.infra.dao.AuditDao;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.SqlParameter;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcCall;
+import org.springframework.stereotype.Repository;
 
-import java.math.BigDecimal;
+import javax.sql.DataSource;
 import java.sql.Timestamp;
 import java.sql.Types;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.time.Duration;
 
 /**
- * Maps run InParams to a flat parameter map for the dynamic-SQL named binds.
- *
- * <p>Binds the TYPED value for each param, mirroring .NET
- * {@code Data_Type_Helper.InputToTypedValue} + {@code ConversionInvariante} (InParam.cs:54 sets
- * {@code _value = InputToTypedValue(_string_value, _type)}, InParams.cs:69 binds {@code inParam.Value}):
- * <ul>
- *   <li>INT      → {@link Integer} (Int32 truncation); unset/unparseable → typed SQL NULL</li>
- *   <li>DECIMAL  → {@link BigDecimal}; unset/unparseable → typed SQL NULL</li>
- *   <li>DATE     → {@link Timestamp} (time-preserving DateTime); unset/unparseable → typed SQL NULL</li>
- *   <li>An unset value binds as SQL NULL (not the MIN_VALUE placeholder), matching how the legacy
- *       Oracle parameter layer converts an unset sentinel to a null bind.</li>
- *   <li>DATE_TIME and every other type → the RAW STRING — .NET's switch has no case for DateTime(5)
- *       (nor Text/Currency/Pourcentage), so it falls to {@code default: return value}.</li>
- * </ul>
- * Findings #21, #49, #50, #51.
+ * Calls QXP_PK_AUDIT.InsertAuditRun (PROCEDURE, 8 IN params).
+ * Cross-reference: .NET Proxy_Audit.InsertAuditRun.
  */
-@Component
-public class InParamSqlMapper {
+@Repository
+@Slf4j
+public class AuditDaoImpl implements AuditDao {
 
-    /** Format the date value arrives in from Oracle Get_In_Params (M/d/yyyy HH:mm:ss). */
-    private static final DateTimeFormatter INPUT_FORMAT = DateTimeFormatter.ofPattern("M/d/yyyy HH:mm:ss");
+    /** p_message is VARCHAR2 — keep within Oracle's standard VARCHAR2 limit. */
+    private static final int MAX_MESSAGE_SIZE = 4000;
 
-    /** .NET {@code decimal.MinValue} — the sentinel ConversionInvariante.ToDecimal returns when unset/unparseable. */
-    private static final BigDecimal DECIMAL_MIN_VALUE = new BigDecimal("-79228162514264337593543950335");
+    private final SimpleJdbcCall insertAuditRunCall;
 
-    /** .NET {@code DateTime.MinValue} (0001-01-01 00:00:00) — the sentinel ToDateTime returns when unset/unparseable. */
-    private static final Timestamp DATETIME_MIN_VALUE = Timestamp.valueOf(LocalDateTime.of(1, 1, 1, 0, 0, 0));
+    @Autowired
+    public AuditDaoImpl(DataSource dataSource) {
+        this.insertAuditRunCall = new SimpleJdbcCall(dataSource)
+                .withCatalogName("QXP_PK_AUDIT")
+                .withProcedureName("InsertAuditRun")
+                .withoutProcedureColumnMetaDataAccess()
+                .declareParameters(
+                        new SqlParameter("p_id_run", Types.NUMERIC),
+                        new SqlParameter("p_id_suivi", Types.NUMERIC),
+                        new SqlParameter("p_run_type", Types.VARCHAR),
+                        new SqlParameter("p_start_date", Types.TIMESTAMP),
+                        new SqlParameter("p_end_date", Types.TIMESTAMP),
+                        new SqlParameter("p_duration", Types.NUMERIC),
+                        new SqlParameter("p_end_status", Types.VARCHAR),
+                        new SqlParameter("p_message", Types.VARCHAR)
+                );
+    }
 
-    public Map<String, Object> toParameterMap(Map<String, InParam> inParams) {
-        Map<String, Object> params = new LinkedHashMap<>();
-        for (Map.Entry<String, InParam> entry : inParams.entrySet()) {
-            params.put(entry.getKey(), toTypedValue(entry.getValue()));
+    @Override
+    public void insertAuditRun(Run run, String message) {
+        // p_duration stores only the SUB-SECOND millisecond COMPONENT (0-999), NOT total elapsed time —
+        // this matches the existing QXP_AUDIT_RUN.DURATION contract.
+        // ⚠️ Quirk: the stored DURATION is only the 0-999 ms part, not the total duration.
+        int durationMs = 0;
+        if (run.getStartDate() != null && run.getEndDate() != null) {
+            durationMs = Duration.between(run.getStartDate(), run.getEndDate()).toMillisPart();
         }
-        return params;
-    }
 
-    private Object toTypedValue(InParam inParam) {
-        String value = inParam.getStringValue();
-        DataTypeEnum type = inParam.getType();
-        if (type == null) {
-            return value;
-        }
-        switch (type) {
-            case INT: {
-                // An unset / unparseable numeric input is bound as a typed SQL NULL, not as the
-                // MIN_VALUE placeholder number. Binding the placeholder would force a numeric
-                // predicate over a textual column through TO_NUMBER against that number, which
-                // raises ORA-01722 on the first non-numeric column value.
-                Integer i = toInt(value);
-                return i == Integer.MIN_VALUE ? new SqlParameterValue(Types.NUMERIC, null) : i;
-            }
-            case DECIMAL: {
-                // compareTo (not equals) so an unset value is caught regardless of its scale.
-                BigDecimal d = toDecimal(value);
-                return DECIMAL_MIN_VALUE.compareTo(d) == 0 ? new SqlParameterValue(Types.NUMERIC, null) : d;
-            }
-            case DATE: {
-                Timestamp ts = toSqlTimestamp(value);
-                return DATETIME_MIN_VALUE.equals(ts) ? new SqlParameterValue(Types.DATE, null) : ts;
-            }
-            default:
-                // DATE_TIME (5), TEXT, CURRENCY, POURCENTAGE, UNSPECIFIED, CUSTOM → raw string
-                // (.NET Data_Type_Helper.InputToTypedValue `default: return value`).
-                return value;
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("p_id_run", run.getId())
+                // ID_SUIVI is NOT NULL. When a run fails before its properties are loaded there is no
+                // suivi id, so bind the neutral 0 (the field's default) rather than SQL NULL — otherwise
+                // the audit insert violates the constraint and rolls back the whole finalize.
+                .addValue("p_id_suivi", run.getRunProperties() != null ? run.getRunProperties().getIdSuivi() : 0)
+                .addValue("p_run_type", run.getRunProperties() != null ? run.getRunProperties().getRunType() : null)
+                .addValue("p_start_date", run.getStartDate() != null ? Timestamp.valueOf(run.getStartDate()) : null)
+                .addValue("p_end_date", run.getEndDate() != null ? Timestamp.valueOf(run.getEndDate()) : null)
+                .addValue("p_duration", durationMs)
+                // Bind the stable PascalCase status label (Generated/Error/...) that END_STATUS expects,
+                // not the Java enum name() (TO_GENERATE/...). The spelling is a persistence contract.
+                .addValue("p_end_status", run.getStatus() != null ? run.getStatus().getAuditStatusLabel() : null)
+                .addValue("p_message", truncate(message, MAX_MESSAGE_SIZE));
+
+        try {
+            insertAuditRunCall.execute(params);
+            log.info("Audit row inserted for run [{}]", run.getId());
+        } catch (Exception e) {
+            log.error("Failed to insert audit row for run [{}]: {}", run.getId(), e.getMessage(), e);
+            throw new RuntimeException("Failed to insert audit row for run: " + run.getId(), e);
         }
     }
 
-    /** .NET ConversionInvariante.ToInt: Decimal.TryParse(value w/o spaces, NumberStyles.Any) cast to Int32; else int.MinValue. */
-    private Integer toInt(String value) {
-        BigDecimal d = parseNumber(value);
-        return d == null ? Integer.MIN_VALUE : d.intValue(); // intValue() truncates toward zero, like (int)decimal
-    }
-
-    /** .NET ConversionInvariante.ToDecimal: Decimal.TryParse(value w/o spaces, NumberStyles.Any); else decimal.MinValue. */
-    private BigDecimal toDecimal(String value) {
-        BigDecimal d = parseNumber(value);
-        return d == null ? DECIMAL_MIN_VALUE : d;
-    }
-
-    /** Returns the parsed number, or null to signal the caller to bind its sentinel. */
-    private BigDecimal parseNumber(String value) {
+    private static String truncate(String value, int maxLength) {
         if (value == null) {
             return null;
         }
-        String v = value.replace(" ", ""); // .NET ToInt/ToDecimal do value.Replace(" ", "")
-        if (v.isEmpty()) {
-            return null;
-        }
-        try {
-            return new BigDecimal(v);
-        } catch (NumberFormatException e) {
-            return null;
-        }
-    }
-
-    /**
-     * Converts a DATE param string to a time-preserving {@link Timestamp}. Parity: .NET
-     * ConversionInvariante.ToDateTime returns the parsed DateTime, or DateTime.MinValue when
-     * unset/unparseable (it does NOT throw).
-     */
-    private Timestamp toSqlTimestamp(String value) {
-        if (value == null || value.trim().isEmpty()) {
-            return DATETIME_MIN_VALUE;
-        }
-        String v = value.trim();
-        try {
-            return Timestamp.valueOf(LocalDateTime.parse(v, INPUT_FORMAT));
-        } catch (Exception e) {
-            try {
-                return Timestamp.valueOf(LocalDate.parse(v).atStartOfDay());
-            } catch (Exception e2) {
-                return DATETIME_MIN_VALUE;
-            }
-        }
+        return value.length() > maxLength ? value.substring(0, maxLength) : value;
     }
 }
 ```
 
-> **Correctness is settled; one symptom-specific note.** The change is proven **byte-for-byte .NET
-> parity** — it emits the identical typed NULL the .NET Oracle-parameter layer emits for an unset
-> sentinel (verified for INT/DECIMAL/DATE above), so it is not a bet on Oracle's NULL-comparison
-> behaviour: whatever the live DB does with .NET's bind, it does identically with ours. The only
-> value-dependent point is whether it *clears the specific 488654 ORA-01722*: that holds when bind `:7`'s
-> value is the unset sentinel (empty / non-numeric → NULL, as .NET does). If `:7` were instead a *real
-> numeric* structure id, both engines bind that number and both apply `TO_NUMBER(id_structure)` — a
-> data/gabarit issue affecting .NET equally, not a port defect. The 488654 log's in-param dump would
-> confirm `:7`'s value/type, but it changes nothing about the fix's correctness.
+*(One line changed: `p_id_suivi` fallback `null` → `0`, plus an explanatory comment. `mvn clean install` still compiles; no test references this binding — needs the live re-run below to confirm on the wire.)*
 
 ---
 
-## Fix #2 — `DynamiqueTaskProcessStrategy`: resolve TElements against the gabarit-template project
+## Corrected test-run query (fixes B & C)
+Returns only runs that will actually **load** (`Get_Run_Properties` chain + active gabarit) **and** have TODO content tasks:
 
-**Path:** `src/main/java/com/socgen/sgs/api/quark/engine/service/task/impl/DynamiqueTaskProcessStrategy.java`
-**.NET parity:** `TElement_Helper.Evaluate_TElement` → `task.Run.Gabarit_Template.QXPProject.Elements`.
-
-**Why the strategy (not `LoadTemplatesBusiness`):** the template document is uploaded to the pool in
-`TaskDynamique.prepare()` (Prepare phase). `getXPressDOM` needs the doc already pooled, so the project
-is built lazily at the start of the Process phase — mirroring .NET's lazy `Document.QXPProject`. The
-build uses the existing `GetDocumentProjectBusiness` bridge (already injected by
-`CompartimentTaskProcessStrategy`; injecting a business into a strategy is an established pattern here,
-e.g. `SqlTaskProcessStrategy` → `ProcessSqlBusiness`). The main-gabarit project was the *only* other use
-of a gabarit project in the whole strategy and was never even populated, so both lookup sites move.
-
-**Change 2.1 — imports** (after the `TElementHelper` import):
-
-```java
-import com.socgen.sgs.api.quark.engine.domain.helper.TElementHelper;
-
-import com.socgen.sgs.api.quark.engine.domain.DocumentDomain;
-
-import com.socgen.sgs.api.quark.engine.business.GetDocumentProjectBusiness;
+```sql
+SELECT r.id_run,
+       s.id_suivi,
+       s.id_gabarit,
+       g.nom                              AS gabarit_nom,
+       s.id_type_rapport,                 -- 2 = Plaquette, 5 = DICI, ...
+       r.id_statut_generation,            -- 1=ToGenerate 2=Generated 3=Error 4=Running
+       COUNT(DISTINCT gt.id_tache)                                        AS nb_taches,
+       COUNT(DISTINCT rt.id_tache)                                        AS nb_todo,
+       COUNT(DISTINCT CASE WHEN t.id_type_tache=1 THEN t.id_tache END)    AS nb_sql,
+       COUNT(DISTINCT CASE WHEN t.id_type_tache=0 THEN t.id_tache END)    AS nb_system,
+       COUNT(DISTINCT CASE WHEN t.id_type_tache=2 THEN t.id_tache END)    AS nb_document,
+       COUNT(DISTINCT CASE WHEN t.id_type_tache=4 THEN t.id_tache END)    AS nb_dynamique,
+       COUNT(DISTINCT CASE WHEN t.id_type_tache=5 THEN t.id_tache END)    AS nb_compartiment
+FROM       qxp_run                 r
+-- run must LOAD: mirror Get_Run_Properties + the is_actif that Get_Gabarit requires
+JOIN       qxp_suivi               s   ON s.id_suivi = r.id_suivi
+JOIN       qxp_gabarit             g   ON g.id_gabarit = s.id_gabarit
+                                      AND g.is_actif   = 1              -- fixes 493497 (inactive gabarit)
+                                      AND g.contenu IS NOT NULL         -- needed for pool upload / render
+JOIN       qxp_ref_langue_document rld ON rld.id_langue_document = s.id_langue
+JOIN       qxp_asso_fond_gabarit   afg ON afg.id_fnd_code     = s.id_fnd_code
+                                      AND afg.id_gabarit      = s.id_gabarit
+                                      AND afg.id_type_rapport = s.id_type_rapport
+                                      AND afg.id_langue       = s.id_langue
+-- run must have TODO tasks on that same gabarit
+JOIN       qxp_asso_gabarit_taches gt  ON gt.id_gabarit = s.id_gabarit
+JOIN       qxp_tache               t   ON t.id_tache = gt.id_tache AND t.is_actif = 1
+LEFT JOIN  qxp_asso_run_taches     rt  ON rt.id_run = r.id_run AND rt.id_tache = gt.id_tache
+GROUP BY r.id_run, s.id_suivi, s.id_gabarit, g.nom, s.id_type_rapport, r.id_statut_generation
+HAVING   COUNT(DISTINCT rt.id_tache) > 0
+ORDER BY nb_sql DESC, nb_dynamique DESC, nb_taches DESC;
 ```
-
-**Change 2.2 — new injected field** (after `dynamicQueryPort`; Lombok `@RequiredArgsConstructor` wires it):
-
-```java
-    private final DynamicQueryPort dynamicQueryPort;
-
-    private final GetDocumentProjectBusiness getDocumentProjectBusiness;
-```
-
-**Change 2.3 — build the template project once, at the top of `process(...)`** (right after the
-existing gabarit null-check `}`):
-
-```java
-            return;
-
-        }
-
-        // The specimen boxes referenced by every report cell live in the gabarit-template
-        // document, not the source gabarit. Parse that document's structure once so the
-
-        // template elements can be resolved during Check_Report.
-
-        ensureTemplateProject(task);
-
-        // ================================================================
-
-        // Stage 1: Get_Report — Execute SQL and build DReport
-```
-
-**Change 2.4 — new private method** (inserted between `checkReport(...)` and `evaluateTElement(...)`):
-
-```java
-    /**
-
-     * Build and cache the gabarit-template document's project once per run. The template document
-
-     * is uploaded to the pool during the Prepare phase; its structure is fetched and parsed here so
-
-     * the report cells can resolve their specimen boxes against it.
-
-     */
-
-    private void ensureTemplateProject(TaskDynamique task) {
-
-        DocumentDomain template = task.getRun().getGabaritTemplate();
-
-        if (template == null) {
-
-            return;
-
-        }
-
-        if (template.getQxpProject() == QxpProject.EMPTY) {
-
-            template.setQxpProject(getDocumentProjectBusiness.getProject(template.getFilePoolPath()));
-
-        }
-
-    }
-```
-
-**Change 2.5 — `checkReport(...)` analyses the template project** (was `getGabarit()`):
-
-```java
-        boolean activeOverflowTemplate = !task.getOverflowBoxes().isEmpty();
-
-        QxpProject qxpProject = task.getRun().getGabaritTemplate().getQxpProject();
-
-        qxpProject.analyse(task, true);
-```
-
-**Change 2.6 — `evaluateTElement(...)` reads the template project** (was `getGabarit()`):
-
-```java
-        QxpProject qxpProject = task.getRun().getGabaritTemplate().getQxpProject();
-
-        Map<String, TElement> elements = qxpProject.getElements();
-```
-
-*(No change to `LoadTemplatesBusiness` — it already loads the template document, sets its
-`filePoolPath`, and re-evaluates Mode_Degrade against it.)*
+- If `HAVING COUNT(rt) > 0` returns nothing (TODO rows may be populated at run time), relax to `COUNT(DISTINCT gt.id_tache) > 0`.
+- **Pre-flight a candidate** before running it: `SELECT id_gabarit, nom, is_actif, CASE WHEN contenu IS NULL THEN 'NULL' ELSE 'present' END FROM qxp_gabarit WHERE id_gabarit = <run's id_gabarit>;`
+- **Or just re-run 488654** — proven active gabarit + 24 content tasks; the lowest-risk way to exercise fixes #1/#2/#4.
 
 ---
 
-## Fix #4 — `EndRunDaoImpl.endRun`: absent doc-id → SQL NULL
+## Apply & test
+1. Paste `AuditDaoImpl.java` (already applied in the 14-07 working copy).
+2. `mvn clean install` → `BUILD SUCCESS`.
+3. Run a candidate from the corrected query (or 488654). Expect: content-ful runs finalize `GENERATED`; and any run that still can't load ends `ERROR` **cleanly** — one status update, one error, one audit row (`id_suivi = 0`), no `ORA-01400`, no rollback/retry.
 
-**Path:** `src/main/java/com/socgen/sgs/api/quark/engine/infra/dao/impl/EndRunDaoImpl.java`
-**.NET parity:** absent `Insert_Document` id (`int.MinValue`) → `DBNull` at the Oracle-parameter layer.
-The `p_id_doc_*` parameters are already declared `Types.NUMERIC`, so `SimpleJdbcCall` binds a proper
-typed NULL. Single choke point — covers `idDoc` (always absent: Word is never generated) and
-`idPdf`/`idQxp` when their render failed.
-
-**Changed binding block in `endRun(...)`:**
-
-```java
-        params.put("p_date_fin", dateFin != null ? Timestamp.valueOf(dateFin) : null);
-        params.put("p_log_trace", logTrace);
-        // The document-id columns carry a foreign key. When a document was not generated its id is
-        // the MIN_VALUE "absent" placeholder; binding it verbatim has no parent row and raises
-        // ORA-02291. Bind SQL NULL for an absent id (the columns are nullable). Declared NUMERIC.
-        params.put("p_id_doc_pdf", nullIfAbsent(idDocPdf));
-        params.put("p_id_doc_qxp", nullIfAbsent(idDocQxp));
-        params.put("p_id_doc_doc", nullIfAbsent(idDocDoc));
-
-        jdbcCall.execute(params);
-        log.info("End_Run executed for run [{}]", idRun);
-    }
-```
-
-**New private helper** (added after `updateStatusRun(...)`):
-
-```java
-    /** An absent generated-document id ({@link Integer#MIN_VALUE}) is bound as SQL NULL. */
-    private static Integer nullIfAbsent(int idDocument) {
-        return idDocument == Integer.MIN_VALUE ? null : idDocument;
-    }
-```
-
----
-
-## Issue #3 — PDF blank-pages (505244): FLAGGED, no code change
-
-`Error #10122 … document contains only blank pages` is a **data/run-selection** condition: run 505244
-loaded **0 content tasks** (DID only), so the document is empty and QXPS `/pdf` refuses to render. Our
-`/pdf` request (path + 6 downsample/compression params) is byte-identical to .NET `QXPS_Message_PDF`, so
-this is not a port defect.
-
-- **Action:** re-run with a **content-ful Plaquette** (a run that carries SQL/System tasks) to validate
-  PDF render + document insert end-to-end.
-- **Optional parity question (your call, not changed here):** in .NET a swallowed render failure is not
-  recorded as a `RunError` / run-fail either; today Java logs `ERROR` and continues. If you want a blank
-  PDF to mark the run failed, that's a deliberate deviation to decide separately.
-
----
-
-## Test impact
-
-- **`InParamSqlMapperTest`** — updated (four sentinel assertions changed from "returns MIN_VALUE
-  placeholder" to "returns a typed SQL NULL"). Whole file below. Non-sentinel cases unchanged.
-- **No other tests** construct `DynamiqueTaskProcessStrategy` or `EndRunDaoImpl` (both Spring-wired), so
-  the new constructor arg / helper are safe. `ProcessRunServiceImplTest` mocks its collaborators — no
-  change needed.
-
-```java
-package com.socgen.sgs.api.quark.engine.mapper;
-
-import com.socgen.sgs.api.quark.engine.domain.InParam;
-import com.socgen.sgs.api.quark.engine.enums.DataTypeEnum;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.jdbc.core.SqlParameterValue;
-
-import java.math.BigDecimal;
-import java.sql.Timestamp;
-import java.sql.Types;
-import java.time.LocalDateTime;
-import java.util.LinkedHashMap;
-import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
-import static org.junit.jupiter.api.Assertions.assertNull;
-
-@DisplayName("InParamSqlMapper typed-binding Tests")
-class InParamSqlMapperTest {
-
-    private final InParamSqlMapper mapper = new InParamSqlMapper();
-
-    private Object map(DataTypeEnum type, String value) {
-        Map<String, InParam> in = new LinkedHashMap<>();
-        in.put("p", new InParam("p", type, value));
-        return mapper.toParameterMap(in).get("p");
-    }
-
-    /** Assert the mapped value is a typed SQL NULL of the expected java.sql.Types code. */
-    private void assertTypedNull(int expectedSqlType, Object actual) {
-        SqlParameterValue v = assertInstanceOf(SqlParameterValue.class, actual);
-        assertEquals(expectedSqlType, v.getSqlType());
-        assertNull(v.getValue());
-    }
-
-    @Test
-    @DisplayName("#51 INT binds a typed Integer (truncating toward zero); unset/unparseable → typed SQL NULL")
-    void intTyped() {
-        assertEquals(123, map(DataTypeEnum.INT, "123"));
-        assertEquals(12, map(DataTypeEnum.INT, "12.9"));      // (int)decimal truncates
-        assertTypedNull(Types.NUMERIC, map(DataTypeEnum.INT, ""));
-        assertTypedNull(Types.NUMERIC, map(DataTypeEnum.INT, "abc"));
-    }
-
-    @Test
-    @DisplayName("#51 DECIMAL binds a typed BigDecimal; unset/unparseable → typed SQL NULL")
-    void decimalTyped() {
-        assertEquals(new BigDecimal("12.50"), map(DataTypeEnum.DECIMAL, "12.50"));
-        assertTypedNull(Types.NUMERIC, map(DataTypeEnum.DECIMAL, ""));
-        assertTypedNull(Types.NUMERIC, map(DataTypeEnum.DECIMAL, "n/a"));
-    }
-
-    @Test
-    @DisplayName("#50 DATE binds a time-preserving Timestamp; unparseable → typed SQL NULL")
-    void dateTimePreserving() {
-        assertEquals(Timestamp.valueOf(LocalDateTime.of(2023, 12, 29, 14, 30, 0)),
-                map(DataTypeEnum.DATE, "12/29/2023 14:30:00"));
-        assertTypedNull(Types.DATE, map(DataTypeEnum.DATE, ""));
-    }
-
-    @Test
-    @DisplayName("#21 DATE_TIME (and TEXT) bind the RAW STRING (matches .NET switch default)")
-    void dateTimeAndTextRawString() {
-        assertEquals("12/29/2023 14:30:00", map(DataTypeEnum.DATE_TIME, "12/29/2023 14:30:00"));
-        assertEquals("hello", map(DataTypeEnum.TEXT, "hello"));
-    }
-}
-```
-
----
-
-## Apply & verify
-
-1. Apply the four edits above (all four are already applied in `14-07 engine service repo/quark-engine`).
-2. `mvn clean install` (no Maven in this sandbox — please run locally). Expected: green; the updated
-   `InParamSqlMapperTest` compiles against `spring-jdbc` (`SqlParameterValue`, already on the classpath).
-3. Re-run **488654 (Dynamique)** → expect: no ORA-01722; dynamic tables populate (no mass
-   "Template element not found").
-4. Re-run a **content-ful Plaquette** → expect: PDF renders, document inserts, and `End_Run` finalizes
-   with no ORA-02291.
-
-## Files changed
-- `src/main/java/.../mapper/InParamSqlMapper.java` (#1)
-- `src/test/java/.../mapper/InParamSqlMapperTest.java` (#1, test)
-- `src/main/java/.../service/task/impl/DynamiqueTaskProcessStrategy.java` (#2)
-- `src/main/java/.../infra/dao/impl/EndRunDaoImpl.java` (#4)
+## File changed
+- `src/main/java/.../infra/dao/impl/AuditDaoImpl.java` (fix A — `p_id_suivi` fallback `null` → `0`).
