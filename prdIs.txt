@@ -40,4 +40,47 @@ Msg:
 Msg:
 ==> Erreur lors du chargement des Templates du run 514986
 - 16:46:50.2017 [1]  Src:R_514986 Msg: Fin du Run 514986 Etape:End Status:Error avec 1 erreurs
- 
+
+
+
+-- 0. Confirm the gabarit_template this run actually uses (should be 3)
+SELECT r.id_run, g.id_gabarit, g.id_gabarit_template
+FROM   QXP_RUN r
+JOIN   QXP_SUIVI s   ON r.id_suivi = s.id_suivi
+JOIN   QXP_GABARIT g ON g.id_gabarit = s.id_gabarit
+WHERE  r.id_run = 514986;
+
+-- 1. THE ROOT-CAUSE CHECK: duplicate template NAMES for gabarit_template 3
+--    Any row returned here == the ArgumentException that kills the run.
+SELECT t.nom, COUNT(*) AS cnt
+FROM   QXP_TEMPLATE t
+JOIN   QXP_ASSO_GABARIT_TEMPLATES g_t ON t.id_template = g_t.id_template
+WHERE  g_t.id_gabarit_template = 3
+GROUP  BY t.nom
+HAVING COUNT(*) > 1;
+
+-- 2. Duplicate ASSOCIATION rows (same template linked twice to the gabarit_template)
+--    This is the most common way the duplicate appears after an edit/import.
+SELECT g_t.id_template, COUNT(*) AS cnt
+FROM   QXP_ASSO_GABARIT_TEMPLATES g_t
+WHERE  g_t.id_gabarit_template = 3
+GROUP  BY g_t.id_template
+HAVING COUNT(*) > 1;
+
+-- 3. NULL / blank names (two of these also collide -> both map to "")
+SELECT t.id_template, t.nom
+FROM   QXP_TEMPLATE t
+JOIN   QXP_ASSO_GABARIT_TEMPLATES g_t ON t.id_template = g_t.id_template
+WHERE  g_t.id_gabarit_template = 3
+AND    (t.nom IS NULL OR TRIM(t.nom) IS NULL);
+
+-- 4. Full listing exactly as the C# loop sees it — eyeball the NOM collisions
+SELECT t.id_template, t.nom, t.src_nom, t.src_nom_overflow,
+       t.absolute, t.absolute_repeat, t."LEFT", t."TOP",
+       t.width, t.height, t.page_break, t.column_break
+FROM   QXP_TEMPLATE t
+JOIN   QXP_ASSO_GABARIT_TEMPLATES g_t ON t.id_template = g_t.id_template
+WHERE  g_t.id_gabarit_template = 3
+ORDER  BY t.nom, t.id_template;
+(If t."LEFT"/t."TOP" error out because the columns aren't quoted-case in your schema, just replace with t.left, t.top.)
+
