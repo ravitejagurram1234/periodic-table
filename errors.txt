@@ -1,1697 +1,234 @@
-Processing run with runId: 339403
-2026-07-15T14:50:16.809+05:30  INFO 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Processing run with runId: 339403
-2026-07-15T14:50:16.809+05:30  INFO 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] c.s.s.a.q.e.b.RunStartUpdateBusiness     : Business layer: starting run with ID: 339403
-2026-07-15T14:50:16.822+05:30  INFO 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] c.s.s.a.q.e.i.d.i.RunStartUpdateDaoImpl  : Starting run with ID: 339403
-2026-07-15T14:50:17.316+05:30  INFO 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] c.s.s.a.q.e.i.d.i.RunStartUpdateDaoImpl  : Successfully started run with ID: 339403
-2026-07-15T14:50:17.316+05:30  INFO 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Run started successfully with runId: 339403
-2026-07-15T14:50:17.316+05:30  INFO 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Loading run with runId: 339403
-2026-07-15T14:50:17.316+05:30  INFO 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Retrieving properties for runId: 339403
-2026-07-15T14:50:17.316+05:30  INFO 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] c.s.s.a.q.e.b.GetRunPropertiesBusiness   : Business layer: fetching run properties for runId: 339403
-2026-07-15T14:50:17.316+05:30  INFO 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] .s.s.a.q.e.i.d.i.GetRunPropertiesDaoImpl : Fetching run properties for runId: 339403
-2026-07-15T14:50:17.815+05:30  INFO 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] .s.s.a.q.e.i.d.i.GetRunPropertiesDaoImpl : Successfully retrieved run properties for runId: 339403
-2026-07-15T14:50:17.815+05:30  INFO 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Successfully retrieved properties for runId: 339403
-2026-07-15T14:50:17.815+05:30  INFO 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] c.s.s.a.q.e.business.GetGabaritBusiness  : Fetching gabarit for idGabarit: 168
-2026-07-15T14:50:17.816+05:30  INFO 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] c.s.s.a.q.e.i.d.impl.GetGabaritDaoImpl   : Fetching gabarit for idGabarit: 168
-2026-07-15T14:50:30.081+05:30  INFO 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] c.s.s.a.q.e.i.d.impl.GetGabaritDaoImpl   : Successfully retrieved gabarit for idGabarit: 168
-2026-07-15T14:50:30.081+05:30  INFO 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] c.s.s.a.q.e.business.GetGabaritBusiness  : Prepared gabarit paths - poolPath: R_339403/G_168.QXP, fullPath: D:\Documents\R_339403\G_168.QXP
-2026-07-15T14:50:30.082+05:30  INFO 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] c.s.s.a.q.e.i.i.q.client.QxpsHttpClient  : QXPS call: POST http://srvcldvapd001.dns43.socgen:8080/addfile/R_339403/G_168.QXP
-2026-07-15T14:50:32.032+05:30  INFO 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] c.s.s.a.q.e.i.i.qxps.helper.QxpsHelper   : File added to QXPS document pool: R_339403/G_168.QXP
-2026-07-15T14:50:32.032+05:30  INFO 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] c.s.s.a.q.e.i.i.q.pool.FilePoolService   : File added to pool: R_339403/G_168.QXP
-2026-07-15T14:50:32.032+05:30  INFO 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] c.s.s.a.q.e.i.i.q.client.QxpsHttpClient  : QXPS call: GET http://srvcldvapd001.dns43.socgen:8080/xml/R_339403/G_168.QXP
-2026-07-15T14:50:34.377+05:30  INFO 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] .s.a.q.e.i.i.q.i.DocumentIdentityService : Fetching XML for document: R_339403/G_168.QXP, box: DID
-2026-07-15T14:50:34.377+05:30  INFO 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] c.s.s.a.q.e.i.i.q.client.QxpsHttpClient  : QXPS call: GET http://srvcldvapd001.dns43.socgen:8080/xml/R_339403/G_168.QXP?box=DID
-2026-07-15T14:50:34.861+05:30  INFO 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] c.s.s.a.q.e.b.GetInParamsBusiness        : Business layer: loading in-params for runId: 339403
-2026-07-15T14:50:34.861+05:30  INFO 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] c.s.s.a.q.e.i.d.impl.GetInParamsDaoImpl  : Fetching in-params for idSuivi: 51839
-2026-07-15T14:50:35.527+05:30  INFO 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] c.s.s.a.q.e.i.d.impl.GetInParamsDaoImpl  : Loaded 3 in-params for idSuivi: 51839
-2026-07-15T14:50:35.528+05:30  INFO 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Loading tasks for runId: 339403
-2026-07-15T14:50:35.528+05:30  INFO 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] c.s.s.a.q.e.business.GetTasksBusiness    : Business layer: loading tasks for runId: 339403
-2026-07-15T14:50:35.528+05:30  INFO 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] c.s.s.a.q.e.i.dao.impl.GetTasksDaoImpl   : Fetching tasks for runId: 339403
-2026-07-15T14:50:40.392+05:30  INFO 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] c.s.s.a.q.e.i.dao.impl.GetTasksDaoImpl   : Fetched 24 task rows for runId: 339403
-2026-07-15T14:50:40.394+05:30  INFO 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Loaded 24 tasks for runId: 339403
-2026-07-15T14:50:40.394+05:30  INFO 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Loading task exceptions for runId: 339403
-2026-07-15T14:50:40.395+05:30  INFO 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] c.s.s.a.q.e.b.GetTaskExceptionsBusiness  : Business layer: loading task exceptions for runId: 339403
-2026-07-15T14:50:40.395+05:30  INFO 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] s.s.a.q.e.i.d.i.GetTaskExceptionsDaoImpl : Fetching task exceptions for runId: 339403
-2026-07-15T14:50:40.892+05:30  INFO 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] s.s.a.q.e.i.d.i.GetTaskExceptionsDaoImpl : Fetched 0 task exception rows for runId: 339403
-2026-07-15T14:50:40.893+05:30  INFO 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Task exceptions loaded for runId: 339403
-2026-07-15T14:50:40.893+05:30  INFO 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : DID task added for runId: 339403
-2026-07-15T14:50:40.893+05:30  INFO 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] c.s.s.a.q.e.b.LoadTemplatesBusiness      : Loading templates for idGabaritTemplate=6 in run [339403]
-2026-07-15T14:50:40.894+05:30  INFO 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] .s.a.q.e.i.d.i.GetGabaritTemplateDaoImpl : Fetching gabarit template for idGabaritTemplate: 6
-2026-07-15T14:50:50.281+05:30  INFO 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] .s.a.q.e.i.d.i.GetGabaritTemplateDaoImpl : Successfully retrieved gabarit template for idGabaritTemplate: 6
-2026-07-15T14:50:50.282+05:30  INFO 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] .s.a.q.e.i.d.i.GetGabaritTemplateDaoImpl : Fetching templates for idGabaritTemplate: 6
-2026-07-15T14:50:56.674+05:30  INFO 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] .s.a.q.e.i.d.i.GetGabaritTemplateDaoImpl : Fetched 349 template rows for idGabaritTemplate: 6
-2026-07-15T14:50:56.677+05:30  INFO 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] c.s.s.a.q.e.b.LoadTemplatesBusiness      : Loaded 349 templates for run [339403]
-2026-07-15T14:50:56.677+05:30  INFO 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Run loading completed for runId: 339403
-2026-07-15T14:50:56.677+05:30  INFO 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] c.s.s.a.q.e.s.i.ProcessTasksServiceImpl  : Preparing tasks for runId: 339403
-2026-07-15T14:50:56.678+05:30  INFO 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] c.s.s.a.q.e.i.i.q.client.QxpsHttpClient  : QXPS call: POST http://srvcldvapd001.dns43.socgen:8080/addfile/R_339403/GT_6.qxp
-2026-07-15T14:51:00.452+05:30  INFO 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] c.s.s.a.q.e.i.i.qxps.helper.QxpsHelper   : File added to QXPS document pool: R_339403/GT_6.qxp
-2026-07-15T14:51:00.452+05:30  INFO 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] c.s.s.a.q.e.i.i.q.pool.FilePoolService   : File added to pool: R_339403/GT_6.qxp
-2026-07-15T14:51:00.452+05:30  INFO 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] c.s.s.a.q.e.s.i.ProcessTasksServiceImpl  : Task preparation completed for runId: 339403
-2026-07-15T14:51:00.453+05:30  INFO 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] c.s.s.a.q.e.s.i.ProcessTasksServiceImpl  : Processing tasks for runId: 339403
-2026-07-15T14:51:00.454+05:30  INFO 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] c.s.s.a.q.e.i.i.qxpsm.QxpsmSoapClient    : QXPSM getXPressDOM for document [R_339403/GT_6.qxp]
-2026-07-15T14:51:58.119+05:30 ERROR 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] c.s.s.a.q.e.i.d.i.DynamicQueryPortImpl   : DynamicQueryPort SQL execution failed: PreparedStatementCallback; SQL [/* 001 - Etat du Patrimoine PioMUNDI MBD 20251130*/
-
------- pensez à mettre ou retirer le where pour tache realimentation
-
---- 20251130 Refonte de la requete pour retrait des data N1.
-
-Select 
-
-prim.ID_PRESENTATION 
-,prim.LANGUE 
-,prim.ID_FND_CODE
-,prim.position
-,prim.index_Section
---,prim.page
---,prim.page_section
-,prim.Position_ptf_section
-,prim.index_col
-,prim.Index_Annee
-,prim.ordre_rapport
-,prim.ID_RUBRIQUE 
-,prim.GROUPE 	
-,prim.NIVEAUX 	
-,prim.LIB_BALISE 
-,prim.LIB_RAPPORT
-,Devise.FND_LNG_DESCRIPTION
-,titre_date.DDate
-,Devise.FND_CURRENCY
-,Donnees.VALEUR
-,Donnees.Valeur_pres
-
-,prim.ordre_rapport as ID_GROUPE
-,prim.ordre_rapport AS ID_LIGNE
-
-,'BILAM_S'||prim.index_Section||'L'||prim.ordre_rapport||'C'||prim.index_col||'D'||Case when prim.Index_Annee is null 
-            then 'LIB' else prim.Index_Annee end||'_'||prim.ID_FND_CODE as Nom_Bloc
-
-,Case when  substr(prim.ID_RUBRIQUE,1,1)= 'A' and prim.LIB_BALISE = 'Lib fond' and prim.Index_Annee is null then prim.LIB_RAPPORT
-	  when  substr(prim.ID_RUBRIQUE,1,1)= 'A' and prim.LIB_BALISE = 'Lib fond' and prim.Index_Annee is not null then Devise.FND_LNG_DESCRIPTION
-	  when  substr(prim.ID_RUBRIQUE,1,1)= 'A' and prim.LIB_BALISE = 'Date' and prim.Index_Annee is null then prim.LIB_RAPPORT
-	  when  substr(prim.ID_RUBRIQUE,1,1)= 'A' and prim.LIB_BALISE = 'Date' and prim.Index_Annee is not null then titre_date.DDate
-	  when  substr(prim.ID_RUBRIQUE,1,1)= 'A' and prim.LIB_BALISE = 'Devise' and prim.Index_Annee is null then prim.LIB_RAPPORT
-	  when  substr(prim.ID_RUBRIQUE,1,1)= 'A' and prim.LIB_BALISE = 'Devise' and prim.Index_Annee is not null then Devise.FND_CURRENCY
-	  when  substr(prim.ID_RUBRIQUE,1,1)in('B','E') and prim.Index_Annee is null and prim.index_col in(0) then prim.LIB_RAPPORT
-	  when  substr(prim.ID_RUBRIQUE,1,1)in('C','D','F','G','H') and prim.Index_Annee is null then prim.LIB_RAPPORT
-	  when  substr(prim.ID_RUBRIQUE,1,1)in('C','D','F','G','H') and prim.Index_Annee is not null then NVL(Donnees.Valeur_pres,'-')
-	  end as valeur_bloc
-		  
-,'BILAM_1G_'|| case when prim.NIVEAUX is null then 'N5'else prim.NIVEAUX end as "TEMPLATE"
-,prim.index_Section as ID_SECTION
-
-from
-(
-(
------------------ Debut de Gestion des presence de libellés en fonction de la page gauche ou droite 
-Select 
-tri.*
--- tri.ID_TABLEAU
--- ,tri.ID_PRESENTATION 
--- ,tri.LANGUE 
--- ,tri.ID_FND_CODE
--- ,tri.position
--- ,tri.index_Section
--- ,tri.page
--- ,tri.page_section
--- ,tri.Position_ptf_section
--- ,tri.index_col
--- ,tri.Index_Annee
--- ,tri.ordre_rapport
--- ,tri.ID_RUBRIQUE 
--- ,tri.GROUPE 	
--- ,tri.NIVEAUX 	
--- ,tri.LIB_BALISE 
--- ,tri.LIB_RAPPORT
-
-from
-(
-Select
-
-presence_ligne.ID_TABLEAU
-,presence_ligne.ID_PRESENTATION 
-,presence_ligne.LANGUE 
-,Cart.ID_FND_CODE
-,Cart.position
-,Cart.index_Section
---,Cart.page
---,Cart.page_section
-,Cart.Position_ptf_section
-,Cart.index_col
-,Cart.Index_Annee
-,presence_ligne.ordre_rapport
-,presence_ligne.ID_RUBRIQUE 
-,presence_ligne.GROUPE 	
-,presence_ligne.NIVEAUX 	
-,presence_ligne.LIB_BALISE 
-,presence_ligne.LIB_RAPPORT 
-
-,case when Cart.Index_Annee = 'N1' and presence_ligne.ID_RUBRIQUE = 'A0020' then 'X' 
-      when Cart.ID_FND_CODE = '111111' and Cart.Index_Annee is null and presence_ligne.ID_RUBRIQUE = 'A0020' and Cart.index_col = 0  then 'X'
-      when Cart.ID_FND_CODE = '111111' and Cart.Index_Annee is null and presence_ligne.ID_RUBRIQUE = 'A0030' and Cart.index_col = 0  then 'X' 
-      else null end as doublon
-      
-from
-
-(-------------- gestion Libelle rubrique avec Presence donnée  Debut
-Select 
---brut.ID_CHARGEMENT
-	brut.ID_TABLEAU
-	,brut.ID_PRESENTATION 
-	,brut.LANGUE 
-	,brut.ordre_rapport
-	,brut.ID_RUBRIQUE 
-	,brut.GROUPE 	
-	,brut.NIVEAUX 	
-	,brut.LIB_BALISE 
-	,brut.LIB_RAPPORT 
-	,brut.VALEUR
- 	,brut.affichage
-
-from
-(Select distinct
-	base.ID_TABLEAU
-	,trad.ID_PRESENTATION 
-	,trad.LANGUE 
-	,rls.ordre_rapport
-	,trad.ID_RUBRIQUE 
-	,base.GROUPE
-	,trad.NIVEAUX 	
-	,trad.LIB_BALISE 
-	,trad.LIB_RAPPORT 
-	,sum(base.VALEUR) over (partition by trad.ID_RUBRIQUE ) as VALEUR
-	,case when trad.NIVEAUX is null and (base.VALEUR is null or base.VALEUR = 0) then null
-		  when trad.NIVEAUX is not null then 'X'
-		  when base.VALEUR <> 0 then 'X'
-		  end as affichage
-	
-	from 
-	
-	qxp.QXP_SUP_LUX_REF_TRAD trad
-	join qxp.QXP_SUP_LUX_SURMAP_MBD rls on trad.ID_PRESENTATION = rls.ID_PRESENTATION and trad.ID_RUBRIQUE = rls.ID_RUBRIQUE
-	Left join 
-		(Select
-			MBD.ID_CHARGEMENT
-			,MBD.ID_TABLEAU
-			,MBD.ID_PRESENTATION 
-			,MBD.VERSION_ID_PRESENTATION 
-			,MBD.CODE_PTF 
--- 			,MBD.ORDRE_RAPPORT 
-			,MBD.ID_RUBRIQUE 
-			,MBD.GROUPE 
-			,MBD.VALEUR 
-
-			from
-			qxp.QXP_IMPORT_LUX_DATA MBD
-			join 
-			(select distinct
-			max(fic.ID_CHARGEMENT)over(partition by fic.DATE_RAPPORT) as ID_CHARGEMENT
-			from 
-			 qxp.QXP_IMPORT_LUX fic
-			 join (Select
-                        srq.DDate
-                        ,srq.ID_GABARIT
-                        from 
-                        (Select to_date(?) as DDate 
-                               ,to_number(?) as ID_GABARIT from dual
-                    )srq
-			 ) gabdate on fic.DATE_RAPPORT = gabdate.DDate and fic.ID_GABARIT = gabdate.ID_GABARIT 
-			 JOIN qxp.QXP_IMPORT_LUX_DATA MBD ON fic.ID_CHARGEMENT = MBD.ID_CHARGEMENT
-			where 
-			fic.ID_STRUCTURE = ?
-			and MBD.ID_TABLEAU = 'BILAN'
-			)fichier on fichier.ID_CHARGEMENT = MBD.ID_CHARGEMENT
-			
-			Where 
-			MBD.ID_TABLEAU = 'BILAN'
-			and MBD.CODE_PTF = '999999'
-			)base on trad.ID_PRESENTATION = base.ID_PRESENTATION
-				  	 and trad.ID_RUBRIQUE = base.ID_RUBRIQUE
-	Where 
-	trad.ID_PRESENTATION = (select distinct 
-								asgc.ID_PRESENTATION_PATRIMOINE 	
-								from 
-								qxp.qxp_asso_struct_gabarit_comp asgc
-								where
-								asgc.ID_STRUCTURE = ?
-								and asgc.ID_GABARIT = ?)
-	and trad.ID_LANGUE =  (Select
-							gab.ID_LANGUE 
-							from
-							qxp.qxp_gabarit gab
-							where 
-							gab.ID_GABARIT = ?)
-	
- )brut							
- Where 
- brut.affichage is not null
- 							
---  order by 
---  brut.ordre_rapport			
--------------- gestion Libelle rubrique avec Presence donnée  Fin 
-)presence_ligne,
-
-( ------------- Cartesien des données et des libellés Debut
-(-- calcul du nb de SECTIONS dans le rapport et produit cartesien
-Select 
-	'111111' as id_fnd_code
-	,0 as position
-	,srq.index_Section
-	,1 as Position_ptf_section
-	,0 as index_col
-	,null as Index_Annee
-	
-	from
-	(
-	-- Calcul de nb de section dans le rapport 
-	select distinct
-	-- on dit ici 4 Ptf par section avec les libellés
-    CEIL(ROW_NUMBER()over (ORDER BY ptf.position )/4) as index_Section
-	from
-	(
-		-- ici la table des structures 
-		(select 
-		asgc.ID_FND_CODE 
-		,asgc.position
-		from 
-		qxp.qxp_asso_struct_gabarit_comp asgc
-		Left join qxp.qxp_compartiment lib on asgc.ID_FND_CODE = lib.id_fnd_code
-        left join qxp.qxp_sup_mapping qsm on qsm.code_mapping_cible=asgc.id_fnd_code
-            and qsm.type_mapping='MASTER-FEEDERS'
-		where
-		asgc.ID_STRUCTURE = ?
-		and asgc.ID_GABARIT = ?
-		and lib.DATE_FIN_COMPART is null
-        and qsm.code_mapping_cible is null
-		)		
-		union -- code fond pour combined
-		(select '999999' ,500 from dual)
-		)ptf
-	)srq
-
-)
-Union
-(
-Select 
-	srq.id_fnd_code
-	,srq.position
-	,srq.index_Section
-    ,srq.Position_ptf_section
-	,srq.Position_ptf_section as index_col
-    ,'N0' as Index_Annee
-
-	
-	From
-	(
-	--- partie gerant les Lib ptf et entete
-	Select 
-	sect.id_fnd_code
-	,sect.position
-	,sect.index_Section
-	-- positionnement des ptf dans la page .
-	,row_number() over(partition by sect.index_section order by sect.position) as Position_ptf_section		
-	from
-	(
-	-- Calcul de nb de section dans le rapport 
-	select distinct
-	-- on dit ici 4 Ptf par section avec les libellés
-	 	ptf.id_fnd_code
-		,ptf.position
-		,CEIL(ROW_NUMBER()over (ORDER BY ptf.position )/4) as index_Section
-
-	from
-	(
-		-- ici la table des structures 
-		(select 
-		asgc.ID_FND_CODE 
-		,asgc.position
-		from 
-		qxp.qxp_asso_struct_gabarit_comp asgc
-		Left join qxp.qxp_compartiment lib on asgc.ID_FND_CODE = lib.id_fnd_code
-        left join qxp.qxp_sup_mapping qsm on qsm.code_mapping_cible=asgc.id_fnd_code
-            and qsm.type_mapping='MASTER-FEEDERS'
-		where
-		asgc.ID_STRUCTURE = ?
-		and asgc.ID_GABARIT = ?
-		and lib.DATE_FIN_COMPART is null
-        and qsm.code_mapping_cible is null
-		)		
-		union -- code fond pour combined
-		(select '999999' 
-				,1000						
-				from dual)
-		)ptf
-		)sect	
-	)srq
---------- gestion des sections : Fin		
-   )	
-	------------- Cartesien des données et des libellés Fin
-	)Cart	
-	)tri
-	where 
-	tri.doublon is null	
-    ----------------- Fin de Gestion des presence de libellés en fonction de la page gauche ou droite 	
-	)
-	)prim
-	Left join 
-	(
-	----------------------------------------gestion du libellé du ptf + devise : Debut
-Select
-srq.id_fnd_code
-,srq.FND_LNG_DESCRIPTION
-,srq.FND_CURRENCY
-from
-(
-(select distinct
-			asgc.id_fnd_code
-			,case when lib.FND_LNG_DESCRIPTION is null then 'Mettre à jour le fichier des libelles' else lib.FND_LNG_DESCRIPTION  end as FND_LNG_DESCRIPTION
-			,rf.FND_CURRENCY
-		from
-		-- ici la table des structures 
-            qxp.qxp_asso_struct_gabarit_comp asgc
-            join OWB_DWH.ref_fund rf on rf.id_fnd_code = asgc.ID_FND_CODE
-            Left join qxp.qxp_compartiment lib on asgc.ID_FND_CODE = lib.id_fnd_code
-            left join qxp.qxp_sup_mapping qsm on qsm.code_mapping_cible=asgc.id_fnd_code
-                and qsm.type_mapping='MASTER-FEEDERS'
-		where
-			asgc.ID_STRUCTURE = ?
-			and asgc.ID_GABARIT = ?	
-			and rf.FND_END_VALIDITY = '31/12/2199'
-			and lib.DATE_FIN_COMPART is null
-            and qsm.code_mapping_cible is null
-)
-union
-(	
-select 
-		'999999' as id_fnd_code
-		,'Combined' as FND_LNG_DESCRIPTION
-		,qs.DEVISE 									
-		
-		from 
-		qxp.qxp_structure  qs
-		where
-		qs.ID_STRUCTURE = ?			
-)		
-)srq	
-----------------------------------------gestion du libellé du ptf + devise : Fin 
-)Devise on prim.ID_FND_CODE = Devise.ID_FND_CODE
-
-Left join
-(---------------------------------------gestion de la date  : Debut
-Select 
-srq.id_fnd_code
-,srq.DATE_FIN_COMPART
-,'N0' as Index_Annee
-,To_char(to_date(?),'dd/mm/yyyy') as DDATE 
-	  
-from
-((select distinct
-            asgc.id_fnd_code
-            ,lib.DATE_FIN_COMPART
-            ,asgc.ID_GABARIT
-            ,qg.ID_TYPE_RAPPORT 
-		from
-            qxp.qxp_asso_struct_gabarit_comp asgc
-        Left join qxp.qxp_compartiment lib on asgc.ID_FND_CODE = lib.id_fnd_code
-        join qxp.qxp_gabarit qg on asgc.ID_GABARIT = qg.ID_GABARIT
-        left join qxp.qxp_sup_mapping qsm on qsm.code_mapping_cible=asgc.id_fnd_code
-            and qsm.type_mapping='MASTER-FEEDERS'
-		where
-			asgc.ID_STRUCTURE = ?
-			and asgc.ID_GABARIT = ?	
-			and lib.DATE_FIN_COMPART is null
-            and qsm.code_mapping_cible is null
-)			
-union
-(	
-select distinct
-			'999999' as id_fnd_code
-			,null as DATE_FIN_COMPART
-			,asgc.ID_GABARIT
-			,qg.ID_TYPE_RAPPORT 
-		from
-				qxp.qxp_asso_struct_gabarit_comp asgc
-				join qxp.qxp_gabarit qg on asgc.ID_GABARIT = qg.ID_GABARIT
-					 	  								   	 	
-		where
-			asgc.ID_STRUCTURE = ?
-			and asgc.ID_GABARIT = ?	)			
-	)srq		
----------------------------------------gestion de la date    
-) titre_date on prim.ID_FND_CODE = titre_date.ID_FND_CODE
-  			 and prim.Index_Annee = titre_date.Index_Annee	
-
-Left join 
-(-------------------------------------- Données :Debut
-Select
-	MBD.ID_CHARGEMENT
-    ,fichier.DATE_RAPPORT
-	,'N0' as Index_Annee	
-    ,MBD.ID_TABLEAU
-	,MBD.ID_PRESENTATION 
-	,MBD.VERSION_ID_PRESENTATION 
-	,MBD.CODE_PTF 
-	,MBD.ORDRE_RAPPORT 
-	,MBD.ID_RUBRIQUE 
-	,MBD.GROUPE 
-	,MBD.VALEUR 
-	------------------- gestion des nombres
-  ,Case when (MBD.VALEUR = 0 or MBD.VALEUR is null) then '-'  
-        when MBD.GROUPE in ('ST_PML') then NVL(Trim(TO_CHAR(MBD.VALEUR ,'999,999,999,999,999,999')),'-')
-        when MBD.ID_RUBRIQUE in ('C0260') and MBD.VALEUR <0 then Trim(TO_CHAR(MBD.VALEUR ,'999,999,999,999,999,999'))
-        when MBD.ID_RUBRIQUE in ('F1150') and MBD.VALEUR >0 then '-'||Trim(TO_CHAR(MBD.VALEUR ,'999,999,999,999,999,999'))
-        Else NVL(Trim(TO_CHAR(ABS(MBD.VALEUR) ,'999,999,999,999,999,999')),'-') end as Valeur_pres
-	 
-	from
-	qxp.QXP_IMPORT_LUX_DATA MBD
-	join 
-	(select distinct
-	max(fic.ID_CHARGEMENT)over(partition by fic.DATE_RAPPORT) as ID_CHARGEMENT
-    ,fic.DATE_RAPPORT
-	from 
-	 qxp.QXP_IMPORT_LUX fic
-	 join (Select
-				srq.DDate
-				,srq.ID_GABARIT
-				from 
-				(Select to_date(?) as DDate 
-					   ,to_number(?) as ID_GABARIT from dual
-				)srq
-	 ) gabdate on fic.DATE_RAPPORT = gabdate.DDate and fic.ID_GABARIT = gabdate.ID_GABARIT 
-	 JOIN qxp.QXP_IMPORT_LUX_DATA MBD ON fic.ID_CHARGEMENT = MBD.ID_CHARGEMENT
-	where 
-	fic.ID_STRUCTURE = ?
-	and MBD.ID_TABLEAU = 'BILAN'
-	)fichier on fichier.ID_CHARGEMENT = MBD.ID_CHARGEMENT
-	Where 
-	MBD.ID_TABLEAU = 'BILAN'
-	-------------------------------------- Données :Fin
-)Donnees on prim.ID_FND_CODE = Donnees.CODE_PTF 
-		 and prim.Index_Annee = Donnees.Index_Annee
-		 and prim.ordre_rapport = Donnees.ORDRE_RAPPORT 
-		 and prim.ID_RUBRIQUE = Donnees.ID_RUBRIQUE		 
-	
------- pour tache realimentation : Where substr(prim.ID_RUBRIQUE,1,1) not in 'A'
-
-/* Gestion de limitation de blocs*/
---where index_section > case when :p_code_port in '_P0_05' then 5 else 0 end
-
-order by
-prim.index_Section
-,prim.ordre_rapport 
-,prim.index_col]; ORA-01830: date format picture ends before converting entire input string
-
-
-org.springframework.dao.DataIntegrityViolationException: PreparedStatementCallback; SQL [/* 001 - Etat du Patrimoine PioMUNDI MBD 20251130*/
-
------- pensez à mettre ou retirer le where pour tache realimentation
-
---- 20251130 Refonte de la requete pour retrait des data N1.
-
-Select 
-
-prim.ID_PRESENTATION 
-,prim.LANGUE 
-,prim.ID_FND_CODE
-,prim.position
-,prim.index_Section
---,prim.page
---,prim.page_section
-,prim.Position_ptf_section
-,prim.index_col
-,prim.Index_Annee
-,prim.ordre_rapport
-,prim.ID_RUBRIQUE 
-,prim.GROUPE 	
-,prim.NIVEAUX 	
-,prim.LIB_BALISE 
-,prim.LIB_RAPPORT
-,Devise.FND_LNG_DESCRIPTION
-,titre_date.DDate
-,Devise.FND_CURRENCY
-,Donnees.VALEUR
-,Donnees.Valeur_pres
-
-,prim.ordre_rapport as ID_GROUPE
-,prim.ordre_rapport AS ID_LIGNE
-
-,'BILAM_S'||prim.index_Section||'L'||prim.ordre_rapport||'C'||prim.index_col||'D'||Case when prim.Index_Annee is null 
-            then 'LIB' else prim.Index_Annee end||'_'||prim.ID_FND_CODE as Nom_Bloc
-
-,Case when  substr(prim.ID_RUBRIQUE,1,1)= 'A' and prim.LIB_BALISE = 'Lib fond' and prim.Index_Annee is null then prim.LIB_RAPPORT
-	  when  substr(prim.ID_RUBRIQUE,1,1)= 'A' and prim.LIB_BALISE = 'Lib fond' and prim.Index_Annee is not null then Devise.FND_LNG_DESCRIPTION
-	  when  substr(prim.ID_RUBRIQUE,1,1)= 'A' and prim.LIB_BALISE = 'Date' and prim.Index_Annee is null then prim.LIB_RAPPORT
-	  when  substr(prim.ID_RUBRIQUE,1,1)= 'A' and prim.LIB_BALISE = 'Date' and prim.Index_Annee is not null then titre_date.DDate
-	  when  substr(prim.ID_RUBRIQUE,1,1)= 'A' and prim.LIB_BALISE = 'Devise' and prim.Index_Annee is null then prim.LIB_RAPPORT
-	  when  substr(prim.ID_RUBRIQUE,1,1)= 'A' and prim.LIB_BALISE = 'Devise' and prim.Index_Annee is not null then Devise.FND_CURRENCY
-	  when  substr(prim.ID_RUBRIQUE,1,1)in('B','E') and prim.Index_Annee is null and prim.index_col in(0) then prim.LIB_RAPPORT
-	  when  substr(prim.ID_RUBRIQUE,1,1)in('C','D','F','G','H') and prim.Index_Annee is null then prim.LIB_RAPPORT
-	  when  substr(prim.ID_RUBRIQUE,1,1)in('C','D','F','G','H') and prim.Index_Annee is not null then NVL(Donnees.Valeur_pres,'-')
-	  end as valeur_bloc
-		  
-,'BILAM_1G_'|| case when prim.NIVEAUX is null then 'N5'else prim.NIVEAUX end as "TEMPLATE"
-,prim.index_Section as ID_SECTION
-
-from
-(
-(
------------------ Debut de Gestion des presence de libellés en fonction de la page gauche ou droite 
-Select 
-tri.*
--- tri.ID_TABLEAU
--- ,tri.ID_PRESENTATION 
--- ,tri.LANGUE 
--- ,tri.ID_FND_CODE
--- ,tri.position
--- ,tri.index_Section
--- ,tri.page
--- ,tri.page_section
--- ,tri.Position_ptf_section
--- ,tri.index_col
--- ,tri.Index_Annee
--- ,tri.ordre_rapport
--- ,tri.ID_RUBRIQUE 
--- ,tri.GROUPE 	
--- ,tri.NIVEAUX 	
--- ,tri.LIB_BALISE 
--- ,tri.LIB_RAPPORT
-
-from
-(
-Select
-
-presence_ligne.ID_TABLEAU
-,presence_ligne.ID_PRESENTATION 
-,presence_ligne.LANGUE 
-,Cart.ID_FND_CODE
-,Cart.position
-,Cart.index_Section
---,Cart.page
---,Cart.page_section
-,Cart.Position_ptf_section
-,Cart.index_col
-,Cart.Index_Annee
-,presence_ligne.ordre_rapport
-,presence_ligne.ID_RUBRIQUE 
-,presence_ligne.GROUPE 	
-,presence_ligne.NIVEAUX 	
-,presence_ligne.LIB_BALISE 
-,presence_ligne.LIB_RAPPORT 
-
-,case when Cart.Index_Annee = 'N1' and presence_ligne.ID_RUBRIQUE = 'A0020' then 'X' 
-      when Cart.ID_FND_CODE = '111111' and Cart.Index_Annee is null and presence_ligne.ID_RUBRIQUE = 'A0020' and Cart.index_col = 0  then 'X'
-      when Cart.ID_FND_CODE = '111111' and Cart.Index_Annee is null and presence_ligne.ID_RUBRIQUE = 'A0030' and Cart.index_col = 0  then 'X' 
-      else null end as doublon
-      
-from
-
-(-------------- gestion Libelle rubrique avec Presence donnée  Debut
-Select 
---brut.ID_CHARGEMENT
-	brut.ID_TABLEAU
-	,brut.ID_PRESENTATION 
-	,brut.LANGUE 
-	,brut.ordre_rapport
-	,brut.ID_RUBRIQUE 
-	,brut.GROUPE 	
-	,brut.NIVEAUX 	
-	,brut.LIB_BALISE 
-	,brut.LIB_RAPPORT 
-	,brut.VALEUR
- 	,brut.affichage
-
-from
-(Select distinct
-	base.ID_TABLEAU
-	,trad.ID_PRESENTATION 
-	,trad.LANGUE 
-	,rls.ordre_rapport
-	,trad.ID_RUBRIQUE 
-	,base.GROUPE
-	,trad.NIVEAUX 	
-	,trad.LIB_BALISE 
-	,trad.LIB_RAPPORT 
-	,sum(base.VALEUR) over (partition by trad.ID_RUBRIQUE ) as VALEUR
-	,case when trad.NIVEAUX is null and (base.VALEUR is null or base.VALEUR = 0) then null
-		  when trad.NIVEAUX is not null then 'X'
-		  when base.VALEUR <> 0 then 'X'
-		  end as affichage
-	
-	from 
-	
-	qxp.QXP_SUP_LUX_REF_TRAD trad
-	join qxp.QXP_SUP_LUX_SURMAP_MBD rls on trad.ID_PRESENTATION = rls.ID_PRESENTATION and trad.ID_RUBRIQUE = rls.ID_RUBRIQUE
-	Left join 
-		(Select
-			MBD.ID_CHARGEMENT
-			,MBD.ID_TABLEAU
-			,MBD.ID_PRESENTATION 
-			,MBD.VERSION_ID_PRESENTATION 
-			,MBD.CODE_PTF 
--- 			,MBD.ORDRE_RAPPORT 
-			,MBD.ID_RUBRIQUE 
-			,MBD.GROUPE 
-			,MBD.VALEUR 
-
-			from
-			qxp.QXP_IMPORT_LUX_DATA MBD
-			join 
-			(select distinct
-			max(fic.ID_CHARGEMENT)over(partition by fic.DATE_RAPPORT) as ID_CHARGEMENT
-			from 
-			 qxp.QXP_IMPORT_LUX fic
-			 join (Select
-                        srq.DDate
-                        ,srq.ID_GABARIT
-                        from 
-                        (Select to_date(?) as DDate 
-                               ,to_number(?) as ID_GABARIT from dual
-                    )srq
-			 ) gabdate on fic.DATE_RAPPORT = gabdate.DDate and fic.ID_GABARIT = gabdate.ID_GABARIT 
-			 JOIN qxp.QXP_IMPORT_LUX_DATA MBD ON fic.ID_CHARGEMENT = MBD.ID_CHARGEMENT
-			where 
-			fic.ID_STRUCTURE = ?
-			and MBD.ID_TABLEAU = 'BILAN'
-			)fichier on fichier.ID_CHARGEMENT = MBD.ID_CHARGEMENT
-			
-			Where 
-			MBD.ID_TABLEAU = 'BILAN'
-			and MBD.CODE_PTF = '999999'
-			)base on trad.ID_PRESENTATION = base.ID_PRESENTATION
-				  	 and trad.ID_RUBRIQUE = base.ID_RUBRIQUE
-	Where 
-	trad.ID_PRESENTATION = (select distinct 
-								asgc.ID_PRESENTATION_PATRIMOINE 	
-								from 
-								qxp.qxp_asso_struct_gabarit_comp asgc
-								where
-								asgc.ID_STRUCTURE = ?
-								and asgc.ID_GABARIT = ?)
-	and trad.ID_LANGUE =  (Select
-							gab.ID_LANGUE 
-							from
-							qxp.qxp_gabarit gab
-							where 
-							gab.ID_GABARIT = ?)
-	
- )brut							
- Where 
- brut.affichage is not null
- 							
---  order by 
---  brut.ordre_rapport			
--------------- gestion Libelle rubrique avec Presence donnée  Fin 
-)presence_ligne,
-
-( ------------- Cartesien des données et des libellés Debut
-(-- calcul du nb de SECTIONS dans le rapport et produit cartesien
-Select 
-	'111111' as id_fnd_code
-	,0 as position
-	,srq.index_Section
-	,1 as Position_ptf_section
-	,0 as index_col
-	,null as Index_Annee
-	
-	from
-	(
-	-- Calcul de nb de section dans le rapport 
-	select distinct
-	-- on dit ici 4 Ptf par section avec les libellés
-    CEIL(ROW_NUMBER()over (ORDER BY ptf.position )/4) as index_Section
-	from
-	(
-		-- ici la table des structures 
-		(select 
-		asgc.ID_FND_CODE 
-		,asgc.position
-		from 
-		qxp.qxp_asso_struct_gabarit_comp asgc
-		Left join qxp.qxp_compartiment lib on asgc.ID_FND_CODE = lib.id_fnd_code
-        left join qxp.qxp_sup_mapping qsm on qsm.code_mapping_cible=asgc.id_fnd_code
-            and qsm.type_mapping='MASTER-FEEDERS'
-		where
-		asgc.ID_STRUCTURE = ?
-		and asgc.ID_GABARIT = ?
-		and lib.DATE_FIN_COMPART is null
-        and qsm.code_mapping_cible is null
-		)		
-		union -- code fond pour combined
-		(select '999999' ,500 from dual)
-		)ptf
-	)srq
-
-)
-Union
-(
-Select 
-	srq.id_fnd_code
-	,srq.position
-	,srq.index_Section
-    ,srq.Position_ptf_section
-	,srq.Position_ptf_section as index_col
-    ,'N0' as Index_Annee
-
-	
-	From
-	(
-	--- partie gerant les Lib ptf et entete
-	Select 
-	sect.id_fnd_code
-	,sect.position
-	,sect.index_Section
-	-- positionnement des ptf dans la page .
-	,row_number() over(partition by sect.index_section order by sect.position) as Position_ptf_section		
-	from
-	(
-	-- Calcul de nb de section dans le rapport 
-	select distinct
-	-- on dit ici 4 Ptf par section avec les libellés
-	 	ptf.id_fnd_code
-		,ptf.position
-		,CEIL(ROW_NUMBER()over (ORDER BY ptf.position )/4) as index_Section
-
-	from
-	(
-		-- ici la table des structures 
-		(select 
-		asgc.ID_FND_CODE 
-		,asgc.position
-		from 
-		qxp.qxp_asso_struct_gabarit_comp asgc
-		Left join qxp.qxp_compartiment lib on asgc.ID_FND_CODE = lib.id_fnd_code
-        left join qxp.qxp_sup_mapping qsm on qsm.code_mapping_cible=asgc.id_fnd_code
-            and qsm.type_mapping='MASTER-FEEDERS'
-		where
-		asgc.ID_STRUCTURE = ?
-		and asgc.ID_GABARIT = ?
-		and lib.DATE_FIN_COMPART is null
-        and qsm.code_mapping_cible is null
-		)		
-		union -- code fond pour combined
-		(select '999999' 
-				,1000						
-				from dual)
-		)ptf
-		)sect	
-	)srq
---------- gestion des sections : Fin		
-   )	
-	------------- Cartesien des données et des libellés Fin
-	)Cart	
-	)tri
-	where 
-	tri.doublon is null	
-    ----------------- Fin de Gestion des presence de libellés en fonction de la page gauche ou droite 	
-	)
-	)prim
-	Left join 
-	(
-	----------------------------------------gestion du libellé du ptf + devise : Debut
-Select
-srq.id_fnd_code
-,srq.FND_LNG_DESCRIPTION
-,srq.FND_CURRENCY
-from
-(
-(select distinct
-			asgc.id_fnd_code
-			,case when lib.FND_LNG_DESCRIPTION is null then 'Mettre à jour le fichier des libelles' else lib.FND_LNG_DESCRIPTION  end as FND_LNG_DESCRIPTION
-			,rf.FND_CURRENCY
-		from
-		-- ici la table des structures 
-            qxp.qxp_asso_struct_gabarit_comp asgc
-            join OWB_DWH.ref_fund rf on rf.id_fnd_code = asgc.ID_FND_CODE
-            Left join qxp.qxp_compartiment lib on asgc.ID_FND_CODE = lib.id_fnd_code
-            left join qxp.qxp_sup_mapping qsm on qsm.code_mapping_cible=asgc.id_fnd_code
-                and qsm.type_mapping='MASTER-FEEDERS'
-		where
-			asgc.ID_STRUCTURE = ?
-			and asgc.ID_GABARIT = ?	
-			and rf.FND_END_VALIDITY = '31/12/2199'
-			and lib.DATE_FIN_COMPART is null
-            and qsm.code_mapping_cible is null
-)
-union
-(	
-select 
-		'999999' as id_fnd_code
-		,'Combined' as FND_LNG_DESCRIPTION
-		,qs.DEVISE 									
-		
-		from 
-		qxp.qxp_structure  qs
-		where
-		qs.ID_STRUCTURE = ?			
-)		
-)srq	
-----------------------------------------gestion du libellé du ptf + devise : Fin 
-)Devise on prim.ID_FND_CODE = Devise.ID_FND_CODE
-
-Left join
-(---------------------------------------gestion de la date  : Debut
-Select 
-srq.id_fnd_code
-,srq.DATE_FIN_COMPART
-,'N0' as Index_Annee
-,To_char(to_date(?),'dd/mm/yyyy') as DDATE 
-	  
-from
-((select distinct
-            asgc.id_fnd_code
-            ,lib.DATE_FIN_COMPART
-            ,asgc.ID_GABARIT
-            ,qg.ID_TYPE_RAPPORT 
-		from
-            qxp.qxp_asso_struct_gabarit_comp asgc
-        Left join qxp.qxp_compartiment lib on asgc.ID_FND_CODE = lib.id_fnd_code
-        join qxp.qxp_gabarit qg on asgc.ID_GABARIT = qg.ID_GABARIT
-        left join qxp.qxp_sup_mapping qsm on qsm.code_mapping_cible=asgc.id_fnd_code
-            and qsm.type_mapping='MASTER-FEEDERS'
-		where
-			asgc.ID_STRUCTURE = ?
-			and asgc.ID_GABARIT = ?	
-			and lib.DATE_FIN_COMPART is null
-            and qsm.code_mapping_cible is null
-)			
-union
-(	
-select distinct
-			'999999' as id_fnd_code
-			,null as DATE_FIN_COMPART
-			,asgc.ID_GABARIT
-			,qg.ID_TYPE_RAPPORT 
-		from
-				qxp.qxp_asso_struct_gabarit_comp asgc
-				join qxp.qxp_gabarit qg on asgc.ID_GABARIT = qg.ID_GABARIT
-					 	  								   	 	
-		where
-			asgc.ID_STRUCTURE = ?
-			and asgc.ID_GABARIT = ?	)			
-	)srq		
----------------------------------------gestion de la date    
-) titre_date on prim.ID_FND_CODE = titre_date.ID_FND_CODE
-  			 and prim.Index_Annee = titre_date.Index_Annee	
-
-Left join 
-(-------------------------------------- Données :Debut
-Select
-	MBD.ID_CHARGEMENT
-    ,fichier.DATE_RAPPORT
-	,'N0' as Index_Annee	
-    ,MBD.ID_TABLEAU
-	,MBD.ID_PRESENTATION 
-	,MBD.VERSION_ID_PRESENTATION 
-	,MBD.CODE_PTF 
-	,MBD.ORDRE_RAPPORT 
-	,MBD.ID_RUBRIQUE 
-	,MBD.GROUPE 
-	,MBD.VALEUR 
-	------------------- gestion des nombres
-  ,Case when (MBD.VALEUR = 0 or MBD.VALEUR is null) then '-'  
-        when MBD.GROUPE in ('ST_PML') then NVL(Trim(TO_CHAR(MBD.VALEUR ,'999,999,999,999,999,999')),'-')
-        when MBD.ID_RUBRIQUE in ('C0260') and MBD.VALEUR <0 then Trim(TO_CHAR(MBD.VALEUR ,'999,999,999,999,999,999'))
-        when MBD.ID_RUBRIQUE in ('F1150') and MBD.VALEUR >0 then '-'||Trim(TO_CHAR(MBD.VALEUR ,'999,999,999,999,999,999'))
-        Else NVL(Trim(TO_CHAR(ABS(MBD.VALEUR) ,'999,999,999,999,999,999')),'-') end as Valeur_pres
-	 
-	from
-	qxp.QXP_IMPORT_LUX_DATA MBD
-	join 
-	(select distinct
-	max(fic.ID_CHARGEMENT)over(partition by fic.DATE_RAPPORT) as ID_CHARGEMENT
-    ,fic.DATE_RAPPORT
-	from 
-	 qxp.QXP_IMPORT_LUX fic
-	 join (Select
-				srq.DDate
-				,srq.ID_GABARIT
-				from 
-				(Select to_date(?) as DDate 
-					   ,to_number(?) as ID_GABARIT from dual
-				)srq
-	 ) gabdate on fic.DATE_RAPPORT = gabdate.DDate and fic.ID_GABARIT = gabdate.ID_GABARIT 
-	 JOIN qxp.QXP_IMPORT_LUX_DATA MBD ON fic.ID_CHARGEMENT = MBD.ID_CHARGEMENT
-	where 
-	fic.ID_STRUCTURE = ?
-	and MBD.ID_TABLEAU = 'BILAN'
-	)fichier on fichier.ID_CHARGEMENT = MBD.ID_CHARGEMENT
-	Where 
-	MBD.ID_TABLEAU = 'BILAN'
-	-------------------------------------- Données :Fin
-)Donnees on prim.ID_FND_CODE = Donnees.CODE_PTF 
-		 and prim.Index_Annee = Donnees.Index_Annee
-		 and prim.ordre_rapport = Donnees.ORDRE_RAPPORT 
-		 and prim.ID_RUBRIQUE = Donnees.ID_RUBRIQUE		 
-	
------- pour tache realimentation : Where substr(prim.ID_RUBRIQUE,1,1) not in 'A'
-
-/* Gestion de limitation de blocs*/
---where index_section > case when :p_code_port in '_P0_05' then 5 else 0 end
-
-order by
-prim.index_Section
-,prim.ordre_rapport 
-,prim.index_col]; ORA-01830: date format picture ends before converting entire input string
-
-	at org.springframework.jdbc.support.SQLExceptionSubclassTranslator.doTranslate(SQLExceptionSubclassTranslator.java:91)
-	at org.springframework.jdbc.support.AbstractFallbackSQLExceptionTranslator.translate(AbstractFallbackSQLExceptionTranslator.java:107)
-	at org.springframework.jdbc.core.JdbcTemplate.translateException(JdbcTemplate.java:1548)
-	at org.springframework.jdbc.core.JdbcTemplate.execute(JdbcTemplate.java:677)
-	at org.springframework.jdbc.core.JdbcTemplate.query(JdbcTemplate.java:723)
-	at org.springframework.jdbc.core.JdbcTemplate.query(JdbcTemplate.java:748)
-	at org.springframework.jdbc.core.JdbcTemplate.query(JdbcTemplate.java:804)
-	at org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate.query(NamedParameterJdbcTemplate.java:218)
-	at org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate.queryForList(NamedParameterJdbcTemplate.java:312)
-	at org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate.queryForList(NamedParameterJdbcTemplate.java:319)
-	at com.socgen.sgs.api.quark.engine.infra.dao.impl.TaskSqlDaoImpl.executeSql(TaskSqlDaoImpl.java:28)
-	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
-	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:352)
-	at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:196)
-	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163)
-	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:765)
-	at org.springframework.dao.support.PersistenceExceptionTranslationInterceptor.invoke(PersistenceExceptionTranslationInterceptor.java:137)
-	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184)
-	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:765)
-	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:717)
-	at com.socgen.sgs.api.quark.engine.infra.dao.impl.TaskSqlDaoImpl$$SpringCGLIB$$0.executeSql(<generated>)
-	at com.socgen.sgs.api.quark.engine.infra.dao.impl.DynamicQueryPortImpl.executeQuery(DynamicQueryPortImpl.java:43)
-	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
-	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:352)
-	at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:196)
-	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163)
-	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:765)
-	at org.springframework.dao.support.PersistenceExceptionTranslationInterceptor.invoke(PersistenceExceptionTranslationInterceptor.java:137)
-	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184)
-	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:765)
-	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:717)
-	at com.socgen.sgs.api.quark.engine.infra.dao.impl.DynamicQueryPortImpl$$SpringCGLIB$$0.executeQuery(<generated>)
-	at com.socgen.sgs.api.quark.engine.service.task.impl.DynamiqueTaskProcessStrategy.process(DynamiqueTaskProcessStrategy.java:177)
-	at com.socgen.sgs.api.quark.engine.service.task.impl.DynamiqueTaskProcessStrategy.process(DynamiqueTaskProcessStrategy.java:99)
-	at com.socgen.sgs.api.quark.engine.service.task.impl.TaskProcessServiceImpl.process(TaskProcessServiceImpl.java:34)
-	at com.socgen.sgs.api.quark.engine.service.impl.ProcessTasksServiceImpl.processTasks(ProcessTasksServiceImpl.java:83)
-	at com.socgen.sgs.api.quark.engine.service.impl.ProcessRunServiceImpl.runProcessor(ProcessRunServiceImpl.java:82)
-	at com.socgen.sgs.api.quark.engine.infra.api.v1.EngineServiceController.processRun(EngineServiceController.java:27)
-	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
-	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:254)
-	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:182)
-	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:118)
-	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:917)
-	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:829)
-	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:87)
-	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1089)
-	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:979)
-	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014)
-	at org.springframework.web.servlet.FrameworkServlet.doPost(FrameworkServlet.java:914)
-	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:590)
-	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:885)
-	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:658)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:205)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
-	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:51)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
-	at com.socgen.apibank.http.ratelimiter.RateLimiterFilter.doFilter(RateLimiterFilter.java:38)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
-	at org.springframework.security.web.ObservationFilterChainDecorator$FilterObservation$SimpleFilterObservation.lambda$wrap$1(ObservationFilterChainDecorator.java:479)
-	at org.springframework.security.web.ObservationFilterChainDecorator.lambda$wrapUnsecured$1(ObservationFilterChainDecorator.java:90)
-	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:219)
-	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:191)
-	at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:352)
-	at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:268)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
-	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
-	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
-	at org.springframework.web.filter.ServerHttpObservationFilter.doFilterInternal(ServerHttpObservationFilter.java:109)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
-	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
-	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:167)
-	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:90)
-	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:482)
-	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:115)
-	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:93)
-	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74)
-	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:340)
-	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:391)
-	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63)
-	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:896)
-	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1744)
-	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52)
-	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1191)
-	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
-	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
-	at java.base/java.lang.Thread.run(Thread.java:1583)
-Caused by: java.sql.SQLDataException: ORA-01830: date format picture ends before converting entire input string
-
-	at oracle.jdbc.driver.T4CTTIoer11.processError(T4CTTIoer11.java:509)
-	at oracle.jdbc.driver.T4CTTIoer11.processError(T4CTTIoer11.java:461)
-	at oracle.jdbc.driver.T4C8Oall.processError(T4C8Oall.java:1104)
-	at oracle.jdbc.driver.T4CTTIfun.receive(T4CTTIfun.java:553)
-	at oracle.jdbc.driver.T4CTTIfun.doRPC(T4CTTIfun.java:269)
-	at oracle.jdbc.driver.T4C8Oall.doOALL(T4C8Oall.java:655)
-	at oracle.jdbc.driver.T4CPreparedStatement.doOall8(T4CPreparedStatement.java:270)
-	at oracle.jdbc.driver.T4CPreparedStatement.doOall8(T4CPreparedStatement.java:91)
-	at oracle.jdbc.driver.T4CPreparedStatement.executeForDescribe(T4CPreparedStatement.java:807)
-	at oracle.jdbc.driver.OracleStatement.executeMaybeDescribe(OracleStatement.java:983)
-	at oracle.jdbc.driver.OracleStatement.doExecuteWithTimeout(OracleStatement.java:1168)
-	at oracle.jdbc.driver.OraclePreparedStatement.executeInternal(OraclePreparedStatement.java:3666)
-	at oracle.jdbc.driver.T4CPreparedStatement.executeInternal(T4CPreparedStatement.java:1426)
-	at oracle.jdbc.driver.OraclePreparedStatement.executeQuery(OraclePreparedStatement.java:3713)
-	at oracle.jdbc.driver.OraclePreparedStatementWrapper.executeQuery(OraclePreparedStatementWrapper.java:1167)
-	at com.zaxxer.hikari.pool.ProxyPreparedStatement.executeQuery(ProxyPreparedStatement.java:52)
-	at com.zaxxer.hikari.pool.HikariProxyPreparedStatement.executeQuery(HikariProxyPreparedStatement.java)
-	at org.springframework.jdbc.core.JdbcTemplate$1.doInPreparedStatement(JdbcTemplate.java:732)
-	at org.springframework.jdbc.core.JdbcTemplate.execute(JdbcTemplate.java:658)
-	... 99 common frames omitted
-Caused by: oracle.jdbc.OracleDatabaseException: ORA-01830: date format picture ends before converting entire input string
-
-	at oracle.jdbc.driver.T4CTTIoer11.processError(T4CTTIoer11.java:513)
-	... 117 common frames omitted
-
-2026-07-15T14:51:58.125+05:30 ERROR 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] a.q.e.s.t.i.DynamiqueTaskProcessStrategy : Error executing SQL for dynamic task [229]: Dynamic query execution failed
-
-java.lang.RuntimeException: Dynamic query execution failed
-	at com.socgen.sgs.api.quark.engine.infra.dao.impl.DynamicQueryPortImpl.executeQuery(DynamicQueryPortImpl.java:50)
-	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
-	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:352)
-	at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:196)
-	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163)
-	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:765)
-	at org.springframework.dao.support.PersistenceExceptionTranslationInterceptor.invoke(PersistenceExceptionTranslationInterceptor.java:137)
-	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184)
-	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:765)
-	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:717)
-	at com.socgen.sgs.api.quark.engine.infra.dao.impl.DynamicQueryPortImpl$$SpringCGLIB$$0.executeQuery(<generated>)
-	at com.socgen.sgs.api.quark.engine.service.task.impl.DynamiqueTaskProcessStrategy.process(DynamiqueTaskProcessStrategy.java:177)
-	at com.socgen.sgs.api.quark.engine.service.task.impl.DynamiqueTaskProcessStrategy.process(DynamiqueTaskProcessStrategy.java:99)
-	at com.socgen.sgs.api.quark.engine.service.task.impl.TaskProcessServiceImpl.process(TaskProcessServiceImpl.java:34)
-	at com.socgen.sgs.api.quark.engine.service.impl.ProcessTasksServiceImpl.processTasks(ProcessTasksServiceImpl.java:83)
-	at com.socgen.sgs.api.quark.engine.service.impl.ProcessRunServiceImpl.runProcessor(ProcessRunServiceImpl.java:82)
-	at com.socgen.sgs.api.quark.engine.infra.api.v1.EngineServiceController.processRun(EngineServiceController.java:27)
-	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
-	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:254)
-	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:182)
-	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:118)
-	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:917)
-	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:829)
-	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:87)
-	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1089)
-	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:979)
-	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014)
-	at org.springframework.web.servlet.FrameworkServlet.doPost(FrameworkServlet.java:914)
-	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:590)
-	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:885)
-	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:658)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:205)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
-	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:51)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
-	at com.socgen.apibank.http.ratelimiter.RateLimiterFilter.doFilter(RateLimiterFilter.java:38)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
-	at org.springframework.security.web.ObservationFilterChainDecorator$FilterObservation$SimpleFilterObservation.lambda$wrap$1(ObservationFilterChainDecorator.java:479)
-	at org.springframework.security.web.ObservationFilterChainDecorator.lambda$wrapUnsecured$1(ObservationFilterChainDecorator.java:90)
-	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:219)
-	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:191)
-	at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:352)
-	at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:268)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
-	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
-	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
-	at org.springframework.web.filter.ServerHttpObservationFilter.doFilterInternal(ServerHttpObservationFilter.java:109)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
-	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
-	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:167)
-	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:90)
-	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:482)
-	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:115)
-	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:93)
-	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74)
-	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:340)
-	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:391)
-	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63)
-	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:896)
-	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1744)
-	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52)
-	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1191)
-	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
-	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
-	at java.base/java.lang.Thread.run(Thread.java:1583)
-Caused by: org.springframework.dao.DataIntegrityViolationException: PreparedStatementCallback; SQL [/* 001 - Etat du Patrimoine PioMUNDI MBD 20251130*/
-
------- pensez à mettre ou retirer le where pour tache realimentation
-
---- 20251130 Refonte de la requete pour retrait des data N1.
-
-Select 
-
-prim.ID_PRESENTATION 
-,prim.LANGUE 
-,prim.ID_FND_CODE
-,prim.position
-,prim.index_Section
---,prim.page
---,prim.page_section
-,prim.Position_ptf_section
-,prim.index_col
-,prim.Index_Annee
-,prim.ordre_rapport
-,prim.ID_RUBRIQUE 
-,prim.GROUPE 	
-,prim.NIVEAUX 	
-,prim.LIB_BALISE 
-,prim.LIB_RAPPORT
-,Devise.FND_LNG_DESCRIPTION
-,titre_date.DDate
-,Devise.FND_CURRENCY
-,Donnees.VALEUR
-,Donnees.Valeur_pres
-
-,prim.ordre_rapport as ID_GROUPE
-,prim.ordre_rapport AS ID_LIGNE
-
-,'BILAM_S'||prim.index_Section||'L'||prim.ordre_rapport||'C'||prim.index_col||'D'||Case when prim.Index_Annee is null 
-            then 'LIB' else prim.Index_Annee end||'_'||prim.ID_FND_CODE as Nom_Bloc
-
-,Case when  substr(prim.ID_RUBRIQUE,1,1)= 'A' and prim.LIB_BALISE = 'Lib fond' and prim.Index_Annee is null then prim.LIB_RAPPORT
-	  when  substr(prim.ID_RUBRIQUE,1,1)= 'A' and prim.LIB_BALISE = 'Lib fond' and prim.Index_Annee is not null then Devise.FND_LNG_DESCRIPTION
-	  when  substr(prim.ID_RUBRIQUE,1,1)= 'A' and prim.LIB_BALISE = 'Date' and prim.Index_Annee is null then prim.LIB_RAPPORT
-	  when  substr(prim.ID_RUBRIQUE,1,1)= 'A' and prim.LIB_BALISE = 'Date' and prim.Index_Annee is not null then titre_date.DDate
-	  when  substr(prim.ID_RUBRIQUE,1,1)= 'A' and prim.LIB_BALISE = 'Devise' and prim.Index_Annee is null then prim.LIB_RAPPORT
-	  when  substr(prim.ID_RUBRIQUE,1,1)= 'A' and prim.LIB_BALISE = 'Devise' and prim.Index_Annee is not null then Devise.FND_CURRENCY
-	  when  substr(prim.ID_RUBRIQUE,1,1)in('B','E') and prim.Index_Annee is null and prim.index_col in(0) then prim.LIB_RAPPORT
-	  when  substr(prim.ID_RUBRIQUE,1,1)in('C','D','F','G','H') and prim.Index_Annee is null then prim.LIB_RAPPORT
-	  when  substr(prim.ID_RUBRIQUE,1,1)in('C','D','F','G','H') and prim.Index_Annee is not null then NVL(Donnees.Valeur_pres,'-')
-	  end as valeur_bloc
-		  
-,'BILAM_1G_'|| case when prim.NIVEAUX is null then 'N5'else prim.NIVEAUX end as "TEMPLATE"
-,prim.index_Section as ID_SECTION
-
-from
-(
-(
------------------ Debut de Gestion des presence de libellés en fonction de la page gauche ou droite 
-Select 
-tri.*
--- tri.ID_TABLEAU
--- ,tri.ID_PRESENTATION 
--- ,tri.LANGUE 
--- ,tri.ID_FND_CODE
--- ,tri.position
--- ,tri.index_Section
--- ,tri.page
--- ,tri.page_section
--- ,tri.Position_ptf_section
--- ,tri.index_col
--- ,tri.Index_Annee
--- ,tri.ordre_rapport
--- ,tri.ID_RUBRIQUE 
--- ,tri.GROUPE 	
--- ,tri.NIVEAUX 	
--- ,tri.LIB_BALISE 
--- ,tri.LIB_RAPPORT
-
-from
-(
-Select
-
-presence_ligne.ID_TABLEAU
-,presence_ligne.ID_PRESENTATION 
-,presence_ligne.LANGUE 
-,Cart.ID_FND_CODE
-,Cart.position
-,Cart.index_Section
---,Cart.page
---,Cart.page_section
-,Cart.Position_ptf_section
-,Cart.index_col
-,Cart.Index_Annee
-,presence_ligne.ordre_rapport
-,presence_ligne.ID_RUBRIQUE 
-,presence_ligne.GROUPE 	
-,presence_ligne.NIVEAUX 	
-,presence_ligne.LIB_BALISE 
-,presence_ligne.LIB_RAPPORT 
-
-,case when Cart.Index_Annee = 'N1' and presence_ligne.ID_RUBRIQUE = 'A0020' then 'X' 
-      when Cart.ID_FND_CODE = '111111' and Cart.Index_Annee is null and presence_ligne.ID_RUBRIQUE = 'A0020' and Cart.index_col = 0  then 'X'
-      when Cart.ID_FND_CODE = '111111' and Cart.Index_Annee is null and presence_ligne.ID_RUBRIQUE = 'A0030' and Cart.index_col = 0  then 'X' 
-      else null end as doublon
-      
-from
-
-(-------------- gestion Libelle rubrique avec Presence donnée  Debut
-Select 
---brut.ID_CHARGEMENT
-	brut.ID_TABLEAU
-	,brut.ID_PRESENTATION 
-	,brut.LANGUE 
-	,brut.ordre_rapport
-	,brut.ID_RUBRIQUE 
-	,brut.GROUPE 	
-	,brut.NIVEAUX 	
-	,brut.LIB_BALISE 
-	,brut.LIB_RAPPORT 
-	,brut.VALEUR
- 	,brut.affichage
-
-from
-(Select distinct
-	base.ID_TABLEAU
-	,trad.ID_PRESENTATION 
-	,trad.LANGUE 
-	,rls.ordre_rapport
-	,trad.ID_RUBRIQUE 
-	,base.GROUPE
-	,trad.NIVEAUX 	
-	,trad.LIB_BALISE 
-	,trad.LIB_RAPPORT 
-	,sum(base.VALEUR) over (partition by trad.ID_RUBRIQUE ) as VALEUR
-	,case when trad.NIVEAUX is null and (base.VALEUR is null or base.VALEUR = 0) then null
-		  when trad.NIVEAUX is not null then 'X'
-		  when base.VALEUR <> 0 then 'X'
-		  end as affichage
-	
-	from 
-	
-	qxp.QXP_SUP_LUX_REF_TRAD trad
-	join qxp.QXP_SUP_LUX_SURMAP_MBD rls on trad.ID_PRESENTATION = rls.ID_PRESENTATION and trad.ID_RUBRIQUE = rls.ID_RUBRIQUE
-	Left join 
-		(Select
-			MBD.ID_CHARGEMENT
-			,MBD.ID_TABLEAU
-			,MBD.ID_PRESENTATION 
-			,MBD.VERSION_ID_PRESENTATION 
-			,MBD.CODE_PTF 
--- 			,MBD.ORDRE_RAPPORT 
-			,MBD.ID_RUBRIQUE 
-			,MBD.GROUPE 
-			,MBD.VALEUR 
-
-			from
-			qxp.QXP_IMPORT_LUX_DATA MBD
-			join 
-			(select distinct
-			max(fic.ID_CHARGEMENT)over(partition by fic.DATE_RAPPORT) as ID_CHARGEMENT
-			from 
-			 qxp.QXP_IMPORT_LUX fic
-			 join (Select
-                        srq.DDate
-                        ,srq.ID_GABARIT
-                        from 
-                        (Select to_date(?) as DDate 
-                               ,to_number(?) as ID_GABARIT from dual
-                    )srq
-			 ) gabdate on fic.DATE_RAPPORT = gabdate.DDate and fic.ID_GABARIT = gabdate.ID_GABARIT 
-			 JOIN qxp.QXP_IMPORT_LUX_DATA MBD ON fic.ID_CHARGEMENT = MBD.ID_CHARGEMENT
-			where 
-			fic.ID_STRUCTURE = ?
-			and MBD.ID_TABLEAU = 'BILAN'
-			)fichier on fichier.ID_CHARGEMENT = MBD.ID_CHARGEMENT
-			
-			Where 
-			MBD.ID_TABLEAU = 'BILAN'
-			and MBD.CODE_PTF = '999999'
-			)base on trad.ID_PRESENTATION = base.ID_PRESENTATION
-				  	 and trad.ID_RUBRIQUE = base.ID_RUBRIQUE
-	Where 
-	trad.ID_PRESENTATION = (select distinct 
-								asgc.ID_PRESENTATION_PATRIMOINE 	
-								from 
-								qxp.qxp_asso_struct_gabarit_comp asgc
-								where
-								asgc.ID_STRUCTURE = ?
-								and asgc.ID_GABARIT = ?)
-	and trad.ID_LANGUE =  (Select
-							gab.ID_LANGUE 
-							from
-							qxp.qxp_gabarit gab
-							where 
-							gab.ID_GABARIT = ?)
-	
- )brut							
- Where 
- brut.affichage is not null
- 							
---  order by 
---  brut.ordre_rapport			
--------------- gestion Libelle rubrique avec Presence donnée  Fin 
-)presence_ligne,
-
-( ------------- Cartesien des données et des libellés Debut
-(-- calcul du nb de SECTIONS dans le rapport et produit cartesien
-Select 
-	'111111' as id_fnd_code
-	,0 as position
-	,srq.index_Section
-	,1 as Position_ptf_section
-	,0 as index_col
-	,null as Index_Annee
-	
-	from
-	(
-	-- Calcul de nb de section dans le rapport 
-	select distinct
-	-- on dit ici 4 Ptf par section avec les libellés
-    CEIL(ROW_NUMBER()over (ORDER BY ptf.position )/4) as index_Section
-	from
-	(
-		-- ici la table des structures 
-		(select 
-		asgc.ID_FND_CODE 
-		,asgc.position
-		from 
-		qxp.qxp_asso_struct_gabarit_comp asgc
-		Left join qxp.qxp_compartiment lib on asgc.ID_FND_CODE = lib.id_fnd_code
-        left join qxp.qxp_sup_mapping qsm on qsm.code_mapping_cible=asgc.id_fnd_code
-            and qsm.type_mapping='MASTER-FEEDERS'
-		where
-		asgc.ID_STRUCTURE = ?
-		and asgc.ID_GABARIT = ?
-		and lib.DATE_FIN_COMPART is null
-        and qsm.code_mapping_cible is null
-		)		
-		union -- code fond pour combined
-		(select '999999' ,500 from dual)
-		)ptf
-	)srq
-
-)
-Union
-(
-Select 
-	srq.id_fnd_code
-	,srq.position
-	,srq.index_Section
-    ,srq.Position_ptf_section
-	,srq.Position_ptf_section as index_col
-    ,'N0' as Index_Annee
-
-	
-	From
-	(
-	--- partie gerant les Lib ptf et entete
-	Select 
-	sect.id_fnd_code
-	,sect.position
-	,sect.index_Section
-	-- positionnement des ptf dans la page .
-	,row_number() over(partition by sect.index_section order by sect.position) as Position_ptf_section		
-	from
-	(
-	-- Calcul de nb de section dans le rapport 
-	select distinct
-	-- on dit ici 4 Ptf par section avec les libellés
-	 	ptf.id_fnd_code
-		,ptf.position
-		,CEIL(ROW_NUMBER()over (ORDER BY ptf.position )/4) as index_Section
-
-	from
-	(
-		-- ici la table des structures 
-		(select 
-		asgc.ID_FND_CODE 
-		,asgc.position
-		from 
-		qxp.qxp_asso_struct_gabarit_comp asgc
-		Left join qxp.qxp_compartiment lib on asgc.ID_FND_CODE = lib.id_fnd_code
-        left join qxp.qxp_sup_mapping qsm on qsm.code_mapping_cible=asgc.id_fnd_code
-            and qsm.type_mapping='MASTER-FEEDERS'
-		where
-		asgc.ID_STRUCTURE = ?
-		and asgc.ID_GABARIT = ?
-		and lib.DATE_FIN_COMPART is null
-        and qsm.code_mapping_cible is null
-		)		
-		union -- code fond pour combined
-		(select '999999' 
-				,1000						
-				from dual)
-		)ptf
-		)sect	
-	)srq
---------- gestion des sections : Fin		
-   )	
-	------------- Cartesien des données et des libellés Fin
-	)Cart	
-	)tri
-	where 
-	tri.doublon is null	
-    ----------------- Fin de Gestion des presence de libellés en fonction de la page gauche ou droite 	
-	)
-	)prim
-	Left join 
-	(
-	----------------------------------------gestion du libellé du ptf + devise : Debut
-Select
-srq.id_fnd_code
-,srq.FND_LNG_DESCRIPTION
-,srq.FND_CURRENCY
-from
-(
-(select distinct
-			asgc.id_fnd_code
-			,case when lib.FND_LNG_DESCRIPTION is null then 'Mettre à jour le fichier des libelles' else lib.FND_LNG_DESCRIPTION  end as FND_LNG_DESCRIPTION
-			,rf.FND_CURRENCY
-		from
-		-- ici la table des structures 
-            qxp.qxp_asso_struct_gabarit_comp asgc
-            join OWB_DWH.ref_fund rf on rf.id_fnd_code = asgc.ID_FND_CODE
-            Left join qxp.qxp_compartiment lib on asgc.ID_FND_CODE = lib.id_fnd_code
-            left join qxp.qxp_sup_mapping qsm on qsm.code_mapping_cible=asgc.id_fnd_code
-                and qsm.type_mapping='MASTER-FEEDERS'
-		where
-			asgc.ID_STRUCTURE = ?
-			and asgc.ID_GABARIT = ?	
-			and rf.FND_END_VALIDITY = '31/12/2199'
-			and lib.DATE_FIN_COMPART is null
-            and qsm.code_mapping_cible is null
-)
-union
-(	
-select 
-		'999999' as id_fnd_code
-		,'Combined' as FND_LNG_DESCRIPTION
-		,qs.DEVISE 									
-		
-		from 
-		qxp.qxp_structure  qs
-		where
-		qs.ID_STRUCTURE = ?			
-)		
-)srq	
-----------------------------------------gestion du libellé du ptf + devise : Fin 
-)Devise on prim.ID_FND_CODE = Devise.ID_FND_CODE
-
-Left join
-(---------------------------------------gestion de la date  : Debut
-Select 
-srq.id_fnd_code
-,srq.DATE_FIN_COMPART
-,'N0' as Index_Annee
-,To_char(to_date(?),'dd/mm/yyyy') as DDATE 
-	  
-from
-((select distinct
-            asgc.id_fnd_code
-            ,lib.DATE_FIN_COMPART
-            ,asgc.ID_GABARIT
-            ,qg.ID_TYPE_RAPPORT 
-		from
-            qxp.qxp_asso_struct_gabarit_comp asgc
-        Left join qxp.qxp_compartiment lib on asgc.ID_FND_CODE = lib.id_fnd_code
-        join qxp.qxp_gabarit qg on asgc.ID_GABARIT = qg.ID_GABARIT
-        left join qxp.qxp_sup_mapping qsm on qsm.code_mapping_cible=asgc.id_fnd_code
-            and qsm.type_mapping='MASTER-FEEDERS'
-		where
-			asgc.ID_STRUCTURE = ?
-			and asgc.ID_GABARIT = ?	
-			and lib.DATE_FIN_COMPART is null
-            and qsm.code_mapping_cible is null
-)			
-union
-(	
-select distinct
-			'999999' as id_fnd_code
-			,null as DATE_FIN_COMPART
-			,asgc.ID_GABARIT
-			,qg.ID_TYPE_RAPPORT 
-		from
-				qxp.qxp_asso_struct_gabarit_comp asgc
-				join qxp.qxp_gabarit qg on asgc.ID_GABARIT = qg.ID_GABARIT
-					 	  								   	 	
-		where
-			asgc.ID_STRUCTURE = ?
-			and asgc.ID_GABARIT = ?	)			
-	)srq		
----------------------------------------gestion de la date    
-) titre_date on prim.ID_FND_CODE = titre_date.ID_FND_CODE
-  			 and prim.Index_Annee = titre_date.Index_Annee	
-
-Left join 
-(-------------------------------------- Données :Debut
-Select
-	MBD.ID_CHARGEMENT
-    ,fichier.DATE_RAPPORT
-	,'N0' as Index_Annee	
-    ,MBD.ID_TABLEAU
-	,MBD.ID_PRESENTATION 
-	,MBD.VERSION_ID_PRESENTATION 
-	,MBD.CODE_PTF 
-	,MBD.ORDRE_RAPPORT 
-	,MBD.ID_RUBRIQUE 
-	,MBD.GROUPE 
-	,MBD.VALEUR 
-	------------------- gestion des nombres
-  ,Case when (MBD.VALEUR = 0 or MBD.VALEUR is null) then '-'  
-        when MBD.GROUPE in ('ST_PML') then NVL(Trim(TO_CHAR(MBD.VALEUR ,'999,999,999,999,999,999')),'-')
-        when MBD.ID_RUBRIQUE in ('C0260') and MBD.VALEUR <0 then Trim(TO_CHAR(MBD.VALEUR ,'999,999,999,999,999,999'))
-        when MBD.ID_RUBRIQUE in ('F1150') and MBD.VALEUR >0 then '-'||Trim(TO_CHAR(MBD.VALEUR ,'999,999,999,999,999,999'))
-        Else NVL(Trim(TO_CHAR(ABS(MBD.VALEUR) ,'999,999,999,999,999,999')),'-') end as Valeur_pres
-	 
-	from
-	qxp.QXP_IMPORT_LUX_DATA MBD
-	join 
-	(select distinct
-	max(fic.ID_CHARGEMENT)over(partition by fic.DATE_RAPPORT) as ID_CHARGEMENT
-    ,fic.DATE_RAPPORT
-	from 
-	 qxp.QXP_IMPORT_LUX fic
-	 join (Select
-				srq.DDate
-				,srq.ID_GABARIT
-				from 
-				(Select to_date(?) as DDate 
-					   ,to_number(?) as ID_GABARIT from dual
-				)srq
-	 ) gabdate on fic.DATE_RAPPORT = gabdate.DDate and fic.ID_GABARIT = gabdate.ID_GABARIT 
-	 JOIN qxp.QXP_IMPORT_LUX_DATA MBD ON fic.ID_CHARGEMENT = MBD.ID_CHARGEMENT
-	where 
-	fic.ID_STRUCTURE = ?
-	and MBD.ID_TABLEAU = 'BILAN'
-	)fichier on fichier.ID_CHARGEMENT = MBD.ID_CHARGEMENT
-	Where 
-	MBD.ID_TABLEAU = 'BILAN'
-	-------------------------------------- Données :Fin
-)Donnees on prim.ID_FND_CODE = Donnees.CODE_PTF 
-		 and prim.Index_Annee = Donnees.Index_Annee
-		 and prim.ordre_rapport = Donnees.ORDRE_RAPPORT 
-		 and prim.ID_RUBRIQUE = Donnees.ID_RUBRIQUE		 
-	
------- pour tache realimentation : Where substr(prim.ID_RUBRIQUE,1,1) not in 'A'
-
-/* Gestion de limitation de blocs*/
---where index_section > case when :p_code_port in '_P0_05' then 5 else 0 end
-
-order by
-prim.index_Section
-,prim.ordre_rapport 
-,prim.index_col]; ORA-01830: date format picture ends before converting entire input string
-
-	at org.springframework.jdbc.support.SQLExceptionSubclassTranslator.doTranslate(SQLExceptionSubclassTranslator.java:91)
-	at org.springframework.jdbc.support.AbstractFallbackSQLExceptionTranslator.translate(AbstractFallbackSQLExceptionTranslator.java:107)
-	at org.springframework.jdbc.core.JdbcTemplate.translateException(JdbcTemplate.java:1548)
-	at org.springframework.jdbc.core.JdbcTemplate.execute(JdbcTemplate.java:677)
-	at org.springframework.jdbc.core.JdbcTemplate.query(JdbcTemplate.java:723)
-	at org.springframework.jdbc.core.JdbcTemplate.query(JdbcTemplate.java:748)
-	at org.springframework.jdbc.core.JdbcTemplate.query(JdbcTemplate.java:804)
-	at org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate.query(NamedParameterJdbcTemplate.java:218)
-	at org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate.queryForList(NamedParameterJdbcTemplate.java:312)
-	at org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate.queryForList(NamedParameterJdbcTemplate.java:319)
-	at com.socgen.sgs.api.quark.engine.infra.dao.impl.TaskSqlDaoImpl.executeSql(TaskSqlDaoImpl.java:28)
-	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
-	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:352)
-	at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:196)
-	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163)
-	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:765)
-	at org.springframework.dao.support.PersistenceExceptionTranslationInterceptor.invoke(PersistenceExceptionTranslationInterceptor.java:137)
-	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184)
-	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:765)
-	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:717)
-	at com.socgen.sgs.api.quark.engine.infra.dao.impl.TaskSqlDaoImpl$$SpringCGLIB$$0.executeSql(<generated>)
-	at com.socgen.sgs.api.quark.engine.infra.dao.impl.DynamicQueryPortImpl.executeQuery(DynamicQueryPortImpl.java:43)
-	... 80 common frames omitted
-Caused by: java.sql.SQLDataException: ORA-01830: date format picture ends before converting entire input string
-
-	at oracle.jdbc.driver.T4CTTIoer11.processError(T4CTTIoer11.java:509)
-	at oracle.jdbc.driver.T4CTTIoer11.processError(T4CTTIoer11.java:461)
-	at oracle.jdbc.driver.T4C8Oall.processError(T4C8Oall.java:1104)
-	at oracle.jdbc.driver.T4CTTIfun.receive(T4CTTIfun.java:553)
-	at oracle.jdbc.driver.T4CTTIfun.doRPC(T4CTTIfun.java:269)
-	at oracle.jdbc.driver.T4C8Oall.doOALL(T4C8Oall.java:655)
-	at oracle.jdbc.driver.T4CPreparedStatement.doOall8(T4CPreparedStatement.java:270)
-	at oracle.jdbc.driver.T4CPreparedStatement.doOall8(T4CPreparedStatement.java:91)
-	at oracle.jdbc.driver.T4CPreparedStatement.executeForDescribe(T4CPreparedStatement.java:807)
-	at oracle.jdbc.driver.OracleStatement.executeMaybeDescribe(OracleStatement.java:983)
-	at oracle.jdbc.driver.OracleStatement.doExecuteWithTimeout(OracleStatement.java:1168)
-	at oracle.jdbc.driver.OraclePreparedStatement.executeInternal(OraclePreparedStatement.java:3666)
-	at oracle.jdbc.driver.T4CPreparedStatement.executeInternal(T4CPreparedStatement.java:1426)
-	at oracle.jdbc.driver.OraclePreparedStatement.executeQuery(OraclePreparedStatement.java:3713)
-	at oracle.jdbc.driver.OraclePreparedStatementWrapper.executeQuery(OraclePreparedStatementWrapper.java:1167)
-	at com.zaxxer.hikari.pool.ProxyPreparedStatement.executeQuery(ProxyPreparedStatement.java:52)
-	at com.zaxxer.hikari.pool.HikariProxyPreparedStatement.executeQuery(HikariProxyPreparedStatement.java)
-	at org.springframework.jdbc.core.JdbcTemplate$1.doInPreparedStatement(JdbcTemplate.java:732)
-	at org.springframework.jdbc.core.JdbcTemplate.execute(JdbcTemplate.java:658)
-	... 99 common frames omitted
-Caused by: oracle.jdbc.OracleDatabaseException: ORA-01830: date format picture ends before converting entire input string
-
-	at oracle.jdbc.driver.T4CTTIoer11.processError(T4CTTIoer11.java:513)
-	... 117 common frames omitted
-
-2026-07-15T14:51:58.152+05:30  INFO 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] s.a.q.e.s.t.i.DidTaskPostProcessStrategy : DID update mode: NAME_VALUE for run [339403]
-2026-07-15T14:51:58.152+05:30  INFO 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] s.a.q.e.s.t.i.DidTaskPostProcessStrategy : DID task post-process completed for run [339403]
-2026-07-15T14:51:58.152+05:30  WARN 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] c.s.s.a.q.e.s.i.ProcessTasksServiceImpl  : Task [229 - 001 - Bilan Pio-Amundi MBD  ] has no blocs after processing
-2026-07-15T14:51:58.152+05:30  INFO 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] c.s.s.a.q.e.s.i.ProcessTasksServiceImpl  : Task processing completed for runId: 339403
-2026-07-15T14:51:58.153+05:30  INFO 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] c.s.s.a.q.e.business.QxpsCallerBusiness  : Starting step execution for run [339403] with 1 steps
-2026-07-15T14:51:58.153+05:30  INFO 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] c.s.s.a.q.e.business.QxpsCallerBusiness  : Preparing step [0] for run [339403]
-2026-07-15T14:51:58.178+05:30  INFO 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] c.s.s.a.q.e.business.QxpsCallerBusiness  : Executing step [0]: add=0 update=1 excluded=0
-2026-07-15T14:51:58.179+05:30  INFO 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] c.s.s.a.q.e.i.i.qxpsm.QxpsmSoapClient    : QXPSM SOAP processRequest for document [R_339403/G_168.QXP]
-2026-07-15T14:51:58.920+05:30  INFO 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] c.s.s.a.q.e.i.i.qxpsm.QxpsmSoapClient    : QXPSM processRequest completed for document [R_339403/G_168.QXP]
-2026-07-15T14:51:58.921+05:30  INFO 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] c.s.s.a.q.e.i.i.q.client.QxpsHttpClient  : QXPS call: GET http://srvcldvapd001.dns43.socgen:8080/literal/R_339403/G_168_1.QXP
-2026-07-15T14:52:01.427+05:30  INFO 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] c.s.s.a.q.e.business.QxpsCallerBusiness  : Step [0] completed for run [339403]
-2026-07-15T14:52:01.428+05:30  INFO 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] c.s.s.a.q.e.business.QxpsCallerBusiness  : All steps completed for run [339403]
-2026-07-15T14:52:01.428+05:30  INFO 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] c.s.s.a.q.e.s.impl.CheckServiceImpl      : Starting Check step for run [339403]
-2026-07-15T14:52:01.428+05:30  INFO 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] c.s.s.a.q.e.i.i.q.client.QxpsHttpClient  : QXPS call: GET http://srvcldvapd001.dns43.socgen:8080/xml/R_339403/G_168_1.QXP
-2026-07-15T14:52:03.596+05:30  INFO 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] c.s.s.a.q.e.s.impl.CheckServiceImpl      : Collected 0 SQL data entries for run [339403]
-2026-07-15T14:52:03.596+05:30  INFO 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] c.s.s.a.q.e.s.impl.CheckServiceImpl      : Check step completed for run [339403]
-2026-07-15T14:52:03.596+05:30  INFO 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] c.s.s.a.q.e.business.QxpsCallerBusiness  : Starting final renders for run [339403]
-2026-07-15T14:52:03.597+05:30  INFO 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] c.s.s.a.q.e.i.i.q.client.QxpsHttpClient  : QXPS call: GET http://srvcldvapd001.dns43.socgen:8080/pdf/R_339403/G_168_1.QXP?colorimagedownsample=300&grayscaleimagedownsample=300&monochromeImagedownSample=300&colorcompression=true&grayscalecompression=true&monochromecompression=true
-2026-07-15T14:52:08.343+05:30  INFO 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] c.s.s.a.q.e.business.QxpsCallerBusiness  : PDF render completed for run [339403]
-2026-07-15T14:52:08.344+05:30  INFO 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] c.s.s.a.q.e.i.i.q.client.QxpsHttpClient  : QXPS call: GET http://srvcldvapd001.dns43.socgen:8080/literal/R_339403/G_168_1.QXP
-2026-07-15T14:52:11.007+05:30  INFO 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] c.s.s.a.q.e.business.QxpsCallerBusiness  : QXP fetched (literal) for run [339403]
-2026-07-15T14:52:11.008+05:30  INFO 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] c.s.s.a.q.e.business.QxpsCallerBusiness  : All renders completed for run [339403]
-2026-07-15T14:52:11.009+05:30  INFO 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] c.s.s.a.q.e.business.EndRunBusiness      : Finalizing run [339403] with status [GENERATED]
-2026-07-15T14:52:25.558+05:30  INFO 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] c.s.s.a.q.e.i.dao.impl.EndRunDaoImpl     : End_Run executed for run [339403]
-2026-07-15T14:52:25.727+05:30  INFO 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] c.s.s.a.q.e.i.dao.impl.EndRunDaoImpl     : Inserted 1 errors for run [339403]
-2026-07-15T14:52:25.893+05:30  INFO 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] c.s.s.a.q.e.infra.dao.impl.AuditDaoImpl  : Audit row inserted for run [339403]
-2026-07-15T14:52:25.893+05:30  INFO 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] c.s.s.a.q.e.business.EndRunBusiness      : Run [339403] finalized successfully
-2026-07-15T14:52:26.061+05:30  INFO 8072 --- [quark-engine-service] [io-8080-exec-10] [78480625d569d91d857860ce1b53c3cb-1a87de1130334f41] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Run completed for runId: 339403 with status: GENERATED
+C:\Users\rgurram062722\bin\jdk-17.0.16+8\bin\java.exe -Dspring.profiles.active=local -Dspring.config.location=classpath:/,file:./src/main/config/local/ -XX:TieredStopAtLevel=1 -Dspring.output.ansi.enabled=always -javaagent:C:\Users\rgurram062722\bin\idea-IU-26.1\lib\idea_rt.jar=55016 -Dfile.encoding=UTF-8 @C:\Users\rgurram062722\AppData\Local\Temp\idea_arg_file1512274781 com.socgen.sgs.api.quark.engine.Application
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::                (v3.2.0)
+
+2026-07-17T09:31:20.917+05:30  INFO 22016 --- [quark-engine-service] [  restartedMain] [                                                 ] c.s.sgs.api.quark.engine.Application     : Starting Application using Java 17.0.16 with PID 22016 (C:\Users\rgurram062722\Documents\GitHub\engine service repo\quark-engine\target\classes started by rgurram062722 in C:\Users\rgurram062722\Documents\GitHub\engine service repo\quark-engine)
+2026-07-17T09:31:20.922+05:30  INFO 22016 --- [quark-engine-service] [  restartedMain] [                                                 ] c.s.sgs.api.quark.engine.Application     : The following 1 profile is active: "local"
+2026-07-17T09:31:21.189+05:30  INFO 22016 --- [quark-engine-service] [  restartedMain] [                                                 ] o.s.b.devtools.restart.ChangeableUrls    : The Class-Path manifest attribute in C:\Users\rgurram062722\.m2\repository\com\oracle\database\jdbc\ojdbc10\19.18.0.0\ojdbc10-19.18.0.0.jar referenced one or more files that do not exist: file:/C:/Users/rgurram062722/.m2/repository/com/oracle/database/jdbc/ojdbc10/19.18.0.0/oraclepki.jar
+2026-07-17T09:31:21.189+05:30  INFO 22016 --- [quark-engine-service] [  restartedMain] [                                                 ] o.s.b.devtools.restart.ChangeableUrls    : The Class-Path manifest attribute in C:\Users\rgurram062722\.m2\repository\com\sun\xml\bind\jaxb-impl\4.0.4\jaxb-impl-4.0.4.jar referenced one or more files that do not exist: file:/C:/Users/rgurram062722/.m2/repository/com/sun/xml/bind/jaxb-impl/4.0.4/jaxb-core.jar,file:/C:/Users/rgurram062722/.m2/repository/com/sun/xml/bind/jaxb-impl/4.0.4/angus-activation.jar
+2026-07-17T09:31:21.189+05:30  INFO 22016 --- [quark-engine-service] [  restartedMain] [                                                 ] o.s.b.devtools.restart.ChangeableUrls    : The Class-Path manifest attribute in C:\Users\rgurram062722\.m2\repository\com\sun\xml\bind\jaxb-core\4.0.4\jaxb-core-4.0.4.jar referenced one or more files that do not exist: file:/C:/Users/rgurram062722/.m2/repository/com/sun/xml/bind/jaxb-core/4.0.4/jakarta.activation-api.jar,file:/C:/Users/rgurram062722/.m2/repository/com/sun/xml/bind/jaxb-core/4.0.4/jakarta.xml.bind-api.jar
+2026-07-17T09:31:21.190+05:30  INFO 22016 --- [quark-engine-service] [  restartedMain] [                                                 ] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2026-07-17T09:31:21.190+05:30  INFO 22016 --- [quark-engine-service] [  restartedMain] [                                                 ] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2026-07-17T09:31:26.614+05:30  INFO 22016 --- [quark-engine-service] [  restartedMain] [                                                 ] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-07-17T09:31:26.737+05:30  INFO 22016 --- [quark-engine-service] [  restartedMain] [                                                 ] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 97 ms. Found 0 JPA repository interfaces.
+2026-07-17T09:31:27.440+05:30  WARN 22016 --- [quark-engine-service] [  restartedMain] [                                                 ] trationDelegate$BeanPostProcessorChecker : Bean 'com.socgen.apibank.autoconfigure.swaggerui.SwaggerUiAutoConfiguration' of type [com.socgen.apibank.autoconfigure.swaggerui.SwaggerUiAutoConfiguration] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). The currently created BeanPostProcessor [swaggerUiOptionsOptionsPropagator] is declared through a non-static factory method on that class; consider declaring it as static instead.
+2026-07-17T09:31:27.458+05:30  WARN 22016 --- [quark-engine-service] [  restartedMain] [                                                 ] trationDelegate$BeanPostProcessorChecker : Bean 'sg.swagger-ui3-com.socgen.apibank.autoconfigure.swaggerui.SwaggerUiProperties' of type [com.socgen.apibank.autoconfigure.swaggerui.SwaggerUiProperties] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected into a currently created BeanPostProcessor [swaggerUiOptionsOptionsPropagator]? Check the corresponding BeanPostProcessor declaration and its dependencies.
+2026-07-17T09:31:27.724+05:30  WARN 22016 --- [quark-engine-service] [  restartedMain] [                                                 ] trationDelegate$BeanPostProcessorChecker : Bean 'org.hibernate.validator.internal.constraintvalidators.bv.PatternValidator' of type [org.hibernate.validator.internal.constraintvalidators.bv.PatternValidator] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected into a currently created BeanPostProcessor [swaggerUiOptionsOptionsPropagator]? Check the corresponding BeanPostProcessor declaration and its dependencies.
+2026-07-17T09:31:27.731+05:30  WARN 22016 --- [quark-engine-service] [  restartedMain] [                                                 ] trationDelegate$BeanPostProcessorChecker : Bean 'org.hibernate.validator.internal.constraintvalidators.hv.URLValidator' of type [org.hibernate.validator.internal.constraintvalidators.hv.URLValidator] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected into a currently created BeanPostProcessor [swaggerUiOptionsOptionsPropagator]? Check the corresponding BeanPostProcessor declaration and its dependencies.
+2026-07-17T09:31:27.751+05:30  WARN 22016 --- [quark-engine-service] [  restartedMain] [                                                 ] trationDelegate$BeanPostProcessorChecker : Bean 'com.socgen.apibank.openapi.validation.AtLeastOneFlowValidator' of type [com.socgen.apibank.openapi.validation.AtLeastOneFlowValidator] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected into a currently created BeanPostProcessor [swaggerUiOptionsOptionsPropagator]? Check the corresponding BeanPostProcessor declaration and its dependencies.
+2026-07-17T09:31:27.751+05:30  WARN 22016 --- [quark-engine-service] [  restartedMain] [                                                 ] trationDelegate$BeanPostProcessorChecker : Bean 'com.socgen.apibank.openapi.validation.EachFlowHasUrlValidator' of type [com.socgen.apibank.openapi.validation.EachFlowHasUrlValidator] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected into a currently created BeanPostProcessor [swaggerUiOptionsOptionsPropagator]? Check the corresponding BeanPostProcessor declaration and its dependencies.
+2026-07-17T09:31:27.754+05:30  WARN 22016 --- [quark-engine-service] [  restartedMain] [                                                 ] trationDelegate$BeanPostProcessorChecker : Bean 'sg.openapi-com.socgen.apibank.openapi.OpenApiProperties' of type [com.socgen.apibank.openapi.OpenApiProperties] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected into a currently created BeanPostProcessor [swaggerUiOptionsOptionsPropagator]? Check the corresponding BeanPostProcessor declaration and its dependencies.
+2026-07-17T09:31:27.778+05:30  WARN 22016 --- [quark-engine-service] [  restartedMain] [                                                 ] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.ws.config.annotation.DelegatingWsConfiguration' of type [org.springframework.ws.config.annotation.DelegatingWsConfiguration$$SpringCGLIB$$0] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). The currently created BeanPostProcessor [annotationActionEndpointMapping] is declared through a non-static factory method on that class; consider declaring it as static instead.
+2026-07-17T09:31:27.818+05:30  INFO 22016 --- [quark-engine-service] [  restartedMain] [                                                 ] .w.s.a.s.AnnotationActionEndpointMapping : Supporting [WS-Addressing August 2004, WS-Addressing 1.0]
+2026-07-17T09:31:28.588+05:30  WARN 22016 --- [quark-engine-service] [  restartedMain] [                                                 ] trationDelegate$BeanPostProcessorChecker : Bean 'com.socgen.apibank.problem.servlet.SgConnectProblemConfiguration' of type [com.socgen.apibank.problem.servlet.SgConnectProblemConfiguration] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). The currently created BeanPostProcessor [problemSecurityBeanPostProcessor] is declared through a non-static factory method on that class; consider declaring it as static instead.
+2026-07-17T09:31:29.487+05:30  INFO 22016 --- [quark-engine-service] [  restartedMain] [                                                 ] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2026-07-17T09:31:29.508+05:30  INFO 22016 --- [quark-engine-service] [  restartedMain] [                                                 ] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-07-17T09:31:29.508+05:30  INFO 22016 --- [quark-engine-service] [  restartedMain] [                                                 ] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.16]
+2026-07-17T09:31:29.729+05:30  INFO 22016 --- [quark-engine-service] [  restartedMain] [                                                 ] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-07-17T09:31:29.730+05:30  INFO 22016 --- [quark-engine-service] [  restartedMain] [                                                 ] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 8540 ms
+2026-07-17T09:31:31.065+05:30  INFO 22016 --- [quark-engine-service] [  restartedMain] [                                                 ] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-07-17T09:31:31.073+05:30  WARN 22016 --- [quark-engine-service] [  restartedMain] [                                                 ] c.zaxxer.hikari.util.DriverDataSource    : Registered driver with driverClassName=oracle.jdbc.driver.OracleDriver was not found, trying direct instantiation.
+2026-07-17T09:31:32.061+05:30  INFO 22016 --- [quark-engine-service] [  restartedMain] [                                                 ] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection oracle.jdbc.driver.T4CConnection@16f83f5
+2026-07-17T09:31:32.063+05:30  INFO 22016 --- [quark-engine-service] [  restartedMain] [                                                 ] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-07-17T09:31:32.072+05:30  INFO 22016 --- [quark-engine-service] [  restartedMain] [                                                 ] o.s.b.a.h2.H2ConsoleAutoConfiguration    : H2 console available at '/h2-console'. Database available at 'jdbc:oracle:thin:@osfreygp3dwpp.ocp.cloud.socgen:1522:YGP3DWPP'
+2026-07-17T09:31:32.650+05:30  INFO 22016 --- [quark-engine-service] [  restartedMain] [                                                 ] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-07-17T09:31:32.986+05:30  INFO 22016 --- [quark-engine-service] [  restartedMain] [                                                 ] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.3.1.Final
+2026-07-17T09:31:33.088+05:30  INFO 22016 --- [quark-engine-service] [  restartedMain] [                                                 ] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-07-17T09:31:33.666+05:30  INFO 22016 --- [quark-engine-service] [  restartedMain] [                                                 ] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-07-17T09:31:34.669+05:30  INFO 22016 --- [quark-engine-service] [  restartedMain] [                                                 ] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-07-17T09:31:34.679+05:30  INFO 22016 --- [quark-engine-service] [  restartedMain] [                                                 ] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-07-17T09:31:35.158+05:30  INFO 22016 --- [quark-engine-service] [  restartedMain] [                                                 ] c.s.s.a.q.e.s.t.i.TaskProcessServiceImpl : Registered 7 task process strategies: [class com.socgen.sgs.api.quark.engine.domain.task.TaskSql, class com.socgen.sgs.api.quark.engine.domain.task.TaskQxpPrevious, class com.socgen.sgs.api.quark.engine.domain.task.TaskCompartiment, class com.socgen.sgs.api.quark.engine.domain.task.TaskDid, class com.socgen.sgs.api.quark.engine.domain.task.TaskDynamique, class com.socgen.sgs.api.quark.engine.domain.task.TaskDocument, class com.socgen.sgs.api.quark.engine.domain.task.TaskSystem]
+2026-07-17T09:31:35.168+05:30  INFO 22016 --- [quark-engine-service] [  restartedMain] [                                                 ] s.a.q.e.s.t.i.TaskPostProcessServiceImpl : Registered 1 task post-process strategies: [class com.socgen.sgs.api.quark.engine.domain.task.TaskDid]
+2026-07-17T09:31:36.825+05:30  INFO 22016 --- [quark-engine-service] [  restartedMain] [                                                 ] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 13 endpoint(s) beneath base path '/actuator'
+2026-07-17T09:31:37.014+05:30  WARN 22016 --- [quark-engine-service] [  restartedMain] [                                                 ] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-07-17T09:31:49.692+05:30  INFO 22016 --- [quark-engine-service] [  restartedMain] [                                                 ] s.a.p.s.ProblemSecurityBeanPostProcessor : Register HttpSecurity's exceptionHandling
+2026-07-17T09:31:49.794+05:30  INFO 22016 --- [quark-engine-service] [  restartedMain] [                                                 ] o.s.s.w.a.c.ChannelProcessingFilter      : Validated configuration attributes
+2026-07-17T09:31:49.810+05:30  INFO 22016 --- [quark-engine-service] [  restartedMain] [                                                 ] o.s.s.web.DefaultSecurityFilterChain     : Will secure Or [Ant [pattern='/api-docs'], Ant [pattern='/v3/api-docs'], Ant [pattern='/favicon.ico'], Ant [pattern='/api-docs*'], Ant [pattern='/v3/api-docs*'], Ant [pattern='/api-docs/**'], Ant [pattern='/v3/api-docs/**'], Ant [pattern='/api-docs.yaml/*'], Ant [pattern='/swagger-ui.html'], Ant [pattern='/swagger-ui/**'], Ant [pattern='/sg/swagger-ui/**']] with [org.springframework.security.web.session.DisableEncodeUrlFilter@785159ef, org.springframework.security.web.access.channel.ChannelProcessingFilter@2e3fa415, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@73a1e0cb, org.springframework.security.web.context.SecurityContextHolderFilter@9afa623, org.springframework.security.web.header.HeaderWriterFilter@217c75c7, org.springframework.security.web.csrf.CsrfFilter@618af45b, org.springframework.security.web.authentication.logout.LogoutFilter@5cf40330, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@7a8db361, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@f67fb80, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@50eb6e3e, org.springframework.security.web.access.ExceptionTranslationFilter@59f830f4, org.springframework.security.web.access.intercept.AuthorizationFilter@568d2801]
+2026-07-17T09:31:49.863+05:30  INFO 22016 --- [quark-engine-service] [  restartedMain] [                                                 ] s.a.p.s.ProblemSecurityBeanPostProcessor : Register HttpSecurity's exceptionHandling
+2026-07-17T09:31:49.877+05:30  INFO 22016 --- [quark-engine-service] [  restartedMain] [                                                 ] s.a.p.s.ProblemSecurityBeanPostProcessor : Register HttpSecurity's exceptionHandling
+2026-07-17T09:31:49.997+05:30  INFO 22016 --- [quark-engine-service] [  restartedMain] [                                                 ] s.a.p.s.ProblemSecurityBeanPostProcessor : Register BearerTokenAuthenticationFilter's authentication entry point
+2026-07-17T09:31:50.001+05:30  INFO 22016 --- [quark-engine-service] [  restartedMain] [                                                 ] o.s.s.w.a.c.ChannelProcessingFilter      : Validated configuration attributes
+2026-07-17T09:31:50.010+05:30  INFO 22016 --- [quark-engine-service] [  restartedMain] [                                                 ] o.s.s.web.DefaultSecurityFilterChain     : Will secure Or [DispatcherServletDelegating [ant = Ant [pattern='/api/**'], mvc = Mvc [pattern='/api/**']]] with [org.springframework.security.web.session.DisableEncodeUrlFilter@60c386e0, org.springframework.security.web.access.channel.ChannelProcessingFilter@14045d95, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@72609639, org.springframework.security.web.context.SecurityContextHolderFilter@3ca71822, org.springframework.security.web.header.HeaderWriterFilter@63b3c26a, org.springframework.web.filter.CorsFilter@519cd634, org.springframework.security.web.authentication.logout.LogoutFilter@472af792, com.socgen.apibank.autoconfigure.sgconnect.servlet.AuthenticationServiceUnavailableHandlerFilter@2853959, org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter@559e8d2c, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@3ea17e7b, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@18387e1f, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@7e0d5b6f, org.springframework.security.web.session.SessionManagementFilter@29bad567, org.springframework.security.web.access.ExceptionTranslationFilter@68c24ca5, org.springframework.security.web.access.intercept.AuthorizationFilter@4abcc28c]
+2026-07-17T09:31:51.280+05:30  INFO 22016 --- [quark-engine-service] [  restartedMain] [                                                 ] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2026-07-17T09:31:51.454+05:30  INFO 22016 --- [quark-engine-service] [  restartedMain] [                                                 ] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path ''
+2026-07-17T09:31:51.459+05:30  INFO 22016 --- [quark-engine-service] [  restartedMain] [                                                 ] o.s.a.r.c.CachingConnectionFactory       : Attempting to connect to: [rabbitmq-vap-dev-965c0883.gslb2.trafficmanager.eu-fr-paris.cloud.socgen:5671]
+2026-07-17T09:31:51.855+05:30  INFO 22016 --- [quark-engine-service] [  restartedMain] [                                                 ] o.s.a.r.c.CachingConnectionFactory       : Created new connection: rabbitConnectionFactory#55efc304:0/SimpleConnection@94101c4 [delegate=amqp://quark_dev@182.8.28.27:5671/vap-quark-host, localPort=58048]
+2026-07-17T09:31:52.002+05:30  INFO 22016 --- [quark-engine-service] [  restartedMain] [                                                 ] c.s.sgs.api.quark.engine.Application     : Started Application in 32.203 seconds (process running for 37.233)
+2026-07-17T09:32:34.502+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [                                                 ] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-07-17T09:32:34.503+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [                                                 ] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-07-17T09:32:34.506+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [                                                 ] o.s.web.servlet.DispatcherServlet        : Completed initialization in 3 ms
+2026-07-17T09:32:38.576+05:30  INFO 22016 --- [quark-engine-service] [io-8080-exec-10] [ff55a76302701faca86a7197c8f3c939-aab3d412483ebfc1] o.springdoc.api.AbstractOpenApiResource  : Init duration for springdoc-openapi is: 549 ms
+2026-07-17T09:32:41.265+05:30  WARN 22016 --- [quark-engine-service] [ctor-http-nio-2] [                                                 ] i.o.exporter.zipkin.ZipkinSpanExporter   : Failed to export spans
+
+org.springframework.web.reactive.function.client.WebClientRequestException: Connection refused: getsockopt: localhost/127.0.0.1:9411
+	at org.springframework.web.reactive.function.client.ExchangeFunctions$DefaultExchangeFunction.lambda$wrapException$9(ExchangeFunctions.java:136)
+	Suppressed: reactor.core.publisher.FluxOnAssembly$OnAssemblyException: 
+Error has been observed at the following site(s):
+	*__checkpoint ⇢ Request to POST http://localhost:9411/api/v2/spans [DefaultWebClient]
+Original Stack Trace:
+		at org.springframework.web.reactive.function.client.ExchangeFunctions$DefaultExchangeFunction.lambda$wrapException$9(ExchangeFunctions.java:136)
+		at reactor.core.publisher.MonoErrorSupplied.subscribe(MonoErrorSupplied.java:55)
+		at reactor.core.publisher.Mono.subscribe(Mono.java:4512)
+		at reactor.core.publisher.FluxOnErrorResume$ResumeSubscriber.onError(FluxOnErrorResume.java:103)
+		at reactor.core.publisher.FluxPeek$PeekSubscriber.onError(FluxPeek.java:222)
+		at reactor.core.publisher.FluxPeek$PeekSubscriber.onError(FluxPeek.java:222)
+		at reactor.core.publisher.FluxPeek$PeekSubscriber.onError(FluxPeek.java:222)
+		at reactor.core.publisher.MonoNext$NextSubscriber.onError(MonoNext.java:93)
+		at reactor.core.publisher.MonoFlatMapMany$FlatMapManyMain.onError(MonoFlatMapMany.java:204)
+		at reactor.core.publisher.SerializedSubscriber.onError(SerializedSubscriber.java:124)
+		at reactor.core.publisher.FluxRetryWhen$RetryWhenMainSubscriber.whenError(FluxRetryWhen.java:228)
+		at reactor.core.publisher.FluxRetryWhen$RetryWhenOtherSubscriber.onError(FluxRetryWhen.java:278)
+		at reactor.core.publisher.FluxContextWrite$ContextWriteSubscriber.onError(FluxContextWrite.java:121)
+		at reactor.core.publisher.FluxConcatMapNoPrefetch$FluxConcatMapNoPrefetchSubscriber.maybeOnError(FluxConcatMapNoPrefetch.java:326)
+		at reactor.core.publisher.FluxConcatMapNoPrefetch$FluxConcatMapNoPrefetchSubscriber.onNext(FluxConcatMapNoPrefetch.java:211)
+		at reactor.core.publisher.FluxContextWrite$ContextWriteSubscriber.onNext(FluxContextWrite.java:107)
+		at reactor.core.publisher.SinkManyEmitterProcessor.drain(SinkManyEmitterProcessor.java:476)
+		at reactor.core.publisher.SinkManyEmitterProcessor$EmitterInner.drainParent(SinkManyEmitterProcessor.java:620)
+		at reactor.core.publisher.FluxPublish$PubSubInner.request(FluxPublish.java:874)
+		at reactor.core.publisher.FluxContextWrite$ContextWriteSubscriber.request(FluxContextWrite.java:136)
+		at reactor.core.publisher.FluxConcatMapNoPrefetch$FluxConcatMapNoPrefetchSubscriber.request(FluxConcatMapNoPrefetch.java:336)
+		at reactor.core.publisher.FluxContextWrite$ContextWriteSubscriber.request(FluxContextWrite.java:136)
+		at reactor.core.publisher.Operators$DeferredSubscription.request(Operators.java:1743)
+		at reactor.core.publisher.FluxRetryWhen$RetryWhenMainSubscriber.onError(FluxRetryWhen.java:195)
+		at reactor.core.publisher.MonoCreate$DefaultMonoSink.error(MonoCreate.java:205)
+		at reactor.netty.http.client.HttpClientConnect$MonoHttpConnect$ClientTransportSubscriber.onError(HttpClientConnect.java:311)
+		at reactor.core.publisher.MonoCreate$DefaultMonoSink.error(MonoCreate.java:205)
+		at reactor.netty.resources.DefaultPooledConnectionProvider$DisposableAcquire.onError(DefaultPooledConnectionProvider.java:162)
+		at reactor.netty.internal.shaded.reactor.pool.AbstractPool$Borrower.fail(AbstractPool.java:475)
+		at reactor.netty.internal.shaded.reactor.pool.SimpleDequePool.lambda$drainLoop$9(SimpleDequePool.java:433)
+		at reactor.core.publisher.FluxDoOnEach$DoOnEachSubscriber.onError(FluxDoOnEach.java:186)
+		at reactor.core.publisher.MonoCreate$DefaultMonoSink.error(MonoCreate.java:205)
+		at reactor.netty.resources.DefaultPooledConnectionProvider$PooledConnectionAllocator$PooledConnectionInitializer.onError(DefaultPooledConnectionProvider.java:560)
+		at reactor.core.publisher.MonoFlatMap$FlatMapMain.secondError(MonoFlatMap.java:241)
+		at reactor.core.publisher.MonoFlatMap$FlatMapInner.onError(MonoFlatMap.java:315)
+		at reactor.core.publisher.FluxOnErrorResume$ResumeSubscriber.onError(FluxOnErrorResume.java:106)
+		at org.springframework.security.config.annotation.web.configuration.SecurityReactorContextConfiguration$SecurityReactorContextSubscriber.onError(SecurityReactorContextConfiguration.java:191)
+		at reactor.core.publisher.Operators.error(Operators.java:198)
+		at reactor.core.publisher.MonoError.subscribe(MonoError.java:53)
+		at reactor.core.publisher.Mono.subscribe(Mono.java:4512)
+		at reactor.core.publisher.FluxOnErrorResume$ResumeSubscriber.onError(FluxOnErrorResume.java:103)
+		at reactor.netty.transport.TransportConnector$MonoChannelPromise.tryFailure(TransportConnector.java:576)
+		at reactor.netty.transport.TransportConnector$MonoChannelPromise.setFailure(TransportConnector.java:522)
+		at reactor.netty.transport.TransportConnector.lambda$doConnect$7(TransportConnector.java:261)
+		at io.netty.util.concurrent.DefaultPromise.notifyListener0(DefaultPromise.java:590)
+		at io.netty.util.concurrent.DefaultPromise.notifyListeners0(DefaultPromise.java:583)
+		at io.netty.util.concurrent.DefaultPromise.notifyListenersNow(DefaultPromise.java:559)
+		at io.netty.util.concurrent.DefaultPromise.notifyListeners(DefaultPromise.java:492)
+		at io.netty.util.concurrent.DefaultPromise.setValue0(DefaultPromise.java:636)
+		at io.netty.util.concurrent.DefaultPromise.setFailure0(DefaultPromise.java:629)
+		at io.netty.util.concurrent.DefaultPromise.tryFailure(DefaultPromise.java:118)
+		at io.netty.channel.nio.AbstractNioChannel$AbstractNioUnsafe.fulfillConnectPromise(AbstractNioChannel.java:321)
+		at io.netty.channel.nio.AbstractNioChannel$AbstractNioUnsafe.finishConnect(AbstractNioChannel.java:337)
+		at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:776)
+		at io.netty.channel.nio.NioEventLoop.processSelectedKeysOptimized(NioEventLoop.java:724)
+		at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:650)
+		at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:562)
+		at io.netty.util.concurrent.SingleThreadEventExecutor$4.run(SingleThreadEventExecutor.java:997)
+		at io.netty.util.internal.ThreadExecutorMap$2.run(ThreadExecutorMap.java:74)
+		at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
+		at java.base/java.lang.Thread.run(Thread.java:840)
+Caused by: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: getsockopt: localhost/127.0.0.1:9411
+Caused by: java.net.ConnectException: Connection refused: getsockopt
+	at java.base/sun.nio.ch.Net.pollConnect(Native Method)
+	at java.base/sun.nio.ch.Net.pollConnectNow(Net.java:672)
+	at java.base/sun.nio.ch.SocketChannelImpl.finishConnect(SocketChannelImpl.java:946)
+	at io.netty.channel.socket.nio.NioSocketChannel.doFinishConnect(NioSocketChannel.java:337)
+	at io.netty.channel.nio.AbstractNioChannel$AbstractNioUnsafe.finishConnect(AbstractNioChannel.java:334)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:776)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeysOptimized(NioEventLoop.java:724)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:650)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:562)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$4.run(SingleThreadEventExecutor.java:997)
+	at io.netty.util.internal.ThreadExecutorMap$2.run(ThreadExecutorMap.java:74)
+	at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+
+2026-07-17T09:33:15.999+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [627cfde6866e73bf43bc12645d1c6056-aa80208a9700c0e0] o.springdoc.api.AbstractOpenApiResource  : Init duration for springdoc-openapi is: 686 ms
+2026-07-17T09:36:22.160+05:30  WARN 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-272dff4048378831] o.s.w.s.h.HandlerMappingIntrospector     : Cache miss for REQUEST dispatch to '/ap/v1/EngineService/processRun/339403' (previous null). Performing MatchableHandlerMapping lookup. This is logged once only at WARN level, and every time at TRACE.
+2026-07-17T09:36:22.166+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] .s.s.a.q.e.i.a.v.EngineServiceController : Processing run with runId: 339403
+2026-07-17T09:36:22.166+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Processing run with runId: 339403
+2026-07-17T09:36:22.170+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] c.s.s.a.q.e.b.RunStartUpdateBusiness     : Business layer: starting run with ID: 339403
+2026-07-17T09:36:22.173+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] c.s.s.a.q.e.i.d.i.RunStartUpdateDaoImpl  : Starting run with ID: 339403
+2026-07-17T09:36:22.273+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] c.s.s.a.q.e.i.d.i.RunStartUpdateDaoImpl  : Successfully started run with ID: 339403
+2026-07-17T09:36:22.274+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Run started successfully with runId: 339403
+2026-07-17T09:36:22.274+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Loading run with runId: 339403
+2026-07-17T09:36:22.274+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Retrieving properties for runId: 339403
+2026-07-17T09:36:22.274+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] c.s.s.a.q.e.b.GetRunPropertiesBusiness   : Business layer: fetching run properties for runId: 339403
+2026-07-17T09:36:22.274+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] .s.s.a.q.e.i.d.i.GetRunPropertiesDaoImpl : Fetching run properties for runId: 339403
+2026-07-17T09:36:22.309+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] .s.s.a.q.e.i.d.i.GetRunPropertiesDaoImpl : Successfully retrieved run properties for runId: 339403
+2026-07-17T09:36:22.310+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Successfully retrieved properties for runId: 339403
+2026-07-17T09:36:22.311+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] c.s.s.a.q.e.business.GetGabaritBusiness  : Fetching gabarit for idGabarit: 168
+2026-07-17T09:36:22.311+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] c.s.s.a.q.e.i.d.impl.GetGabaritDaoImpl   : Fetching gabarit for idGabarit: 168
+2026-07-17T09:36:22.422+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] c.s.s.a.q.e.i.d.impl.GetGabaritDaoImpl   : Successfully retrieved gabarit for idGabarit: 168
+2026-07-17T09:36:22.422+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] c.s.s.a.q.e.business.GetGabaritBusiness  : Prepared gabarit paths - poolPath: R_339403/G_168.QXP, fullPath: D:\Documents\R_339403\G_168.QXP
+2026-07-17T09:36:22.424+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] c.s.s.a.q.e.i.i.q.client.QxpsHttpClient  : QXPS call: POST http://srvcldvapd001.dns43.socgen:8080/addfile/R_339403/G_168.QXP
+2026-07-17T09:36:22.710+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] c.s.s.a.q.e.i.i.qxps.helper.QxpsHelper   : File added to QXPS document pool: R_339403/G_168.QXP
+2026-07-17T09:36:22.711+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] c.s.s.a.q.e.i.i.q.pool.FilePoolService   : File added to pool: R_339403/G_168.QXP
+2026-07-17T09:36:22.712+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] c.s.s.a.q.e.i.i.q.client.QxpsHttpClient  : QXPS call: GET http://srvcldvapd001.dns43.socgen:8080/xml/R_339403/G_168.QXP
+2026-07-17T09:36:23.908+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] .s.a.q.e.i.i.q.i.DocumentIdentityService : Fetching XML for document: R_339403/G_168.QXP, box: DID
+2026-07-17T09:36:23.909+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] c.s.s.a.q.e.i.i.q.client.QxpsHttpClient  : QXPS call: GET http://srvcldvapd001.dns43.socgen:8080/xml/R_339403/G_168.QXP?box=DID
+2026-07-17T09:36:24.123+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] c.s.s.a.q.e.b.GetInParamsBusiness        : Business layer: loading in-params for runId: 339403
+2026-07-17T09:36:24.123+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] c.s.s.a.q.e.i.d.impl.GetInParamsDaoImpl  : Fetching in-params for idSuivi: 51839
+2026-07-17T09:36:24.165+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] c.s.s.a.q.e.i.d.impl.GetInParamsDaoImpl  : Loaded 3 in-params for idSuivi: 51839
+2026-07-17T09:36:24.165+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Loading tasks for runId: 339403
+2026-07-17T09:36:24.165+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] c.s.s.a.q.e.business.GetTasksBusiness    : Business layer: loading tasks for runId: 339403
+2026-07-17T09:36:24.165+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] c.s.s.a.q.e.i.dao.impl.GetTasksDaoImpl   : Fetching tasks for runId: 339403
+2026-07-17T09:36:24.451+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] c.s.s.a.q.e.i.dao.impl.GetTasksDaoImpl   : Fetched 24 task rows for runId: 339403
+2026-07-17T09:36:24.459+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Loaded 24 tasks for runId: 339403
+2026-07-17T09:36:24.459+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Loading task exceptions for runId: 339403
+2026-07-17T09:36:24.459+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] c.s.s.a.q.e.b.GetTaskExceptionsBusiness  : Business layer: loading task exceptions for runId: 339403
+2026-07-17T09:36:24.459+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] s.s.a.q.e.i.d.i.GetTaskExceptionsDaoImpl : Fetching task exceptions for runId: 339403
+2026-07-17T09:36:24.481+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] s.s.a.q.e.i.d.i.GetTaskExceptionsDaoImpl : Fetched 0 task exception rows for runId: 339403
+2026-07-17T09:36:24.481+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : Task exceptions loaded for runId: 339403
+2026-07-17T09:36:24.481+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] c.s.s.a.q.e.s.impl.LoadTasksServiceImpl  : DID task added for runId: 339403
+2026-07-17T09:36:24.483+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] c.s.s.a.q.e.b.LoadTemplatesBusiness      : Loading templates for idGabaritTemplate=6 in run [339403]
+2026-07-17T09:36:24.483+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] .s.a.q.e.i.d.i.GetGabaritTemplateDaoImpl : Fetching gabarit template for idGabaritTemplate: 6
+2026-07-17T09:36:24.885+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] .s.a.q.e.i.d.i.GetGabaritTemplateDaoImpl : Successfully retrieved gabarit template for idGabaritTemplate: 6
+2026-07-17T09:36:24.886+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] .s.a.q.e.i.d.i.GetGabaritTemplateDaoImpl : Fetching templates for idGabaritTemplate: 6
+2026-07-17T09:36:25.122+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] .s.a.q.e.i.d.i.GetGabaritTemplateDaoImpl : Fetched 349 template rows for idGabaritTemplate: 6
+2026-07-17T09:36:25.123+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] c.s.s.a.q.e.b.LoadTemplatesBusiness      : Loaded 349 templates for run [339403]
+2026-07-17T09:36:25.124+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Run loading completed for runId: 339403
+2026-07-17T09:36:25.124+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] c.s.s.a.q.e.s.i.ProcessTasksServiceImpl  : Preparing tasks for runId: 339403
+2026-07-17T09:36:25.125+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] c.s.s.a.q.e.i.i.q.client.QxpsHttpClient  : QXPS call: POST http://srvcldvapd001.dns43.socgen:8080/addfile/R_339403/GT_6.qxp
+2026-07-17T09:36:25.298+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] c.s.s.a.q.e.i.i.qxps.helper.QxpsHelper   : File added to QXPS document pool: R_339403/GT_6.qxp
+2026-07-17T09:36:25.298+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] c.s.s.a.q.e.i.i.q.pool.FilePoolService   : File added to pool: R_339403/GT_6.qxp
+2026-07-17T09:36:25.298+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] c.s.s.a.q.e.s.i.ProcessTasksServiceImpl  : Task preparation completed for runId: 339403
+2026-07-17T09:36:25.299+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] c.s.s.a.q.e.s.i.ProcessTasksServiceImpl  : Processing tasks for runId: 339403
+Standard Commons Logging discovery in action with spring-jcl: please remove commons-logging.jar from classpath in order to avoid potential conflicts
+2026-07-17T09:36:25.336+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] c.s.s.a.q.e.i.i.qxpsm.QxpsmSoapClient    : QXPSM getXPressDOM for document [R_339403/GT_6.qxp]
+2026-07-17T09:36:25.450+05:30  WARN 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] org.apache.axis.utils.JavaUtils          : Unable to find required classes (javax.activation.DataHandler and javax.mail.internet.MimeMultipart). Attachment support is disabled.
+2026-07-17T09:36:37.643+05:30 ERROR 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] a.q.e.s.t.i.DynamiqueTaskProcessStrategy : Dynamic task [229] SQL failed: SQL execution failed — in-params [p_code_port=_P0_28(TEXT), p_date_echeance=06/29/2018 00:00:00(DATE), p_id_gabarit=168(INT)] -> ORA-01858: a non-numeric character was found where a numeric was expected
+2026-07-17T09:36:37.684+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] s.a.q.e.s.t.i.DidTaskPostProcessStrategy : DID update mode: NAME_VALUE for run [339403]
+2026-07-17T09:36:37.690+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] s.a.q.e.s.t.i.DidTaskPostProcessStrategy : DID task post-process completed for run [339403]
+2026-07-17T09:36:37.691+05:30  WARN 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] c.s.s.a.q.e.s.i.ProcessTasksServiceImpl  : Task [229 - 001 - Bilan Pio-Amundi MBD  ] has no blocs after processing
+2026-07-17T09:36:37.692+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] c.s.s.a.q.e.s.i.ProcessTasksServiceImpl  : Task processing completed for runId: 339403
+2026-07-17T09:36:37.692+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] c.s.s.a.q.e.business.QxpsCallerBusiness  : Starting step execution for run [339403] with 1 steps
+2026-07-17T09:36:37.692+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] c.s.s.a.q.e.business.QxpsCallerBusiness  : Preparing step [0] for run [339403]
+2026-07-17T09:36:37.725+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] c.s.s.a.q.e.business.QxpsCallerBusiness  : Executing step [0]: add=0 update=1 excluded=0
+2026-07-17T09:36:37.729+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] c.s.s.a.q.e.i.i.qxpsm.QxpsmSoapClient    : QXPSM SOAP processRequest for document [R_339403/G_168.QXP]
+2026-07-17T09:36:38.177+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] c.s.s.a.q.e.i.i.qxpsm.QxpsmSoapClient    : QXPSM processRequest completed for document [R_339403/G_168.QXP]
+2026-07-17T09:36:38.179+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] c.s.s.a.q.e.i.i.q.client.QxpsHttpClient  : QXPS call: GET http://srvcldvapd001.dns43.socgen:8080/literal/R_339403/G_168_1.QXP
+2026-07-17T09:36:38.264+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] c.s.s.a.q.e.business.QxpsCallerBusiness  : Step [0] completed for run [339403]
+2026-07-17T09:36:38.265+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] c.s.s.a.q.e.business.QxpsCallerBusiness  : All steps completed for run [339403]
+2026-07-17T09:36:38.265+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] c.s.s.a.q.e.s.impl.CheckServiceImpl      : Starting Check step for run [339403]
+2026-07-17T09:36:38.265+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] c.s.s.a.q.e.i.i.q.client.QxpsHttpClient  : QXPS call: GET http://srvcldvapd001.dns43.socgen:8080/xml/R_339403/G_168_1.QXP
+2026-07-17T09:36:38.667+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] c.s.s.a.q.e.s.impl.CheckServiceImpl      : Collected 0 SQL data entries for run [339403]
+2026-07-17T09:36:38.667+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] c.s.s.a.q.e.s.impl.CheckServiceImpl      : Check step completed for run [339403]
+2026-07-17T09:36:38.668+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] c.s.s.a.q.e.business.QxpsCallerBusiness  : Starting final renders for run [339403]
+2026-07-17T09:36:38.669+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] c.s.s.a.q.e.i.i.q.client.QxpsHttpClient  : QXPS call: GET http://srvcldvapd001.dns43.socgen:8080/pdf/R_339403/G_168_1.QXP?colorimagedownsample=300&grayscaleimagedownsample=300&monochromeImagedownSample=300&colorcompression=true&grayscalecompression=true&monochromecompression=true
+2026-07-17T09:36:46.602+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] c.s.s.a.q.e.business.QxpsCallerBusiness  : PDF render completed for run [339403]
+2026-07-17T09:36:46.602+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] c.s.s.a.q.e.i.i.q.client.QxpsHttpClient  : QXPS call: GET http://srvcldvapd001.dns43.socgen:8080/literal/R_339403/G_168_1.QXP
+2026-07-17T09:36:46.683+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] c.s.s.a.q.e.business.QxpsCallerBusiness  : QXP fetched (literal) for run [339403]
+2026-07-17T09:36:46.684+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] c.s.s.a.q.e.business.QxpsCallerBusiness  : All renders completed for run [339403]
+2026-07-17T09:36:46.701+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] c.s.s.a.q.e.business.EndRunBusiness      : Finalizing run [339403] with status [GENERATED]
+2026-07-17T09:36:47.304+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] c.s.s.a.q.e.i.dao.impl.EndRunDaoImpl     : End_Run executed for run [339403]
+2026-07-17T09:36:47.326+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] c.s.s.a.q.e.i.dao.impl.EndRunDaoImpl     : Inserted 1 errors for run [339403]
+2026-07-17T09:36:47.341+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] c.s.s.a.q.e.infra.dao.impl.AuditDaoImpl  : Audit row inserted for run [339403]
+2026-07-17T09:36:47.341+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] c.s.s.a.q.e.business.EndRunBusiness      : Run [339403] finalized successfully
+2026-07-17T09:36:47.351+05:30  INFO 22016 --- [quark-engine-service] [nio-8080-exec-1] [525a3959d9250fd0375cfe68ee872509-d9d1b1f89aad38aa] c.s.s.a.q.e.s.i.ProcessRunServiceImpl    : Run completed for runId: 339403 with status: GENERATED
