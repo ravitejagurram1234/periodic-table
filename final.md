@@ -1,335 +1,203 @@
-# EOS Quark — QXPSM SOAP Fix: SINGLE SOURCE OF TRUTH
+# EOS Quark — logging hygiene + run 339403 analysis (copy-paste ready)
 
-**Date:** 2026-06-26
-**This document supersedes and consolidates:**
-`EOS_Quark_QxpsmSoap_MultiRef_Fix.md` (obsolete — wrong hypothesis),
-`EOS_Quark_QXPSM_WSDL_Fix.md`, `EOS_Quark_QxpsmSoapClient_Update.md`,
-`EOS_Quark_QXPSM_Correctness_Verification.md`.
-Follow **only this file**.
+**Repo:** `14-07 engine service repo/quark-engine`.
 
----
-
-## A. What was wrong (one paragraph)
-
-The QXPSM SOAP call failed with `namespace mismatch require http://com.quark.qxpsm found
-http://webservice.manager.quark.com`. Root cause: our stub was generated from the wrong
-WSDL (`qxpsmsdk.wsdl`, rpc/encoded, `webservice.manager.quark.com`) — a **stale, never-compiled
-leftover** copied from the .NET source. The **deployed** QXPSM (and the proxy .NET actually
-runs, from `QXPSMWebServiceStubs.dll`) is **Axis2, document/literal, namespace
-`com.quark.qxpsm`, service `RequestService`**. Fix = regenerate the stub from the live WSDL
-and update the client to the new class names. (Also: all three Quark URLs must point at one
-environment.)
-
-This is a **faithful** match to .NET — same request graph, same operation; only the wire
-dialect/class names follow the deployed server, which .NET's real proxy already does.
+## Milestone first
+Run **339403** (Dynamique, gabarit G_168 / template GT_6) completed **`GENERATED` end-to-end**:
+properties ✓, 3 in-params ✓, **24 tasks + 349 templates loaded ✓**, GT_6 uploaded and its **project parsed
+via `getXPressDOM` (the #2 template fix ran) ✓**, SOAP ✓, **PDF rendered ✓**, **`End_Run` executed
+successfully (fresh run — no re-run hazard) ✓**, audit ✓. So the success-finalize (#4) + audit fix are
+validated on a real run.
 
 ---
 
-## B. STATUS — what's done vs pending
+## Part 1 — Logging mistakes & corrections (the ask)
 
-| # | Step | Status |
+**The problem:** on a task-SQL failure the code logged `exception.getMessage()` **and** the throwable, and
+Spring/the driver embed the **entire SQL query** in that message → the log gets flooded with the whole
+statement (twice). You want the **SQL id (task id) + the in-params used**, not the query text.
+
+**Sites found & fixed:**
+
+| File | Was | Now |
 |---|---|---|
-| 1 | Fetch live WSDL → `RequestService.wsdl` (+ `RequestService.full.wsdl` backup) | ✅ done |
-| 2 | Trim WSDL to the SOAP 1.1 binding/port only | ✅ done |
-| 3 | `pom.xml` `wsdlFile` → `RequestService.wsdl` | ✅ done |
-| 4 | Delete old `generated/`, `mvn generate-sources` regenerates | ✅ done (BUILD SUCCESS) |
-| 5 | Update `QxpsmSoapClient.java` (new names, stub timeout, no multi-ref) | ✅ done (verified correct) |
-| 6 | `application.yaml`: `qxps` + `qxpsm` on same host (DEV) | ✅ done |
-| 7 | `application.yaml`: `qxp.thirdparty.url` → same host (DEV) | ⬜ **pending** (§D) |
-| 8 | Add + run `QxpsmProbe` to verify server contract | ⬜ **pending** (§E) |
-| 9 | `mvn clean install` (full compile = whole-engine check) | ⬜ pending (§F) |
-| 10 | Live run of 509636; remove temp Axis DEBUG logging | ⬜ pending (§G) |
+| `DynamicQueryPortImpl:49` | `log.error("… failed: {}", e.getMessage(), e)` → full SQL + stack | in-params `name=value(TYPE)` + the concise `ORA-…` line only; full stack at DEBUG |
+| `DynamiqueTaskProcessStrategy` (catch) | `log.error("… [{}]: {}", id, ex.getMessage(), ex)` → SQL in cause stack | `log.error("Dynamic task [{}] SQL failed: {}", id, ex.getMessage())` + stack at DEBUG |
+| `ProcessTasksServiceImpl:51/90/107` | `log.error("Error … task {}: {}", id, ex.getMessage(), ex)` → SQL/huge stack for SQL tasks | same message, **throwable moved to DEBUG** (applies to every task type) |
+| `ProcessSqlBusiness` (catch) | `throw new RuntimeException("Error executing SQL for task " + debugInfo, ex)` — no root error | rethrows with the concise `ORA-…` cause so the upstream ERROR line is informative, still no SQL |
+| `application.yaml` | leftover `logging.level.org.apache.axis.transport.http: DEBUG` → dumps the full SOAP request/response XML every step | **removed** |
 
-You are at **step 7/8**.
-
----
-
-## C. Files changed (reference)
-
-| File | Change |
-|---|---|
-| `src/main/resources/wsdl/RequestService.wsdl` | NEW — live WSDL, trimmed to SOAP 1.1 |
-| `src/main/resources/wsdl/RequestService.full.wsdl` | NEW — untouched vendor original |
-| `src/main/resources/wsdl/qxpsmsdk.wsdl` | obsolete (no longer referenced) |
-| `pom.xml` | `wsdlFile` → `RequestService.wsdl` |
-| `src/main/java/.../integration/soap/generated/` | regenerated (RequestService, RequestServiceLocator, RequestServicePortType, RequestServiceSoap11BindingStub, + type beans) |
-| `.../infra/interop/qxpsm/QxpsmSoapClient.java` | new locator/port/stub names; stub timeout; multi-ref removed |
-| `src/main/resources/application.yaml` | 3 Quark URLs aligned to one host; (temp) Axis DEBUG logging |
-
----
-
-## D. Step 7 — finish the environment alignment (`application.yaml`)
-
-All three Quark endpoints must be on the **same host**, or the SOAP modify / PDF render
-won't see the pooled document. You've already set `qxps` and `qxpsm` to DEV
-(`srvcldvapd001`). Make the PDF URL match:
-
-```yaml
-qxp:
-  thirdparty:
-    url: http://srvcldvapd001.dns43.socgen:8080/saveas/pdf/   # was srvcldqxpu001 (UAT)
-
-qxps:
-  server:
-    url: "http://srvcldvapd001.dns43.socgen:8080"             # DEV (already set)
-
-qxpsm:
-  soap:
-    endpoint: http://srvcldvapd001.dns43.socgen:8090/qxpsm/services/RequestService  # DEV (already set)
+Result — a failed dynamic task now logs **one readable line**, e.g.:
 ```
+ERROR ... DynamiqueTaskProcessStrategy : Dynamic task [229] SQL failed: SQL execution failed —
+  in-params [P_DATE=12/01/2023 00:00:00(DATE_TIME), P_STRUCT=..(TEXT), P_GAB=168(INT)] -> ORA-01830: ...
+```
+The full SQL + stack is still available by turning that logger to DEBUG.
 
-> Not needed for the probe (the probe only hits `qxpsm`), but required before the full run.
-> Keep the `logging.level.org.apache.axis.transport.http: DEBUG` block for now — it dumps
-> the SOAP envelope during the probe. Remove it in step 10.
-
----
-
-## E. Step 8 — verify the server contract with `QxpsmProbe`
-
-This proves, **before** the live run, that the regenerated stub talks to the server
-correctly — including the one residual risk: **document/literal polymorphism** (the
-`QRequestContext.request` field is the abstract `QRequest` holding a concrete subtype, so
-the client must emit `xsi:type` for the server to resolve it). .NET does this and works;
-the probe confirms our Axis stub does too.
-
-### E.1 — Create this throwaway class (delete after)
-
-**Path:** `src/main/java/com/socgen/sgs/api/quark/engine/integration/soap/generated/QxpsmProbe.java`
-
+### `DynamicQueryPortImpl.java`  *(paste whole file)*
+Path: `src/main/java/com/socgen/sgs/api/quark/engine/infra/dao/impl/DynamicQueryPortImpl.java`
 ```java
-package com.socgen.sgs.api.quark.engine.integration.soap.generated;
+package com.socgen.sgs.api.quark.engine.infra.dao.impl;
 
-/**
- * THROWAWAY connectivity/correctness probe for the regenerated QXPSM stub.
- * Run from IntelliJ (Run 'QxpsmProbe.main()'). Endpoint = program arg 0, or the default below.
- * DELETE this file after verifying.
- */
-public class QxpsmProbe {
-
-    public static void main(String[] args) throws Exception {
-        // Best-effort SOAP wire dump to stdout.
-        System.setProperty("org.apache.commons.logging.Log",
-                "org.apache.commons.logging.impl.SimpleLog");
-        System.setProperty("org.apache.commons.logging.simplelog.showShortLogname", "true");
-        System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.axis.transport.http", "debug");
-        System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.axis.SOAPPart", "debug");
-
-        String endpoint = (args.length > 0) ? args[0]
-                : "http://srvcldvapd001.dns43.socgen:8090/qxpsm/services/RequestService";
-        System.out.println("== QXPSM probe against: " + endpoint);
-
-        RequestServiceLocator locator = new RequestServiceLocator();
-        RequestServicePortType stub =
-                locator.getRequestServiceHttpSoap11Endpoint(new java.net.URL(endpoint));
-        ((org.apache.axis.client.Stub) stub).setTimeout(120000); // 2 min for the probe
-
-        // ---- LEVEL 1: transport + namespace handshake (no document, no polymorphism) ----
-        try {
-            String[] sessions = stub.getOpenSessions();
-            System.out.println("[L1] getOpenSessions OK — sessions=" +
-                    (sessions == null ? 0 : sessions.length));
-            System.out.println("[L1] => endpoint + namespace + document/literal transport are CORRECT.");
-        } catch (Exception e) {
-            System.out.println("[L1] getOpenSessions FAILED: " + e);
-            System.out.println("[L1] => transport/namespace/endpoint problem. Stop and share the fault.");
-        }
-
-        // ---- LEVEL 2: polymorphic request (exercises xsi:type on ctx.request) ----
-        try {
-            QRequestContext ctx = new QRequestContext();
-            ctx.setRequest(new GetServerInfoRequest()); // a QRequest subtype, no fields
-            ctx.setResponseAsURL(false);
-            ctx.setUseCache(false);
-            ctx.setBypassFileInfo(false);
-            ctx.setUserName("");
-            ctx.setUserPassword("");
-            ctx.setRequestTimeout(120000);
-
-            QContentData resp = stub.processRequest(ctx);
-            System.out.println("[L2] processRequest(GetServerInfoRequest) OK — textData="
-                    + (resp == null ? "null" : resp.getTextData()));
-            System.out.println("[L2] => polymorphic request graph (xsi:type) is ACCEPTED. Full chain will work.");
-        } catch (Exception e) {
-            System.out.println("[L2] processRequest result: " + e);
-            System.out.println("[L2] INTERPRET: a Quark/business error (needs a document, server-info "
-                    + "unavailable, etc.) still PROVES deserialization worked. A 'namespace mismatch' or a "
-                    + "type/deserialization fault means polymorphism (xsi:type) needs attention.");
-        }
-    }
-}
-```
-
-### E.2 — Run it
-
-- **IntelliJ:** open `QxpsmProbe.java`, click ▶ next to `main` → **Run 'QxpsmProbe.main()'**.
-  Endpoint via **Run → Edit Configurations → Program arguments**, or edit the default line.
-- **Maven (if `exec` plugin is present):**
-  ```powershell
-  mvn -q compile exec:java "-Dexec.mainClass=com.socgen.sgs.api.quark.engine.integration.soap.generated.QxpsmProbe" "-Dexec.args=http://srvcldvapd001.dns43.socgen:8090/qxpsm/services/RequestService"
-  ```
-
-### E.3 — Read the result
-
-| Outcome | Meaning | Next |
-|---|---|---|
-| **L1 OK** | endpoint + `com.quark.qxpsm` namespace + doc/literal transport correct | proceed |
-| **L1 → `namespace mismatch`** | wrong endpoint/host, or the new stub isn't the one compiled | recheck endpoint + regen |
-| **L2 OK, or fails with a Quark/business error** | polymorphic `xsi:type` graph accepted → real chain will work | **GO** |
-| **L2 → deserialization / "cannot find type" / namespace fault** | doc/literal polymorphism needs a type-mapping fix | paste fault + SOAP XML |
-
-Paste the `[L1]`/`[L2]` output (and the dumped SOAP envelope) before the full run.
-
----
-
-## F. Step 9 — full build (whole-engine dependency check)
-
-```powershell
-mvn clean install
-```
-
-`BUILD SUCCESS` confirms nothing else depended on the old stub names (the modifier-graph
-builders `ModifierLayout`/`ModifierSpread` and `QxpsProjectSerializer` use type beans that
-are unchanged in the new WSDL, so they compile). If there are errors, paste them.
-
----
-
-## G. Step 10 — live run + cleanup
-
-1. Run **runId 509636** (Plaquette, DOCUMENT_COURANT). Expected: addfile → `/xml` → **QXPSM
-   `processRequest` now accepted** → SaveAs → final PDF via QXPS HTTP `/pdf`.
-   (Note: .NET produces the final PDF via the **direct QXPS HTTP `/pdf`** call, not via the
-   SOAP render — confirm the Java engine's PDF step uses the `qxp.thirdparty` path.)
-2. Delete `src/main/java/.../integration/soap/generated/QxpsmProbe.java`.
-3. Remove the temp logging from `application.yaml`:
-   ```yaml
-   logging:
-     level:
-       org.apache.axis.transport.http: DEBUG   # <-- delete this block
-   ```
-
----
-
-## H. Reference — final `QxpsmSoapClient.java` (already applied & verified)
-
-This is the version you have; included here so this doc is self-contained.
-
-```java
-package com.socgen.sgs.api.quark.engine.infra.interop.qxpsm;
-
-import com.socgen.sgs.api.quark.engine.integration.soap.generated.*;
+import com.socgen.sgs.api.quark.engine.domain.InParam;
+import com.socgen.sgs.api.quark.engine.domain.port.DynamicQueryPort;
+import com.socgen.sgs.api.quark.engine.infra.dao.TaskSqlDao;
+import com.socgen.sgs.api.quark.engine.mapper.InParamSqlMapper;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
+import org.springframework.core.NestedExceptionUtils;
+import org.springframework.stereotype.Repository;
 
-import java.net.URL;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
- * SOAP client for communicating with QuarkXPress Server Manager (QXPSM).
- * Uses the Axis 1.x generated stub (regenerated from the deployed server's
- * document/literal WSDL — service RequestService, namespace http://com.quark.qxpsm)
- * to call processRequest / getXPressDOM.
+ * Infrastructure implementation of DynamicQueryPort.
+ * Reuses existing TaskSqlDao for SQL execution and InParamSqlMapper for parameter conversion.
  *
- * <p>Used for UPDATE steps (directCall=false) where text value changes
- * and structural modifications are sent via SOAP.
- *
- * <p>Request chain built inside QRequestContext:
- * RequestParameters → ModifierRequest → SaveAsRequest → QuarkXPressRenderRequest
- * (each linked via the inherited QRequest.request field)
- *
- * Cross-reference: .NET QXPSM_Call.SDKCall() / QXPS_Caller.Execute()
+ * Cross-reference: .NET Proxy_Generic.GetReader() used in Process_Dynamique.Get_Report()
  */
-@Component
+@Repository
+@RequiredArgsConstructor
 @Slf4j
-public class QxpsmSoapClient {
+public class DynamicQueryPortImpl implements DynamicQueryPort {
 
-    private final QxpsmProperties qxpsmProperties;
+    private final TaskSqlDao taskSqlDao;
+    private final InParamSqlMapper inParamSqlMapper;
 
-    public QxpsmSoapClient(QxpsmProperties qxpsmProperties) {
-        this.qxpsmProperties = qxpsmProperties;
-    }
+    @Override
+    public List<Map<String, Object>> executeQuery(String sql, Map<String, InParam> parameters) {
+        if (sql == null || sql.isBlank()) {
+            log.warn("Empty SQL provided to DynamicQueryPort, returning empty result");
+            return Collections.emptyList();
+        }
 
-    public QContentData executeStep(String documentName,
-                                    List<NameValueParam> nameValues,
-                                    Project project,
-                                    String saveAsPath,
-                                    String saveAsName) {
-        log.info("QXPSM SOAP processRequest for document [{}]", documentName);
+        log.debug("DynamicQueryPort executing SQL with {} parameters",
+                parameters != null ? parameters.size() : 0);
 
         try {
-            // Get the Axis-generated stub (regenerated from the live document/literal WSDL).
-            RequestServiceLocator locator = new RequestServiceLocator();
-            RequestServicePortType stub =
-                    locator.getRequestServiceHttpSoap11Endpoint(new URL(qxpsmProperties.getEndpoint()));
+            Map<String, Object> jdbcParams = inParamSqlMapper.toParameterMap(
+                    parameters != null ? parameters : Collections.emptyMap());
 
-            // Long QXPSM modify/render calls on large (100 MB+) docs: set the Axis client socket
-            // timeout from config (ms); 0 = infinite, matching .NET (_sdk_service.Timeout = Infinite).
-            int stubTimeoutMs = qxpsmProperties.getTimeout();
-            ((org.apache.axis.client.Stub) stub).setTimeout(stubTimeoutMs > 0 ? stubTimeoutMs : 0);
+            List<Map<String, Object>> results = taskSqlDao.executeSql(sql, jdbcParams);
 
-            // Build the request chain (last → first, then link)
-            QuarkXPressRenderRequest qxpRender = new QuarkXPressRenderRequest();
-
-            SaveAsRequest saveAs = new SaveAsRequest();
-            saveAs.setNewFilePath(saveAsPath);
-            saveAs.setNewName(saveAsName);
-            saveAs.setReplaceFile("true");
-            saveAs.setSaveToPool("false");
-            saveAs.setRequest(qxpRender);
-
-            QRequest currentHead = saveAs;
-            if (project != null && project.getLayouts() != null && project.getLayouts().length > 0) {
-                ModifierRequest modifier = new ModifierRequest();
-                modifier.setProject(project);
-                modifier.setRequest(saveAs);
-                currentHead = modifier;
-            }
-
-            if (nameValues != null && !nameValues.isEmpty()) {
-                RequestParameters params = new RequestParameters();
-                params.setParams(nameValues.toArray(new NameValueParam[0]));
-                params.setRequest(currentHead);
-                currentHead = params;
-            }
-
-            QRequestContext context = new QRequestContext();
-            context.setDocumentName(documentName);
-            context.setRequest(currentHead);
-            context.setResponseAsURL(false);
-            context.setUseCache(false);
-            context.setBypassFileInfo(false);
-            context.setUserName("");
-            context.setUserPassword("");
-            if (qxpsmProperties.getMaxRetries() > 0) {
-                context.setMaxRetries(qxpsmProperties.getMaxRetries());
-            }
-            int timeout = qxpsmProperties.getTimeout();
-            context.setRequestTimeout(timeout > 0 ? timeout : 3600 * 1000);
-
-            log.debug("QXPSM calling processRequest with chain: {} → ... → QXPRender",
-                    currentHead.getClass().getSimpleName());
-
-            QContentData result = stub.processRequest(context);
-
-            log.info("QXPSM processRequest completed for document [{}]", documentName);
-            return result;
+            log.debug("DynamicQueryPort returned {} rows", results.size());
+            return results;
 
         } catch (Exception e) {
-            log.error("QXPSM SOAP call failed for document [{}]: {}", documentName, e.getMessage(), e);
-            throw new RuntimeException("QXPSM SOAP call failed for document: " + documentName, e);
+            // Do NOT surface the SQL text: the driver/Spring embed the whole query in the exception
+            // message, which floods the logs. Carry the in-params + the concise Oracle error instead;
+            // the full stack (with the SQL) is available only at DEBUG.
+            log.debug("Dynamic SQL failure detail", e);
+            throw new RuntimeException(
+                    "SQL execution failed — in-params [" + describeParams(parameters) + "] -> " + rootMessage(e), e);
         }
     }
 
-    public Project getProject(String documentName) {
-        log.info("QXPSM getXPressDOM for document [{}]", documentName);
-        try {
-            RequestServiceLocator locator = new RequestServiceLocator();
-            RequestServicePortType stub =
-                    locator.getRequestServiceHttpSoap11Endpoint(new URL(qxpsmProperties.getEndpoint()));
-            return stub.getXPressDOM(documentName);
-        } catch (Exception e) {
-            log.error("QXPSM getXPressDOM failed for document [{}]: {}", documentName, e.getMessage(), e);
-            throw new RuntimeException("QXPSM getXPressDOM failed for document: " + documentName, e);
+    /** "name=value(TYPE)" per in-param, so a bad bind is visible without dumping the SQL text. */
+    private static String describeParams(Map<String, InParam> parameters) {
+        if (parameters == null || parameters.isEmpty()) {
+            return "";
         }
+        return parameters.values().stream()
+                .map(p -> p.getName() + "=" + p.getStringValue() + "(" + p.getType() + ")")
+                .collect(Collectors.joining(", "));
+    }
+
+    /** Innermost cause message (the ORA-xxxxx line), stripped of the SQL text. */
+    private static String rootMessage(Throwable e) {
+        Throwable root = NestedExceptionUtils.getMostSpecificCause(e);
+        String msg = root.getMessage();
+        return msg != null ? msg.strip() : root.getClass().getSimpleName();
     }
 }
 ```
+
+### `DynamiqueTaskProcessStrategy.java`  *(snippet — Stage 1 catch)*
+```java
+        } catch (Exception ex) {
+
+            log.error("Dynamic task [{}] SQL failed: {}", task.getId(), ex.getMessage());
+
+            log.debug("Dynamic task [{}] SQL failure detail", task.getId(), ex);
+
+            return;
+
+        }
+```
+
+### `ProcessTasksServiceImpl.java`  *(3 snippets)*
+```java
+                // prepare (was: ..., ex.getMessage(), ex)
+                log.error("Error preparing task {}: {}", task.getId(), ex.getMessage());
+                log.debug("Task {} preparation failure detail", task.getId(), ex);
+```
+```java
+                // process
+                log.error("Error processing task {}: {}", task.getId(), ex.getMessage());
+                log.debug("Task {} processing failure detail", task.getId(), ex);
+```
+```java
+                // post-process
+                log.error("Error post-processing task {}: {}", task.getId(), ex.getMessage());
+                log.debug("Task {} post-processing failure detail", task.getId(), ex);
+```
+
+### `ProcessSqlBusiness.java`  *(snippet — add import + enrich rethrow)*
+```java
+import org.springframework.core.NestedExceptionUtils;   // add with the other imports
+```
+```java
+        } catch (Exception ex) {
+            // Carry the concise Oracle error (not the full SQL, which the driver embeds in the message)
+            // so the upstream task-error log stays readable.
+            throw new RuntimeException("SQL task " + task.getDebugInfo() + " failed: "
+                    + NestedExceptionUtils.getMostSpecificCause(ex).getMessage(), ex);
+        }
+```
+
+### `application.yaml`  *(remove the leftover SOAP wire-dump)*
+Delete this block (it dumps the full SOAP request/response XML on every step):
+```yaml
+logging:
+  level:
+    # TEMP-DEBUG-RT: dump the raw SOAP request + response/fault to confirm multi-ref. REMOVE after diagnosis.
+    org.apache.axis.transport.http: DEBUG
+```
+
+---
+
+## Part 2 — The one real functional error: `ORA-01830` on task 229
+
+Buried under the SQL spam, task **229**'s Dynamique SQL failed with **`ORA-01830: date format picture ends
+before converting entire input string`**, so it produced **no blocs** ("has no blocs after processing") →
+that dynamic table is **empty** in the output (the run still finalized `GENERATED` with 1 recorded error).
+
+This is the **date/NLS class** (the query has the hardcoded `rf.FND_END_VALIDITY = '31/12/2199'` literal and
+several `to_date(?)` binds). Two possible causes — the improved logging above will tell us which on the next
+run:
+1. **NLS not applied in the running build.** This repo already has
+   `spring.datasource.hikari.connection-init-sql: ALTER SESSION SET NLS_DATE_FORMAT='DD/MM/YYYY'` and the
+   `oracle.sql.DATE` bind. **Confirm both are present in the build you actually run** (your Windows repo).
+   If the build is behind, apply `EOS_Quark_DynamicSQL_Date_NLS_Fix_14-07.md`.
+2. **A date in-param typed `DATE_TIME`/`TEXT`** (not `DATE`) → bound as a raw string *with time*
+   (`to_date('12/01/2023 00:00:00')`) which `ORA-01830`s even under `DD/MM/YYYY`. The new log line prints
+   each param's `TYPE`, so a `(DATE_TIME)`/`(TEXT)` date param would be the smoking gun.
+
+**Next step:** rebuild with these logging changes and re-run 339403 — the single ERROR line will show the
+exact in-param (name, value, type) that broke `to_date`, and we fix precisely from there.
+
+---
+
+## Part 3 — Harmless noise (no action needed)
+- `Zipkin … Connection refused :9411` — no local trace collector.
+- `driver … not found, trying direct instantiation` — Hikari cosmetic; the Oracle connection succeeded.
+- `Attachment support is disabled (javax.activation/javax.mail)` — fine (`responseAsURL=false` → inline base64).
+- `Standard Commons Logging discovery … remove commons-logging.jar` — startup notice only.
+
+## Files changed
+- `infra/dao/impl/DynamicQueryPortImpl.java`, `service/task/impl/DynamiqueTaskProcessStrategy.java`,
+  `service/impl/ProcessTasksServiceImpl.java`, `business/ProcessSqlBusiness.java`,
+  `src/main/resources/application.yaml` (removed TEMP axis DEBUG).
