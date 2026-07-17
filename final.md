@@ -1,203 +1,232 @@
-# EOS Quark — logging hygiene + run 339403 analysis (copy-paste ready)
+# EOS Quark — date-bind blocker + document-store logging + tracing-spam silence (copy-paste ready)
 
 **Repo:** `14-07 engine service repo/quark-engine`.
+Three changes bundled: (1) the `ORA-01858` blocker fix (bind DATE as an Oracle `DATE`), (2) log where the
+generated document is stored, (3) silence the Zipkin "Failed to export spans" noise.
 
-## Milestone first
-Run **339403** (Dynamique, gabarit G_168 / template GT_6) completed **`GENERATED` end-to-end**:
-properties ✓, 3 in-params ✓, **24 tasks + 349 templates loaded ✓**, GT_6 uploaded and its **project parsed
-via `getXPressDOM` (the #2 template fix ran) ✓**, SOAP ✓, **PDF rendered ✓**, **`End_Run` executed
-successfully (fresh run — no re-run hazard) ✓**, audit ✓. So the success-finalize (#4) + audit fix are
-validated on a real run.
+## Context (why)
+Run 339403 / task 229 failed with `ORA-01858`. Running the same SQL manually with the 3 in-params returned
+**21 rows**, proving the SQL + params are correct — so it's a **Java bind-type bug on the date**:
+the SQL does `to_date(:p_date_echeance)`, and the param was bound as a `java.sql.Timestamp`. Oracle evaluates
+`to_date(TIMESTAMP)` by rendering the timestamp via `NLS_TIMESTAMP_FORMAT` (default `DD-MON-RR …` →
+`"29-JUN-18 …"`) then parsing with `NLS_DATE_FORMAT='DD/MM/YYYY'` → hits the letter `J` in `JUN` →
+`ORA-01858`. Binding a real Oracle `DATE` makes `to_date(DATE)` round-trip through `NLS_DATE_FORMAT` and work.
 
 ---
 
-## Part 1 — Logging mistakes & corrections (the ask)
+## 1. `InParamSqlMapper.java` — bind DATE as Oracle `DATE` *(the blocker — paste whole file)*
+Path: `src/main/java/com/socgen/sgs/api/quark/engine/mapper/InParamSqlMapper.java`
+Key line is the DATE case: `new oracle.sql.DATE(ts)` (your build likely still returns the raw `ts` Timestamp).
 
-**The problem:** on a task-SQL failure the code logged `exception.getMessage()` **and** the throwable, and
-Spring/the driver embed the **entire SQL query** in that message → the log gets flooded with the whole
-statement (twice). You want the **SQL id (task id) + the in-params used**, not the query text.
-
-**Sites found & fixed:**
-
-| File | Was | Now |
-|---|---|---|
-| `DynamicQueryPortImpl:49` | `log.error("… failed: {}", e.getMessage(), e)` → full SQL + stack | in-params `name=value(TYPE)` + the concise `ORA-…` line only; full stack at DEBUG |
-| `DynamiqueTaskProcessStrategy` (catch) | `log.error("… [{}]: {}", id, ex.getMessage(), ex)` → SQL in cause stack | `log.error("Dynamic task [{}] SQL failed: {}", id, ex.getMessage())` + stack at DEBUG |
-| `ProcessTasksServiceImpl:51/90/107` | `log.error("Error … task {}: {}", id, ex.getMessage(), ex)` → SQL/huge stack for SQL tasks | same message, **throwable moved to DEBUG** (applies to every task type) |
-| `ProcessSqlBusiness` (catch) | `throw new RuntimeException("Error executing SQL for task " + debugInfo, ex)` — no root error | rethrows with the concise `ORA-…` cause so the upstream ERROR line is informative, still no SQL |
-| `application.yaml` | leftover `logging.level.org.apache.axis.transport.http: DEBUG` → dumps the full SOAP request/response XML every step | **removed** |
-
-Result — a failed dynamic task now logs **one readable line**, e.g.:
-```
-ERROR ... DynamiqueTaskProcessStrategy : Dynamic task [229] SQL failed: SQL execution failed —
-  in-params [P_DATE=12/01/2023 00:00:00(DATE_TIME), P_STRUCT=..(TEXT), P_GAB=168(INT)] -> ORA-01830: ...
-```
-The full SQL + stack is still available by turning that logger to DEBUG.
-
-### `DynamicQueryPortImpl.java`  *(paste whole file)*
-Path: `src/main/java/com/socgen/sgs/api/quark/engine/infra/dao/impl/DynamicQueryPortImpl.java`
 ```java
-package com.socgen.sgs.api.quark.engine.infra.dao.impl;
+package com.socgen.sgs.api.quark.engine.mapper;
 
 import com.socgen.sgs.api.quark.engine.domain.InParam;
-import com.socgen.sgs.api.quark.engine.domain.port.DynamicQueryPort;
-import com.socgen.sgs.api.quark.engine.infra.dao.TaskSqlDao;
-import com.socgen.sgs.api.quark.engine.mapper.InParamSqlMapper;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.NestedExceptionUtils;
-import org.springframework.stereotype.Repository;
+import com.socgen.sgs.api.quark.engine.enums.DataTypeEnum;
+import org.springframework.jdbc.core.SqlParameterValue;
+import org.springframework.stereotype.Component;
 
-import java.util.Collections;
-import java.util.List;
+import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.sql.Types;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
- * Infrastructure implementation of DynamicQueryPort.
- * Reuses existing TaskSqlDao for SQL execution and InParamSqlMapper for parameter conversion.
+ * Maps run InParams to a flat parameter map for the dynamic-SQL named binds.
  *
- * Cross-reference: .NET Proxy_Generic.GetReader() used in Process_Dynamique.Get_Report()
+ * <p>Binds the TYPED value for each param, mirroring .NET
+ * {@code Data_Type_Helper.InputToTypedValue} + {@code ConversionInvariante} (InParam.cs:54 sets
+ * {@code _value = InputToTypedValue(_string_value, _type)}, InParams.cs:69 binds {@code inParam.Value}):
+ * <ul>
+ *   <li>INT      → {@link Integer} (Int32 truncation); unset/unparseable → typed SQL NULL</li>
+ *   <li>DECIMAL  → {@link BigDecimal}; unset/unparseable → typed SQL NULL</li>
+ *   <li>DATE     → an Oracle {@code DATE} ({@link oracle.sql.DATE}, time-preserving) so the gabarit SQL's
+ *       {@code to_date(?)} round-trips under any session date format; unset/unparseable → typed SQL NULL</li>
+ *   <li>An unset value binds as SQL NULL (not the MIN_VALUE placeholder), matching how the legacy
+ *       Oracle parameter layer converts an unset sentinel to a null bind.</li>
+ *   <li>DATE_TIME and every other type → the RAW STRING — .NET's switch has no case for DateTime(5)
+ *       (nor Text/Currency/Pourcentage), so it falls to {@code default: return value}.</li>
+ * </ul>
+ * Findings #21, #49, #50, #51.
  */
-@Repository
-@RequiredArgsConstructor
-@Slf4j
-public class DynamicQueryPortImpl implements DynamicQueryPort {
+@Component
+public class InParamSqlMapper {
 
-    private final TaskSqlDao taskSqlDao;
-    private final InParamSqlMapper inParamSqlMapper;
+    /** Format the date value arrives in from Oracle Get_In_Params (M/d/yyyy HH:mm:ss). */
+    private static final DateTimeFormatter INPUT_FORMAT = DateTimeFormatter.ofPattern("M/d/yyyy HH:mm:ss");
 
-    @Override
-    public List<Map<String, Object>> executeQuery(String sql, Map<String, InParam> parameters) {
-        if (sql == null || sql.isBlank()) {
-            log.warn("Empty SQL provided to DynamicQueryPort, returning empty result");
-            return Collections.emptyList();
+    /** .NET {@code decimal.MinValue} — the sentinel ConversionInvariante.ToDecimal returns when unset/unparseable. */
+    private static final BigDecimal DECIMAL_MIN_VALUE = new BigDecimal("-79228162514264337593543950335");
+
+    /** .NET {@code DateTime.MinValue} (0001-01-01 00:00:00) — the sentinel ToDateTime returns when unset/unparseable. */
+    private static final Timestamp DATETIME_MIN_VALUE = Timestamp.valueOf(LocalDateTime.of(1, 1, 1, 0, 0, 0));
+
+    public Map<String, Object> toParameterMap(Map<String, InParam> inParams) {
+        Map<String, Object> params = new LinkedHashMap<>();
+        for (Map.Entry<String, InParam> entry : inParams.entrySet()) {
+            params.put(entry.getKey(), toTypedValue(entry.getValue()));
         }
+        return params;
+    }
 
-        log.debug("DynamicQueryPort executing SQL with {} parameters",
-                parameters != null ? parameters.size() : 0);
+    private Object toTypedValue(InParam inParam) {
+        String value = inParam.getStringValue();
+        DataTypeEnum type = inParam.getType();
+        if (type == null) {
+            return value;
+        }
+        switch (type) {
+            case INT: {
+                // An unset / unparseable numeric input is bound as a typed SQL NULL, not as the
+                // MIN_VALUE placeholder number. Binding the placeholder would force a numeric
+                // predicate over a textual column through TO_NUMBER against that number, which
+                // raises ORA-01722 on the first non-numeric column value.
+                Integer i = toInt(value);
+                return i == Integer.MIN_VALUE ? new SqlParameterValue(Types.NUMERIC, null) : i;
+            }
+            case DECIMAL: {
+                // compareTo (not equals) so an unset value is caught regardless of its scale.
+                BigDecimal d = toDecimal(value);
+                return DECIMAL_MIN_VALUE.compareTo(d) == 0 ? new SqlParameterValue(Types.NUMERIC, null) : d;
+            }
+            case DATE: {
+                // A valid date binds as an Oracle DATE (time-preserving) so the gabarit SQL's to_date(?)
+                // round-trips regardless of the session date format; an unset value binds as SQL NULL.
+                Timestamp ts = toSqlTimestamp(value);
+                return DATETIME_MIN_VALUE.equals(ts)
+                        ? new SqlParameterValue(Types.DATE, null)
+                        : new oracle.sql.DATE(ts);
+            }
+            default:
+                // DATE_TIME (5), TEXT, CURRENCY, POURCENTAGE, UNSPECIFIED, CUSTOM → raw string
+                // (.NET Data_Type_Helper.InputToTypedValue `default: return value`).
+                return value;
+        }
+    }
 
+    /** .NET ConversionInvariante.ToInt: Decimal.TryParse(value w/o spaces, NumberStyles.Any) cast to Int32; else int.MinValue. */
+    private Integer toInt(String value) {
+        BigDecimal d = parseNumber(value);
+        return d == null ? Integer.MIN_VALUE : d.intValue(); // intValue() truncates toward zero, like (int)decimal
+    }
+
+    /** .NET ConversionInvariante.ToDecimal: Decimal.TryParse(value w/o spaces, NumberStyles.Any); else decimal.MinValue. */
+    private BigDecimal toDecimal(String value) {
+        BigDecimal d = parseNumber(value);
+        return d == null ? DECIMAL_MIN_VALUE : d;
+    }
+
+    /** Returns the parsed number, or null to signal the caller to bind its sentinel. */
+    private BigDecimal parseNumber(String value) {
+        if (value == null) {
+            return null;
+        }
+        String v = value.replace(" ", ""); // .NET ToInt/ToDecimal do value.Replace(" ", "")
+        if (v.isEmpty()) {
+            return null;
+        }
         try {
-            Map<String, Object> jdbcParams = inParamSqlMapper.toParameterMap(
-                    parameters != null ? parameters : Collections.emptyMap());
+            return new BigDecimal(v);
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
 
-            List<Map<String, Object>> results = taskSqlDao.executeSql(sql, jdbcParams);
-
-            log.debug("DynamicQueryPort returned {} rows", results.size());
-            return results;
-
+    /**
+     * Converts a DATE param string to a time-preserving {@link Timestamp}. Parity: .NET
+     * ConversionInvariante.ToDateTime returns the parsed DateTime, or DateTime.MinValue when
+     * unset/unparseable (it does NOT throw).
+     */
+    private Timestamp toSqlTimestamp(String value) {
+        if (value == null || value.trim().isEmpty()) {
+            return DATETIME_MIN_VALUE;
+        }
+        String v = value.trim();
+        try {
+            return Timestamp.valueOf(LocalDateTime.parse(v, INPUT_FORMAT));
         } catch (Exception e) {
-            // Do NOT surface the SQL text: the driver/Spring embed the whole query in the exception
-            // message, which floods the logs. Carry the in-params + the concise Oracle error instead;
-            // the full stack (with the SQL) is available only at DEBUG.
-            log.debug("Dynamic SQL failure detail", e);
-            throw new RuntimeException(
-                    "SQL execution failed — in-params [" + describeParams(parameters) + "] -> " + rootMessage(e), e);
+            try {
+                return Timestamp.valueOf(LocalDate.parse(v).atStartOfDay());
+            } catch (Exception e2) {
+                return DATETIME_MIN_VALUE;
+            }
         }
-    }
-
-    /** "name=value(TYPE)" per in-param, so a bad bind is visible without dumping the SQL text. */
-    private static String describeParams(Map<String, InParam> parameters) {
-        if (parameters == null || parameters.isEmpty()) {
-            return "";
-        }
-        return parameters.values().stream()
-                .map(p -> p.getName() + "=" + p.getStringValue() + "(" + p.getType() + ")")
-                .collect(Collectors.joining(", "));
-    }
-
-    /** Innermost cause message (the ORA-xxxxx line), stripped of the SQL text. */
-    private static String rootMessage(Throwable e) {
-        Throwable root = NestedExceptionUtils.getMostSpecificCause(e);
-        String msg = root.getMessage();
-        return msg != null ? msg.strip() : root.getClass().getSimpleName();
     }
 }
 ```
 
-### `DynamiqueTaskProcessStrategy.java`  *(snippet — Stage 1 catch)*
+---
+
+## 2. `EndRunBusiness.java` — log where the generated document is stored *(snippet)*
+Path: `src/main/java/com/socgen/sgs/api/quark/engine/business/EndRunBusiness.java`
+Replace the `insertGeneratedDocument(...)` method with this, and add the `documentKind(...)` helper next to it:
+
 ```java
-        } catch (Exception ex) {
-
-            log.error("Dynamic task [{}] SQL failed: {}", task.getId(), ex.getMessage());
-
-            log.debug("Dynamic task [{}] SQL failure detail", task.getId(), ex);
-
-            return;
-
+    private int insertGeneratedDocument(Run run, DocumentDomain document, int idSousCategorie) {
+        String kind = documentKind(idSousCategorie);
+        if (document == null || document.getData() == null) {
+            log.info("No {} generated for run [{}] — nothing stored in QXP_DOCUMENT", kind, run.getId());
+            return Integer.MIN_VALUE;
         }
-```
+        int idDocument = insertDocumentDao.insertDocument(
+                document, idSousCategorie,
+                run.getRunProperties().getIdFndCode(),
+                run.getRunProperties().getIdUnitCode(),
+                run.getRunProperties().getDateEcheance(),
+                run.getId());
+        log.info("Stored {} document [id={}, {} bytes] in QXP_DOCUMENT for run [{}] (pool file: {})",
+                kind, idDocument, document.getData().length, run.getId(), document.getFilePoolPath());
+        return idDocument;
+    }
 
-### `ProcessTasksServiceImpl.java`  *(3 snippets)*
-```java
-                // prepare (was: ..., ex.getMessage(), ex)
-                log.error("Error preparing task {}: {}", task.getId(), ex.getMessage());
-                log.debug("Task {} preparation failure detail", task.getId(), ex);
-```
-```java
-                // process
-                log.error("Error processing task {}: {}", task.getId(), ex.getMessage());
-                log.debug("Task {} processing failure detail", task.getId(), ex);
-```
-```java
-                // post-process
-                log.error("Error post-processing task {}: {}", task.getId(), ex.getMessage());
-                log.debug("Task {} post-processing failure detail", task.getId(), ex);
-```
-
-### `ProcessSqlBusiness.java`  *(snippet — add import + enrich rethrow)*
-```java
-import org.springframework.core.NestedExceptionUtils;   // add with the other imports
-```
-```java
-        } catch (Exception ex) {
-            // Carry the concise Oracle error (not the full SQL, which the driver embeds in the message)
-            // so the upstream task-error log stays readable.
-            throw new RuntimeException("SQL task " + task.getDebugInfo() + " failed: "
-                    + NestedExceptionUtils.getMostSpecificCause(ex).getMessage(), ex);
+    private static String documentKind(int idSousCategorie) {
+        switch (idSousCategorie) {
+            case ID_SOUS_CATEGORIE_QXP: return "QXP";
+            case ID_SOUS_CATEGORIE_PDF: return "PDF";
+            case ID_SOUS_CATEGORIE_DOC: return "Word";
+            default: return "document(cat=" + idSousCategorie + ")";
         }
+    }
 ```
 
-### `application.yaml`  *(remove the leftover SOAP wire-dump)*
-Delete this block (it dumps the full SOAP request/response XML on every step):
+You'll then see, at End_Run, e.g.:
+`Stored PDF document [id=987654, 412300 bytes] in QXP_DOCUMENT for run [339403] (pool file: R_339403/G_168_1.QXP)`
+
+> Where things land: the QXP is SaveAs'd to `D:\Documents\R_<runId>\<name>_1.QXP` **on the Quark host**
+> (`srvcldvapd001`); the final PDF + QXP bytes are inserted into the **`QXP_DOCUMENT`** table (the persistent
+> repository). Both are on the server side, not your laptop.
+
+---
+
+## 3. `application-local.yaml` — silence the "Failed to export spans" spam *(local dev only)*
+Path: `src/main/config/local/application-local.yaml`
+The Zipkin/OpenTelemetry exporter tries to POST traces to a local collector (`localhost:9411`) that isn't
+running, and dumps a huge reactor stack each time. It's harmless. Add:
+
 ```yaml
-logging:
-  level:
-    # TEMP-DEBUG-RT: dump the raw SOAP request + response/fault to confirm multi-ref. REMOVE after diagnosis.
-    org.apache.axis.transport.http: DEBUG
+management:
+  tracing:
+    sampling:
+      probability: 0.0   # no spans sampled -> nothing exported -> no localhost:9411 connection spam
 ```
+(Alternative, to only mute the log instead of disabling tracing: `logging.level.io.opentelemetry.exporter.zipkin: "off"`.)
 
 ---
 
-## Part 2 — The one real functional error: `ORA-01830` on task 229
-
-Buried under the SQL spam, task **229**'s Dynamique SQL failed with **`ORA-01830: date format picture ends
-before converting entire input string`**, so it produced **no blocs** ("has no blocs after processing") →
-that dynamic table is **empty** in the output (the run still finalized `GENERATED` with 1 recorded error).
-
-This is the **date/NLS class** (the query has the hardcoded `rf.FND_END_VALIDITY = '31/12/2199'` literal and
-several `to_date(?)` binds). Two possible causes — the improved logging above will tell us which on the next
-run:
-1. **NLS not applied in the running build.** This repo already has
-   `spring.datasource.hikari.connection-init-sql: ALTER SESSION SET NLS_DATE_FORMAT='DD/MM/YYYY'` and the
-   `oracle.sql.DATE` bind. **Confirm both are present in the build you actually run** (your Windows repo).
-   If the build is behind, apply `EOS_Quark_DynamicSQL_Date_NLS_Fix_14-07.md`.
-2. **A date in-param typed `DATE_TIME`/`TEXT`** (not `DATE`) → bound as a raw string *with time*
-   (`to_date('12/01/2023 00:00:00')`) which `ORA-01830`s even under `DD/MM/YYYY`. The new log line prints
-   each param's `TYPE`, so a `(DATE_TIME)`/`(TEXT)` date param would be the smoking gun.
-
-**Next step:** rebuild with these logging changes and re-run 339403 — the single ERROR line will show the
-exact in-param (name, value, type) that broke `to_date`, and we fix precisely from there.
-
----
-
-## Part 3 — Harmless noise (no action needed)
-- `Zipkin … Connection refused :9411` — no local trace collector.
-- `driver … not found, trying direct instantiation` — Hikari cosmetic; the Oracle connection succeeded.
-- `Attachment support is disabled (javax.activation/javax.mail)` — fine (`responseAsURL=false` → inline base64).
-- `Standard Commons Logging discovery … remove commons-logging.jar` — startup notice only.
+## Apply & verify
+1. Fix §1 (`InParamSqlMapper` DATE → `oracle.sql.DATE`) — the blocker.
+2. Apply §2 (`EndRunBusiness` doc logging). *(Already applied in the 14-07 copy.)*
+3. Add §3 (local tracing off).
+4. `mvn clean install`, re-run 339403. Expect:
+   - `Dynamic task [229] (run [339403]) SQL fetched 21 rows`
+   - `Stored QXP document [...]` and `Stored PDF document [...]` at End_Run
+   - no more "Failed to export spans" stack traces.
 
 ## Files changed
-- `infra/dao/impl/DynamicQueryPortImpl.java`, `service/task/impl/DynamiqueTaskProcessStrategy.java`,
-  `service/impl/ProcessTasksServiceImpl.java`, `business/ProcessSqlBusiness.java`,
-  `src/main/resources/application.yaml` (removed TEMP axis DEBUG).
+- `mapper/InParamSqlMapper.java` (§1 — DATE → `oracle.sql.DATE`)
+- `business/EndRunBusiness.java` (§2 — document-store logging)
+- `src/main/config/local/application-local.yaml` (§3 — tracing sampling 0)
