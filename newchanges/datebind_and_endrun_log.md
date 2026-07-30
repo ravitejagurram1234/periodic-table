@@ -1,49 +1,86 @@
-# EOS Quark — date-bind blocker + document-store logging + tracing-spam silence (changes only)
+# EOS Quark — production-verified date fix + document logging + tracing-spam silence (changes only)
 
 **Repo:** `14-07 engine service repo/quark-engine`.
-Only the diffs are shown below, so you can skip any you already applied.
+Only the diffs are shown so you can skip anything already applied. §1 is verified against .NET.
 
-## Context (why)
-Run 339403 / task 229 failed with `ORA-01858`. The same SQL run manually with the 3 in-params returned
-**21 rows**, so the SQL is fine — it's a **Java bind-type bug on the date**: the SQL does
-`to_date(:p_date_echeance)` and the date was bound as a `java.sql.Timestamp`. Oracle renders that timestamp
-via `NLS_TIMESTAMP_FORMAT` (`"29-JUN-18 …"`) then parses with `DD/MM/YYYY` → chokes on `J` in `JUN` →
-`ORA-01858`. Binding a real Oracle `DATE` makes `to_date(DATE)` round-trip and work.
+## Context (verified vs .NET)
+Run 339403 / task 229 failed with `ORA-01858`; the same SQL run manually with the 3 in-params returned
+**21 rows**, so the SQL is correct — it was a **Java date bind/parse bug**. Verified how .NET does it
+(`ConversionInvariante.ToDateTime` + `OracleParameter.GetParameter(DateTime)`):
+
+| Aspect | .NET | Java must do |
+|---|---|---|
+| Parse | `DateTime.TryParse(value, **InvariantCulture**, None)` — **month-first**, lenient, accepts **date-only AND date+time**, keeps time | month-first, optional time |
+| Empty / bad input | → `DateTime.MinValue` (no throw) | → sentinel → SQL NULL |
+| Bind | `OracleDbType.**Date**` (Oracle DATE, not Timestamp); `MinValue → DBNull` | `oracle.sql.DATE`; unset → SQL NULL |
+
+The **bind** (`oracle.sql.DATE`) already matched. The **parse** was too strict (`"M/d/yyyy HH:mm:ss"` required
+a time) — a **date-only** value silently became NULL where .NET parses it. §1 fixes the parse to match .NET.
 
 ---
 
-## 1. `InParamSqlMapper.java` — bind DATE as Oracle `DATE` *(THE blocker)*
+## 1. `InParamSqlMapper.java` — the date fix *(4 small edits)*
 Path: `src/main/java/com/socgen/sgs/api/quark/engine/mapper/InParamSqlMapper.java`
-In `toTypedValue(...)`, the **`DATE` case** must return `new oracle.sql.DATE(ts)` for a valid date — not the
-raw `Timestamp`. The only essential change is `: ts` → `: new oracle.sql.DATE(ts)`.
 
-**BEFORE** (your build likely has one of these — both bind a `Timestamp`):
+**1a. Imports** — add these three (next to the existing `java.time.*` imports):
 ```java
-            case DATE:
-                return toSqlTimestamp(value);
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.temporal.ChronoField;
+import java.util.Locale;
 ```
+
+**1b. `INPUT_FORMAT`** — replace the strict formatter with a lenient, month-first, optional-time one:
 ```java
-            // or the sentinel-null variant:
-            case DATE: {
-                Timestamp ts = toSqlTimestamp(value);
-                return DATETIME_MIN_VALUE.equals(ts) ? new SqlParameterValue(Types.DATE, null) : ts;
+// BEFORE:
+private static final DateTimeFormatter INPUT_FORMAT = DateTimeFormatter.ofPattern("M/d/yyyy HH:mm:ss");
+
+// AFTER (mirrors .NET DateTime.TryParse(value, InvariantCulture, None)):
+private static final DateTimeFormatter INPUT_FORMAT = new DateTimeFormatterBuilder()
+        .parseCaseInsensitive()
+        .appendPattern("M/d/uuuu")
+        .optionalStart().appendLiteral(' ').appendPattern("H:m:s").optionalEnd()
+        .parseDefaulting(ChronoField.HOUR_OF_DAY, 0)
+        .parseDefaulting(ChronoField.MINUTE_OF_HOUR, 0)
+        .parseDefaulting(ChronoField.SECOND_OF_MINUTE, 0)
+        .toFormatter(Locale.ROOT);
+```
+
+**1c. `toSqlTimestamp(...)`** — replace with the lenient version (adds a date-only path + ISO fallbacks):
+```java
+    private Timestamp toSqlTimestamp(String value) {
+        if (value == null || value.trim().isEmpty()) {
+            return DATETIME_MIN_VALUE;
+        }
+        String v = value.trim();
+        try {
+            return Timestamp.valueOf(LocalDateTime.parse(v, INPUT_FORMAT)); // month-first, date-only or date+time
+        } catch (Exception ignored) {
+            try {
+                return Timestamp.valueOf(LocalDateTime.parse(v));           // ISO yyyy-MM-ddTHH:mm:ss
+            } catch (Exception ignored2) {
+                try {
+                    return Timestamp.valueOf(LocalDate.parse(v).atStartOfDay()); // ISO yyyy-MM-dd
+                } catch (Exception ignored3) {
+                    return DATETIME_MIN_VALUE;
+                }
             }
+        }
+    }
 ```
 
-**AFTER** (bind Oracle `DATE`):
+**1d. DATE bind (the `to_date` blocker)** — in `toTypedValue(...)`, the `DATE` case must return
+`new oracle.sql.DATE(ts)` (Oracle DATE), **not** the raw `Timestamp`. Confirm your build has the `oracle.sql.DATE` line:
 ```java
             case DATE: {
-                // A valid date binds as an Oracle DATE (time-preserving) so the gabarit SQL's to_date(?)
-                // round-trips regardless of the session date format; an unset value binds as SQL NULL.
                 Timestamp ts = toSqlTimestamp(value);
                 return DATETIME_MIN_VALUE.equals(ts)
                         ? new SqlParameterValue(Types.DATE, null)
-                        : new oracle.sql.DATE(ts);
+                        : new oracle.sql.DATE(ts);   // ← Oracle DATE (matches .NET OracleDbType.Date)
             }
 ```
-No new import needed (`oracle.sql.DATE` is fully qualified). `Types` / `SqlParameterValue` are already
-imported if you have the sentinel-null variant; if not, add
-`import org.springframework.jdbc.core.SqlParameterValue;` and `import java.sql.Types;`.
+
+*(Handled by 1a–1d, now covers: `"06/29/2018 00:00:00"`, date-only `"06/29/2018"`, single-digit `"6/9/2018 9:5:3"`,
+ISO `"2018-06-29"`; empty/garbage → SQL NULL. Month-first, matching .NET Invariant.)*
 
 ---
 
@@ -64,7 +101,6 @@ Path: `src/main/java/com/socgen/sgs/api/quark/engine/business/EndRunBusiness.jav
                 run.getId());
     }
 ```
-
 **AFTER** (add the two log lines + the `documentKind` helper):
 ```java
     private int insertGeneratedDocument(Run run, DocumentDomain document, int idSousCategorie) {
@@ -93,28 +129,33 @@ Path: `src/main/java/com/socgen/sgs/api/quark/engine/business/EndRunBusiness.jav
         }
     }
 ```
-Gives, at End_Run: `Stored PDF document [id=987654, 412300 bytes] in QXP_DOCUMENT for run [339403] (pool file: R_339403/G_168_1.QXP)`.
 
 ---
 
 ## 3. `application-local.yaml` — silence "Failed to export spans" *(local only, additive)*
-Path: `src/main/config/local/application-local.yaml`
-Add this block (nothing to replace):
+Path: `src/main/config/local/application-local.yaml` — add (nothing to replace):
 ```yaml
 management:
   tracing:
     sampling:
       probability: 0.0   # no spans sampled -> nothing exported -> no localhost:9411 stack-trace spam
 ```
-(Alternative that only mutes the log: `logging.level.io.opentelemetry.exporter.zipkin: "off"`.)
 
 ---
 
 ## Verify
-`mvn clean install`, re-run 339403 → expect `Dynamic task [229] (run [339403]) SQL fetched 21 rows`,
-`Stored QXP/PDF document …` at End_Run, and no more "Failed to export spans" traces.
+`mvn clean install` (the added `InParamSqlMapperTest.dateParseMatchesDotNet` covers date-only / single-digit /
+ISO / month-first / unparseable). Re-run 339403 → expect `Dynamic task [229] (run [339403]) SQL fetched
+21 rows`, the `Stored … document …` lines, and no span stack-traces.
+
+## One thing to confirm with real data
+The parser handles the observed/realistic formats (4-digit year, `/` separator, 24-h time, with or without
+time). .NET's `TryParse(Invariant)` is even looser (2-digit years, `AM/PM`, other separators). If any date
+`valeur` in your DB uses those, send me a few samples (`SELECT valeur FROM qxp_asso_suivi_parametres WHERE …`
+for date params across report types) and I'll widen the parser to match exactly.
 
 ## Files touched
-- `mapper/InParamSqlMapper.java` (§1 — DATE → `oracle.sql.DATE`) — **the fix that unblocks the data**
+- `mapper/InParamSqlMapper.java` (§1 — parse + `oracle.sql.DATE` bind) — **the fix**
+- `mapper/InParamSqlMapperTest.java` (new date-parse cases)
 - `business/EndRunBusiness.java` (§2 — doc-store logging)
 - `src/main/config/local/application-local.yaml` (§3 — tracing off)
