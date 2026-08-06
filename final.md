@@ -1,232 +1,184 @@
-# EOS Quark — date-bind blocker + document-store logging + tracing-spam silence (copy-paste ready)
+# EOS Quark — Build Warnings Fix #2: `DocumentDomain` Lombok `@Builder` defaults
 
-**Repo:** `14-07 engine service repo/quark-engine`.
-Three changes bundled: (1) the `ORA-01858` blocker fix (bind DATE as an Oracle `DATE`), (2) log where the
-generated document is stored, (3) silence the Zipkin "Failed to export spans" noise.
-
-## Context (why)
-Run 339403 / task 229 failed with `ORA-01858`. Running the same SQL manually with the 3 in-params returned
-**21 rows**, proving the SQL + params are correct — so it's a **Java bind-type bug on the date**:
-the SQL does `to_date(:p_date_echeance)`, and the param was bound as a `java.sql.Timestamp`. Oracle evaluates
-`to_date(TIMESTAMP)` by rendering the timestamp via `NLS_TIMESTAMP_FORMAT` (default `DD-MON-RR …` →
-`"29-JUN-18 …"`) then parsing with `NLS_DATE_FORMAT='DD/MM/YYYY'` → hits the letter `J` in `JUN` →
-`ORA-01858`. Binding a real Oracle `DATE` makes `to_date(DATE)` round-trip through `NLS_DATE_FORMAT` and work.
+**Date:** 2026-08-07
+**Repo:** `14-07 engine service repo/quark-engine`
+**File changed:** `src/main/java/com/socgen/sgs/api/quark/engine/domain/DocumentDomain.java` (1 file)
+**Status of the local Mac copy before this change:** change was **NOT** present — the Copilot edit exists only on your work laptop (if at all). Applied here now.
 
 ---
 
-## 1. `InParamSqlMapper.java` — bind DATE as Oracle `DATE` *(the blocker — paste whole file)*
-Path: `src/main/java/com/socgen/sgs/api/quark/engine/mapper/InParamSqlMapper.java`
-Key line is the DATE case: `new oracle.sql.DATE(ts)` (your build likely still returns the raw `ts` Timestamp).
+## 1. What the build warned about
 
+```
+DocumentDomain.java:[51,21] @Builder will ignore the initializing expression entirely.
+DocumentDomain.java:[70,26] @Builder will ignore the initializing expression entirely.
+```
+
+Two fields with inline defaults that `@Builder` silently discards:
+
+| Line | Field | Real impact |
+|---|---|---|
+| 51 | `private boolean modeDegrade = false;` | **None.** `false` is already the JVM default for a primitive `boolean`. Cosmetic — silences the warning, behaviour identical on every path. |
+| 70 | `private List<String> pdfFiles = new ArrayList<>();` | **Real NPE risk.** Objects built via `DocumentDomain.builder()` get `pdfFiles == null`. |
+
+### The `pdfFiles` NPE path is live in this codebase
+
+- **Builder is used:** `infra/dao/impl/GetGabaritTemplateDaoImpl.java:42` builds `DocumentDomain` via `.builder()`.
+- **Getter is called unguarded:** `service/task/impl/DocumentTaskProcessStrategy.java:221`
+  → `if (doc == null || doc.getPdfFiles().isEmpty())` — NPE if `pdfFiles` is null.
+  Also `:242` (`.size()`) and `:278` (`.get(i)`).
+
+---
+
+## 2. Why `@Builder.Default` **alone** is not enough — verified regression
+
+Lombok does not just annotate the field: it **removes the initializer** and moves it into a generated
+`$default$pdfFiles()` helper, which it can inject **only into the constructors Lombok itself generates**.
+Any **hand-written** constructor is left untouched — so the field becomes `null` there.
+
+`DocumentDomain` **has** a hand-written 5-arg constructor
+(`DocumentDomain(Integer id, String name, String format, String prefix, byte[] data)`),
+used at `service/impl/ProcessRunServiceImpl.java:147, 152, 157` (finalJpg / finalPdf / finalQxp).
+
+**Empirically verified against the exact pinned Lombok version (1.18.30):**
+
+| Construction path | `@Builder.Default` only | `@Builder.Default` + null-safe getter |
+|---|---|---|
+| `new DocumentDomain()` — used by 6 DAOs | `[]` ✅ | `[]` ✅ |
+| `DocumentDomain.builder().build()` — GetGabaritTemplateDaoImpl | `[]` ✅ (this is the fix) | `[]` ✅ |
+| **hand-written 5-arg ctor** — ProcessRunServiceImpl | **`null` ❌ REGRESSION** | `[]` ✅ |
+| `@AllArgsConstructor` with `null` | `null` ❌ | `[]` ✅ |
+| `setPdfFiles(null)` | `null` ❌ | `[]` ✅ |
+
+Applying `@Builder.Default` on its own would have **fixed one null path and created another.**
+Hence the extra null-safe guard in the hand-written `getPdfFiles()`.
+
+---
+
+## 3. .NET parity check
+
+`QXP.Engine.Core/BusinessObject/Document/Document.cs`:
+- `_pdfs` (line 32) has **no initializer** → `PDFFiles` is `null` by default in .NET.
+- `PDFFiles` (line 342) is declared but **never read or written anywhere else in `QXP.Engine.Core`** — it is dead code in the .NET engine.
+
+The Java `pdfFiles` list is a Java-side reimplementation (populated by
+`LoadTaskDocumentsBusiness.loadPdfPages`), so **.NET imposes no parity constraint here.**
+Empty-list-never-null is therefore a free robustness win, not a behaviour divergence.
+
+`Mode_Degrade` in .NET is a lazily-evaluated `bool?` (`_mode_degrade = null` until
+`Evaluate_Mode_Degrade()` runs). The Java `modeDegrade` field is only a cached flag; the real
+evaluation lives in `evaluateModeDegrade(long)`. Unchanged by this fix.
+
+---
+
+## 4. Changes to apply (3 edits)
+
+### Edit 1 — line ~51: add `@Builder.Default` to `modeDegrade`
+
+**Find:**
 ```java
-package com.socgen.sgs.api.quark.engine.mapper;
+    private boolean gabarit;
+    private boolean modeDegrade = false;
+    private DocumentIdentity documentIdentity;
+```
 
-import com.socgen.sgs.api.quark.engine.domain.InParam;
-import com.socgen.sgs.api.quark.engine.enums.DataTypeEnum;
-import org.springframework.jdbc.core.SqlParameterValue;
-import org.springframework.stereotype.Component;
+**Replace with:**
+```java
+    private boolean gabarit;
+    @Builder.Default
+    private boolean modeDegrade = false;
+    private DocumentIdentity documentIdentity;
+```
 
-import java.math.BigDecimal;
-import java.sql.Timestamp;
-import java.sql.Types;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.LinkedHashMap;
-import java.util.Map;
+---
 
-/**
- * Maps run InParams to a flat parameter map for the dynamic-SQL named binds.
- *
- * <p>Binds the TYPED value for each param, mirroring .NET
- * {@code Data_Type_Helper.InputToTypedValue} + {@code ConversionInvariante} (InParam.cs:54 sets
- * {@code _value = InputToTypedValue(_string_value, _type)}, InParams.cs:69 binds {@code inParam.Value}):
- * <ul>
- *   <li>INT      → {@link Integer} (Int32 truncation); unset/unparseable → typed SQL NULL</li>
- *   <li>DECIMAL  → {@link BigDecimal}; unset/unparseable → typed SQL NULL</li>
- *   <li>DATE     → an Oracle {@code DATE} ({@link oracle.sql.DATE}, time-preserving) so the gabarit SQL's
- *       {@code to_date(?)} round-trips under any session date format; unset/unparseable → typed SQL NULL</li>
- *   <li>An unset value binds as SQL NULL (not the MIN_VALUE placeholder), matching how the legacy
- *       Oracle parameter layer converts an unset sentinel to a null bind.</li>
- *   <li>DATE_TIME and every other type → the RAW STRING — .NET's switch has no case for DateTime(5)
- *       (nor Text/Currency/Pourcentage), so it falls to {@code default: return value}.</li>
- * </ul>
- * Findings #21, #49, #50, #51.
- */
-@Component
-public class InParamSqlMapper {
+### Edit 2 — line ~70: add `@Builder.Default` to `pdfFiles`
 
-    /** Format the date value arrives in from Oracle Get_In_Params (M/d/yyyy HH:mm:ss). */
-    private static final DateTimeFormatter INPUT_FORMAT = DateTimeFormatter.ofPattern("M/d/yyyy HH:mm:ss");
+**Find:**
+```java
+    /** List of PDF page file paths (for multi-page PDF documents). */
+    private List<String> pdfFiles = new ArrayList<>();
+```
 
-    /** .NET {@code decimal.MinValue} — the sentinel ConversionInvariante.ToDecimal returns when unset/unparseable. */
-    private static final BigDecimal DECIMAL_MIN_VALUE = new BigDecimal("-79228162514264337593543950335");
-
-    /** .NET {@code DateTime.MinValue} (0001-01-01 00:00:00) — the sentinel ToDateTime returns when unset/unparseable. */
-    private static final Timestamp DATETIME_MIN_VALUE = Timestamp.valueOf(LocalDateTime.of(1, 1, 1, 0, 0, 0));
-
-    public Map<String, Object> toParameterMap(Map<String, InParam> inParams) {
-        Map<String, Object> params = new LinkedHashMap<>();
-        for (Map.Entry<String, InParam> entry : inParams.entrySet()) {
-            params.put(entry.getKey(), toTypedValue(entry.getValue()));
-        }
-        return params;
-    }
-
-    private Object toTypedValue(InParam inParam) {
-        String value = inParam.getStringValue();
-        DataTypeEnum type = inParam.getType();
-        if (type == null) {
-            return value;
-        }
-        switch (type) {
-            case INT: {
-                // An unset / unparseable numeric input is bound as a typed SQL NULL, not as the
-                // MIN_VALUE placeholder number. Binding the placeholder would force a numeric
-                // predicate over a textual column through TO_NUMBER against that number, which
-                // raises ORA-01722 on the first non-numeric column value.
-                Integer i = toInt(value);
-                return i == Integer.MIN_VALUE ? new SqlParameterValue(Types.NUMERIC, null) : i;
-            }
-            case DECIMAL: {
-                // compareTo (not equals) so an unset value is caught regardless of its scale.
-                BigDecimal d = toDecimal(value);
-                return DECIMAL_MIN_VALUE.compareTo(d) == 0 ? new SqlParameterValue(Types.NUMERIC, null) : d;
-            }
-            case DATE: {
-                // A valid date binds as an Oracle DATE (time-preserving) so the gabarit SQL's to_date(?)
-                // round-trips regardless of the session date format; an unset value binds as SQL NULL.
-                Timestamp ts = toSqlTimestamp(value);
-                return DATETIME_MIN_VALUE.equals(ts)
-                        ? new SqlParameterValue(Types.DATE, null)
-                        : new oracle.sql.DATE(ts);
-            }
-            default:
-                // DATE_TIME (5), TEXT, CURRENCY, POURCENTAGE, UNSPECIFIED, CUSTOM → raw string
-                // (.NET Data_Type_Helper.InputToTypedValue `default: return value`).
-                return value;
-        }
-    }
-
-    /** .NET ConversionInvariante.ToInt: Decimal.TryParse(value w/o spaces, NumberStyles.Any) cast to Int32; else int.MinValue. */
-    private Integer toInt(String value) {
-        BigDecimal d = parseNumber(value);
-        return d == null ? Integer.MIN_VALUE : d.intValue(); // intValue() truncates toward zero, like (int)decimal
-    }
-
-    /** .NET ConversionInvariante.ToDecimal: Decimal.TryParse(value w/o spaces, NumberStyles.Any); else decimal.MinValue. */
-    private BigDecimal toDecimal(String value) {
-        BigDecimal d = parseNumber(value);
-        return d == null ? DECIMAL_MIN_VALUE : d;
-    }
-
-    /** Returns the parsed number, or null to signal the caller to bind its sentinel. */
-    private BigDecimal parseNumber(String value) {
-        if (value == null) {
-            return null;
-        }
-        String v = value.replace(" ", ""); // .NET ToInt/ToDecimal do value.Replace(" ", "")
-        if (v.isEmpty()) {
-            return null;
-        }
-        try {
-            return new BigDecimal(v);
-        } catch (NumberFormatException e) {
-            return null;
-        }
-    }
-
+**Replace with:**
+```java
     /**
-     * Converts a DATE param string to a time-preserving {@link Timestamp}. Parity: .NET
-     * ConversionInvariante.ToDateTime returns the parsed DateTime, or DateTime.MinValue when
-     * unset/unparseable (it does NOT throw).
+     * List of PDF page file paths (for multi-page PDF documents).
+     *
+     * <p>{@code @Builder.Default} makes the builder honour the empty-list default. Note that Lombok
+     * moves the initializer out of the field into a generated {@code $default$pdfFiles()} helper,
+     * which it can only inject into the constructors <em>it</em> generates — the hand-written
+     * 5-arg constructor below would therefore leave this field null. {@link #getPdfFiles()} is
+     * lazily null-safe to cover that path.
      */
-    private Timestamp toSqlTimestamp(String value) {
-        if (value == null || value.trim().isEmpty()) {
-            return DATETIME_MIN_VALUE;
-        }
-        String v = value.trim();
-        try {
-            return Timestamp.valueOf(LocalDateTime.parse(v, INPUT_FORMAT));
-        } catch (Exception e) {
-            try {
-                return Timestamp.valueOf(LocalDate.parse(v).atStartOfDay());
-            } catch (Exception e2) {
-                return DATETIME_MIN_VALUE;
-            }
-        }
-    }
-}
+    @Builder.Default
+    private List<String> pdfFiles = new ArrayList<>();
 ```
 
 ---
 
-## 2. `EndRunBusiness.java` — log where the generated document is stored *(snippet)*
-Path: `src/main/java/com/socgen/sgs/api/quark/engine/business/EndRunBusiness.java`
-Replace the `insertGeneratedDocument(...)` method with this, and add the `documentKind(...)` helper next to it:
+### Edit 3 — line ~178: make the hand-written `getPdfFiles()` null-safe
 
+**Find:**
 ```java
-    private int insertGeneratedDocument(Run run, DocumentDomain document, int idSousCategorie) {
-        String kind = documentKind(idSousCategorie);
-        if (document == null || document.getData() == null) {
-            log.info("No {} generated for run [{}] — nothing stored in QXP_DOCUMENT", kind, run.getId());
-            return Integer.MIN_VALUE;
-        }
-        int idDocument = insertDocumentDao.insertDocument(
-                document, idSousCategorie,
-                run.getRunProperties().getIdFndCode(),
-                run.getRunProperties().getIdUnitCode(),
-                run.getRunProperties().getDateEcheance(),
-                run.getId());
-        log.info("Stored {} document [id={}, {} bytes] in QXP_DOCUMENT for run [{}] (pool file: {})",
-                kind, idDocument, document.getData().length, run.getId(), document.getFilePoolPath());
-        return idDocument;
-    }
-
-    private static String documentKind(int idSousCategorie) {
-        switch (idSousCategorie) {
-            case ID_SOUS_CATEGORIE_QXP: return "QXP";
-            case ID_SOUS_CATEGORIE_PDF: return "PDF";
-            case ID_SOUS_CATEGORIE_DOC: return "Word";
-            default: return "document(cat=" + idSousCategorie + ")";
-        }
+    /**
+     * Get the list of PDF page file paths.
+     *
+     * @return the list of PDF file paths
+     */
+    public List<String> getPdfFiles() {
+        return this.pdfFiles;
     }
 ```
 
-You'll then see, at End_Run, e.g.:
-`Stored PDF document [id=987654, 412300 bytes] in QXP_DOCUMENT for run [339403] (pool file: R_339403/G_168_1.QXP)`
-
-> Where things land: the QXP is SaveAs'd to `D:\Documents\R_<runId>\<name>_1.QXP` **on the Quark host**
-> (`srvcldvapd001`); the final PDF + QXP bytes are inserted into the **`QXP_DOCUMENT`** table (the persistent
-> repository). Both are on the server side, not your laptop.
-
----
-
-## 3. `application-local.yaml` — silence the "Failed to export spans" spam *(local dev only)*
-Path: `src/main/config/local/application-local.yaml`
-The Zipkin/OpenTelemetry exporter tries to POST traces to a local collector (`localhost:9411`) that isn't
-running, and dumps a huge reactor stack each time. It's harmless. Add:
-
-```yaml
-management:
-  tracing:
-    sampling:
-      probability: 0.0   # no spans sampled -> nothing exported -> no localhost:9411 connection spam
+**Replace with:**
+```java
+    /**
+     * Get the list of PDF page file paths, never null.
+     *
+     * <p>Lazily initialises the list so every construction path yields an empty list rather than
+     * null: the hand-written 5-arg constructor (which Lombok cannot inject the {@code @Builder.Default}
+     * initializer into) and {@code setPdfFiles(null)} both leave the field null otherwise.
+     * DocumentTaskProcessStrategy.processFilePdf calls {@code getPdfFiles().isEmpty()} unguarded.
+     *
+     * @return the list of PDF file paths (empty when none)
+     */
+    public List<String> getPdfFiles() {
+        if (this.pdfFiles == null) {
+            this.pdfFiles = new ArrayList<>();
+        }
+        return this.pdfFiles;
+    }
 ```
-(Alternative, to only mute the log instead of disabling tracing: `logging.level.io.opentelemetry.exporter.zipkin: "off"`.)
+
+No import changes needed — `Builder` and `ArrayList` are already imported.
 
 ---
 
-## Apply & verify
-1. Fix §1 (`InParamSqlMapper` DATE → `oracle.sql.DATE`) — the blocker.
-2. Apply §2 (`EndRunBusiness` doc logging). *(Already applied in the 14-07 copy.)*
-3. Add §3 (local tracing off).
-4. `mvn clean install`, re-run 339403. Expect:
-   - `Dynamic task [229] (run [339403]) SQL fetched 21 rows`
-   - `Stored QXP document [...]` and `Stored PDF document [...]` at End_Run
-   - no more "Failed to export spans" stack traces.
+## 5. Expected result after rebuild
 
-## Files changed
-- `mapper/InParamSqlMapper.java` (§1 — DATE → `oracle.sql.DATE`)
-- `business/EndRunBusiness.java` (§2 — document-store logging)
-- `src/main/config/local/application-local.yaml` (§3 — tracing sampling 0)
+- The two `@Builder will ignore the initializing expression entirely` warnings disappear.
+- `pdfFiles` is guaranteed non-null on all five construction paths.
+- No behaviour change for `modeDegrade` (was and remains `false` by default everywhere).
+- No test changes required — all 308 tests should still pass.
+
+---
+
+## 6. Side note found while checking (not fixed here)
+
+Your **local Mac copy** of `pom.xml` still has `<spring-boot.version>2.7.18</spring-boot.version>`
+(line 27) — i.e. **issue #1 is also not present in the copy on this machine**, only on your work
+laptop. Also note the parent version differs between the two copies:
+
+| | parent `sgs-api-core` |
+|---|---|
+| Local Mac copy | `11.0.1` |
+| Work laptop (per your build log) | `11.5.1` |
+
+So the Mac copy is genuinely older, as you said. I could not verify the issue-#1 fix locally:
+`sgs-api-core` is an internal SocGen artifact and is not resolvable from this machine, so I cannot
+confirm what `spring-boot.version` the `11.0.1` parent defaults to. On the work laptop your
+verification (plugin now resolving to `3.5.15`) is the authoritative check — that one looked correct.
+
+**When you next paste code over, please paste the current work-laptop `pom.xml` and `DocumentDomain.java`**
+so the two copies stop drifting.
