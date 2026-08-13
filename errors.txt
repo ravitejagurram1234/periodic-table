@@ -1,35 +1,13 @@
 SELECT
-      agt.id_gabarit_template,
-      t.id_template,
-      NVL(t.nom, '<NULL>') AS nom,
-      NVL(t.src_nom, '<NULL>') AS src_nom,
-      NVL(t.src_nom_overflow, '<NULL>') AS src_nom_overflow,
-      NVL(TO_CHAR(t.absolute), '<NULL>') AS absolute_value,
-      NVL(TO_CHAR(t.absolute_repeat), '<NULL>') AS absolute_repeat,
-      NVL(TO_CHAR(t.left), '<NULL>') AS left_value,
-      NVL(TO_CHAR(t.top), '<NULL>') AS top_value,
-      NVL(TO_CHAR(t.width), '<NULL>') AS width_value,
-      NVL(TO_CHAR(t.height), '<NULL>') AS height_value,
-      NVL(TO_CHAR(t.page_break), '<NULL>') AS page_break,
-      NVL(TO_CHAR(t.column_break), '<NULL>') AS column_break
-  FROM qxp_asso_gabarit_templates agt
-  JOIN qxp_template t
-    ON t.id_template = agt.id_template
-  WHERE agt.id_gabarit_template = 3
-    AND t.nom IN (
-        'SWAP_N1_RSA',
-        'SWAP_N2_RSA',
-        'SWAP_N3_RSA',
-        'SWAP_N4_RSA'
-    )
-  ORDER BY t.nom, t.id_template;
-
-
-3	673	SWAP_N1_RSA	SWAP_N1_RSA	<NULL>	0	<NULL>	<NULL>	<NULL>	<NULL>	<NULL>	0	0
-3	1107	SWAP_N1_RSA	SWAP_N1_RSA	<NULL>	0	<NULL>	-14.173	<NULL>	<NULL>	<NULL>	0	0
-3	674	SWAP_N2_RSA	SWAP_N2_RSA	<NULL>	0	<NULL>	<NULL>	<NULL>	<NULL>	<NULL>	0	0
-3	1106	SWAP_N2_RSA	SWAP_N2_RSA	<NULL>	0	<NULL>	<NULL>	<NULL>	<NULL>	<NULL>	0	0
-3	675	SWAP_N3_RSA	SWAP_N3_RSA	SWAP_N3_RSA_H2	0	<NULL>	<NULL>	<NULL>	<NULL>	<NULL>	0	0
-3	1104	SWAP_N3_RSA	SWAP_N3_RSA	<NULL>	0	<NULL>	<NULL>	<NULL>	<NULL>	<NULL>	0	0
-3	676	SWAP_N4_RSA	SWAP_N4_RSA	<NULL>	0	<NULL>	<NULL>	<NULL>	<NULL>	<NULL>	0	0
-3	1102	SWAP_N4_RSA	SWAP_N4_RSA	SWAP_N4_RSA_H2	0	<NULL>	<NULL>	<NULL>	<NULL>	<NULL>	0	0
+      t.is_actif,
+      COUNT(DISTINCT t.id_tache) AS task_count,
+      COUNT(DISTINCT agt.id_gabarit) AS linked_gabarits,
+      COUNT(DISTINCT art.id_run) AS linked_runs
+  FROM qxp_tache t
+  LEFT JOIN qxp_asso_gabarit_taches agt
+    ON agt.id_tache = t.id_tache
+  LEFT JOIN qxp_asso_run_taches art
+    ON art.id_tache = t.id_tache
+  WHERE t.id_type_tache = 9
+  GROUP BY t.is_actif
+  ORDER BY t.is_actif;
