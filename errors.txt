@@ -89,3 +89,79 @@
    AND rt.id_tache = task.id_tache
   GROUP BY d.id_gabarit_template
   ORDER BY d.id_gabarit_template;
+
+
+
+
+
+
+
+
+
+
+
+SELECT
+      x.id_gabarit_template,
+      x.id_template,
+      x.nom,
+      x.src_nom,
+      x.src_nom_overflow,
+      x.absolute_value,
+      x.absolute_repeat,
+      x.left_value,
+      x.top_value,
+      x.width_value,
+      x.height_value,
+      x.page_break,
+      x.column_break,
+      x.duplicate_count
+  FROM (
+      SELECT
+          agt.id_gabarit_template,
+          t.id_template,
+          t.nom,
+          t.src_nom,
+          t.src_nom_overflow,
+          t.absolute AS absolute_value,
+          t.absolute_repeat,
+          t.left AS left_value,
+          t.top AS top_value,
+          t.width AS width_value,
+          t.height AS height_value,
+          t.page_break,
+          t.column_break,
+          COUNT(*) OVER (
+              PARTITION BY agt.id_gabarit_template, t.nom
+          ) AS duplicate_count
+      FROM qxp_asso_gabarit_templates agt
+      INNER JOIN qxp_template t
+          ON t.id_template = agt.id_template
+  ) x
+  WHERE x.duplicate_count > 1
+  ORDER BY
+      x.id_gabarit_template,
+      x.nom,
+      x.id_template;
+
+  This avoids joining the duplicate CTE back to the same two tables. If it still fails, please share the exact
+  ORA-xxxxx message because that would indicate a column-name/version difference.
+
+  Please also run the NB_DECIMAL query:
+
+  SELECT
+      output_data_type,
+      decimal_significative,
+      afficher_zero,
+      COUNT(*) AS task_count
+  FROM qxp_tache
+  WHERE is_actif = 1
+    AND id_type_tache = 1
+    AND nb_decimal IS NULL
+  GROUP BY
+      output_data_type,
+      decimal_significative,
+      afficher_zero
+  ORDER BY
+      output_data_type,
+      decimal_significative,
+      afficher_zero;
