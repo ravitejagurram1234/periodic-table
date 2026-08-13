@@ -6,3 +6,12 @@
          END) AS unusual_values
   FROM qxp_asso_suivi_parametres sp
   WHERE sp.id_parametre = 3;
+
+
+
+SELECT sp.valeur, COUNT(*) AS occurrences
+  FROM qxp_asso_suivi_parametres sp
+  WHERE sp.id_parametre = 2
+  GROUP BY sp.valeur
+  ORDER BY occurrences DESC
+  FETCH FIRST 20 ROWS ONLY;
