@@ -92,6 +92,73 @@
 
 
 
+First query 
+ SELECT
+      output_data_type,
+      decimal_significative,
+      afficher_zero,
+      COUNT(*) AS task_count
+  FROM qxp_tache
+  WHERE is_actif = 1
+    AND id_type_tache = 1
+    AND nb_decimal IS NULL
+  GROUP BY
+      output_data_type,
+      decimal_significative,
+      afficher_zero
+  ORDER BY
+      output_data_type,
+      decimal_significative,
+      afficher_zero;
+
+result
+output_data_type decimal_significative afficher_zero task_count
+0	1	0	1
+0	1		7
+1	0		1
+1	1		66
+
+third query
+ WITH duplicate_template_ids AS (
+      SELECT DISTINCT agt.id_gabarit_template
+      FROM qxp_asso_gabarit_templates agt
+      JOIN qxp_template t
+        ON t.id_template = agt.id_template
+      GROUP BY agt.id_gabarit_template, t.nom
+      HAVING COUNT(*) > 1
+  )
+  SELECT
+      d.id_gabarit_template,
+      COUNT(DISTINCT g.id_gabarit) AS referencing_gabarits,
+      COUNT(DISTINCT CASE
+          WHEN task.id_type_tache = 4
+           AND task.is_actif = 1
+          THEN task.id_tache
+      END) AS active_dynamic_tasks,
+      COUNT(DISTINCT CASE
+          WHEN task.id_type_tache = 4
+           AND task.is_actif = 1
+           AND rt.id_tache IS NOT NULL
+          THEN r.id_run
+      END) AS current_todo_runs
+  FROM duplicate_template_ids d
+  LEFT JOIN qxp_gabarit g
+    ON g.id_gabarit_template = d.id_gabarit_template
+  LEFT JOIN qxp_asso_gabarit_taches agt
+    ON agt.id_gabarit = g.id_gabarit
+  LEFT JOIN qxp_tache task
+    ON task.id_tache = agt.id_tache
+  LEFT JOIN qxp_suivi s
+    ON s.id_gabarit = g.id_gabarit
+  LEFT JOIN qxp_run r
+    ON r.id_run = s.id_run_suivant
+  LEFT JOIN qxp_asso_run_taches rt
+    ON rt.id_run = r.id_run
+   AND rt.id_tache = task.id_tache
+  GROUP BY d.id_gabarit_template
+  ORDER BY d.id_gabarit_template;
+result:
+3	7	19	22
 
 
 
@@ -142,6 +209,17 @@ SELECT
       x.id_gabarit_template,
       x.nom,
       x.id_template;
+result: 
+id_gabarit_template id_template, nom, src_nom, src_nom_overflow, absolute_value, absolute_repeat, left_value, top_value, width_value height value, page_break, column_break, duplicate_count
+3	673	SWAP_N1_RSA	SWAP_N1_RSA		0						0	0	2
+3	1107	SWAP_N1_RSA	SWAP_N1_RSA		0		-14.173				0	0	2
+3	674	SWAP_N2_RSA	SWAP_N2_RSA		0						0	0	2
+3	1106	SWAP_N2_RSA	SWAP_N2_RSA		0						0	0	2
+3	675	SWAP_N3_RSA	SWAP_N3_RSA	SWAP_N3_RSA_H2	0						0	0	2
+3	1104	SWAP_N3_RSA	SWAP_N3_RSA		0						0	0	2
+3	676	SWAP_N4_RSA	SWAP_N4_RSA		0						0	0	2
+3	1102	SWAP_N4_RSA	SWAP_N4_RSA	SWAP_N4_RSA_H2	0						0	0	2
+detect the null values properly. let me know if you miss anything to properly identity the values. 
 
   This avoids joining the duplicate CTE back to the same two tables. If it still fails, please share the exact
   ORA-xxxxx message because that would indicate a column-name/version difference.
@@ -165,3 +243,8 @@ SELECT
       output_data_type,
       decimal_significative,
       afficher_zero;
+result
+0	1	0	1
+0	1		7
+1	0		1
+1	1		66
