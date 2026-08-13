@@ -1,42 +1,91 @@
- -- 1. Active task population and important nullable fields
+-- A. Determine whether NULL NB_DECIMAL currently affects formatting
   SELECT
-      id_type_tache,
-      COUNT(*) AS active_tasks,
-      SUM(CASE WHEN id_type_tache = 1
-                AND nb_decimal IS NULL THEN 1 ELSE 0 END) AS sql_null_nb_decimal,
-      SUM(CASE WHEN id_type_tache = 2
-                AND id_sous_categorie IS NULL THEN 1 ELSE 0 END) AS doc_null_category,
-      SUM(CASE WHEN id_type_tache = 4
-                AND sql IS NULL THEN 1 ELSE 0 END) AS dynamic_null_sql,
-      SUM(CASE WHEN id_type_tache = 5
-                AND id_gabarit_fils IS NULL THEN 1 ELSE 0 END) AS compartment_null_child
+      output_data_type,
+      decimal_significative,
+      afficher_zero,
+      COUNT(*) AS task_count
   FROM qxp_tache
   WHERE is_actif = 1
-  GROUP BY id_type_tache
-  ORDER BY id_type_tache;
+    AND id_type_tache = 1
+    AND nb_decimal IS NULL
+  GROUP BY
+      output_data_type,
+      decimal_significative,
+      afficher_zero
+  ORDER BY
+      output_data_type,
+      decimal_significative,
+      afficher_zero;
 
-  -- 2. Duplicate exception block names
-  SELECT
-      COUNT(*) AS duplicate_keys,
-      NVL(MAX(occurrences), 0) AS maximum_occurrences
-  FROM (
-      SELECT id_tache, nom_bloc, COUNT(*) AS occurrences
-      FROM qxp_tache_exception
-      GROUP BY id_tache, nom_bloc
-      HAVING COUNT(*) > 1
-  );
-
-  -- 3. Duplicate template names inside one gabarit-template
-  SELECT
-      COUNT(*) AS duplicate_keys,
-      NVL(MAX(occurrences), 0) AS maximum_occurrences
-  FROM (
-      SELECT agt.id_gabarit_template,
-             t.nom,
-             COUNT(*) AS occurrences
+  -- B. Show the eight rows participating in the four duplicate names
+  WITH duplicate_names AS (
+      SELECT
+          agt.id_gabarit_template,
+          t.nom
       FROM qxp_asso_gabarit_templates agt
       JOIN qxp_template t
         ON t.id_template = agt.id_template
       GROUP BY agt.id_gabarit_template, t.nom
       HAVING COUNT(*) > 1
-  );
+  )
+  SELECT
+      agt.id_gabarit_template,
+      t.id_template,
+      t.nom,
+      t.src_nom,
+      t.src_nom_overflow,
+      t.absolute,
+      t.absolute_repeat,
+      t.left,
+      t.top,
+      t.width,
+      t.height,
+      t.page_break,
+      t.column_break
+  FROM duplicate_names d
+  JOIN qxp_asso_gabarit_templates agt
+    ON agt.id_gabarit_template = d.id_gabarit_template
+  JOIN qxp_template t
+      agt.id_gabarit_template,
+      t.nom,
+      t.id_template;
+
+  -- C. Determine whether affected template sets are reachable by dynamic tasks/current runs
+  WITH duplicate_template_ids AS (
+      SELECT DISTINCT agt.id_gabarit_template
+      FROM qxp_asso_gabarit_templates agt
+      JOIN qxp_template t
+        ON t.id_template = agt.id_template
+      GROUP BY agt.id_gabarit_template, t.nom
+      HAVING COUNT(*) > 1
+  )
+  SELECT
+      d.id_gabarit_template,
+      COUNT(DISTINCT g.id_gabarit) AS referencing_gabarits,
+      COUNT(DISTINCT CASE
+          WHEN task.id_type_tache = 4
+           AND task.is_actif = 1
+          THEN task.id_tache
+      END) AS active_dynamic_tasks,
+      COUNT(DISTINCT CASE
+          WHEN task.id_type_tache = 4
+           AND task.is_actif = 1
+           AND rt.id_tache IS NOT NULL
+          THEN r.id_run
+      END) AS current_todo_runs
+  FROM duplicate_template_ids d
+  LEFT JOIN qxp_gabarit g
+    ON g.id_gabarit_template = d.id_gabarit_template
+  LEFT JOIN qxp_asso_gabarit_taches agt
+    ON agt.id_gabarit = g.id_gabarit
+  LEFT JOIN qxp_tache task
+    ON task.id_tache = agt.id_tache
+  LEFT JOIN qxp_suivi s
+    ON s.id_gabarit = g.id_gabarit
+  LEFT JOIN qxp_run r
+    ON r.id_run = s.id_run_suivant
+  LEFT JOIN qxp_asso_run_taches rt
+    ON rt.id_run = r.id_run
+   AND rt.id_tache = task.id_tache
+  GROUP BY d.id_gabarit_template
+  ORDER BY d.id_gabarit_template;
