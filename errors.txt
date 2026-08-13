@@ -1,146 +1,42 @@
- SELECT MIN(LENGTH(TRIM(sp.valeur))) AS min_length,
-         MAX(LENGTH(TRIM(sp.valeur))) AS max_length,
-         COUNT(CASE
-             WHEN NOT REGEXP_LIKE(TRIM(sp.valeur), '^[+-]?[0-9]+$')
-             THEN 1
-         END) AS unusual_values
-  FROM qxp_asso_suivi_parametres sp
-  WHERE sp.id_parametre = 3;
-
-
-
-SELECT sp.valeur, COUNT(*) AS occurrences
-  FROM qxp_asso_suivi_parametres sp
-  WHERE sp.id_parametre = 2
-  GROUP BY sp.valeur
-  ORDER BY occurrences DESC
-  FETCH FIRST 20 ROWS ONLY;
-
-12/31/2015 00:00:00	1794
-12/31/2013 00:00:00	1756
-12/31/2014 00:00:00	1715
-12/31/2010 00:00:00	1690
-12/31/2012 00:00:00	1626
-12/31/2009 00:00:00	1581
-12/31/2020 00:00:00	1476
-12/30/2011 00:00:00	1431
-06/30/2014 00:00:00	1420
-12/31/2021 00:00:00	1341
-12/31/2018 00:00:00	1324
-06/30/2017 00:00:00	1301
-12/31/2019 00:00:00	1283
-06/30/2015 00:00:00	1261
-12/31/2025 00:00:00	1250
-06/30/2023 00:00:00	1247
-06/30/2016 00:00:00	1227
-06/30/2021 00:00:00	1212
-06/30/2022 00:00:00	1185
-06/30/2020 00:00:00	1184
-
- SELECT
-      COUNT(*) AS total_values,
-      SUM(
-          CASE
-              WHEN REGEXP_LIKE(
-                  TRIM(valeur),
-                  '^[[:digit:]]{1,2}/[[:digit:]]{1,2}/[[:digit:]]{4} [[:digit:]]{1,2}:[[:digit:]]{1,2}:[[:digit:]]
-                  {1,2}$'
-              )
-              THEN 1 ELSE 0
-          END
-      ) AS expected_shape,
-      SUM(
-          CASE
-              WHEN valeur IS NULL
-                OR NOT REGEXP_LIKE(
-                    TRIM(valeur),
-                    '^[[:digit:]]{1,2}/[[:digit:]]{1,2}/[[:digit:]]{4} [[:digit:]]{1,2}:[[:digit:]]{1,2}:
-                    [[:digit:]]{1,2}$'
-                )
-              THEN 1 ELSE 0
-          END
-      ) AS other_shape
-  FROM qxp_asso_suivi_parametres
-  WHERE id_parametre = 2;
-
-
- SELECT
-      COUNT(*) AS total_values,
-      SUM(
-          CASE
-              WHEN TRANSLATE(
-                  TRIM(valeur),
-                  '0123456789',
-                  '0000000000'
-              ) = '00/00/0000 00:00:00'
-              THEN 1 ELSE 0
-          END
-      ) AS expected_shape,
-      SUM(
-          CASE
-              WHEN valeur IS NULL
-                OR TRANSLATE(
-                    TRIM(valeur),
-                    '0123456789',
-                    '0000000000'
-                ) <> '00/00/0000 00:00:00'
-              THEN 1 ELSE 0
-          END
-      ) AS other_shape
-  FROM qxp_asso_suivi_parametres
-  WHERE id_parametre = 2;
-
-  This transforms digits to zero:
-
-  12/31/2015 00:00:00
-  → 00/00/0000 00:00:00
-
-  It avoids regular expressions completely.
-
-  To understand any other shapes without returning thousands of rows:
-
+ -- 1. Active task population and important nullable fields
   SELECT
-      LENGTH(TRIM(valeur)) AS value_length,
-      TRANSLATE(
-          TRIM(valeur),
-          '0123456789',
-          '0000000000'
-      ) AS value_shape,
-      COUNT(*) AS occurrences
-  FROM qxp_asso_suivi_parametres
-  WHERE id_parametre = 2
-  GROUP BY
-      LENGTH(TRIM(valeur)),
-      TRANSLATE(
-          TRIM(valeur),
-          '0123456789',
-          '0000000000'
-      )
-  ORDER BY occurrences DESC;
+      id_type_tache,
+      COUNT(*) AS active_tasks,
+      SUM(CASE WHEN id_type_tache = 1
+                AND nb_decimal IS NULL THEN 1 ELSE 0 END) AS sql_null_nb_decimal,
+      SUM(CASE WHEN id_type_tache = 2
+                AND id_sous_categorie IS NULL THEN 1 ELSE 0 END) AS doc_null_category,
+      SUM(CASE WHEN id_type_tache = 4
+                AND sql IS NULL THEN 1 ELSE 0 END) AS dynamic_null_sql,
+      SUM(CASE WHEN id_type_tache = 5
+                AND id_gabarit_fils IS NULL THEN 1 ELSE 0 END) AS compartment_null_child
+  FROM qxp_tache
+  WHERE is_actif = 1
+  GROUP BY id_type_tache
+  ORDER BY id_type_tache;
 
-  This should return only the distinct textual shapes.
-
-  If your Oracle version supports VALIDATE_CONVERSION, calendar validity can then be checked separately:
-
+  -- 2. Duplicate exception block names
   SELECT
-      COUNT(*) AS total_values,
-      SUM(
-          CASE
-              WHEN VALIDATE_CONVERSION(
-                  TRIM(valeur) AS DATE,
-                  'MM/DD/YYYY HH24:MI:SS'
-              ) = 1
-              THEN 1 ELSE 0
-          END
-      ) AS valid_dates,
-      SUM(
-          CASE
-              WHEN VALIDATE_CONVERSION(
-                  TRIM(valeur) AS DATE,
-                  'MM/DD/YYYY HH24:MI:SS'
-              ) = 0
-              THEN 1 ELSE 0
-          END
-      ) AS invalid_dates
-  FROM qxp_asso_suivi_parametres
-  WHERE id_parametre = 2;
+      COUNT(*) AS duplicate_keys,
+      NVL(MAX(occurrences), 0) AS maximum_occurrences
+  FROM (
+      SELECT id_tache, nom_bloc, COUNT(*) AS occurrences
+      FROM qxp_tache_exception
+      GROUP BY id_tache, nom_bloc
+      HAVING COUNT(*) > 1
+  );
+
+  -- 3. Duplicate template names inside one gabarit-template
+  SELECT
+      COUNT(*) AS duplicate_keys,
+      NVL(MAX(occurrences), 0) AS maximum_occurrences
+  FROM (
+      SELECT agt.id_gabarit_template,
+             t.nom,
+             COUNT(*) AS occurrences
+      FROM qxp_asso_gabarit_templates agt
+      JOIN qxp_template t
+        ON t.id_template = agt.id_template
+      GROUP BY agt.id_gabarit_template, t.nom
+      HAVING COUNT(*) > 1
+  );
