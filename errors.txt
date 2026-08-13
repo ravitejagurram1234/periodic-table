@@ -62,3 +62,85 @@ SELECT sp.valeur, COUNT(*) AS occurrences
       ) AS other_shape
   FROM qxp_asso_suivi_parametres
   WHERE id_parametre = 2;
+
+
+ SELECT
+      COUNT(*) AS total_values,
+      SUM(
+          CASE
+              WHEN TRANSLATE(
+                  TRIM(valeur),
+                  '0123456789',
+                  '0000000000'
+              ) = '00/00/0000 00:00:00'
+              THEN 1 ELSE 0
+          END
+      ) AS expected_shape,
+      SUM(
+          CASE
+              WHEN valeur IS NULL
+                OR TRANSLATE(
+                    TRIM(valeur),
+                    '0123456789',
+                    '0000000000'
+                ) <> '00/00/0000 00:00:00'
+              THEN 1 ELSE 0
+          END
+      ) AS other_shape
+  FROM qxp_asso_suivi_parametres
+  WHERE id_parametre = 2;
+
+  This transforms digits to zero:
+
+  12/31/2015 00:00:00
+  → 00/00/0000 00:00:00
+
+  It avoids regular expressions completely.
+
+  To understand any other shapes without returning thousands of rows:
+
+  SELECT
+      LENGTH(TRIM(valeur)) AS value_length,
+      TRANSLATE(
+          TRIM(valeur),
+          '0123456789',
+          '0000000000'
+      ) AS value_shape,
+      COUNT(*) AS occurrences
+  FROM qxp_asso_suivi_parametres
+  WHERE id_parametre = 2
+  GROUP BY
+      LENGTH(TRIM(valeur)),
+      TRANSLATE(
+          TRIM(valeur),
+          '0123456789',
+          '0000000000'
+      )
+  ORDER BY occurrences DESC;
+
+  This should return only the distinct textual shapes.
+
+  If your Oracle version supports VALIDATE_CONVERSION, calendar validity can then be checked separately:
+
+  SELECT
+      COUNT(*) AS total_values,
+      SUM(
+          CASE
+              WHEN VALIDATE_CONVERSION(
+                  TRIM(valeur) AS DATE,
+                  'MM/DD/YYYY HH24:MI:SS'
+              ) = 1
+              THEN 1 ELSE 0
+          END
+      ) AS valid_dates,
+      SUM(
+          CASE
+              WHEN VALIDATE_CONVERSION(
+                  TRIM(valeur) AS DATE,
+                  'MM/DD/YYYY HH24:MI:SS'
+              ) = 0
+              THEN 1 ELSE 0
+          END
+      ) AS invalid_dates
+  FROM qxp_asso_suivi_parametres
+  WHERE id_parametre = 2;
