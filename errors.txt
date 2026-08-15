@@ -10,8 +10,6 @@ SELECT
   JOIN qxp_asso_suivi_parametres sp
     ON sp.id_suivi = r.id_suivi
 
-    ON p.id_parametre = sp.id_parametre
-
   WHERE r.id_run IN (
       509474,
       464995,
