@@ -1,31 +1,12 @@
 SELECT
-      id_type_tache,
-      COUNT(*) AS active_tasks,
-      SUM(CASE WHEN sql IS NULL THEN 1 ELSE 0 END) AS null_sql,
-      SUM(CASE WHEN INSTR(sql, ':') > 0 THEN 1 ELSE 0 END) AS contains_colon,
-      SUM(CASE WHEN INSTR(sql, '?') > 0 THEN 1 ELSE 0 END) AS contains_question_mark
-  FROM qxp_tache
-  WHERE is_actif = 1
-    AND id_type_tache IN (1, 4)
-  GROUP BY id_type_tache
-  ORDER BY id_type_tache;
-
-  SELECT
-      output_data_type,
-      nb_decimal,
-      decimal_significative,
-      afficher_zero,
-      COUNT(*) AS task_count
-  FROM qxp_tache
-  WHERE is_actif = 1
-    AND id_type_tache = 1
-  GROUP BY
-      output_data_type,
-      nb_decimal,
-      decimal_significative,
-      afficher_zero
-  ORDER BY
-      output_data_type NULLS FIRST,
-      nb_decimal NULLS FIRST,
-      decimal_significative NULLS FIRST,
-      afficher_zero NULLS FIRST;
+      t.id_tache,
+      REGEXP_COUNT(t.sql, '[?]') AS question_count,
+          ),
+          CHR(13),
+          ' '
+      ) AS first_question_context
+  FROM qxp_tache t
+  WHERE t.is_actif = 1
+    AND t.id_type_tache = 4
+    AND DBMS_LOB.INSTR(t.sql, '?') > 0
+  ORDER BY t.id_tache;
