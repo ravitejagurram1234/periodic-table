@@ -1,32 +1,38 @@
 SELECT
-      id_tache,
-      '[' || champs_vide || ']' AS visible_value,
-      LENGTH(champs_vide) AS value_length,
-      DUMP(champs_vide, 1016) AS byte_dump
-  FROM qxp_tache
-  WHERE id_tache = 225;
-
-SELECT
       t.id_tache,
-      COUNT(DISTINCT agt.id_gabarit) AS all_linked_gabarits,
+
+      COUNT(
+          DISTINCT agt.id_gabarit
+      ) AS all_linked_gabarits,
+
       COUNT(
           DISTINCT CASE
-              WHEN g.is_actif = 1 THEN g.id_gabarit
+              WHEN g.is_actif = 1
+              THEN g.id_gabarit
           END
       ) AS active_linked_gabarits,
+
       COUNT(
           DISTINCT CASE
               WHEN g.is_actif = 1
                AND afg.id_gabarit IS NOT NULL
               THEN g.id_gabarit
           END
+      ) AS active_fund_mapped_gabarits,
+
+      t.commentaire
+
   FROM qxp_tache t
+
   LEFT JOIN qxp_asso_gabarit_taches agt
     ON agt.id_tache = t.id_tache
+
   LEFT JOIN qxp_gabarit g
     ON g.id_gabarit = agt.id_gabarit
+
   LEFT JOIN qxp_asso_fond_gabarit afg
     ON afg.id_gabarit = g.id_gabarit
+
   WHERE t.is_actif = 1
     AND t.id_type_tache = 1
     AND NOT EXISTS (
@@ -34,7 +40,62 @@ SELECT
         FROM qxp_asso_run_taches art
         WHERE art.id_tache = t.id_tache
     )
+
   GROUP BY
       t.id_tache,
       t.commentaire
-  ORDER BY t.id_tache;
+
+  ORDER BY
+      t.id_tache;
+
+
+
+--2
+SELECT
+      te.id_tache,
+      t.output_data_type,
+      t.nb_decimal,
+      t.decimal_significative,
+      t.afficher_zero,
+
+      CASE
+          WHEN t.champs_vide IS NULL THEN '<NULL>'
+          ELSE '[' || t.champs_vide || ']'
+      END AS champs_vide,
+
+      te.nom_bloc AS condition_block,
+      te.nom_tableau AS target_table,
+
+      CASE
+          WHEN te.index_lignes IS NULL THEN '<WHOLE TABLE>'
+          ELSE te.index_lignes
+      END AS removal_scope,
+
+      CASE
+          WHEN te.index_lignes IS NULL THEN 'TABLE'
+          ELSE 'LINE'
+      END AS rule_type
+
+  FROM qxp_tache_exception te
+
+  JOIN qxp_tache t
+    ON t.id_tache = te.id_tache
+
+  WHERE t.is_actif = 1
+    AND t.id_type_tache = 1
+
+  ORDER BY
+      te.id_tache,
+      te.nom_bloc,
+      te.nom_tableau;
+
+
+
+--3
+SELECT
+      id_tache,
+      '[' || champs_vide || ']' AS visible_value,
+      LENGTH(champs_vide) AS value_length,
+      DUMP(champs_vide, 1016) AS byte_dump
+  FROM qxp_tache
+  WHERE id_tache = 225;
