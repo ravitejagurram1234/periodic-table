@@ -1,13 +1,31 @@
 SELECT
-      t.is_actif,
-      COUNT(DISTINCT t.id_tache) AS task_count,
-      COUNT(DISTINCT agt.id_gabarit) AS linked_gabarits,
-      COUNT(DISTINCT art.id_run) AS linked_runs
-  FROM qxp_tache t
-  LEFT JOIN qxp_asso_gabarit_taches agt
-    ON agt.id_tache = t.id_tache
-  LEFT JOIN qxp_asso_run_taches art
-    ON art.id_tache = t.id_tache
-  WHERE t.id_type_tache = 9
-  GROUP BY t.is_actif
-  ORDER BY t.is_actif;
+      id_type_tache,
+      COUNT(*) AS active_tasks,
+      SUM(CASE WHEN sql IS NULL THEN 1 ELSE 0 END) AS null_sql,
+      SUM(CASE WHEN INSTR(sql, ':') > 0 THEN 1 ELSE 0 END) AS contains_colon,
+      SUM(CASE WHEN INSTR(sql, '?') > 0 THEN 1 ELSE 0 END) AS contains_question_mark
+  FROM qxp_tache
+  WHERE is_actif = 1
+    AND id_type_tache IN (1, 4)
+  GROUP BY id_type_tache
+  ORDER BY id_type_tache;
+
+  SELECT
+      output_data_type,
+      nb_decimal,
+      decimal_significative,
+      afficher_zero,
+      COUNT(*) AS task_count
+  FROM qxp_tache
+  WHERE is_actif = 1
+    AND id_type_tache = 1
+  GROUP BY
+      output_data_type,
+      nb_decimal,
+      decimal_significative,
+      afficher_zero
+  ORDER BY
+      output_data_type NULLS FIRST,
+      nb_decimal NULLS FIRST,
+      decimal_significative NULLS FIRST,
+      afficher_zero NULLS FIRST;
