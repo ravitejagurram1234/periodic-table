@@ -1,63 +1,40 @@
- WITH gabarit_usage AS (
-      SELECT
-          id_tache,
-          COUNT(DISTINCT id_gabarit) AS linked_gabarits
-      FROM qxp_asso_gabarit_taches
-      GROUP BY id_tache
-  ),
-  run_usage AS (
-      SELECT
-          art.id_tache,
-          COUNT(DISTINCT art.id_run) AS associated_runs,
-          COUNT(
-              DISTINCT CASE
-                  WHEN r.id_doc_qxp IS NOT NULL
-                  THEN art.id_run
-              END
-          ) AS runs_with_qxp_output,
-          MAX(
-              NVL(
-                  r.date_fin_generation,
-                  NVL(r.date_debut_generation, r.date_creation_run)
-              )
-          ) AS latest_run_date
-      FROM qxp_asso_run_taches art
-      JOIN qxp_run r
-        ON r.id_run = art.id_run
-      GROUP BY art.id_tache
-  ),
-  exception_usage AS (
-      SELECT
-          id_tache,
-          COUNT(*) AS exception_rules
-      FROM qxp_tache_exception
-      GROUP BY id_tache
-  )
-  SELECT
+SELECT
+      id_tache,
+      '[' || champs_vide || ']' AS visible_value,
+      LENGTH(champs_vide) AS value_length,
+      DUMP(champs_vide, 1016) AS byte_dump
+  FROM qxp_tache
+  WHERE id_tache = 225;
+
+SELECT
       t.id_tache,
-      DBMS_LOB.GETLENGTH(t.sql) AS sql_length,
-      t.output_data_type,
-      t.nb_decimal,
-      t.decimal_significative,
-      t.afficher_zero,
-      CASE
-          WHEN t.champs_vide IS NULL THEN '<NULL>'
-          ELSE '[' || t.champs_vide || ']'
-      END AS champs_vide,
-      t.store_data,
-      NVL(e.exception_rules, 0) AS exception_rules,
-      NVL(g.linked_gabarits, 0) AS linked_gabarits,
-      NVL(r.associated_runs, 0) AS associated_runs,
-      NVL(r.runs_with_qxp_output, 0) AS runs_with_qxp_output,
-      r.latest_run_date,
-      t.commentaire
+      COUNT(DISTINCT agt.id_gabarit) AS all_linked_gabarits,
+      COUNT(
+          DISTINCT CASE
+              WHEN g.is_actif = 1 THEN g.id_gabarit
+          END
+      ) AS active_linked_gabarits,
+      COUNT(
+          DISTINCT CASE
+              WHEN g.is_actif = 1
+               AND afg.id_gabarit IS NOT NULL
+              THEN g.id_gabarit
+          END
   FROM qxp_tache t
-  LEFT JOIN gabarit_usage g
-    ON g.id_tache = t.id_tache
-  LEFT JOIN run_usage r
-    ON r.id_tache = t.id_tache
-  LEFT JOIN exception_usage e
-    ON e.id_tache = t.id_tache
+  LEFT JOIN qxp_asso_gabarit_taches agt
+    ON agt.id_tache = t.id_tache
+  LEFT JOIN qxp_gabarit g
+    ON g.id_gabarit = agt.id_gabarit
+  LEFT JOIN qxp_asso_fond_gabarit afg
+    ON afg.id_gabarit = g.id_gabarit
   WHERE t.is_actif = 1
     AND t.id_type_tache = 1
+    AND NOT EXISTS (
+        SELECT 1
+        FROM qxp_asso_run_taches art
+        WHERE art.id_tache = t.id_tache
+    )
+  GROUP BY
+      t.id_tache,
+      t.commentaire
   ORDER BY t.id_tache;
