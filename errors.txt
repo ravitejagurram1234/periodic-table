@@ -25,6 +25,17 @@ SELECT
       ) DESC NULLS LAST
   FETCH FIRST 10 ROWS ONLY;
 
+result
+509199	68134	2	11-APR-26	11-APR-26	11-APR-26	1059071	1059072	329	1	101005		01-DEC-22
+509198	68114	2	11-APR-26	11-APR-26	11-APR-26	1059065	1059067	329	1	101004		01-DEC-22
+509197	68113	2	11-APR-26	11-APR-26	11-APR-26	1059066	1059068	329	1	101003		01-DEC-22
+494060	73019	2	04-JUL-25	04-JUL-25	04-JUL-25	1028811	1028812	31	1	340203		01-MAR-24
+492075	72004	3	07-JUN-25	07-JUN-25	07-JUN-25			329	1	101017		01-DEC-23
+492027	72008	2	06-JUN-25	06-JUN-25	06-JUN-25	1024758	1024759	329	1	101021		01-DEC-23
+468905	71492	3	18-JAN-25	18-JAN-25	18-JAN-25			31	1	102008		01-DEC-23
+479806	72007	2	05-DEC-24	05-DEC-24	05-DEC-24	1000388	1000389	329	1	101020		01-DEC-23
+470987	68135	2	23-JUN-24	23-JUN-24	23-JUN-24	982745	982747	329	1	101006		01-DEC-22
+470988	68144	2	23-JUN-24	23-JUN-24	23-JUN-24	982744	982746	329	1	101009		01-DEC-22
 
 --2
 
@@ -45,6 +56,9 @@ SELECT
   WHERE r.id_run = <CHOSEN_RUN_ID>
   ORDER BY p.id_parametre;
 
+output: 
+509199	68134	1	p_code_port	1	101005
+509199	68134	2	p_date_echeance	4	12/30/2022 00:00:00
 -- 3
 
 
@@ -64,9 +78,130 @@ SELECT
       commentaire
   FROM qxp_tache
   WHERE id_tache = 53;
+output
+53	1	5620	3	2	1	0	[-]	0	21 - 2 - Historique des accomptes PMV 301112
 
-  Then retrieve the SQL CLOB:
 
   SELECT sql
   FROM qxp_tache
   WHERE id_tache = 53;
+sql query
+"""
+
+-- 21 - 2 - Historique des accomptes PMV 301112
+
+(
+ select
+
+htr.ID_TBR_REPORTING
+,htr.ID_TBR_FUND 
+,htr.ID_TBR_TAB 
+,htr.ID_TBR_REPORT_DATE     
+,htr.ID_TBR_ROW 
+,htr.ID_TBR_COLUMN
+,'R'||'.HISAPM.'||  case   when  htr.TBR_CELL_VALUE = 'HIS_ACP' then 'ACCOMPTE'
+                             when  htr.ID_TBR_COLUMN = '2' then 'DATE_ACCOMPTE'
+                             when  htr.ID_TBR_COLUMN = '3' then 'CODE_PART'
+                             when  htr.ID_TBR_COLUMN = '4' then 'LIBELLE_PART'
+                             when  htr.ID_TBR_COLUMN = '5' then 'MONTANT_TOTAL'
+                             when  htr.ID_TBR_COLUMN = '6' then 'MONTANT_UNIT'
+                             when  htr.ID_TBR_COLUMN = '7' then 'CI_TOTAL'
+                             when  htr.ID_TBR_COLUMN = '8' then 'CI_UNITAIRE'     
+                      end ||'.'|| htr.ID_TBR_ROW as NOM_BLOC
+
+,Case When htr.ID_TBR_COLUMN = 2 then htr.TBR_CELL_VALUE 
+      when htr.TBR_CELL_VALUE in ('0','0.0','0.00')then '-'
+      When htr.ID_TBR_COLUMN in (5,6) then Replace(Replace(htr.TBR_CELL_VALUE,',',' '),'.',',') end as VALEUR_BLOC    
+
+,length ('R'||'.HISAPM.'||  case   when  htr.TBR_CELL_VALUE = 'HIS_ACP' then 'ACCOMPTE'
+                                     when  htr.ID_TBR_COLUMN = '2' then 'DATE_ACCOMPTE'
+                                     when  htr.ID_TBR_COLUMN = '3' then 'CODE_PART'
+                                     when  htr.ID_TBR_COLUMN = '4' then 'LIBELLE_PART'
+                                     when  htr.ID_TBR_COLUMN = '5' then 'MONTANT_TOTAL'
+                                     when  htr.ID_TBR_COLUMN = '6' then 'MONTANT_UNIT'
+                                     when  htr.ID_TBR_COLUMN = '7' then 'CI_TOTAL'
+                                     when  htr.ID_TBR_COLUMN = '8' then 'CI_UNITAIRE'
+                              end ||'.'|| htr.ID_TBR_ROW) as NB_CARACTERES
+
+from
+        OWB_DWH.HIS_TAB_RESULT htr
+        
+    where
+        htr.ID_TBR_REPORTING = 'TYPREP\RAN12' 
+        AND htr.ID_TBR_TAB = 'HISAPM-M12'
+        AND htr.ID_TBR_REPORT_DATE = to_date(:p_date_echeance)
+        AND htr.ID_TBR_FUND = :p_code_port
+        AND htr.ID_TBR_COLUMN not in (1,3,4)
+        AND NOT htr.ID_TBR_ROW =   (select 
+                                    htr.ID_TBR_ROW
+                                    from
+                                    OWB_DWH.HIS_TAB_RESULT htr
+                                    where
+                                    htr.ID_TBR_REPORTING = 'TYPREP\RAN12' 
+                                    AND htr.ID_TBR_TAB = 'HISAPM-M12'
+                                    AND htr.ID_TBR_REPORT_DATE = to_date(:p_date_echeance)
+                                    AND htr.ID_TBR_FUND = :p_code_port
+                                    and htr.TBR_CELL_VALUE = 'TOTAL_LIG')
+
+)
+UNION
+(
+select
+
+htr.ID_TBR_REPORTING
+,htr.ID_TBR_FUND 
+,htr.ID_TBR_TAB 
+,htr.ID_TBR_REPORT_DATE 
+,htr.ID_TBR_ROW 
+,htr.ID_TBR_COLUMN
+,'R'||'.HISAPM.'|| case    when  htr.TBR_CELL_VALUE = 'TOTAL_LIG' then 'TOT_ACCOMPTES'
+                             when  htr.ID_TBR_COLUMN = '2' then 'DATE_ACCOMPTE'
+                             when  htr.ID_TBR_COLUMN = '3' then 'CODE_PART'
+                             when  htr.ID_TBR_COLUMN = '4' then 'LIBELLE_PART'
+                             when  htr.ID_TBR_COLUMN = '5' then 'MONTANT_TOTAL'
+                             when  htr.ID_TBR_COLUMN = '6' then 'MONTANT_UNIT'
+                             when  htr.ID_TBR_COLUMN = '7' then 'CI_TOTAL'
+                             when  htr.ID_TBR_COLUMN = '8' then 'CI_UNITAIRE'
+                     end ||'.'|| 'TOTAL' as NOM_BLOC
+
+ ,Case when htr.TBR_CELL_VALUE in ('0','0.0','0.00')then '-'
+      else Replace(Replace(htr.TBR_CELL_VALUE,',',' '),'.',',') end as VALEUR_BLOC 
+      
+,length ('R'||'.HISAPM.'|| case    when  htr.TBR_CELL_VALUE = 'TOTAL_LIG' then 'TOT_ACCOMPTES'
+                                     when  htr.ID_TBR_COLUMN = '2' then 'DATE_ACCOMPTE'
+                                     when  htr.ID_TBR_COLUMN = '3' then 'CODE_PART'
+                                     when  htr.ID_TBR_COLUMN = '4' then 'LIBELLE_PART'
+                                     when  htr.ID_TBR_COLUMN = '5' then 'MONTANT_TOTAL'
+                                     when  htr.ID_TBR_COLUMN = '6' then 'MONTANT_UNIT'
+                                     when  htr.ID_TBR_COLUMN = '7' then 'CI_TOTAL'
+                                     when  htr.ID_TBR_COLUMN = '8' then 'CI_UNITAIRE'
+                              end ||'.'|| 'TOTAL') as NB_CARACTERES
+
+from
+        OWB_DWH.HIS_TAB_RESULT htr
+        
+        
+    where
+        htr.ID_TBR_REPORTING = 'TYPREP\RAN12' 
+        AND htr.ID_TBR_TAB = 'HISAPM-M12'
+        AND htr.ID_TBR_REPORT_DATE = to_date(:p_date_echeance)
+        AND htr.ID_TBR_FUND = :p_code_port
+        AND htr.ID_TBR_COLUMN not in (1,2,3,4)
+        AND htr.ID_TBR_ROW =   (select 
+                                    htr.ID_TBR_ROW
+                                    from
+                                    OWB_DWH.HIS_TAB_RESULT htr
+                                    where
+                                    htr.ID_TBR_REPORTING = 'TYPREP\RAN12' 
+                                    AND htr.ID_TBR_TAB = 'HISAPM-M12'
+                                    AND htr.ID_TBR_REPORT_DATE = to_date(:p_date_echeance)
+                                    AND htr.ID_TBR_FUND = :p_code_port
+                                    and htr.TBR_CELL_VALUE = 'TOTAL_LIG')
+                                    
+)
+
+"""
+
+result of sql query
+TYPREP\RAN12	101005	HISAPM-M12	30/12/2022	1	5	R.HISAPM.MONTANT_TOTAL.TOTAL	-	28
+TYPREP\RAN12	101005	HISAPM-M12	30/12/2022	1	6	R.HISAPM.MONTANT_UNIT.TOTAL	-	27
