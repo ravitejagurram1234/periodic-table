@@ -1,6 +1,52 @@
 SELECT
+      CASE
+          WHEN champs_vide IS NULL THEN '<NULL>'
+          ELSE '[' ||
+               REPLACE(
+                   REPLACE(champs_vide, CHR(13), '<CR>'),
+                   CHR(10), '<LF>'
+               ) ||
+               ']'
+      END AS champs_vide_display,
+      CASE
+          WHEN champs_vide IS NULL THEN NULL
+          ELSE LENGTH(champs_vide)
+      END AS value_length,
+      CASE
+          WHEN champs_vide IS NULL THEN '<NULL>'
+          ELSE DUMP(champs_vide, 1016)
+      END AS byte_dump,
+      COUNT(*) AS task_count
+  FROM qxp_tache
+  WHERE is_actif = 1
+    AND id_type_tache = 1
+    AND output_data_type = 3
+  GROUP BY champs_vide
+  ORDER BY task_count DESC;
+
+  The square brackets will make spaces visible—for example, [ ] means one space.
+
+  ### Corrected dynamic-task query
+
+  Your pasted query lost the middle of the nested function call. This is the complete statement:
+
+  SELECT
       t.id_tache,
       REGEXP_COUNT(t.sql, '[?]') AS question_count,
+      DBMS_LOB.INSTR(t.sql, '?') AS first_question_position,
+      REPLACE(
+          REPLACE(
+              DBMS_LOB.SUBSTR(
+                  t.sql,
+                  161,
+                  CASE
+                      WHEN DBMS_LOB.INSTR(t.sql, '?') > 80
+                      THEN DBMS_LOB.INSTR(t.sql, '?') - 80
+                      ELSE 1
+                  END
+              ),
+              CHR(10),
+              ' '
           ),
           CHR(13),
           ' '
