@@ -1,16 +1,20 @@
-SELECT
-      r.id_run,
-      r.id_suivi,
-      p.id_parametre,
-      p.nom_parametre,
-      p.input_data_type,
-      sp.valeur
-  FROM qxp_run r
+ SELECT
+      run_record.id_run,
+      run_record.id_suivi,
+      parameter_definition.id_parametre,
+      parameter_definition.nom_parametre,
+      parameter_definition.input_data_type,
+      suivi_parameter.valeur
+  FROM qxp_run run_record
 
-  JOIN qxp_asso_suivi_parametres sp
-    ON sp.id_suivi = r.id_suivi
+  JOIN qxp_asso_suivi_parametres suivi_parameter
+    ON suivi_parameter.id_suivi = run_record.id_suivi
 
-  WHERE r.id_run IN (
+  JOIN qxp_params_type_rapport parameter_definition
+    ON parameter_definition.id_parametre =
+       suivi_parameter.id_parametre
+
+  WHERE run_record.id_run IN (
       509474,
       464995,
       275985,
@@ -18,5 +22,5 @@ SELECT
   )
 
   ORDER BY
-      r.id_run,
-      p.id_parametre;
+      run_record.id_run,
+      parameter_definition.id_parametre;
