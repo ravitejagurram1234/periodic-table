@@ -69,3 +69,16 @@ SELECT
 216	8	185	ns la requête - Autres REME à finaliser  - Autres types d'instruments concernés ? (emprunt à terme, dépot à terme)  - saut de page dans Quark - nouveau type de r
 240	2	4443	10 and srq.info = 'PARTS' and srq.col = 2 then NVL(srq.VALEUR_AFFICHAGE,'-') -- ??:(        when srq.niveau_base = 10 and srq.info = 'VL' and srq.col = 3 then sr
 241	2	4379	10 and srq.info = 'PARTS' and srq.col = 2 then NVL(srq.VALEUR_AFFICHAGE,'-') -- ??:(        when srq.niveau_base = 10 and srq.info = 'VL' and srq.col = 3 then sr
+
+
+SELECT
+      t.id_tache,
+      COUNT(*) AS exception_rule_count
+  FROM qxp_tache t
+  JOIN qxp_tache_exception te
+    ON te.id_tache = t.id_tache
+  WHERE t.is_actif = 1
+    AND t.id_type_tache = 1
+    AND t.output_data_type = 3
+  GROUP BY t.id_tache
+  ORDER BY t.id_tache;
