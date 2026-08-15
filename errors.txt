@@ -1,84 +1,10 @@
 SELECT
+      nom_bloc,
+      nom_tableau,
       CASE
-          WHEN champs_vide IS NULL THEN '<NULL>'
-          ELSE '[' ||
-               REPLACE(
-                   REPLACE(champs_vide, CHR(13), '<CR>'),
-                   CHR(10), '<LF>'
-               ) ||
-               ']'
-      END AS champs_vide_display,
-      CASE
-          WHEN champs_vide IS NULL THEN NULL
-          ELSE LENGTH(champs_vide)
-      END AS value_length,
-      CASE
-          WHEN champs_vide IS NULL THEN '<NULL>'
-          ELSE DUMP(champs_vide, 1016)
-      END AS byte_dump,
-      COUNT(*) AS task_count
-  FROM qxp_tache
-  WHERE is_actif = 1
-    AND id_type_tache = 1
-    AND output_data_type = 3
-  GROUP BY champs_vide
-  ORDER BY task_count DESC;
--- result
-[-]	1	Typ=1 Len=1 CharacterSet=WE8ISO8859P1: 2d	35
-
-  The square brackets will make spaces visible—for example, [ ] means one space.
-
-  ### Corrected dynamic-task query
-
-  Your pasted query lost the middle of the nested function call. This is the complete statement:
-
-  SELECT
-      t.id_tache,
-      REGEXP_COUNT(t.sql, '[?]') AS question_count,
-      DBMS_LOB.INSTR(t.sql, '?') AS first_question_position,
-      REPLACE(
-          REPLACE(
-              DBMS_LOB.SUBSTR(
-                  t.sql,
-                  161,
-                  CASE
-                      WHEN DBMS_LOB.INSTR(t.sql, '?') > 80
-                      THEN DBMS_LOB.INSTR(t.sql, '?') - 80
-                      ELSE 1
-                  END
-              ),
-              CHR(10),
-              ' '
-          ),
-          CHR(13),
-          ' '
-      ) AS first_question_context
-  FROM qxp_tache t
-  WHERE t.is_actif = 1
-    AND t.id_type_tache = 4
-    AND DBMS_LOB.INSTR(t.sql, '?') > 0
-  ORDER BY t.id_tache;
---result
-116	1	7482	ins_category in ('VMOB','CRNE','CAT','FUTU','OPTI','SWAT','TRES')--Inclure TRES ? A priori non                             join                                 (
-117	2	82023	1154' /*Traiter les identification de Loans (Cible # via QXP_CLASSIF_INSTRUMENT ?)*/                                              when srq_photo.ins_asset_type i
-126	1	6981	 ri.id_ins_category in ('VMOB','CRNE','CAT','FUTU','OPTI','SWAT')--Inclure TRES ? A priori non                             join                                 (
-137	1	6566	ins_category in ('VMOB','CRNE','CAT','FUTU','OPTI','SWAT','TRES')--Inclure TRES ? A priori non                             left join owb_dwh.ref_trd_master_data 
-160	1	26779	154' /* Traiter les identification de Loans (Cible # via QXP_CLASSIF_INSTRUMENT ?) */                                  else srq_photo.ocr_id_translation_cpt     
-163	1	7549	ins_category in ('VMOB','CRNE','CAT','FUTU','OPTI','SWAT','TRES')--Inclure TRES ? A priori non                             join                                 (
-211	1	29985	          when 'EUR' then '¿'             when 'GBP' then '£'             else '?'              end currency_symbol                ,max(indic_affich_5_pct)over(p
-216	8	185	ns la requête - Autres REME à finaliser  - Autres types d'instruments concernés ? (emprunt à terme, dépot à terme)  - saut de page dans Quark - nouveau type de r
-240	2	4443	10 and srq.info = 'PARTS' and srq.col = 2 then NVL(srq.VALEUR_AFFICHAGE,'-') -- ??:(        when srq.niveau_base = 10 and srq.info = 'VL' and srq.col = 3 then sr
-241	2	4379	10 and srq.info = 'PARTS' and srq.col = 2 then NVL(srq.VALEUR_AFFICHAGE,'-') -- ??:(        when srq.niveau_base = 10 and srq.info = 'VL' and srq.col = 3 then sr
-
-
-SELECT
-      t.id_tache,
-      COUNT(*) AS exception_rule_count
-  FROM qxp_tache t
-  JOIN qxp_tache_exception te
-    ON te.id_tache = t.id_tache
-  WHERE t.is_actif = 1
-    AND t.id_type_tache = 1
-    AND t.output_data_type = 3
-  GROUP BY t.id_tache
-  ORDER BY t.id_tache;
+          WHEN index_lignes IS NULL THEN '<WHOLE TABLE>'
+          ELSE index_lignes
+      END AS removal_scope
+  FROM qxp_tache_exception
+  WHERE id_tache = 53
+  ORDER BY nom_bloc;
