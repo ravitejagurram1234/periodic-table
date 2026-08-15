@@ -1,28 +1,72 @@
 SELECT
-      nom_bloc,
-      nom_tableau,
+      r.id_run,
+      r.id_suivi,
+      r.id_statut_generation,
+      r.date_creation_run,
+      r.date_debut_generation,
+      r.date_fin_generation,
+      r.id_doc_qxp,
+      r.id_doc_pdf,
+      s.id_gabarit,
+      s.id_type_rapport,
+      s.id_fnd_code,
+      s.id_unit_code,
+      s.date_echeance
+  FROM qxp_asso_run_taches art
+  JOIN qxp_run r
+    ON r.id_run = art.id_run
+  JOIN qxp_suivi s
+    ON s.id_suivi = r.id_suivi
+  WHERE art.id_tache = 53
+  ORDER BY
+      NVL(
+          r.date_fin_generation,
+          NVL(r.date_debut_generation, r.date_creation_run)
+      ) DESC NULLS LAST
+  FETCH FIRST 10 ROWS ONLY;
+
+
+--2
+
+
+
+  SELECT
+      r.id_run,
+      r.id_suivi,
+      p.id_parametre,
+      p.nom_parametre,
+      p.input_data_type,
+      sp.valeur
+  FROM qxp_run r
+  JOIN qxp_asso_suivi_parametres sp
+    ON sp.id_suivi = r.id_suivi
+  JOIN qxp_params_type_rapport p
+    ON p.id_parametre = sp.id_parametre
+  WHERE r.id_run = <CHOSEN_RUN_ID>
+  ORDER BY p.id_parametre;
+
+-- 3
+
+
+SELECT
+      id_tache,
+      id_type_tache,
+      DBMS_LOB.GETLENGTH(sql) AS sql_length,
+      output_data_type,
+      nb_decimal,
+      decimal_significative,
+      afficher_zero,
       CASE
-          WHEN index_lignes IS NULL THEN '<WHOLE TABLE>'
-          ELSE index_lignes
-      END AS removal_scope
-  FROM qxp_tache_exception
-  WHERE id_tache = 53
-  ORDER BY nom_bloc;
+          WHEN champs_vide IS NULL THEN '<NULL>'
+          ELSE '[' || champs_vide || ']'
+      END AS champs_vide,
+      store_data,
+      commentaire
+  FROM qxp_tache
+  WHERE id_tache = 53;
 
+  Then retrieve the SQL CLOB:
 
-R.HISACP-M.DATE_ACCOMPTE.10	3.10.AcomptesVerses	12
-R.HISACP-M.DATE_ACCOMPTE.11	3.10.AcomptesVerses	13
-R.HISACP-M.DATE_ACCOMPTE.12	3.10.AcomptesVerses	14
-R.HISACP-M.DATE_ACCOMPTE.13	3.10.AcomptesVerses	15
-R.HISACP-M.DATE_ACCOMPTE.14	3.10.AcomptesVerses	16
-R.HISACP-M.DATE_ACCOMPTE.15	3.10.AcomptesVerses	17
-R.HISACP-M.DATE_ACCOMPTE.16	3.10.AcomptesVerses	18
-R.HISACP-M.DATE_ACCOMPTE.17	3.10.AcomptesVerses	19
-R.HISACP-M.DATE_ACCOMPTE.18	3.10.AcomptesVerses	20
-R.HISACP-M.DATE_ACCOMPTE.19	3.10.AcomptesVerses	21
-R.HISACP-M.DATE_ACCOMPTE.20	3.10.AcomptesVerses	22
-R.HISACP-M.DATE_ACCOMPTE.5	3.10.AcomptesVerses	7
-R.HISACP-M.DATE_ACCOMPTE.6	3.10.AcomptesVerses	8
-R.HISACP-M.DATE_ACCOMPTE.7	3.10.AcomptesVerses	9
-R.HISACP-M.DATE_ACCOMPTE.8	3.10.AcomptesVerses	10
-R.HISACP-M.DATE_ACCOMPTE.9	3.10.AcomptesVerses	11
+  SELECT sql
+  FROM qxp_tache
+  WHERE id_tache = 53;
