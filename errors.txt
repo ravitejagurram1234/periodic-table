@@ -1,101 +1,74 @@
 SELECT
-      t.id_tache,
-
-      COUNT(
-          DISTINCT agt.id_gabarit
-      ) AS all_linked_gabarits,
-
-      COUNT(
-          DISTINCT CASE
-              WHEN g.is_actif = 1
-              THEN g.id_gabarit
-          END
-      ) AS active_linked_gabarits,
-
-      COUNT(
-          DISTINCT CASE
-              WHEN g.is_actif = 1
-               AND afg.id_gabarit IS NOT NULL
-              THEN g.id_gabarit
-          END
-      ) AS active_fund_mapped_gabarits,
-
-      t.commentaire
-
-  FROM qxp_tache t
-
-  LEFT JOIN qxp_asso_gabarit_taches agt
-    ON agt.id_tache = t.id_tache
-
-  LEFT JOIN qxp_gabarit g
-    ON g.id_gabarit = agt.id_gabarit
-
-  LEFT JOIN qxp_asso_fond_gabarit afg
-    ON afg.id_gabarit = g.id_gabarit
-
-  WHERE t.is_actif = 1
-    AND t.id_type_tache = 1
-    AND NOT EXISTS (
-        SELECT 1
-        FROM qxp_asso_run_taches art
-        WHERE art.id_tache = t.id_tache
-    )
-
-  GROUP BY
-      t.id_tache,
-      t.commentaire
-
-  ORDER BY
-      t.id_tache;
-
-
-
---2
-SELECT
-      te.id_tache,
-      t.output_data_type,
-      t.nb_decimal,
-      t.decimal_significative,
-      t.afficher_zero,
-
-      CASE
-          WHEN t.champs_vide IS NULL THEN '<NULL>'
-          ELSE '[' || t.champs_vide || ']'
-      END AS champs_vide,
-
-      te.nom_bloc AS condition_block,
-      te.nom_tableau AS target_table,
-
-      CASE
-          WHEN te.index_lignes IS NULL THEN '<WHOLE TABLE>'
-          ELSE te.index_lignes
-      END AS removal_scope,
-
-      CASE
-          WHEN te.index_lignes IS NULL THEN 'TABLE'
-          ELSE 'LINE'
-      END AS rule_type
-
-  FROM qxp_tache_exception te
-
-  JOIN qxp_tache t
-    ON t.id_tache = te.id_tache
-
-  WHERE t.is_actif = 1
-    AND t.id_type_tache = 1
-
-  ORDER BY
-      te.id_tache,
-      te.nom_bloc,
-      te.nom_tableau;
-
-
-
---3
-SELECT
       id_tache,
-      '[' || champs_vide || ']' AS visible_value,
-      LENGTH(champs_vide) AS value_length,
-      DUMP(champs_vide, 1016) AS byte_dump
+      DBMS_LOB.GETLENGTH(sql) AS sql_length,
+      sql
   FROM qxp_tache
-  WHERE id_tache = 225;
+  WHERE id_tache IN (3, 97, 98, 99, 225)
+  ORDER BY id_tache;
+
+
+
+  WITH ranked_runs AS (
+      SELECT
+          art.id_tache,
+          r.id_run,
+          r.id_suivi,
+          r.id_statut_generation,
+          sg.libelle AS status_label,
+          sg.traduction_code AS status_code,
+          r.date_creation_run,
+          r.date_debut_generation,
+          r.date_fin_generation,
+          r.id_doc_qxp,
+          r.id_doc_pdf,
+          s.id_gabarit,
+          s.id_type_rapport,
+          s.id_fnd_code,
+          s.id_unit_code,
+          s.date_echeance,
+
+          ROW_NUMBER() OVER (
+              PARTITION BY art.id_tache
+              ORDER BY
+                  NVL(
+                      r.date_fin_generation,
+                      NVL(r.date_debut_generation, r.date_creation_run)
+                  ) DESC NULLS LAST,
+                  r.id_run DESC
+          ) AS candidate_rank
+
+      FROM qxp_asso_run_taches art
+
+      JOIN qxp_run r
+        ON r.id_run = art.id_run
+
+      JOIN qxp_suivi s
+        ON s.id_suivi = r.id_suivi
+
+      LEFT JOIN qxp_ref_statut_generation sg
+        ON sg.id_statut_generation = r.id_statut_generation
+
+      WHERE art.id_tache IN (3, 97, 98, 99, 225)
+        AND r.id_doc_qxp IS NOT NULL
+  )
+  SELECT
+      id_tache,
+      candidate_rank,
+      id_run,
+      id_suivi,
+      id_statut_generation,
+      status_label,
+      status_code,
+      date_creation_run,
+      date_debut_generation,
+      date_fin_generation,
+      id_doc_qxp,
+      id_doc_pdf,
+      id_gabarit,
+      id_type_rapport,
+      id_fnd_code,
+      id_unit_code,
+      date_echeance
+  FROM ranked_runs
+  WHERE candidate_rank <= 3
+  ORDER BY id_tache, candidate_rank;
