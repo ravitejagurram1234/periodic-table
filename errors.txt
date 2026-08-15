@@ -1,74 +1,24 @@
 SELECT
-      id_tache,
-      DBMS_LOB.GETLENGTH(sql) AS sql_length,
-      sql
-  FROM qxp_tache
-  WHERE id_tache IN (3, 97, 98, 99, 225)
-  ORDER BY id_tache;
+      r.id_run,
+      r.id_suivi,
+      p.id_parametre,
+      p.nom_parametre,
+      p.input_data_type,
+      sp.valeur
+  FROM qxp_run r
 
+  JOIN qxp_asso_suivi_parametres sp
+    ON sp.id_suivi = r.id_suivi
 
+    ON p.id_parametre = sp.id_parametre
 
-  WITH ranked_runs AS (
-      SELECT
-          art.id_tache,
-          r.id_run,
-          r.id_suivi,
-          r.id_statut_generation,
-          sg.libelle AS status_label,
-          sg.traduction_code AS status_code,
-          r.date_creation_run,
-          r.date_debut_generation,
-          r.date_fin_generation,
-          r.id_doc_qxp,
-          r.id_doc_pdf,
-          s.id_gabarit,
-          s.id_type_rapport,
-          s.id_fnd_code,
-          s.id_unit_code,
-          s.date_echeance,
-
-          ROW_NUMBER() OVER (
-              PARTITION BY art.id_tache
-              ORDER BY
-                  NVL(
-                      r.date_fin_generation,
-                      NVL(r.date_debut_generation, r.date_creation_run)
-                  ) DESC NULLS LAST,
-                  r.id_run DESC
-          ) AS candidate_rank
-
-      FROM qxp_asso_run_taches art
-
-      JOIN qxp_run r
-        ON r.id_run = art.id_run
-
-      JOIN qxp_suivi s
-        ON s.id_suivi = r.id_suivi
-
-      LEFT JOIN qxp_ref_statut_generation sg
-        ON sg.id_statut_generation = r.id_statut_generation
-
-      WHERE art.id_tache IN (3, 97, 98, 99, 225)
-        AND r.id_doc_qxp IS NOT NULL
+  WHERE r.id_run IN (
+      509474,
+      464995,
+      275985,
+      514731
   )
-  SELECT
-      id_tache,
-      candidate_rank,
-      id_run,
-      id_suivi,
-      id_statut_generation,
-      status_label,
-      status_code,
-      date_creation_run,
-      date_debut_generation,
-      date_fin_generation,
-      id_doc_qxp,
-      id_doc_pdf,
-      id_gabarit,
-      id_type_rapport,
-      id_fnd_code,
-      id_unit_code,
-      date_echeance
-  FROM ranked_runs
-  WHERE candidate_rank <= 3
-  ORDER BY id_tache, candidate_rank;
+
+  ORDER BY
+      r.id_run,
+      p.id_parametre;
