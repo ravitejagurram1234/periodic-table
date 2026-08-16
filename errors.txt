@@ -1,58 +1,31 @@
 /* ============================================================================
-   Q006 — Diagnose zero SQL-storage rows for task-99 run 275985
+   Q008 — Determine whether retained SQL-storage evidence exists elsewhere
 
    Purpose:
-     Q005 returned zero rows. These read-only statements determine whether the
-     whole run has no storage, whether the same suivi has SQL storage from other
-     runs, and whether another successful task-99 run retains SQL-storage rows.
-
-   Interpretation:
-     Q004 reads today's task/gabarit configuration; it is not a historical
-     snapshot of configuration at run 275985's execution time. SQL storage is
-     non-differential, so a successful insert remains keyed to its original run
-     unless another process explicitly removes it.
+     All thirteen retained successful task-99 runs have zero SQL-storage rows.
+     First summarize the storage table by type, then inspect recent successful
+     task-133 runs because task 133 is the other active static SQL task whose
+     STORE_DATA flag is enabled.
    ============================================================================ */
 
-/* Q006-A — Any retained storage type for the selected run. */
+/* Q008-A — Global retained storage by data type. */
 SELECT
-    stored_data.id_suivi,
-    stored_data.id_run,
     stored_data.data_type,
     COUNT(*) AS stored_row_count,
+    COUNT(DISTINCT stored_data.id_run) AS distinct_run_count,
+    COUNT(DISTINCT stored_data.id_suivi) AS distinct_suivi_count,
     MIN(stored_data.date_generation) AS first_generation_date,
     MAX(stored_data.date_generation) AS last_generation_date
 FROM qxp_data_storage stored_data
-WHERE stored_data.id_run = 275985
-GROUP BY
-    stored_data.id_suivi,
-    stored_data.id_run,
-    stored_data.data_type
+GROUP BY stored_data.data_type
 ORDER BY stored_data.data_type;
 
-/* Q006-B — SQL-storage history retained for the same suivi. */
-SELECT
-    stored_data.id_suivi,
-    stored_data.id_run,
-    COUNT(*) AS stored_sql_row_count,
-    MIN(stored_data.date_generation) AS first_generation_date,
-    MAX(stored_data.date_generation) AS last_generation_date
-FROM qxp_data_storage stored_data
-WHERE stored_data.id_suivi = 44138
-  AND stored_data.data_type = 1
-GROUP BY
-    stored_data.id_suivi,
-    stored_data.id_run
-ORDER BY stored_data.id_run DESC;
-
-/* Q006-C — Recent successful task-99 runs and their retained SQL row counts. */
-WITH task_99_runs AS (
+/* Q008-B — Recent successful task-133 runs and retained SQL row counts. */
+WITH task_133_runs AS (
     SELECT
         run_task.id_tache,
         run_record.id_run,
         run_record.id_suivi,
-        run_record.id_statut_generation,
-        run_record.date_creation_run,
-        run_record.date_debut_generation,
         run_record.date_fin_generation,
         run_record.id_doc_qxp,
         run_record.id_doc_pdf,
@@ -68,7 +41,7 @@ WITH task_99_runs AS (
       ON run_record.id_run = run_task.id_run
     JOIN qxp_suivi suivi_record
       ON suivi_record.id_suivi = run_record.id_suivi
-    WHERE run_task.id_tache = 99
+    WHERE run_task.id_tache = 133
       AND run_record.id_statut_generation = 2
 )
 SELECT
@@ -80,7 +53,7 @@ SELECT
     candidate_run.id_doc_qxp,
     candidate_run.id_doc_pdf,
     COUNT(stored_data.nom_bloc) AS retained_sql_row_count
-FROM task_99_runs candidate_run
+FROM task_133_runs candidate_run
 LEFT JOIN qxp_data_storage stored_data
   ON stored_data.id_suivi = candidate_run.id_suivi
  AND stored_data.id_run = candidate_run.id_run
@@ -99,92 +72,66 @@ ORDER BY candidate_run.recency_rank;
 
 
 /* ============================================================================
-   Q007 — Prove availability of all four defined input parameters
+   Q009 — Candidate real runs for both static three-parameter bind sets
 
    Purpose:
-     Confirm each parameter has suivi associations and determine whether any
-     retained run currently has all four parameters together. Get_In_Params
-     itself has no two/three/four-row limit: it returns every association for
-     the requested ID_SUIVI.
+     Select up to three recent successful runs per three-parameter static task
+     and return every parameter actually associated with each selected suivi.
+     Task 133 requires p_id_gabarit; tasks 206/207/235 require p_id_unit_code.
+
+   Expected result:
+     Each candidate must include p_code_port, p_date_echeance and the third bind
+     required by its task SQL. Extra fetched parameters are allowed.
    ============================================================================ */
 
-/* Q007-A — Association coverage for every current parameter definition. */
+WITH ranked_task_runs AS (
+    SELECT
+        run_task.id_tache,
+        run_record.id_run,
+        run_record.id_suivi,
+        run_record.date_fin_generation,
+        run_record.id_doc_qxp,
+        run_record.id_doc_pdf,
+        suivi_record.id_gabarit,
+        ROW_NUMBER() OVER (
+            PARTITION BY run_task.id_tache
+            ORDER BY NVL(
+                run_record.date_fin_generation,
+                NVL(run_record.date_debut_generation, run_record.date_creation_run)
+            ) DESC NULLS LAST
+        ) AS task_recency_rank
+    FROM qxp_asso_run_taches run_task
+    JOIN qxp_run run_record
+      ON run_record.id_run = run_task.id_run
+    JOIN qxp_suivi suivi_record
+      ON suivi_record.id_suivi = run_record.id_suivi
+    WHERE run_task.id_tache IN (133, 206, 207, 235)
+      AND run_record.id_statut_generation = 2
+),
+candidate_runs AS (
+    SELECT ranked_run.*
+    FROM ranked_task_runs ranked_run
+    WHERE ranked_run.task_recency_rank <= 3
+)
 SELECT
+    candidate_run.id_tache,
+    candidate_run.task_recency_rank,
+    candidate_run.id_run,
+    candidate_run.id_suivi,
+    candidate_run.id_gabarit,
+    candidate_run.date_fin_generation,
+    candidate_run.id_doc_qxp,
+    candidate_run.id_doc_pdf,
     parameter_definition.id_parametre,
     parameter_definition.nom_parametre,
     parameter_definition.input_data_type,
-    COUNT(suivi_parameter.id_suivi) AS association_count,
-    COUNT(DISTINCT suivi_parameter.id_suivi) AS distinct_suivi_count,
-    SUM(
-        CASE
-            WHEN suivi_parameter.id_suivi IS NOT NULL
-             AND suivi_parameter.valeur IS NULL
-            THEN 1 ELSE 0
-        END
-    ) AS null_value_count
-FROM qxp_params_type_rapport parameter_definition
-LEFT JOIN qxp_asso_suivi_parametres suivi_parameter
-  ON suivi_parameter.id_parametre = parameter_definition.id_parametre
-GROUP BY
-    parameter_definition.id_parametre,
-    parameter_definition.nom_parametre,
-    parameter_definition.input_data_type
-ORDER BY parameter_definition.id_parametre;
-
-/* Q007-B — Up to twenty recent runs whose suivi contains all four names. */
-WITH run_parameter_sets AS (
-    SELECT
-        run_record.id_run,
-        run_record.id_suivi,
-        run_record.id_statut_generation,
-        run_record.date_fin_generation,
-        MAX(CASE WHEN parameter_definition.nom_parametre = 'p_code_port' THEN 1 ELSE 0 END) AS has_code_port,
-        MAX(CASE WHEN parameter_definition.nom_parametre = 'p_date_echeance' THEN 1 ELSE 0 END) AS has_date_echeance,
-        MAX(CASE WHEN parameter_definition.nom_parametre = 'p_id_gabarit' THEN 1 ELSE 0 END) AS has_id_gabarit,
-        MAX(CASE WHEN parameter_definition.nom_parametre = 'p_id_unit_code' THEN 1 ELSE 0 END) AS has_id_unit_code,
-        MAX(CASE WHEN parameter_definition.nom_parametre = 'p_code_port' THEN suivi_parameter.valeur END) AS p_code_port,
-        MAX(CASE WHEN parameter_definition.nom_parametre = 'p_date_echeance' THEN suivi_parameter.valeur END) AS p_date_echeance,
-        MAX(CASE WHEN parameter_definition.nom_parametre = 'p_id_gabarit' THEN suivi_parameter.valeur END) AS p_id_gabarit,
-        MAX(CASE WHEN parameter_definition.nom_parametre = 'p_id_unit_code' THEN suivi_parameter.valeur END) AS p_id_unit_code
-    FROM qxp_run run_record
-    JOIN qxp_asso_suivi_parametres suivi_parameter
-      ON suivi_parameter.id_suivi = run_record.id_suivi
-    JOIN qxp_params_type_rapport parameter_definition
-      ON parameter_definition.id_parametre = suivi_parameter.id_parametre
-    WHERE parameter_definition.nom_parametre IN (
-        'p_code_port',
-        'p_date_echeance',
-        'p_id_gabarit',
-        'p_id_unit_code'
-    )
-    GROUP BY
-        run_record.id_run,
-        run_record.id_suivi,
-        run_record.id_statut_generation,
-        run_record.date_fin_generation
-),
-complete_parameter_runs AS (
-    SELECT
-        parameter_run.*,
-        ROW_NUMBER() OVER (
-            ORDER BY parameter_run.date_fin_generation DESC NULLS LAST,
-                     parameter_run.id_run DESC
-        ) AS recency_rank
-    FROM run_parameter_sets parameter_run
-    WHERE parameter_run.has_code_port = 1
-      AND parameter_run.has_date_echeance = 1
-      AND parameter_run.has_id_gabarit = 1
-      AND parameter_run.has_id_unit_code = 1
-)
-SELECT
-    complete_run.id_run,
-    complete_run.id_suivi,
-    complete_run.id_statut_generation,
-    complete_run.date_fin_generation,
-    complete_run.p_code_port,
-    complete_run.p_date_echeance,
-    complete_run.p_id_gabarit,
-    complete_run.p_id_unit_code
-FROM complete_parameter_runs complete_run
-WHERE complete_run.recency_rank <= 20
-ORDER BY complete_run.recency_rank;
+    suivi_parameter.valeur
+FROM candidate_runs candidate_run
+JOIN qxp_asso_suivi_parametres suivi_parameter
+  ON suivi_parameter.id_suivi = candidate_run.id_suivi
+JOIN qxp_params_type_rapport parameter_definition
+  ON parameter_definition.id_parametre = suivi_parameter.id_parametre
+ORDER BY
+    candidate_run.id_tache,
+    candidate_run.task_recency_rank,
+    parameter_definition.id_parametre;
