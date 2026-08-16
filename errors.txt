@@ -24,25 +24,28 @@ ORDER BY stored_data.nom_bloc;
 
 
 WITH selected_task_runs AS (
-      SELECT 133 AS id_tache, 505902 AS id_run FROM dual
-      UNION ALL
-      SELECT 206 AS id_tache, 399675 AS id_run FROM dual
-  )
-  SELECT
-      selected_pair.id_tache,
-      run_record.id_run,
-      run_record.id_suivi,
-      parameter_definition.id_parametre,
-      parameter_definition.nom_parametre,
-      suivi_parameter.valeur
-  FROM selected_task_runs selected_pair
-  JOIN qxp_run run_record
-    ON run_record.id_run = selected_pair.id_run
-   AND run_task.id_tache = selected_pair.id_tache
-  JOIN qxp_asso_suivi_parametres suivi_parameter
-    ON suivi_parameter.id_suivi = run_record.id_suivi
-  JOIN qxp_params_type_rapport parameter_definition
-    ON parameter_definition.id_parametre = suivi_parameter.id_parametre
-  ORDER BY
-
-  Expected six rows:
+    SELECT 133 AS id_tache, 505902 AS id_run FROM dual
+    UNION ALL
+    SELECT 206 AS id_tache, 399675 AS id_run FROM dual
+)
+SELECT
+    selected_pair.id_tache,
+    run_record.id_run,
+    run_record.id_suivi,
+    parameter_definition.id_parametre,
+    parameter_definition.nom_parametre,
+    parameter_definition.input_data_type,
+    suivi_parameter.valeur
+FROM selected_task_runs selected_pair
+JOIN qxp_run run_record
+  ON run_record.id_run = selected_pair.id_run
+JOIN qxp_asso_run_taches run_task
+  ON run_task.id_run = run_record.id_run
+ AND run_task.id_tache = selected_pair.id_tache
+JOIN qxp_asso_suivi_parametres suivi_parameter
+  ON suivi_parameter.id_suivi = run_record.id_suivi
+JOIN qxp_params_type_rapport parameter_definition
+  ON parameter_definition.id_parametre = suivi_parameter.id_parametre
+ORDER BY
+    selected_pair.id_tache,
+    parameter_definition.id_parametre;
