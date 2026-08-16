@@ -1,26 +1,119 @@
- SELECT
-      run_record.id_run,
-      run_record.id_suivi,
-      parameter_definition.id_parametre,
-      parameter_definition.nom_parametre,
-      parameter_definition.input_data_type,
-      suivi_parameter.valeur
-  FROM qxp_run run_record
+SELECT
+    session_nls.parameter AS nls_parameter,
+    session_nls.value AS nls_value
+FROM nls_session_parameters session_nls
+WHERE session_nls.parameter IN (
+    'NLS_DATE_FORMAT',
+    'NLS_DATE_LANGUAGE',
+    'NLS_LANGUAGE',
+    'NLS_NUMERIC_CHARACTERS',
+    'NLS_TERRITORY',
+    'NLS_TIMESTAMP_FORMAT'
+)
+ORDER BY session_nls.parameter;
 
-  JOIN qxp_asso_suivi_parametres suivi_parameter
-    ON suivi_parameter.id_suivi = run_record.id_suivi
+SELECT
+    SESSIONTIMEZONE AS session_time_zone,
+    DBTIMEZONE AS database_time_zone
+FROM dual;
 
-  JOIN qxp_params_type_rapport parameter_definition
-    ON parameter_definition.id_parametre =
-       suivi_parameter.id_parametre
 
-  WHERE run_record.id_run IN (
-      509474,
-      464995,
-      275985,
-      514731
-  )
+/* ============================================================================
+   Q003 — Complete active executable-task CLOB export for bind inventory
 
-  ORDER BY
-      run_record.id_run,
-      parameter_definition.id_parametre;
+   Purpose:
+     Export every active static-SQL (type 1) and dynamic (type 4) task so bind
+     markers can be parsed locally. This establishes which tasks use zero, one,
+     two, three or four distinct input parameters, detects any name not present
+     in QXP_PARAMS_TYPE_RAPPORT, and separately inventories positional question
+     marks used by dynamic tasks.
+
+   Why the SQL is chunked:
+     An XLSX cell is limited to 32,767 characters, while the current longest
+     known static-task SQL is 69,585 characters. Each 8,000-character chunk fits safely in
+     one XLSX cell even when characters require up to four bytes. Reconstruct
+     each task by concatenating SQL_CHUNK in CHUNK_NUMBER order. Do not export
+     the CLOB directly to one XLSX cell.
+
+   Expected current result:
+     219 distinct task IDs (130 static SQL + 89 dynamic). The known maximum
+     static SQL needs nine chunks. Export
+     the result as all_active_sql_task_chunks.xlsx without changing cell text.
+   ============================================================================ */
+
+WITH active_sql_tasks AS (
+    SELECT
+        task_definition.id_tache,
+        task_definition.id_type_tache,
+        task_definition.sql AS task_sql,
+        DBMS_LOB.GETLENGTH(task_definition.sql) AS sql_length
+    FROM qxp_tache task_definition
+    WHERE task_definition.is_actif = 1
+      AND task_definition.id_type_tache IN (1, 4)
+),
+maximum_chunk_count AS (
+    SELECT
+        CEIL(MAX(active_task.sql_length) / 8000) AS chunk_count
+    FROM active_sql_tasks active_task
+),
+chunk_numbers AS (
+    SELECT LEVEL AS chunk_number
+    FROM maximum_chunk_count
+    CONNECT BY LEVEL <= maximum_chunk_count.chunk_count
+)
+SELECT
+    active_task.id_tache,
+    active_task.id_type_tache,
+    active_task.sql_length,
+    chunk_number.chunk_number,
+    DBMS_LOB.SUBSTR(
+        active_task.task_sql,
+        8000,
+        ((chunk_number.chunk_number - 1) * 8000) + 1
+    ) AS sql_chunk
+FROM active_sql_tasks active_task
+CROSS JOIN chunk_numbers chunk_number
+WHERE chunk_number.chunk_number <= CEIL(active_task.sql_length / 8000)
+ORDER BY
+    active_task.id_tache,
+    active_task.id_type_tache,
+    chunk_number.chunk_number;
+
+
+/* ============================================================================
+   Q004 — Task 99 SQL-storage gate for golden run 275985
+
+   Purpose:
+     Task 99 has STORE_DATA=1. SQL values are persisted only when the selected
+     gabarit's STORE_DATA_TYPE also contains the SQL bit (1). This query proves
+     whether the persistence branch is active for the selected golden run.
+
+   Expected result:
+     One row. SQL_STORAGE_ENABLED is YES only when both task and gabarit gates
+     are enabled.
+   ============================================================================ */
+
+SELECT
+    run_record.id_run,
+    run_record.id_suivi,
+    suivi_record.id_gabarit,
+    task_definition.id_tache,
+    task_definition.store_data AS task_store_data,
+    gabarit_definition.store_data_type AS gabarit_store_data_type,
+    CASE
+        WHEN task_definition.store_data = 1
+         AND BITAND(NVL(gabarit_definition.store_data_type, 0), 1) = 1
+        THEN 'YES'
+        ELSE 'NO'
+    END AS sql_storage_enabled
+FROM qxp_run run_record
+JOIN qxp_suivi suivi_record
+  ON suivi_record.id_suivi = run_record.id_suivi
+JOIN qxp_gabarit gabarit_definition
+  ON gabarit_definition.id_gabarit = suivi_record.id_gabarit
+JOIN qxp_asso_run_taches run_task
+  ON run_task.id_run = run_record.id_run
+JOIN qxp_tache task_definition
+  ON task_definition.id_tache = run_task.id_tache
+WHERE run_record.id_run = 275985
+  AND task_definition.id_tache = 99;
