@@ -117,3 +117,48 @@ JOIN qxp_tache task_definition
   ON task_definition.id_tache = run_task.id_tache
 WHERE run_record.id_run = 275985
   AND task_definition.id_tache = 99;
+
+
+
+
+
+WITH active_sql_tasks AS (
+      SELECT
+          task_definition.id_tache,
+          task_definition.id_type_tache,
+          task_definition.sql AS task_sql,
+          DBMS_LOB.GETLENGTH(task_definition.sql) AS sql_length
+      FROM qxp_tache task_definition
+      WHERE task_definition.is_actif = 1
+        AND task_definition.id_type_tache IN (1, 4)
+  ),
+  maximum_chunk_count AS (
+      SELECT
+          CEIL(MAX(active_task.sql_length) / 1000) AS chunk_count
+      FROM active_sql_tasks active_task
+  ),
+  chunk_numbers AS (
+      SELECT LEVEL AS chunk_number
+      FROM maximum_chunk_count
+      CONNECT BY LEVEL <= maximum_chunk_count.chunk_count
+  )
+  SELECT
+      active_task.id_tache,
+      active_task.id_type_tache,
+      active_task.sql_length,
+      chunk_number.chunk_number,
+      CAST(
+          DBMS_LOB.SUBSTR(
+              active_task.task_sql,
+              1000,
+              ((chunk_number.chunk_number - 1) * 1000) + 1
+          )
+          AS VARCHAR2(1000 CHAR)
+      ) AS sql_chunk
+  FROM active_sql_tasks active_task
+  CROSS JOIN chunk_numbers chunk_number
+  WHERE chunk_number.chunk_number <= CEIL(active_task.sql_length / 1000)
+  ORDER BY
+      active_task.id_tache,
+      active_task.id_type_tache,
+      chunk_number.chunk_number;
