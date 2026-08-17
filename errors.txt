@@ -1,120 +1,1655 @@
-/* ============================================================================
-   Q012 — Text-safe task-133 storage evidence
-
-   Purpose:
-     Excel converted DATE.N0 text and DATE_GENERATION while data was pasted.
-     Prefix/wrap the VARCHAR2 fields and explicitly format the Oracle DATE so
-     the next export preserves exact text, punctuation and whitespace.
-
-   Expected result:
-     Three rows. Copy/export as text without removing the TEXT:[...] wrapper.
-   ============================================================================ */
-
+/* Q014-A — Exact parameter associations and types. */
 SELECT
-    stored_data.id_suivi,
-    stored_data.id_run,
-    'GENERATION:' || TO_CHAR(
-        stored_data.date_generation,
-        'YYYY-MM-DD HH24:MI:SS'
-    ) AS date_generation_text,
-    stored_data.data_type,
-    stored_data.nom_bloc,
+    run_task.id_tache,
+    run_record.id_run,
+    run_record.id_suivi,
+    parameter_definition.id_parametre,
+    parameter_definition.nom_parametre,
+    parameter_definition.input_data_type,
     CASE
-        WHEN stored_data.valeur_bloc IS NULL THEN '<NULL>'
-        ELSE 'TEXT:[' ||
-             REPLACE(
-                 REPLACE(stored_data.valeur_bloc, CHR(13), '<CR>'),
-                 CHR(10), '<LF>'
-             ) || ']'
-    END AS valeur_bloc_exact,
+        WHEN suivi_parameter.valeur IS NULL THEN '<NULL>'
+        ELSE 'TEXT:[' || suivi_parameter.valeur || ']'
+    END AS valeur_exact,
+    LENGTH(suivi_parameter.valeur) AS valeur_length,
     CASE
-        WHEN stored_data.valeur_bloc IS NULL THEN NULL
-        ELSE LENGTH(stored_data.valeur_bloc)
-    END AS valeur_length,
-    CASE
-        WHEN stored_data.valeur_bloc IS NULL THEN '<NULL>'
-        ELSE DUMP(stored_data.valeur_bloc, 1016)
-    END AS valeur_dump,
-    CASE
-        WHEN stored_data.description_bloc IS NULL THEN '<NULL>'
-        ELSE 'TEXT:[' || stored_data.description_bloc || ']'
-    END AS description_bloc_exact,
-    CASE
-        WHEN stored_data.info_bloc IS NULL THEN '<NULL>'
-        ELSE 'TEXT:[' || stored_data.info_bloc || ']'
-    END AS info_bloc_exact
-FROM qxp_data_storage stored_data
-WHERE stored_data.id_suivi = 80593
-  AND stored_data.id_run = 505902
-  AND stored_data.data_type = 1
-ORDER BY stored_data.nom_bloc;
+        WHEN suivi_parameter.valeur IS NULL THEN '<NULL>'
+        ELSE DUMP(suivi_parameter.valeur, 1016)
+    END AS valeur_dump
+FROM qxp_run run_record
+JOIN qxp_asso_run_taches run_task
+  ON run_task.id_run = run_record.id_run
+ AND run_task.id_tache = 206
+JOIN qxp_asso_suivi_parametres suivi_parameter
+  ON suivi_parameter.id_suivi = run_record.id_suivi
+JOIN qxp_params_type_rapport parameter_definition
+  ON parameter_definition.id_parametre = suivi_parameter.id_parametre
+WHERE run_record.id_run = 340518
+ORDER BY parameter_definition.id_parametre;
 
-
-/* ============================================================================
-   Q013 — Recent task-206 run with nonzero percentage data
-
-   Purpose:
-     Run 399675 proves NULL handling only. Find a successful task-206 run whose
-     exact task expression produces at least one nonzero value, so the
-     NLS_NUMERIC_CHARACTERS-dependent FM990D00 output can be verified in Java.
-
-   Next step:
-     Choose one returned ID_RUN, fetch its parameters with the SQL handbook
-     section 1.4, and execute task 206 in the same Oracle session.
-   ============================================================================ */
-
-WITH candidate_runs AS (
-    SELECT DISTINCT
+/* Q014-B — Task-206 output using the selected run's typed parameters. */
+WITH raw_parameters AS (
+    SELECT
         run_record.id_run,
-        run_record.id_suivi,
-        run_record.date_fin_generation,
-        suivi_record.id_fnd_code,
-        suivi_record.id_unit_code,
-        suivi_record.date_echeance
-    FROM qxp_asso_run_taches run_task
-    JOIN qxp_run run_record
-      ON run_record.id_run = run_task.id_run
-    JOIN qxp_suivi suivi_record
-      ON suivi_record.id_suivi = run_record.id_suivi
+        MAX(CASE
+            WHEN parameter_definition.nom_parametre = 'p_code_port'
+            THEN suivi_parameter.valeur
+        END) AS p_code_port,
+        MAX(CASE
+            WHEN parameter_definition.nom_parametre = 'p_date_echeance'
+            THEN suivi_parameter.valeur
+        END) AS p_date_echeance_text,
+        MAX(CASE
+            WHEN parameter_definition.nom_parametre = 'p_id_unit_code'
+            THEN suivi_parameter.valeur
+        END) AS p_id_unit_code
+    FROM qxp_run run_record
+    JOIN qxp_asso_suivi_parametres suivi_parameter
+      ON suivi_parameter.id_suivi = run_record.id_suivi
+    JOIN qxp_params_type_rapport parameter_definition
+      ON parameter_definition.id_parametre = suivi_parameter.id_parametre
+    WHERE run_record.id_run = 340518
+    GROUP BY run_record.id_run
+),
+typed_parameters AS (
+    SELECT
+        raw_parameter.id_run,
+        raw_parameter.p_code_port,
+        TO_DATE(
+            raw_parameter.p_date_echeance_text,
+            'MM/DD/YYYY HH24:MI:SS'
+        ) AS p_date_echeance,
+        raw_parameter.p_id_unit_code
+    FROM raw_parameters raw_parameter
+),
+principal AS (
+    SELECT
+        parameter.id_run,
+        unit_reference.id_unit_fund_code,
+        unit_reference.id_unit_code
+    FROM typed_parameters parameter
     JOIN owb_dwh.ref_unit unit_reference
-      ON unit_reference.id_unit_fund_code = suivi_record.id_fnd_code
-     AND unit_reference.id_unit_code = suivi_record.id_unit_code
-     AND unit_reference.unit_end_validity = DATE '2199-12-31'
-    WHERE run_task.id_tache = 206
-      AND run_record.id_statut_generation = 2
+      ON unit_reference.id_unit_fund_code = parameter.p_code_port
+     AND unit_reference.id_unit_code = parameter.p_id_unit_code
+     AND unit_reference.unit_end_validity = '31/12/2199'
+),
+selected_kii AS (
+    SELECT
+        parameter.id_run,
+        kii_storage.id_fnd_code,
+        kii_storage.id_unit_code,
+        kii_storage.tx_ffg
+            + kii_storage.tx_frais_pret
+            + kii_storage.tx_com_mvmt
+            + kii_storage.tx_ct_ind
+            + kii_storage.tx_retro AS frais_courant,
+        kii_storage.tx_com_surperf AS frais_performance
+    FROM typed_parameters parameter
+    JOIN qxp.qxp_kii_storage kii_storage
+      ON kii_storage.id_fnd_code = parameter.p_code_port
+     AND kii_storage.nav_date = parameter.p_date_echeance
+     AND kii_storage.id_unit_code = parameter.p_id_unit_code
+     AND kii_storage.id_kii = (
+            SELECT MAX(candidate_storage.id_kii)
+            FROM qxp.qxp_kii_storage candidate_storage
+            WHERE candidate_storage.id_fnd_code = parameter.p_code_port
+              AND candidate_storage.nav_date = parameter.p_date_echeance
+              AND candidate_storage.id_unit_code = parameter.p_id_unit_code
+        )
+),
+task_output AS (
+    SELECT
+        principal_row.id_run,
+        'KID_PCT_FRAIS_COURANTS' AS nom_bloc,
+        CASE
+            WHEN kii_row.frais_courant IS NULL
+              OR kii_row.frais_courant = 0
+            THEN NULL
+            ELSE TO_CHAR(kii_row.frais_courant, 'FM990D00') || '%'
+        END AS valeur_bloc
+    FROM principal principal_row
+    LEFT JOIN selected_kii kii_row
+      ON kii_row.id_run = principal_row.id_run
+     AND kii_row.id_fnd_code = principal_row.id_unit_fund_code
+     AND kii_row.id_unit_code = principal_row.id_unit_code
+
+    UNION
+
+    SELECT
+        principal_row.id_run,
+        'KID_PCT_FRAIS_PERF' AS nom_bloc,
+        CASE
+            WHEN kii_row.frais_performance IS NULL
+              OR kii_row.frais_performance = 0
+            THEN NULL
+            ELSE TO_CHAR(kii_row.frais_performance, 'FM990D00') || '%'
+        END AS valeur_bloc
+    FROM principal principal_row
+    LEFT JOIN selected_kii kii_row
+      ON kii_row.id_run = principal_row.id_run
+     AND kii_row.id_fnd_code = principal_row.id_unit_fund_code
+     AND kii_row.id_unit_code = principal_row.id_unit_code
 )
 SELECT
-    candidate_run.id_run,
-    candidate_run.id_suivi,
-    candidate_run.date_fin_generation,
-    candidate_run.id_fnd_code AS p_code_port,
-    candidate_run.date_echeance AS p_date_echeance,
-    candidate_run.id_unit_code AS p_id_unit_code,
-    kii_storage.tx_ffg
-        + kii_storage.tx_frais_pret
-        + kii_storage.tx_com_mvmt
-        + kii_storage.tx_ct_ind
-        + kii_storage.tx_retro AS frais_courant,
-    kii_storage.tx_com_surperf AS frais_performance
-FROM candidate_runs candidate_run
-JOIN qxp.qxp_kii_storage kii_storage
-  ON kii_storage.id_fnd_code = candidate_run.id_fnd_code
- AND kii_storage.id_unit_code = candidate_run.id_unit_code
- AND kii_storage.nav_date = candidate_run.date_echeance
- AND kii_storage.id_kii = (
-        SELECT MAX(candidate_storage.id_kii)
-        FROM qxp.qxp_kii_storage candidate_storage
-        WHERE candidate_storage.id_fnd_code = candidate_run.id_fnd_code
-          AND candidate_storage.id_unit_code = candidate_run.id_unit_code
-          AND candidate_storage.nav_date = candidate_run.date_echeance
+    task_result.id_run,
+    task_result.nom_bloc,
+    CASE
+        WHEN task_result.valeur_bloc IS NULL THEN '<NULL>'
+        ELSE 'TEXT:[' || task_result.valeur_bloc || ']'
+    END AS valeur_bloc_exact,
+    LENGTH(task_result.valeur_bloc) AS valeur_length,
+    CASE
+        WHEN task_result.valeur_bloc IS NULL THEN '<NULL>'
+        ELSE DUMP(task_result.valeur_bloc, 1016)
+    END AS valeur_dump,
+    (
+        SELECT session_nls.value
+        FROM nls_session_parameters session_nls
+        WHERE session_nls.parameter = 'NLS_NUMERIC_CHARACTERS'
+    ) AS nls_numeric_characters,
+    (
+        SELECT session_nls.value
+        FROM nls_session_parameters session_nls
+        WHERE session_nls.parameter = 'NLS_DATE_FORMAT'
+    ) AS nls_date_format
+FROM task_output task_result
+ORDER BY task_result.nom_bloc;
+
+
+/* ============================================================================
+   Q015 — Active DOC EOS task configuration and reachability
+
+   Purpose:
+     Inventory every active type-2 task before selecting representative DOC,
+     image, PDF and QXP cases. In particular, establish whether the
+     CONSERVER_STYLE=1 QXP structural-copy branch is reachable today and expose
+     source/destination list shapes without executing any task.
+
+   Reading the result:
+     SOURCE_COUNT / DESTINATION_COUNT count pipe-delimited positions. A SQL
+     NULL has count 0; a non-null value with no pipe has count 1. Square
+     brackets preserve visible leading/trailing spaces in the displayed names.
+     CURRENT_TODO_RUNS counts associations to the run currently referenced by
+     QXP_SUIVI.ID_RUN_SUIVANT. SUCCESSFUL_RUNS is historical status-2 evidence.
+
+   Expected size:
+     One row per active QXP_TACHE.ID_TYPE_TACHE=2 (currently expected: 12).
+   ============================================================================ */
+
+SELECT
+    task.id_tache,
+    task.id_sous_categorie,
+    subcategory.libelle_sous_categorie,
+    category.id_type_categorie,
+    CASE
+        WHEN task.conserver_style IS NULL THEN '<NULL>'
+        ELSE TO_CHAR(task.conserver_style)
+    END AS conserver_style,
+    CASE
+        WHEN task.rotation_image IS NULL THEN '<NULL>'
+        ELSE TO_CHAR(task.rotation_image)
+    END AS rotation_image,
+    CASE
+        WHEN task.bloc_source IS NULL THEN '<NULL>'
+        ELSE '[' || task.bloc_source || ']'
+    END AS bloc_source_exact,
+    CASE
+        WHEN task.bloc_source IS NULL THEN 0
+        ELSE LENGTH(task.bloc_source)
+             - NVL(LENGTH(REPLACE(task.bloc_source, '|', '')), 0) + 1
+    END AS source_count,
+    CASE
+        WHEN task.bloc_destination IS NULL THEN '<NULL>'
+        ELSE '[' || task.bloc_destination || ']'
+    END AS bloc_destination_exact,
+    CASE
+        WHEN task.bloc_destination IS NULL THEN 0
+        ELSE LENGTH(task.bloc_destination)
+             - NVL(LENGTH(REPLACE(task.bloc_destination, '|', '')), 0) + 1
+    END AS destination_count,
+    CASE
+        WHEN task.crop_image_values IS NULL THEN '<NULL>'
+        ELSE '[' || task.crop_image_values || ']'
+    END AS crop_image_values_exact,
+    CASE
+        WHEN task.position_image IS NULL THEN '<NULL>'
+        ELSE '[' || task.position_image || ']'
+    END AS position_image_exact,
+    task.commentaire,
+    (
+        SELECT COUNT(*)
+        FROM qxp_asso_gabarit_taches task_gabarit
+        WHERE task_gabarit.id_tache = task.id_tache
+    ) AS linked_gabarits,
+    (
+        SELECT COUNT(DISTINCT task_gabarit.id_gabarit)
+        FROM qxp_asso_gabarit_taches task_gabarit
+        JOIN qxp_gabarit gabarit
+          ON gabarit.id_gabarit = task_gabarit.id_gabarit
+         AND gabarit.is_actif = 1
+        WHERE task_gabarit.id_tache = task.id_tache
+    ) AS active_linked_gabarits,
+    (
+        SELECT COUNT(DISTINCT run_task.id_run)
+        FROM qxp_asso_run_taches run_task
+        JOIN qxp_run run_record
+          ON run_record.id_run = run_task.id_run
+        JOIN qxp_suivi suivi_record
+          ON suivi_record.id_suivi = run_record.id_suivi
+         AND suivi_record.id_run_suivant = run_record.id_run
+        WHERE run_task.id_tache = task.id_tache
+    ) AS current_todo_runs,
+    (
+        SELECT COUNT(DISTINCT run_task.id_run)
+        FROM qxp_asso_run_taches run_task
+        JOIN qxp_run run_record
+          ON run_record.id_run = run_task.id_run
+         AND run_record.id_statut_generation = 2
+        WHERE run_task.id_tache = task.id_tache
+    ) AS successful_runs
+FROM qxp_tache task
+LEFT JOIN qxp_ref_sous_categorie subcategory
+  ON subcategory.id_sous_categorie = task.id_sous_categorie
+LEFT JOIN qxp_ref_categorie category
+  ON category.id_categorie = subcategory.id_categorie
+WHERE task.is_actif = 1
+  AND task.id_type_tache = 2
+ORDER BY task.id_tache;
+
+
+/* Q015-B — Prove whether DATE_ECHEANCE is a date-only business invariant.
+
+   Java maps the run value to LocalDate/java.sql.Date; .NET retains DateTime.
+   Get_Document compares Oracle DATE values by equality, so a non-midnight time
+   component would be behaviorally relevant. Expected safe result: zero
+   NON_MIDNIGHT_VALUES for both rows.
+*/
+SELECT
+    date_source,
+    total_values,
+    midnight_values,
+    non_midnight_values
+FROM (
+    SELECT
+        'QXP_SUIVI' AS date_source,
+        COUNT(*) AS total_values,
+        SUM(CASE
+            WHEN date_echeance = TRUNC(date_echeance) THEN 1
+            ELSE 0
+        END) AS midnight_values,
+        SUM(CASE
+            WHEN date_echeance <> TRUNC(date_echeance) THEN 1
+            ELSE 0
+        END) AS non_midnight_values
+    FROM qxp_suivi
+
+    UNION ALL
+
+    SELECT
+        'QXP_DOCUMENT_ACTIVE' AS date_source,
+        COUNT(*) AS total_values,
+        SUM(CASE
+            WHEN date_echeance = TRUNC(date_echeance) THEN 1
+            ELSE 0
+        END) AS midnight_values,
+        SUM(CASE
+            WHEN date_echeance <> TRUNC(date_echeance) THEN 1
+            ELSE 0
+        END) AS non_midnight_values
+    FROM qxp_document
+    WHERE is_actif = 1
+)
+ORDER BY date_source;
+
+
+/* Q015-C — Runtime format selected for each current TODO DOC EOS task.
+
+   Why this is separate from Q015-A:
+     FORMAT is not stored in QXP_TACHE. QXP_PK_RUN.Get_Taches obtains FORMAT
+     from the QXP_DOCUMENT row selected for the particular run. This query
+     reconstructs that part of Get_Taches for every current TODO type-2 task,
+     including its special "latest date <= due date" handling for document
+     subcategories 5 and 10.
+
+   Reading the result:
+     MATCHED_DOCUMENT_COUNT=0 means Get_Taches supplies NULL ID_DOCUMENT/FORMAT
+     for that task/run. A value greater than 1 means the cursor contains
+     duplicate rows for the same task ID, which is itself a load-path edge
+     case. ID_STATUT_GENERATION is exported so a row is not mistaken for an
+     executable API candidate merely because its task association is current.
+     Use FORMAT to select one evidence candidate per reachable processing
+     branch (PDF, image, QXP value/style, DOC/RTF/XTG); decide execution safety
+     separately from status/admission evidence.
+
+   Important:
+     The correlated MAX intentionally does not filter IS_ACTIF because the
+     accepted Get_Taches package code does not filter it while calculating its
+     v_date_max_logo/v_date_max_nomsoc variables. The outer document match does
+     require IS_ACTIF=1, exactly like Get_Taches.
+*/
+WITH current_doc_task_context AS (
+    SELECT DISTINCT
+        run_record.id_run,
+        run_record.id_statut_generation,
+        suivi.id_suivi,
+        suivi.id_fnd_code,
+        suivi.id_unit_code,
+        suivi.id_langue,
+        suivi.date_echeance,
+        fond_gabarit.societe,
+        task.id_tache,
+        task.id_sous_categorie,
+        task.conserver_style,
+        task.rotation_image,
+        task.bloc_source,
+        task.bloc_destination,
+        category.id_type_categorie
+    FROM qxp_suivi suivi
+    JOIN qxp_run run_record
+      ON run_record.id_run = suivi.id_run_suivant
+    JOIN qxp_asso_fond_gabarit fond_gabarit
+      ON fond_gabarit.id_type_rapport = suivi.id_type_rapport
+     AND fond_gabarit.id_fnd_code = suivi.id_fnd_code
+     AND fond_gabarit.id_langue = suivi.id_langue
+     AND fond_gabarit.id_gabarit = suivi.id_gabarit
+    JOIN qxp_asso_gabarit_taches gabarit_task
+      ON gabarit_task.id_gabarit = fond_gabarit.id_gabarit
+    JOIN qxp_tache task
+      ON task.id_tache = gabarit_task.id_tache
+     AND task.is_actif = 1
+     AND task.id_type_tache = 2
+    JOIN qxp_asso_run_taches run_task
+      ON run_task.id_run = run_record.id_run
+     AND run_task.id_tache = task.id_tache
+    LEFT JOIN qxp_ref_sous_categorie subcategory
+      ON subcategory.id_sous_categorie = task.id_sous_categorie
+    LEFT JOIN qxp_ref_categorie category
+      ON category.id_categorie = subcategory.id_categorie
+),
+selected_doc_rows AS (
+    SELECT
+        task_context.*,
+        document_row.id_document,
+        document_row.format,
+        document_row.date_echeance AS document_date_echeance,
+        document_row.nom_complet_document,
+        COUNT(document_row.id_document) OVER (
+            PARTITION BY task_context.id_run, task_context.id_tache
+        ) AS matched_document_count
+    FROM current_doc_task_context task_context
+    LEFT JOIN qxp_document document_row
+      ON document_row.id_sous_categorie = task_context.id_sous_categorie
+     AND document_row.is_actif = 1
+     AND document_row.id_langue = task_context.id_langue
+     AND (
+            (task_context.id_type_categorie = 1
+             AND document_row.id_fnd_code = task_context.id_fnd_code)
+         OR (task_context.id_type_categorie = 2
+             AND document_row.societe = task_context.societe)
+         OR (task_context.id_type_categorie = 3
+             AND document_row.id_fnd_code = task_context.id_fnd_code
+             AND document_row.id_unit_code = task_context.id_unit_code)
+     )
+     AND (
+            (task_context.id_sous_categorie IN (5, 10)
+             AND document_row.date_echeance = (
+                 SELECT MAX(candidate_document.date_echeance)
+                 FROM qxp_document candidate_document
+                 WHERE candidate_document.id_sous_categorie = task_context.id_sous_categorie
+                   AND candidate_document.id_langue = task_context.id_langue
+                   AND candidate_document.societe = task_context.societe
+                   AND candidate_document.date_echeance <= task_context.date_echeance
+             ))
+         OR (task_context.id_sous_categorie NOT IN (5, 10)
+             AND document_row.date_echeance = task_context.date_echeance)
+     )
+)
+SELECT
+    id_run,
+    id_statut_generation,
+    id_suivi,
+    id_tache,
+    id_sous_categorie,
+    id_type_categorie,
+    id_document,
+    format,
+    document_date_echeance,
+    nom_complet_document,
+    conserver_style,
+    rotation_image,
+    CASE
+        WHEN bloc_source IS NULL THEN '<NULL>'
+        ELSE '[' || bloc_source || ']'
+    END AS bloc_source_exact,
+    CASE
+        WHEN bloc_destination IS NULL THEN '<NULL>'
+        ELSE '[' || bloc_destination || ']'
+    END AS bloc_destination_exact,
+    matched_document_count
+FROM selected_doc_rows
+ORDER BY id_tache, id_run, id_document;
+
+
+/* ============================================================================
+   Q016-A — Active Bloc QXP / QXP Previous configuration and reachability
+
+   Purpose:
+     Inventory every active type-3 task before selecting a previous-certified
+     QXP run. Exact wrappers, lengths and byte dumps preserve whitespace because
+     .NET treats whitespace-only text as set while Java currently uses isBlank.
+
+   Expected size:
+     One row per active QXP_TACHE.ID_TYPE_TACHE=3 (currently expected: 1).
+
+   Reading the result:
+     DOTNET_MAPPING_MODE is EXPLICIT when both stored names are non-NULL; Oracle
+     stores an empty VARCHAR2 as NULL. POSITION_SEPARATOR_COUNT identifies the
+     optional "destinations¤positionBloc" syntax. Pipe counts expose explicit
+     list mismatches. CURRENT_TODO_RUNS identifies live candidate runs.
+   ============================================================================ */
+
+SELECT
+    task.id_tache,
+    CASE
+        WHEN task.previous_type_rapport IS NULL THEN '<NULL>'
+        ELSE '[' || task.previous_type_rapport || ']'
+    END AS previous_type_rapport_exact,
+    LENGTH(task.previous_type_rapport) AS previous_type_rapport_length,
+    CASE
+        WHEN task.previous_type_rapport IS NULL THEN '<NULL>'
+        ELSE DUMP(task.previous_type_rapport, 1016)
+    END AS previous_type_rapport_dump,
+    CASE
+        WHEN task.conserver_style IS NULL THEN '<NULL>'
+        ELSE TO_CHAR(task.conserver_style)
+    END AS conserver_style,
+    CASE
+        WHEN task.bloc_source IS NULL THEN '<NULL>'
+        ELSE '[' || task.bloc_source || ']'
+    END AS bloc_source_exact,
+    LENGTH(task.bloc_source) AS bloc_source_length,
+    CASE
+        WHEN task.bloc_source IS NULL THEN '<NULL>'
+        ELSE DUMP(task.bloc_source, 1016)
+    END AS bloc_source_dump,
+    CASE
+        WHEN task.bloc_source IS NULL THEN 0
+        ELSE LENGTH(task.bloc_source)
+             - NVL(LENGTH(REPLACE(task.bloc_source, '|', '')), 0) + 1
+    END AS source_count,
+    CASE
+        WHEN task.bloc_destination IS NULL THEN '<NULL>'
+        ELSE '[' || task.bloc_destination || ']'
+    END AS bloc_destination_exact,
+    LENGTH(task.bloc_destination) AS bloc_destination_length,
+    CASE
+        WHEN task.bloc_destination IS NULL THEN '<NULL>'
+        ELSE DUMP(task.bloc_destination, 1016)
+    END AS bloc_destination_dump,
+    CASE
+        WHEN task.bloc_destination IS NULL THEN 0
+        WHEN LENGTH(task.bloc_destination)
+             - NVL(LENGTH(REPLACE(task.bloc_destination, '¤', '')), 0) = 1
+         AND INSTR(task.bloc_destination, '¤') = 1
+        THEN 1
+        ELSE LENGTH(
+                 CASE
+                     WHEN LENGTH(task.bloc_destination)
+                          - NVL(LENGTH(REPLACE(task.bloc_destination, '¤', '')), 0) = 1
+                     THEN SUBSTR(task.bloc_destination, 1,
+                                 INSTR(task.bloc_destination, '¤') - 1)
+                     ELSE task.bloc_destination
+                 END
+             )
+             - NVL(LENGTH(REPLACE(
+                 CASE
+                     WHEN LENGTH(task.bloc_destination)
+                          - NVL(LENGTH(REPLACE(task.bloc_destination, '¤', '')), 0) = 1
+                     THEN SUBSTR(task.bloc_destination, 1,
+                                 INSTR(task.bloc_destination, '¤') - 1)
+                     ELSE task.bloc_destination
+                 END,
+                 '|',
+                 ''
+             )), 0) + 1
+    END AS destination_count_before_position,
+    CASE
+        WHEN task.bloc_destination IS NULL THEN 0
+        ELSE LENGTH(task.bloc_destination)
+             - NVL(LENGTH(REPLACE(task.bloc_destination, '¤', '')), 0)
+    END AS position_separator_count,
+    CASE
+        WHEN task.bloc_source IS NOT NULL
+         AND task.bloc_destination IS NOT NULL
+        THEN 'EXPLICIT'
+        ELSE 'HIERARCHY'
+    END AS dotnet_mapping_mode,
+    CASE
+        WHEN task.champs_vide IS NULL THEN '<DEFAULT ONE SPACE>'
+        ELSE '[' || task.champs_vide || ']'
+    END AS champs_vide_exact,
+    task.commentaire,
+    (
+        SELECT COUNT(DISTINCT gabarit_task.id_gabarit)
+        FROM qxp_asso_gabarit_taches gabarit_task
+        WHERE gabarit_task.id_tache = task.id_tache
+    ) AS linked_gabarits,
+    (
+        SELECT COUNT(DISTINCT gabarit_task.id_gabarit)
+        FROM qxp_asso_gabarit_taches gabarit_task
+        JOIN qxp_gabarit gabarit
+          ON gabarit.id_gabarit = gabarit_task.id_gabarit
+         AND gabarit.is_actif = 1
+        WHERE gabarit_task.id_tache = task.id_tache
+    ) AS active_linked_gabarits,
+    (
+        SELECT COUNT(DISTINCT run_task.id_run)
+        FROM qxp_asso_run_taches run_task
+        JOIN qxp_run run_record
+          ON run_record.id_run = run_task.id_run
+        JOIN qxp_suivi suivi
+          ON suivi.id_suivi = run_record.id_suivi
+         AND suivi.id_run_suivant = run_record.id_run
+        WHERE run_task.id_tache = task.id_tache
+    ) AS current_todo_runs,
+    (
+        SELECT COUNT(DISTINCT run_task.id_run)
+        FROM qxp_asso_run_taches run_task
+        JOIN qxp_run run_record
+          ON run_record.id_run = run_task.id_run
+         AND run_record.id_statut_generation = 2
+        WHERE run_task.id_tache = task.id_tache
+    ) AS successful_runs
+FROM qxp_tache task
+WHERE task.is_actif = 1
+  AND task.id_type_tache = 3
+ORDER BY task.id_tache;
+
+
+/* Q016-B — Database report-type codes versus Java's closed enum.
+
+   .NET preserves QXP_SUIVI.ID_TYPE_RAPPORT as a raw integer. Java currently
+   maps only codes 0..5 and collapses every other value to UNKNOWN(0). For a
+   QXP Previous task whose PREVIOUS_TYPE_RAPPORT is NULL or "same", that 0 is
+   passed to Get_Last_Qxp_Certifie and means "any report type".
+
+   Any row marked COLLAPSES_TO_0 is therefore a real compatibility domain that
+   must be preserved even if CURRENT_RUN_REFERENCES happens to be zero today.
+*/
+SELECT
+    suivi.id_type_rapport,
+    report_type.libelle,
+    CASE
+        WHEN suivi.id_type_rapport BETWEEN 0 AND 5
+        THEN 'PRESERVED_BY_CURRENT_ENUM'
+        ELSE 'COLLAPSES_TO_0'
+    END AS current_java_mapping,
+    COUNT(*) AS suivi_count,
+    COUNT(suivi.id_run_suivant) AS current_run_references
+FROM qxp_suivi suivi
+LEFT JOIN qxp_ref_type_rapport report_type
+  ON report_type.id_type_rapport = suivi.id_type_rapport
+GROUP BY
+    suivi.id_type_rapport,
+    report_type.libelle,
+    CASE
+        WHEN suivi.id_type_rapport BETWEEN 0 AND 5
+        THEN 'PRESERVED_BY_CURRENT_ENUM'
+        ELSE 'COLLAPSES_TO_0'
+    END
+ORDER BY suivi.id_type_rapport;
+
+
+/* ============================================================================
+   Q017 — Dynamic-task configuration and question-mark bind audit
+
+   Purpose:
+     Start the database side of the type-4 DYNAMIQUE audit without executing
+     any task SQL. Q017-A records every active configuration and its current
+     reachability. Q017-B is an optional independent re-export of the complete
+     SQL text, in safe 1,000-character chunks, only for tasks containing a
+     question-mark character. The earlier complete Q003 export has already
+     proved that all ten dynamic question marks occur only inside literals or
+     comments and that Java detects zero positional markers. Q017-C records the
+     template definitions reachable from active dynamic tasks.
+
+   Why a future independent recheck must use complete chunks:
+     .NET's Oracle command always uses BindByName=true. Java scans the SQL and
+     switches to positional binding when it finds an executable '?', while
+     ignoring ordinary quoted literals and comments. A short context around the
+     first character cannot safely distinguish every Oracle quoting/comment
+     form, so any recheck must use the complete ten affected SQL CLOBs.
+
+   Export instructions:
+     Keep all Q017-B rows, ordered by ID_TACHE and CHUNK_NUMBER. Do not merge,
+     trim, reformat or auto-convert SQL_CHUNK.
+   ============================================================================ */
+
+/* Q017-A — All active dynamic definitions and reachability. */
+SELECT
+    task.id_tache,
+    task.commentaire,
+    CASE
+        WHEN task.champs_vide IS NULL THEN '<NULL/EMPTY: DEFAULT ONE SPACE>'
+        ELSE '[' || task.champs_vide || ']'
+    END AS champs_vide_exact,
+    LENGTH(task.champs_vide) AS champs_vide_length,
+    CASE
+        WHEN task.champs_vide IS NULL THEN 'NULL_OR_EMPTY'
+        WHEN REGEXP_LIKE(task.champs_vide, '^[[:space:]]+$') THEN 'WHITESPACE_ONLY'
+        ELSE 'NONEMPTY'
+    END AS champs_vide_shape,
+    CASE
+        WHEN task.code_master_page IS NULL THEN '<NULL/EMPTY: DEFAULT 4>'
+        ELSE '[' || task.code_master_page || ']'
+    END AS code_master_page_exact,
+    LENGTH(task.code_master_page) AS code_master_page_length,
+    CASE
+        WHEN task.code_master_page IS NULL THEN 'NULL_OR_EMPTY'
+        WHEN REGEXP_LIKE(task.code_master_page, '^[[:space:]]+$') THEN 'WHITESPACE_ONLY'
+        ELSE 'NONEMPTY'
+    END AS code_master_page_shape,
+    CASE
+        WHEN task.bloc_destination IS NULL THEN '<NULL>'
+        ELSE '[' || task.bloc_destination || ']'
+    END AS bloc_destination_exact,
+    LENGTH(task.bloc_destination) AS bloc_destination_length,
+    CASE
+        WHEN task.bloc_destination IS NULL THEN 'NULL_OR_EMPTY'
+        WHEN REGEXP_LIKE(task.bloc_destination, '^[[:space:]]+$') THEN 'WHITESPACE_ONLY'
+        ELSE 'NONEMPTY'
+    END AS bloc_destination_shape,
+    task.control_overflow,
+    task.new_page_table,
+    task.nb_column,
+    task.column_space,
+    CASE
+        WHEN task.page_break_rules IS NULL THEN '<NULL>'
+        ELSE '[' || task.page_break_rules || ']'
+    END AS page_break_rules_exact,
+    LENGTH(task.page_break_rules) AS page_break_rules_length,
+    CASE
+        WHEN task.page_break_rules IS NULL THEN 'NULL_OR_EMPTY'
+        WHEN REGEXP_LIKE(task.page_break_rules, '^[[:space:]]+$') THEN 'WHITESPACE_ONLY'
+        ELSE 'NONEMPTY'
+    END AS page_break_rules_shape,
+    CASE
+        WHEN task.column_break_rules IS NULL THEN '<NULL>'
+        ELSE '[' || task.column_break_rules || ']'
+    END AS column_break_rules_exact,
+    LENGTH(task.column_break_rules) AS column_break_rules_length,
+    CASE
+        WHEN task.column_break_rules IS NULL THEN 'NULL_OR_EMPTY'
+        WHEN REGEXP_LIKE(task.column_break_rules, '^[[:space:]]+$') THEN 'WHITESPACE_ONLY'
+        ELSE 'NONEMPTY'
+    END AS column_break_rules_shape,
+    task.store_data,
+    DBMS_LOB.GETLENGTH(task.sql) AS sql_length,
+    REGEXP_COUNT(task.sql, '[?]') AS question_character_count,
+    DBMS_LOB.INSTR(task.sql, '?') AS first_question_position,
+    (
+        SELECT COUNT(DISTINCT gabarit_task.id_gabarit)
+        FROM qxp_asso_gabarit_taches gabarit_task
+        WHERE gabarit_task.id_tache = task.id_tache
+    ) AS linked_gabarits,
+    (
+        SELECT COUNT(DISTINCT gabarit_task.id_gabarit)
+        FROM qxp_asso_gabarit_taches gabarit_task
+        JOIN qxp_gabarit gabarit
+          ON gabarit.id_gabarit = gabarit_task.id_gabarit
+         AND gabarit.is_actif = 1
+        WHERE gabarit_task.id_tache = task.id_tache
+    ) AS active_linked_gabarits,
+    (
+        SELECT COUNT(DISTINCT run_task.id_run)
+        FROM qxp_asso_run_taches run_task
+        JOIN qxp_run run_record
+          ON run_record.id_run = run_task.id_run
+        JOIN qxp_suivi suivi
+          ON suivi.id_suivi = run_record.id_suivi
+         AND suivi.id_run_suivant = run_record.id_run
+        WHERE run_task.id_tache = task.id_tache
+    ) AS current_todo_runs,
+    (
+        SELECT COUNT(DISTINCT run_task.id_run)
+        FROM qxp_asso_run_taches run_task
+        JOIN qxp_run run_record
+          ON run_record.id_run = run_task.id_run
+         AND run_record.id_statut_generation = 2
+        WHERE run_task.id_tache = task.id_tache
+    ) AS successful_runs
+FROM qxp_tache task
+WHERE task.is_actif = 1
+  AND task.id_type_tache = 4
+ORDER BY task.id_tache;
+
+
+/* Q017-B — Complete SQL for question-mark candidates, safely chunked.
+
+   The fixed 500-row number source supports SQL CLOBs up to 500,000 characters.
+   Q017-A's SQL_LENGTH proves whether that ceiling is sufficient before relying
+   on this export.
+*/
+WITH chunk_numbers AS (
+    SELECT LEVEL AS chunk_number
+    FROM dual
+    CONNECT BY LEVEL <= 500
+)
+SELECT
+    task.id_tache,
+    chunk.chunk_number,
+    ((chunk.chunk_number - 1) * 1000) + 1 AS chunk_start_position,
+    DBMS_LOB.SUBSTR(
+        task.sql,
+        1000,
+        ((chunk.chunk_number - 1) * 1000) + 1
+    ) AS sql_chunk
+FROM qxp_tache task
+CROSS JOIN chunk_numbers chunk
+WHERE task.is_actif = 1
+  AND task.id_type_tache = 4
+  AND DBMS_LOB.INSTR(task.sql, '?') > 0
+  AND chunk.chunk_number <= CEIL(DBMS_LOB.GETLENGTH(task.sql) / 1000)
+ORDER BY task.id_tache, chunk.chunk_number;
+
+
+/* Q017-C — Template definitions reachable from active dynamic tasks.
+
+   Important NULL behavior:
+     Oracle stores an empty VARCHAR2 as NULL. The .NET OraValue string
+     conversion maps that NULL to "" before Dictionary.Add. Therefore a single
+     NULL NOM is an accepted empty key; a second NULL/empty NOM is a duplicate
+     and fails. SRC_NOM_OVERFLOW whitespace must remain visible because .NET
+     falls back to SRC_NOM only for null/empty, while Java currently also falls
+     back for whitespace-only text.
+*/
+WITH active_dynamic_template_sets AS (
+    SELECT DISTINCT
+        gabarit.id_gabarit_template,
+        gabarit_task.id_tache
+    FROM qxp_gabarit gabarit
+    JOIN qxp_asso_gabarit_taches gabarit_task
+      ON gabarit_task.id_gabarit = gabarit.id_gabarit
+    JOIN qxp_tache task
+      ON task.id_tache = gabarit_task.id_tache
+     AND task.is_actif = 1
+     AND task.id_type_tache = 4
+    WHERE gabarit.id_gabarit_template IS NOT NULL
+)
+SELECT
+    template_link.id_gabarit_template,
+    template_definition.id_template,
+    CASE
+        WHEN template_definition.nom IS NULL THEN '<NULL/EMPTY IN .NET>'
+        ELSE '[' || template_definition.nom || ']'
+    END AS nom_exact,
+    LENGTH(template_definition.nom) AS nom_length,
+    CASE
+        WHEN template_definition.nom IS NULL THEN '<NULL>'
+        ELSE DUMP(template_definition.nom, 1016)
+    END AS nom_dump,
+    CASE
+        WHEN template_definition.src_nom IS NULL THEN '<NULL/EMPTY>'
+        ELSE '[' || template_definition.src_nom || ']'
+    END AS src_nom_exact,
+    LENGTH(template_definition.src_nom) AS src_nom_length,
+    CASE
+        WHEN template_definition.src_nom IS NULL THEN 'NULL_OR_EMPTY'
+        WHEN REGEXP_LIKE(template_definition.src_nom, '^[[:space:]]+$') THEN 'WHITESPACE_ONLY'
+        ELSE 'NONEMPTY'
+    END AS src_nom_shape,
+    CASE
+        WHEN template_definition.src_nom_overflow IS NULL THEN '<NULL/EMPTY: FALL BACK>'
+        ELSE '[' || template_definition.src_nom_overflow || ']'
+    END AS src_nom_overflow_exact,
+    LENGTH(template_definition.src_nom_overflow) AS src_nom_overflow_length,
+    CASE
+        WHEN template_definition.src_nom_overflow IS NULL THEN 'NULL_OR_EMPTY'
+        WHEN REGEXP_LIKE(template_definition.src_nom_overflow, '^[[:space:]]+$') THEN 'WHITESPACE_ONLY'
+        ELSE 'NONEMPTY'
+    END AS overflow_name_shape,
+    template_definition.absolute,
+    template_definition.absolute_repeat,
+    template_definition.left AS left_value,
+    template_definition.top AS top_value,
+    template_definition.width AS width_value,
+    template_definition.height AS height_value,
+    template_definition.page_break,
+    template_definition.column_break,
+    COUNT(DISTINCT dynamic_set.id_tache) AS active_dynamic_tasks
+FROM qxp_asso_gabarit_templates template_link
+JOIN qxp_template template_definition
+  ON template_definition.id_template = template_link.id_template
+JOIN active_dynamic_template_sets dynamic_set
+  ON dynamic_set.id_gabarit_template = template_link.id_gabarit_template
+GROUP BY
+    template_link.id_gabarit_template,
+    template_definition.id_template,
+    template_definition.nom,
+    template_definition.src_nom,
+    template_definition.src_nom_overflow,
+    template_definition.absolute,
+    template_definition.absolute_repeat,
+    template_definition.left,
+    template_definition.top,
+    template_definition.width,
+    template_definition.height,
+    template_definition.page_break,
+    template_definition.column_break
+ORDER BY
+    template_link.id_gabarit_template,
+    template_definition.nom NULLS FIRST,
+    template_definition.id_template;
+
+
+/* ============================================================================
+   Q018-A — Active COMPARTIMENT task configuration and reachability
+
+   Purpose:
+     Inventory all active type-5 definitions, preserving NULL and whitespace
+     exactly for the common values whose Java mapping currently differs.
+
+   Expected size:
+     One row per active type-5 task (currently expected: 16).
+   ============================================================================ */
+
+SELECT
+    task.id_tache,
+    task.id_gabarit_fils,
+    CASE
+        WHEN task.bloc_destination IS NULL THEN '<NULL>'
+        ELSE '[' || task.bloc_destination || ']'
+    END AS bloc_destination_exact,
+    LENGTH(task.bloc_destination) AS bloc_destination_length,
+    CASE
+        WHEN task.bloc_destination IS NULL THEN 'NULL_OR_EMPTY'
+        WHEN REGEXP_LIKE(task.bloc_destination, '^[[:space:]]+$') THEN 'WHITESPACE_ONLY'
+        ELSE 'NONEMPTY'
+    END AS bloc_destination_shape,
+    CASE
+        WHEN task.code_master_page IS NULL THEN '<NULL/EMPTY: DEFAULT 4>'
+        ELSE '[' || task.code_master_page || ']'
+    END AS code_master_page_exact,
+    LENGTH(task.code_master_page) AS code_master_page_length,
+    CASE
+        WHEN task.code_master_page IS NULL THEN 'NULL_OR_EMPTY'
+        WHEN REGEXP_LIKE(task.code_master_page, '^[[:space:]]+$') THEN 'WHITESPACE_ONLY'
+        ELSE 'NONEMPTY'
+    END AS code_master_page_shape,
+    CASE
+        WHEN task.champs_vide IS NULL THEN '<NULL: TASK DEFAULT>'
+        ELSE '[' || task.champs_vide || ']'
+    END AS champs_vide_exact,
+    LENGTH(task.champs_vide) AS champs_vide_length,
+    CASE
+        WHEN task.champs_vide IS NULL THEN '<NULL>'
+        ELSE DUMP(task.champs_vide, 1016)
+    END AS champs_vide_dump,
+    task.commentaire,
+    (
+        SELECT COUNT(DISTINCT task_gabarit.id_gabarit)
+        FROM qxp_asso_gabarit_taches task_gabarit
+        WHERE task_gabarit.id_tache = task.id_tache
+    ) AS linked_gabarits,
+    (
+        SELECT COUNT(DISTINCT task_gabarit.id_gabarit)
+        FROM qxp_asso_gabarit_taches task_gabarit
+        JOIN qxp_gabarit gabarit
+          ON gabarit.id_gabarit = task_gabarit.id_gabarit
+         AND gabarit.is_actif = 1
+        WHERE task_gabarit.id_tache = task.id_tache
+    ) AS active_linked_gabarits,
+    (
+        SELECT COUNT(DISTINCT run_task.id_run)
+        FROM qxp_asso_run_taches run_task
+        JOIN qxp_run run_record
+          ON run_record.id_run = run_task.id_run
+        JOIN qxp_suivi suivi_record
+          ON suivi_record.id_suivi = run_record.id_suivi
+         AND suivi_record.id_run_suivant = run_record.id_run
+        WHERE run_task.id_tache = task.id_tache
+    ) AS current_todo_runs,
+    (
+        SELECT COUNT(DISTINCT run_task.id_run)
+        FROM qxp_asso_run_taches run_task
+        JOIN qxp_run run_record
+          ON run_record.id_run = run_task.id_run
+         AND run_record.id_statut_generation = 2
+        WHERE run_task.id_tache = task.id_tache
+    ) AS successful_runs
+FROM qxp_tache task
+WHERE task.is_actif = 1
+  AND task.id_type_tache = 5
+ORDER BY task.id_tache;
+
+
+/* Q018-B — Current COMPARTIMENT parent-run mode distribution.
+
+   MODE_COMPART is read from QXP_RUN. NULL/0 is Unknown; 1 is Generate;
+   2 is Incorporate; 3 is Generate+Incorporate. Extra values matter because
+   accepted .NET code tests bits independently.
+*/
+SELECT
+    CASE
+        WHEN run_record.mode_compart IS NULL THEN '<NULL>'
+        ELSE TO_CHAR(run_record.mode_compart)
+    END AS mode_compart,
+    COUNT(DISTINCT run_record.id_run) AS parent_runs,
+    COUNT(DISTINCT run_task.id_tache) AS compartment_tasks,
+    COUNT(*) AS run_task_associations
+FROM qxp_asso_run_taches run_task
+JOIN qxp_tache task
+  ON task.id_tache = run_task.id_tache
+ AND task.is_actif = 1
+ AND task.id_type_tache = 5
+JOIN qxp_run run_record
+  ON run_record.id_run = run_task.id_run
+JOIN qxp_suivi suivi_record
+  ON suivi_record.id_suivi = run_record.id_suivi
+ AND suivi_record.id_run_suivant = run_record.id_run
+GROUP BY run_record.mode_compart
+ORDER BY run_record.mode_compart NULLS FIRST;
+
+
+/* Q018-C — Reconstruct Get_Compartiment_Runs for every current parent task.
+
+   One output row represents one configured child fund for one parent run/task.
+   MATCHING_CHILD_SUIVIS should normally be 0 or 1. Values above 1 prove that
+   the Oracle cursor can repeat ID_FND_CODE even though the association table's
+   primary key itself prevents duplicate configured fund codes. Q018-D is the
+   row-level source for every individual ID; this summary deliberately avoids
+   LISTAGG so a large duplicate population cannot raise ORA-01489.
+*/
+WITH parent_context AS (
+    SELECT DISTINCT
+        parent_run.id_run AS parent_run_id,
+        run_task.id_tache,
+        parent_suivi.id_gabarit AS id_gabarit_tete,
+        parent_suivi.id_fnd_code AS id_structure,
+        task.id_gabarit_fils,
+        parent_suivi.id_langue,
+        parent_suivi.date_echeance,
+        parent_run.mode_compart
+    FROM qxp_asso_run_taches run_task
+    JOIN qxp_tache task
+      ON task.id_tache = run_task.id_tache
+     AND task.is_actif = 1
+     AND task.id_type_tache = 5
+    JOIN qxp_run parent_run
+      ON parent_run.id_run = run_task.id_run
+    JOIN qxp_suivi parent_suivi
+      ON parent_suivi.id_suivi = parent_run.id_suivi
+     AND parent_suivi.id_run_suivant = parent_run.id_run
+)
+SELECT
+    parent.parent_run_id,
+    parent.id_tache,
+    parent.mode_compart,
+    parent.id_gabarit_tete,
+    parent.id_structure,
+    parent.id_gabarit_fils,
+    compartment_link.id_fnd_code AS child_fnd_code,
+    compartment_link.position AS child_position,
+    COUNT(child_suivi.id_suivi) AS matching_child_suivis,
+    COUNT(
+        CASE
+            WHEN BITAND(NVL(parent.mode_compart, 0), 1) = 1
+            THEN child_suivi.id_run_suivant
+            ELSE child_suivi.id_run_precedent
+        END
+    ) AS nonnull_selected_runs,
+    MIN(child_suivi.id_suivi) AS min_child_suivi_id,
+    MAX(child_suivi.id_suivi) AS max_child_suivi_id,
+    MIN(
+        CASE
+            WHEN BITAND(NVL(parent.mode_compart, 0), 1) = 1
+            THEN child_suivi.id_run_suivant
+            ELSE child_suivi.id_run_precedent
+        END
+    ) AS min_selected_run_id,
+    MAX(
+        CASE
+            WHEN BITAND(NVL(parent.mode_compart, 0), 1) = 1
+            THEN child_suivi.id_run_suivant
+            ELSE child_suivi.id_run_precedent
+        END
+    ) AS max_selected_run_id
+FROM parent_context parent
+JOIN qxp_asso_struct_gabarit_comp compartment_link
+  ON compartment_link.id_structure = parent.id_structure
+ AND compartment_link.id_gabarit = parent.id_gabarit_tete
+LEFT JOIN qxp_suivi child_suivi
+  ON child_suivi.id_fnd_code = compartment_link.id_fnd_code
+ AND child_suivi.id_langue = parent.id_langue
+ AND child_suivi.id_gabarit = parent.id_gabarit_fils
+ AND child_suivi.date_echeance = parent.date_echeance
+ AND child_suivi.id_type_rapport = 4
+GROUP BY
+    parent.parent_run_id,
+    parent.id_tache,
+    parent.mode_compart,
+    parent.id_gabarit_tete,
+    parent.id_structure,
+    parent.id_gabarit_fils,
+    compartment_link.id_fnd_code,
+    compartment_link.position
+ORDER BY
+    parent.parent_run_id,
+    parent.id_tache,
+    compartment_link.position,
+    compartment_link.id_fnd_code;
+
+
+/* Q018-D — Detailed selected child-run state for representative-run choice.
+
+   This is the row-level companion to Q018-C. It shows whether the selected
+   previous/next child exists, its status, and whether a previous/final QXP id
+   is available. Duplicate rows are intentionally retained.
+*/
+WITH parent_context AS (
+    SELECT DISTINCT
+        parent_run.id_run AS parent_run_id,
+        run_task.id_tache,
+        parent_suivi.id_gabarit AS id_gabarit_tete,
+        parent_suivi.id_fnd_code AS id_structure,
+        task.id_gabarit_fils,
+        parent_suivi.id_langue,
+        parent_suivi.date_echeance,
+        parent_run.mode_compart
+    FROM qxp_asso_run_taches run_task
+    JOIN qxp_tache task
+      ON task.id_tache = run_task.id_tache
+     AND task.is_actif = 1
+     AND task.id_type_tache = 5
+    JOIN qxp_run parent_run
+      ON parent_run.id_run = run_task.id_run
+    JOIN qxp_suivi parent_suivi
+      ON parent_suivi.id_suivi = parent_run.id_suivi
+     AND parent_suivi.id_run_suivant = parent_run.id_run
+), child_selection AS (
+    SELECT
+        parent.parent_run_id,
+        parent.id_tache,
+        parent.mode_compart,
+        compartment_link.position AS child_position,
+        compartment_link.id_fnd_code AS child_fnd_code,
+        child_suivi.id_suivi AS child_suivi_id,
+        CASE
+            WHEN BITAND(NVL(parent.mode_compart, 0), 1) = 1
+            THEN child_suivi.id_run_suivant
+            ELSE child_suivi.id_run_precedent
+        END AS selected_child_run_id
+    FROM parent_context parent
+    JOIN qxp_asso_struct_gabarit_comp compartment_link
+      ON compartment_link.id_structure = parent.id_structure
+     AND compartment_link.id_gabarit = parent.id_gabarit_tete
+    LEFT JOIN qxp_suivi child_suivi
+      ON child_suivi.id_fnd_code = compartment_link.id_fnd_code
+     AND child_suivi.id_langue = parent.id_langue
+     AND child_suivi.id_gabarit = parent.id_gabarit_fils
+     AND child_suivi.date_echeance = parent.date_echeance
+     AND child_suivi.id_type_rapport = 4
+)
+SELECT
+    selection.parent_run_id,
+    selection.id_tache,
+    selection.mode_compart,
+    selection.child_position,
+    selection.child_fnd_code,
+    selection.child_suivi_id,
+    selection.selected_child_run_id,
+    child_run.id_statut_generation AS child_run_status,
+    child_run.id_doc_qxp AS child_qxp_document_id,
+    child_run.date_debut_generation AS child_start_date,
+    child_run.date_fin_generation AS child_end_date
+FROM child_selection selection
+LEFT JOIN qxp_run child_run
+  ON child_run.id_run = selection.selected_child_run_id
+ORDER BY
+    selection.parent_run_id,
+    selection.id_tache,
+    selection.child_position,
+    selection.child_fnd_code,
+    selection.child_suivi_id;
+
+
+/* Q018-E — Selected child-run ID shape and accepted presence semantics.
+
+   The accepted .NET reader maps SQL NULL to Int32.MinValue and its default
+   Validation.IsSet(int) accepts every other integer, including zero/negative.
+   Java currently maps NULL to zero and accepts only values greater than zero.
+   This aggregate proves whether the difference is reachable in current data.
+*/
+WITH parent_context AS (
+    SELECT DISTINCT
+        parent_run.id_run AS parent_run_id,
+        run_task.id_tache,
+        parent_suivi.id_gabarit AS id_gabarit_tete,
+        parent_suivi.id_fnd_code AS id_structure,
+        task.id_gabarit_fils,
+        parent_suivi.id_langue,
+        parent_suivi.date_echeance,
+        parent_run.mode_compart
+    FROM qxp_asso_run_taches run_task
+    JOIN qxp_tache task
+      ON task.id_tache = run_task.id_tache
+     AND task.is_actif = 1
+     AND task.id_type_tache = 5
+    JOIN qxp_run parent_run
+      ON parent_run.id_run = run_task.id_run
+    JOIN qxp_suivi parent_suivi
+      ON parent_suivi.id_suivi = parent_run.id_suivi
+     AND parent_suivi.id_run_suivant = parent_run.id_run
+), selected_children AS (
+    SELECT
+        parent.parent_run_id,
+        parent.id_tache,
+        compartment_link.id_fnd_code AS child_fnd_code,
+        compartment_link.position AS child_position,
+        child_suivi.id_suivi AS child_suivi_id,
+        CASE
+            WHEN BITAND(NVL(parent.mode_compart, 0), 1) = 1
+            THEN child_suivi.id_run_suivant
+            ELSE child_suivi.id_run_precedent
+        END AS selected_child_run_id
+    FROM parent_context parent
+    JOIN qxp_asso_struct_gabarit_comp compartment_link
+      ON compartment_link.id_structure = parent.id_structure
+     AND compartment_link.id_gabarit = parent.id_gabarit_tete
+    LEFT JOIN qxp_suivi child_suivi
+      ON child_suivi.id_fnd_code = compartment_link.id_fnd_code
+     AND child_suivi.id_langue = parent.id_langue
+     AND child_suivi.id_gabarit = parent.id_gabarit_fils
+     AND child_suivi.date_echeance = parent.date_echeance
+     AND child_suivi.id_type_rapport = 4
+)
+SELECT
+    COUNT(*) AS cursor_rows,
+    SUM(CASE WHEN selected_child_run_id IS NULL THEN 1 ELSE 0 END) AS null_run_ids,
+    SUM(CASE WHEN selected_child_run_id = 0 THEN 1 ELSE 0 END) AS zero_run_ids,
+    SUM(CASE WHEN selected_child_run_id < 0 THEN 1 ELSE 0 END) AS negative_run_ids,
+    SUM(CASE WHEN selected_child_run_id > 0 THEN 1 ELSE 0 END) AS positive_run_ids,
+    COUNT(DISTINCT parent_run_id) AS parent_runs,
+    COUNT(DISTINCT id_tache) AS compartment_tasks
+FROM selected_children;
+
+
+/* Q018-F — Active compartment-gabarit dependency cycles.
+
+   Zero rows means no cycle is reachable in the active static gabarit/task
+   graph. A returned row is a rollout blocker because neither engine currently
+   has a recursion-depth or cycle guard.
+*/
+WITH compartment_edges AS (
+    SELECT DISTINCT
+        gabarit_task.id_gabarit AS parent_gabarit_id,
+        task.id_gabarit_fils AS child_gabarit_id,
+        task.id_tache
+    FROM qxp_asso_gabarit_taches gabarit_task
+    JOIN qxp_gabarit parent_gabarit
+      ON parent_gabarit.id_gabarit = gabarit_task.id_gabarit
+     AND parent_gabarit.is_actif = 1
+    JOIN qxp_tache task
+      ON task.id_tache = gabarit_task.id_tache
+     AND task.is_actif = 1
+     AND task.id_type_tache = 5
+), hierarchy AS (
+    SELECT
+        CONNECT_BY_ROOT parent_gabarit_id AS root_gabarit_id,
+        parent_gabarit_id,
+        child_gabarit_id,
+        id_tache,
+        LEVEL AS dependency_depth,
+        CONNECT_BY_ISCYCLE AS is_cycle
+    FROM compartment_edges
+    START WITH parent_gabarit_id IN (
+        SELECT DISTINCT edge_root.parent_gabarit_id
+        FROM compartment_edges edge_root
     )
-WHERE (
-        kii_storage.tx_ffg
-        + kii_storage.tx_frais_pret
-        + kii_storage.tx_com_mvmt
-        + kii_storage.tx_ct_ind
-        + kii_storage.tx_retro
-      ) <> 0
-   OR kii_storage.tx_com_surperf <> 0
-ORDER BY candidate_run.date_fin_generation DESC NULLS LAST
-FETCH FIRST 10 ROWS ONLY;
+    CONNECT BY NOCYCLE
+        PRIOR child_gabarit_id = parent_gabarit_id
+)
+SELECT
+    root_gabarit_id,
+    parent_gabarit_id,
+    child_gabarit_id,
+    id_tache,
+    dependency_depth
+FROM hierarchy
+WHERE is_cycle = 1
+ORDER BY
+    root_gabarit_id,
+    dependency_depth,
+    parent_gabarit_id,
+    child_gabarit_id,
+    id_tache;
+
+
+/* ========================================================================
+   Q019 — Check/overflow and document-storage reachability
+
+   Purpose:
+     Inventory the two conditions that make Check consume final structural
+     XML, then select historical generated runs for later .NET/Java evidence.
+
+   Notes:
+     STORE_DATA_TYPE is a bit mask on QXP_GABARIT:
+       1 = SQL, 2 = DOCUMENT, 3 = SQL + DOCUMENT.
+     CONTROL_OVERFLOW belongs to active DYNAMIQUE tasks (ID_TYPE_TACHE=4).
+   ======================================================================== */
+
+/* Q019-A — Active-gabarit storage flags and next-run reachability. */
+SELECT
+    NVL(gabarit.store_data_type, 0) AS store_data_type,
+    COUNT(DISTINCT gabarit.id_gabarit) AS active_gabarits,
+    COUNT(DISTINCT CASE
+        WHEN suivi.id_run_suivant IS NOT NULL THEN suivi.id_run_suivant
+    END) AS selected_next_runs
+FROM qxp_gabarit gabarit
+LEFT JOIN qxp_suivi suivi
+  ON suivi.id_gabarit = gabarit.id_gabarit
+WHERE gabarit.is_actif = 1
+GROUP BY NVL(gabarit.store_data_type, 0)
+ORDER BY store_data_type;
+
+
+/* Q019-B — Active dynamic overflow-control inventory and reachability. */
+SELECT
+    task.control_overflow,
+    COUNT(DISTINCT task.id_tache) AS active_dynamic_tasks,
+    COUNT(DISTINCT gabarit_task.id_gabarit) AS linked_gabarits,
+    COUNT(DISTINCT CASE
+        WHEN suivi.id_run_suivant = run_task.id_run THEN run_task.id_run
+    END) AS selected_next_runs
+FROM qxp_tache task
+LEFT JOIN qxp_asso_gabarit_taches gabarit_task
+  ON gabarit_task.id_tache = task.id_tache
+LEFT JOIN qxp_asso_run_taches run_task
+  ON run_task.id_tache = task.id_tache
+LEFT JOIN qxp_run run
+  ON run.id_run = run_task.id_run
+LEFT JOIN qxp_suivi suivi
+  ON suivi.id_suivi = run.id_suivi
+WHERE task.is_actif = 1
+  AND task.id_type_tache = 4
+GROUP BY task.control_overflow
+ORDER BY task.control_overflow;
+
+
+/* Q019-C — Recent generated DOCUMENT-storage candidates.
+
+   These runs can provide final QXP/XML evidence for name/value extraction,
+   including whether whitespace-only box names are reachable.
+*/
+SELECT
+    run.id_run,
+    run.id_suivi,
+    suivi.id_gabarit,
+    NVL(gabarit.store_data_type, 0) AS store_data_type,
+    run.id_statut_generation,
+    run.date_debut_generation,
+    run.date_fin_generation,
+    run.id_doc_qxp,
+    run.id_doc_pdf
+FROM qxp_run run
+JOIN qxp_suivi suivi
+  ON suivi.id_suivi = run.id_suivi
+JOIN qxp_gabarit gabarit
+  ON gabarit.id_gabarit = suivi.id_gabarit
+WHERE BITAND(NVL(gabarit.store_data_type, 0), 2) = 2
+  AND run.id_statut_generation = 2
+  AND run.id_doc_qxp IS NOT NULL
+ORDER BY
+    NVL(
+        run.date_fin_generation,
+        NVL(run.date_debut_generation, run.date_creation_run)
+    ) DESC NULLS LAST
+FETCH FIRST 20 ROWS ONLY;
+
+
+/* Q019-D — Recent generated overflow-control run/task candidates.
+
+   One run can intentionally appear once for each associated controlled task.
+*/
+SELECT
+    run.id_run,
+    run.id_suivi,
+    run_task.id_tache,
+    suivi.id_gabarit,
+    task.control_overflow,
+    run.id_statut_generation,
+    run.date_debut_generation,
+    run.date_fin_generation,
+    run.id_doc_qxp,
+    run.id_doc_pdf
+FROM qxp_asso_run_taches run_task
+JOIN qxp_tache task
+  ON task.id_tache = run_task.id_tache
+JOIN qxp_run run
+  ON run.id_run = run_task.id_run
+JOIN qxp_suivi suivi
+  ON suivi.id_suivi = run.id_suivi
+WHERE task.is_actif = 1
+  AND task.id_type_tache = 4
+  AND task.control_overflow = 1
+  AND run.id_statut_generation = 2
+  AND run.id_doc_qxp IS NOT NULL
+ORDER BY
+    NVL(
+        run.date_fin_generation,
+        NVL(run.date_debut_generation, run.date_creation_run)
+    ) DESC NULLS LAST,
+    run.id_run,
+    run_task.id_tache
+FETCH FIRST 20 ROWS ONLY;
+
+
+/* ========================================================================
+   Q020 — Final render and End/audit persistence evidence
+
+   Run this after Q014-Q019. Q020-A is especially important because the
+   supplied .NET source constructs an Audit object but contains no call to
+   Audit.End(); the database proves the actual deployed behavior.
+   ======================================================================== */
+
+/* Q020-A — Exact audit rows for already selected/accepted runs. */
+SELECT
+    audit_row.id_audit_run,
+    audit_row.id_run,
+    audit_row.id_suivi,
+    NVL(audit_row.run_type, '<NULL>') AS run_type,
+    NVL(
+        TO_CHAR(audit_row.start_date, 'YYYY-MM-DD HH24:MI:SS'),
+        '<NULL>'
+    ) AS start_date_exact,
+    NVL(
+        TO_CHAR(audit_row.end_date, 'YYYY-MM-DD HH24:MI:SS'),
+        '<NULL>'
+    ) AS end_date_exact,
+    audit_row.duration,
+    NVL(audit_row.end_status, '<NULL>') AS end_status,
+    CASE
+        WHEN audit_row.message IS NULL THEN '<NULL>'
+        ELSE REPLACE(
+            REPLACE(audit_row.message, CHR(13), '<CR>'),
+            CHR(10), '<LF>'
+        )
+    END AS message_exact,
+    LENGTH(audit_row.message) AS message_length
+FROM qxp_audit_run audit_row
+WHERE audit_row.id_run IN (
+    517912,
+    509199,
+    340518
+)
+ORDER BY audit_row.id_run, audit_row.id_audit_run;
+
+
+/* Q020-B — Audit shape inventory across the refreshed environment. */
+SELECT
+    NVL(audit_row.end_status, '<NULL>') AS end_status,
+    COUNT(*) AS audit_rows,
+    SUM(CASE WHEN audit_row.end_date IS NULL THEN 1 ELSE 0 END) AS null_end_dates,
+    SUM(CASE WHEN audit_row.message IS NULL THEN 1 ELSE 0 END) AS null_messages,
+    MIN(LENGTH(audit_row.message)) AS min_message_length,
+    MAX(LENGTH(audit_row.message)) AS max_message_length
+FROM qxp_audit_run audit_row
+GROUP BY NVL(audit_row.end_status, '<NULL>')
+ORDER BY end_status;
+
+
+/* Q020-C — Generated-run final-document presence combinations. */
+SELECT
+    run.id_statut_generation,
+    CASE WHEN run.id_doc_qxp IS NULL THEN '<NULL>' ELSE '<SET>' END AS qxp_state,
+    CASE WHEN run.id_doc_pdf IS NULL THEN '<NULL>' ELSE '<SET>' END AS pdf_state,
+    CASE WHEN run.id_doc_doc IS NULL THEN '<NULL>' ELSE '<SET>' END AS word_state,
+    COUNT(*) AS run_count
+FROM qxp_run run
+GROUP BY
+    run.id_statut_generation,
+    CASE WHEN run.id_doc_qxp IS NULL THEN '<NULL>' ELSE '<SET>' END,
+    CASE WHEN run.id_doc_pdf IS NULL THEN '<NULL>' ELSE '<SET>' END,
+    CASE WHEN run.id_doc_doc IS NULL THEN '<NULL>' ELSE '<SET>' END
+ORDER BY
+    run.id_statut_generation,
+    qxp_state,
+    pdf_state,
+    word_state;
+
+
+/* Q020-D — Zero-byte/unknown-size persisted documents and current run links.
+
+   TAILLE_DOCUMENT is nullable, so it cannot by itself prove a zero-byte BLOB.
+   RECORDED_SIZE_STATE and BLOB_SIZE_STATE deliberately remain separate:
+     - ZERO/ZERO is direct zero-byte evidence;
+     - NULL with any BLOB state is incomplete metadata, not automatically zero;
+     - a disagreement exposes a persisted size inconsistency.
+*/
+SELECT
+    document.id_sous_categorie,
+    document.format,
+    CASE
+        WHEN document.taille_document IS NULL THEN 'NULL'
+        WHEN document.taille_document = 0 THEN 'ZERO'
+        ELSE 'POSITIVE'
+    END AS recorded_size_state,
+    CASE
+        WHEN document.contenu IS NULL THEN 'NULL'
+        WHEN DBMS_LOB.GETLENGTH(document.contenu) = 0 THEN 'ZERO'
+        ELSE 'POSITIVE'
+    END AS blob_size_state,
+    COUNT(DISTINCT document.id_document) AS documents,
+    COUNT(DISTINCT run.id_run) AS linked_runs
+FROM qxp_document document
+LEFT JOIN qxp_run run
+  ON run.id_doc_qxp = document.id_document
+  OR run.id_doc_pdf = document.id_document
+  OR run.id_doc_doc = document.id_document
+WHERE document.taille_document IS NULL
+   OR document.taille_document = 0
+   OR document.contenu IS NULL
+   OR DBMS_LOB.GETLENGTH(document.contenu) = 0
+GROUP BY
+    document.id_sous_categorie,
+    document.format,
+    CASE
+        WHEN document.taille_document IS NULL THEN 'NULL'
+        WHEN document.taille_document = 0 THEN 'ZERO'
+        ELSE 'POSITIVE'
+    END,
+    CASE
+        WHEN document.contenu IS NULL THEN 'NULL'
+        WHEN DBMS_LOB.GETLENGTH(document.contenu) = 0 THEN 'ZERO'
+        ELSE 'POSITIVE'
+    END
+ORDER BY
+    document.id_sous_categorie,
+    document.format,
+    recorded_size_state,
+    blob_size_state;
+
+
+/* Q020-E — Reachability of whitespace-only persisted run-error messages. */
+SELECT
+    COUNT(*) AS total_run_errors,
+    SUM(CASE WHEN error.message IS NULL THEN 1 ELSE 0 END) AS null_messages,
+    SUM(
+        CASE
+            WHEN error.message IS NOT NULL
+             AND LENGTH(
+                 REPLACE(
+                     REPLACE(
+                         REPLACE(
+                             REPLACE(error.message, ' ', ''),
+                             CHR(9),
+                             ''
+                         ),
+                         CHR(10),
+                         ''
+                     ),
+                     CHR(13),
+                     ''
+                 )
+             ) IS NULL
+            THEN 1 ELSE 0
+        END
+    ) AS whitespace_only_messages
+FROM qxp_run_error error;
+
+
+/* Q020-F — Existing persisted trace-size distribution.
+
+   The accepted .NET in-memory trace has no size bound. Batch 2H proposes a
+   YAML-owned Java bound, initially 1 MiB, to prevent one large run retaining
+   an unbounded CLOB candidate. This query measures the refreshed environment
+   before that default is approved. It deliberately reads lengths only and
+   never exports LOG_TRACE content, which may contain business values.
+*/
+WITH run_trace_lengths AS (
+    SELECT
+        run.id_statut_generation,
+        CASE
+            WHEN run.log_trace IS NULL THEN NULL
+            ELSE DBMS_LOB.GETLENGTH(run.log_trace)
+        END AS trace_length
+    FROM qxp_run run
+)
+SELECT
+    COUNT(*) AS total_runs,
+    SUM(CASE WHEN trace_length IS NULL THEN 1 ELSE 0 END) AS null_traces,
+    COUNT(trace_length) AS nonnull_traces,
+    SUM(CASE WHEN trace_length = 0 THEN 1 ELSE 0 END) AS zero_length_traces,
+    MIN(trace_length) AS min_trace_length,
+    ROUND(AVG(trace_length), 2) AS average_trace_length,
+    PERCENTILE_CONT(0.50) WITHIN GROUP (
+        ORDER BY trace_length
+    ) AS p50_trace_length,
+    PERCENTILE_CONT(0.95) WITHIN GROUP (
+        ORDER BY trace_length
+    ) AS p95_trace_length,
+    PERCENTILE_CONT(0.99) WITHIN GROUP (
+        ORDER BY trace_length
+    ) AS p99_trace_length,
+    MAX(trace_length) AS max_trace_length,
+    SUM(CASE WHEN trace_length > 1048576 THEN 1 ELSE 0 END) AS above_proposed_one_mib
+FROM run_trace_lengths;
+
+
+/* ========================================================================
+   Q021 — Run admission, reservation and replay exposure
+
+   Purpose:
+     The historical scheduled batch route selected status-1 rows linked
+     through ID_RUN_SUIVANT and changed them to status 5 before launching the
+     one-run executable. The historical immediate website route first created
+     or reset such a next run, then its batch command unconditionally changed
+     the supplied ID to status 5. REST and Rabbit now receive explicit IDs,
+     but their correspondence to those two old routes is not yet confirmed.
+     These read-only queries establish the actual status labels, current
+     link/state population and the state of selected evidence runs. They do
+     not decide adapter or Rabbit-publisher reservation ownership.
+
+   Run after Q020. Preserve the three result sets separately with headers.
+   ======================================================================== */
+
+/* Q021-A — Exact generation-status reference values. */
+SELECT
+    status_reference.id_statut_generation,
+    NVL(status_reference.libelle, '<NULL>') AS libelle,
+    NVL(status_reference.traduction_code, '<NULL>') AS traduction_code
+FROM qxp_ref_statut_generation status_reference
+ORDER BY status_reference.id_statut_generation;
+
+
+/* Q021-B — Population by status and suivi next/previous relationship.
+
+   OLD_BATCH_INITIAL_ELIGIBLE reproduces Get_Runs_Initials eligibility.
+   OLD_BATCH_SCHEDULED_ELIGIBLE reproduces Get_Runs eligibility.
+   LINKED_AS_PREVIOUS identifies runs for which a blind replay can encounter
+   itself as End_Run's previous-run cleanup target.
+*/
+SELECT
+    run_record.id_statut_generation,
+    COUNT(*) AS total_runs,
+    SUM(CASE
+        WHEN suivi_record.id_run_suivant = run_record.id_run THEN 1 ELSE 0
+    END) AS linked_as_next,
+    SUM(CASE
+        WHEN suivi_record.id_run_precedent = run_record.id_run THEN 1 ELSE 0
+    END) AS linked_as_previous,
+    SUM(CASE
+        WHEN suivi_record.id_run_suivant = run_record.id_run
+         AND suivi_record.id_run_precedent = run_record.id_run
+        THEN 1 ELSE 0
+    END) AS linked_as_both,
+    SUM(CASE
+        WHEN suivi_record.id_run_suivant <> run_record.id_run
+          OR suivi_record.id_run_suivant IS NULL
+        THEN CASE
+            WHEN suivi_record.id_run_precedent <> run_record.id_run
+              OR suivi_record.id_run_precedent IS NULL
+            THEN 1 ELSE 0
+        END
+        ELSE 0
+    END) AS linked_as_neither,
+    SUM(CASE
+        WHEN run_record.id_statut_generation = 1
+         AND suivi_record.id_run_suivant = run_record.id_run
+         AND (
+             run_record.date_planification IS NULL
+             OR run_record.date_planification < SYSDATE
+         )
+        THEN 1 ELSE 0
+    END) AS old_batch_initial_eligible,
+    SUM(CASE
+        WHEN run_record.id_statut_generation = 1
+         AND suivi_record.id_run_suivant = run_record.id_run
+         AND run_record.date_planification IS NOT NULL
+         AND run_record.date_planification < SYSDATE
+        THEN 1 ELSE 0
+    END) AS old_batch_scheduled_eligible
+FROM qxp_run run_record
+JOIN qxp_suivi suivi_record
+  ON suivi_record.id_suivi = run_record.id_suivi
+GROUP BY run_record.id_statut_generation
+ORDER BY run_record.id_statut_generation;
+
+
+/* Q021-C — Exact admission/link state of selected evidence runs. */
+SELECT
+    run_record.id_run,
+    run_record.id_suivi,
+    run_record.id_statut_generation,
+    NVL(status_reference.libelle, '<NULL>') AS status_libelle,
+    NVL(
+        TO_CHAR(run_record.date_planification, 'YYYY-MM-DD HH24:MI:SS'),
+        '<NULL>'
+    ) AS date_planification_exact,
+    CASE
+        WHEN suivi_record.id_run_suivant IS NULL THEN '<NULL>'
+        ELSE TO_CHAR(suivi_record.id_run_suivant)
+    END AS id_run_suivant,
+    CASE
+        WHEN suivi_record.id_run_precedent IS NULL THEN '<NULL>'
+        ELSE TO_CHAR(suivi_record.id_run_precedent)
+    END AS id_run_precedent,
+    CASE
+        WHEN suivi_record.id_run_suivant = run_record.id_run
+         AND suivi_record.id_run_precedent = run_record.id_run
+        THEN 'BOTH'
+        WHEN suivi_record.id_run_suivant = run_record.id_run THEN 'NEXT'
+        WHEN suivi_record.id_run_precedent = run_record.id_run THEN 'PREVIOUS'
+        ELSE 'NEITHER'
+    END AS suivi_link_role
+FROM qxp_run run_record
+JOIN qxp_suivi suivi_record
+  ON suivi_record.id_suivi = run_record.id_suivi
+LEFT JOIN qxp_ref_statut_generation status_reference
+  ON status_reference.id_statut_generation = run_record.id_statut_generation
+WHERE run_record.id_run IN (
+    340518,
+    505902,
+    509199,
+    517912
+)
+ORDER BY run_record.id_run;
