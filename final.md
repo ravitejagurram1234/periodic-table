@@ -1,35 +1,267 @@
-# EOS Quark Engine — Fix Batch 1 Complete Java Copy Packet
+# EOS Quark Core Parity Wave 1 — Complete Copy Packet
 
-This document contains the complete final content of every Java production class and test class changed in Fix Batch 1.
-Each code block is generated directly from the corresponding repository file and can replace that file in full.
+Date: 18 August 2026
 
-## Change inventory
+Scope: the user-approved Wave 1 only — Batch 2A, 3A1, 3A2, 3E1 and the safe 3E3 foundation.
 
-1. `Run.prepareGabarit`: structural XML retrieval/parsing failure now caches empty XML, marks both document and
-   run degraded, skips the separate DID request and leaves Render/End available. Size-triggered degradation also
-   marks both objects. Successful parsing logs only run ID plus box/page counts.
-2. `LoadTasksServiceImpl`: missing-task and duplicate-block exception rows now add the same Unspecified (1) run
-   errors as .NET while continuing. Logs use task/run/block identifiers and aggregate counts; no task SQL is logged.
-3. `LoadTemplatesBusiness`: an empty gabarit-template document result is deferred to per-task Prepare handling;
-   duplicate or null template names fail Load like `.NET Dictionary.Add`. Template degradation marks document/run.
-4. `GetGabaritTemplateDaoImpl`: an empty cursor returns `null`, and the pool filename is `GT_<id>.QXP`.
-5. `TaskMapper`: a NULL `NB_DECIMAL` maps to `Integer.MIN_VALUE`, preserving the .NET unset sentinel.
-6. `DataTypeHelper`: unset or out-of-range decimal precision uses the standard fixed two-digit default; configured
-   precision 0–10 retains the existing significant/optional-zero behavior.
-7. Focused tests cover retrieval failure, malformed XML, size degradation, nonblocking exception continuation,
-   duplicate/null template names, missing template documents, per-task Prepare isolation, uppercase filenames and
-   default decimal/currency/percentage formatting.
+This is a whole-file transfer artifact. Replace each listed destination file with the complete content in its
+code block. Do not copy only a displayed method or diff fragment. No `application.yaml`, REST or RabbitMQ file is
+changed by this wave.
 
-No REST endpoint, RabbitMQ configuration/listener, task SQL text, Oracle package, schema or size-threshold value is
-changed by this packet.
+Verification completed before packet generation:
 
-## Production classes
+- all 483 Java production source files compiled with Java 17 in an independent Maven dependency mirror;
+- 81 focused tests passed; failures 0, errors 0, skipped 0;
+- accepted invariant numeric/date behavior was cross-checked with executable .NET probes;
+- repository-native Maven still requires the private parent POM/dependencies available in the connected environment.
+
+After transfer, run the repository's normal clean build and the focused tests in the connected environment. A
+checksum mismatch means the destination is not the reviewed Wave 1 file.
+
+## Production files
+
+### `src/main/java/com/socgen/sgs/api/quark/engine/service/impl/LoadTasksServiceImpl.java`
+
+SHA-256: `a11c8cc04456c234f1c2c3f7890ebc9bf9cc18c84b378365283209d33d494498`
+
+````java
+package com.socgen.sgs.api.quark.engine.service.impl;
+
+import com.socgen.sgs.api.quark.engine.business.GetTasksBusiness;
+import com.socgen.sgs.api.quark.engine.business.GetTaskExceptionsBusiness;
+import com.socgen.sgs.api.quark.engine.domain.Run;
+import com.socgen.sgs.api.quark.engine.domain.RunError;
+import com.socgen.sgs.api.quark.engine.domain.task.TaskBase;
+import com.socgen.sgs.api.quark.engine.domain.task.TaskDid;
+import com.socgen.sgs.api.quark.engine.domain.task.TaskException;
+import com.socgen.sgs.api.quark.engine.mapper.TaskExceptionMapper;
+import com.socgen.sgs.api.quark.engine.mapper.TaskMapper;
+import com.socgen.sgs.api.quark.engine.service.LoadTasksService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Map;
+
+@Service
+@Slf4j
+@RequiredArgsConstructor
+public class LoadTasksServiceImpl implements LoadTasksService {
+
+    private final GetTasksBusiness getTasksBusiness;
+    private final GetTaskExceptionsBusiness getTaskExceptionsBusiness;
+    private final TaskMapper taskMapper;
+    private final TaskExceptionMapper taskExceptionMapper;
+
+    @Override
+    public void loadTasks(Run run) {
+        log.info("Loading tasks for runId: {}", run.getId());
+
+        List<Map<String, Object>> rows = getTasksBusiness.execute(run.getId());
+        run.getTasks().clear();
+
+        for (Map<String, Object> row : rows) {
+            TaskBase task = taskMapper.mapToTask(row, run);
+            if (task != null) {
+                addTaskOrThrow(run, task);
+            }
+        }
+
+        log.info("Loaded {} tasks for runId: {}", run.getTasks().size(), run.getId());
+
+        loadTaskExceptions(run);
+
+        //adding did_Task
+        TaskDid didTask = new TaskDid(TaskDid.DID_TASK_ID, run);
+        addTaskOrThrow(run, didTask);
+        log.info("DID task added for runId: {}", run.getId());
+    }
+
+    private void addTaskOrThrow(Run run, TaskBase task) {
+        if (run.getTasks().containsKey(task.getId())) {
+            throw new IllegalStateException(String.format(
+                    "Duplicate task id %d for run %d", task.getId(), run.getId()));
+        }
+
+        run.getTasks().put(task.getId(), task);
+    }
+
+    private void loadTaskExceptions(Run run) {
+        log.info("Loading task exceptions for runId: {}", run.getId());
+
+        List<Map<String, Object>> rows = getTaskExceptionsBusiness.execute(run.getId());
+        TaskBase cachedTask = null;
+        int loadedCount = 0;
+        int missingTaskCount = 0;
+        int duplicateBlocCount = 0;
+
+        for (Map<String, Object> row : rows) {
+            int idTache = taskExceptionMapper.getIdTache(row);
+            String nomBloc = taskExceptionMapper.getNomBloc(row);
+
+            // Local cache: reuse last task if same id
+            if (cachedTask == null || cachedTask.getId() != idTache) {
+                if (run.getTasks().containsKey(idTache)) {
+                    cachedTask = run.getTasks().get(idTache);
+                } else {
+                    cachedTask = null;
+                    missingTaskCount++;
+                    run.getErrors().add(new RunError(RunError.UNSPECIFIED, String.format(
+                            "impossible de définir l'exception [%s] pour la tache %d "
+                                    + "qui est introuvable dans le run %d",
+                            nomBloc, idTache, run.getId())));
+                    log.warn("Task {} not found in run {} for bloc exception '{}'", idTache, run.getId(), nomBloc);
+                    continue;
+                }
+            }
+
+            TaskException taskException = taskExceptionMapper.mapToTaskException(row);
+
+            if (cachedTask.getExceptions().containsKey(nomBloc)) {
+                duplicateBlocCount++;
+                run.getErrors().add(new RunError(RunError.UNSPECIFIED, String.format(
+                        "Le bloc %s est déjà défini dans la tache %s du run %d",
+                        nomBloc, cachedTask.getDebugInfo(), run.getId())));
+                log.warn("Duplicate bloc exception '{}' for taskId {} in run {}",
+                        nomBloc, cachedTask.getId(), run.getId());
+            } else {
+                cachedTask.getExceptions().put(nomBloc, taskException);
+                loadedCount++;
+            }
+        }
+
+        log.info("Task exception loading completed for run [{}]: {} loaded, {} missing-task rows skipped, "
+                        + "{} duplicate-block rows skipped",
+                run.getId(), loadedCount, missingTaskCount, duplicateBlocCount);
+    }
+}
+````
+
+### `src/main/java/com/socgen/sgs/api/quark/engine/service/task/impl/DidTaskPostProcessStrategy.java`
+
+SHA-256: `673d681d916cdde9966dbdaec0d844a0e8315f0e994b4dba2e40e84112344ef2`
+
+````java
+package com.socgen.sgs.api.quark.engine.service.task.impl;
+
+import com.socgen.sgs.api.quark.engine.domain.RunError;
+import com.socgen.sgs.api.quark.engine.domain.bloc.BlocBase;
+import com.socgen.sgs.api.quark.engine.domain.dynamic.report.DBlocInfo;
+import com.socgen.sgs.api.quark.engine.domain.element.TBox;
+import com.socgen.sgs.api.quark.engine.domain.helper.DocumentIdentityHelper;
+import com.socgen.sgs.api.quark.engine.domain.helper.TElementHelper;
+import com.socgen.sgs.api.quark.engine.domain.task.TaskBase;
+import com.socgen.sgs.api.quark.engine.domain.task.TaskDid;
+import com.socgen.sgs.api.quark.engine.enums.BlocActionEnum;
+import com.socgen.sgs.api.quark.engine.enums.StaticTElementNameEnum;
+import com.socgen.sgs.api.quark.engine.integration.soap.generated.Box;
+import com.socgen.sgs.api.quark.engine.service.task.TaskPostProcessStrategy;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
+
+/**
+ * DID post-processing — chooses MOVE vs NAME_VALUE mode, builds the DID identity, and produces
+ * the DID bloc by routing through the standard system bloc-creation path.
+ *
+ * <p>Cross-reference: .NET {@code Task_DID.PostProcess()} → {@code Business.Process_System.Process(this)}.
+ */
+@Component
+@RequiredArgsConstructor
+@Slf4j
+public class DidTaskPostProcessStrategy implements TaskPostProcessStrategy<TaskDid> {
+
+    private static final String DID_BLOC_NAME = "DID";
+    /** Reused to actually create the bloc, exactly like .NET delegates to Process_System. */
+    private final SystemTaskProcessStrategy systemTaskProcessStrategy;
+
+    @Override
+    public Class<TaskDid> getTaskType() {
+        return TaskDid.class;
+    }
+
+    @Override
+    public void postProcess(TaskDid task) {
+        // 1. Choose update mode.
+        // If any task produced a paginated modify bloc (page create/remove) it may shift the DID's
+        // position, so the DID is repositioned + revalued via MOVE; otherwise just its value changes.
+        // Cross-reference: .NET Task_DID.PostProcess() mode selection.
+        boolean modifier = false;
+        modeSelection:
+        for (TaskBase other : task.getRun().getTasks().values()) {
+            for (BlocBase bloc : other.getBlocsModify().values()) {
+                if (bloc.isPagination()) {
+                    modifier = true;
+                    break modeSelection;
+                }
+            }
+        }
+
+        // 2. Build the new identity value.
+        String didValue = DocumentIdentityHelper.getNewIdentity(task.getRun());
+
+        if (modifier) {
+            // MOVE mode — keep the DID box on the page where it currently is, with the new value.
+            task.setAction(BlocActionEnum.MOVE);
+            task.setPagination(true);
+
+            DBlocInfo didInfo = task.getRun().getGabarit().getQxpXml().getBlocInfo(DID_BLOC_NAME);
+
+            // A box with no UID does not exist (every Quark box, even unnamed, has a UID).
+            if (didInfo == null || didInfo.getUid() == null || didInfo.getUid().isEmpty()) {
+                task.getRun().getErrors().add(new RunError(RunError.UNSPECIFIED,
+                        "Le bloc DID est absent du document"));
+                log.warn("Missing DID box for run [{}] in MOVE branch; DID update skipped",
+                        task.getRun().getId());
+                return;
+            }
+
+            // To move a box, QuarkXPress needs at least its position + UID (the page is set later in
+            // the modifier). Cross-reference: .NET TElement_Helper.Get_TElement(MOVE_BLOC_VALUE, dest).
+            TBox tBox = (TBox) TElementHelper.getTElement(
+                    StaticTElementNameEnum.MOVE_BLOC_VALUE, task.getDestinationBlocName());
+            Box box = tBox.getSrcBox();
+            box.getGeometry().getPosition().setLeft(didInfo.getLeft().toString());
+            box.getGeometry().getPosition().setTop(didInfo.getTop().toString());
+            box.getGeometry().getPosition().setRight(didInfo.getRight().toString());
+            box.getGeometry().getPosition().setBottom(didInfo.getBottom().toString());
+            box.setUID(didInfo.getUid());
+            box.getContent().setValue(didValue);
+
+            // Drives SystemTaskProcessStrategy BOX mode → a MOVE bloc in blocsModify.
+            task.setTBoxSrcBox(box);
+            log.info("DID update mode: MOVE for run [{}]", task.getRun().getId());
+
+        } else {
+            // NAME_VALUE mode — update the DID value only.
+            String didUid = task.getRun().getGabarit().getQxpXml().getUID(DID_BLOC_NAME);
+            if (didUid == null || didUid.isEmpty()) {
+                task.getRun().getErrors().add(new RunError(RunError.UNSPECIFIED,
+                        "Le bloc DID est absent du document"));
+                log.warn("Missing DID box for run [{}] in NAME_VALUE branch; DID update skipped",
+                        task.getRun().getId());
+                return;
+            }
+            // tBoxSrcBox stays null → SystemTaskProcessStrategy VALUE mode → an UPDATE bloc in blocsUpdate.
+            task.setValue(didValue);
+            log.info("DID update mode: NAME_VALUE for run [{}]", task.getRun().getId());
+        }
+
+        // 3. Create the actual bloc as a standard system task.
+        // Cross-reference: .NET Task_DID.PostProcess() → Business.Process_System.Process(this).
+        systemTaskProcessStrategy.process(task);
+
+        log.info("DID task post-process completed for run [{}]", task.getRun().getId());
+    }
+}
+````
 
 ### `src/main/java/com/socgen/sgs/api/quark/engine/domain/Run.java`
 
-SHA-256: `1f7908610d927ae787c1b7005ea164f76316b35353b71afc08f3b36997b75196`
+SHA-256: `3f36ef8cb9dc65fa3e0ee5bff615b7e2bb27ead20ac776f1e75858aaf84103a0`
 
-```java
+````java
 package com.socgen.sgs.api.quark.engine.domain;
 
 import com.socgen.sgs.api.quark.engine.business.GetGabaritBusiness;
@@ -39,6 +271,7 @@ import com.socgen.sgs.api.quark.engine.domain.port.DocumentIdentityPort;
 import com.socgen.sgs.api.quark.engine.domain.port.FilePoolPort;
 import com.socgen.sgs.api.quark.engine.domain.task.TaskBase;
 import com.socgen.sgs.api.quark.engine.domain.xml.QxpXml;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -97,6 +330,14 @@ public class Run {
     /** End timestamp. Cross-reference: .NET Run_Base._finGeneration */
     private LocalDateTime endDate;
 
+    /**
+     * Next QXPS working-document suffix for this run. The accepted caller retains this counter
+     * across overflow reprocessing of the same run.
+     */
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
+    private int qxpsExecutionCount = 1;
+
     private long sizeLimitBeforeFailSoft;
 
     /** Max boxes a modified document may contain (.NET EngineCoreSetting Nb_Box_Max). Configurable. */
@@ -122,6 +363,15 @@ public class Run {
     /** Full accumulated trace text for the End_Run p_log_trace CLOB. */
     public String getTraceLog() {
         return String.join(System.lineSeparator(), traceLogs);
+    }
+
+    public int currentQxpsExecutionNumber() {
+        return qxpsExecutionCount;
+    }
+
+    /** Advance only after QXPS execution and the working-document switch both succeed. */
+    public void advanceQxpsExecutionNumber() {
+        qxpsExecutionCount++;
     }
 
     /**
@@ -255,953 +505,1901 @@ public class Run {
         log.info("Gabarit identity evaluation completed for run [{}]", this.id);
     }
 }
-```
+````
 
-### `src/main/java/com/socgen/sgs/api/quark/engine/service/impl/LoadTasksServiceImpl.java`
+### `src/main/java/com/socgen/sgs/api/quark/engine/domain/RunTask.java`
 
-SHA-256: `013071daea207ba6c8f2ea9a5a845393e5c77eb401e60155892b89266e38dd1e`
+SHA-256: `45a2c3b65b9e524f8b5e86a302a863741f380b41ae1042f0acba1ddf6bb5f7ad`
 
-```java
-package com.socgen.sgs.api.quark.engine.service.impl;
+````java
+package com.socgen.sgs.api.quark.engine.domain;
 
-import com.socgen.sgs.api.quark.engine.business.GetTasksBusiness;
-import com.socgen.sgs.api.quark.engine.business.GetTaskExceptionsBusiness;
-import com.socgen.sgs.api.quark.engine.domain.Run;
-import com.socgen.sgs.api.quark.engine.domain.RunError;
+import com.socgen.sgs.api.quark.engine.domain.bloc.BlocBase;
+import com.socgen.sgs.api.quark.engine.domain.bloc.BlocBox;
 import com.socgen.sgs.api.quark.engine.domain.task.TaskBase;
-import com.socgen.sgs.api.quark.engine.domain.task.TaskDid;
-import com.socgen.sgs.api.quark.engine.domain.task.TaskException;
-import com.socgen.sgs.api.quark.engine.mapper.TaskExceptionMapper;
-import com.socgen.sgs.api.quark.engine.mapper.TaskMapper;
-import com.socgen.sgs.api.quark.engine.service.LoadTasksService;
-import lombok.RequiredArgsConstructor;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-@Service
+/**
+ * Consolidates tasks into execution steps for the QuarkXPress server.
+ * Provides getSteps() which builds the ordered list of RunTaskStep:
+ * <ol>
+ *   <li>Step[0]: UPDATE — all blocsUpdate (text values via SOAP, directCall=false)</li>
+ *   <li>Step[1]: PAGINATION — blocs with pagination=true (page create/remove via HTTP)</li>
+ *   <li>Step[2..N]: MODIFY — remaining blocsModify, split at splitStepBoxNumber per step</li>
+ * </ol>
+ *
+ * Cross-reference: QXP.Engine.Core.Run_Task
+ */
+@Getter
 @Slf4j
-@RequiredArgsConstructor
-public class LoadTasksServiceImpl implements LoadTasksService {
+public class RunTask {
 
-    private final GetTasksBusiness getTasksBusiness;
-    private final GetTaskExceptionsBusiness getTaskExceptionsBusiness;
-    private final TaskMapper taskMapper;
-    private final TaskExceptionMapper taskExceptionMapper;
+    /** Tasks that have modify blocs. Keyed by task ID, preserves order. */
+    private final Map<Integer, TaskBase> tasksModifier = new LinkedHashMap<>();
 
-    @Override
-    public void loadTasks(Run run) {
-        log.info("Loading tasks for runId: {}", run.getId());
+    /** Tasks that have update blocs. Keyed by task ID, preserves order. */
+    private final Map<Integer, TaskBase> tasksUpdate = new LinkedHashMap<>();
 
-        List<Map<String, Object>> rows = getTasksBusiness.execute(run.getId());
-        run.getTasks().clear();
+    /**
+     * Maximum blocs per modify step. If exceeded, a new step is created.
+     * Default 5000 (from .NET EngineCoreSetting.Def_Step_Limit).
+     */
+    private int splitStepBoxNumber = 5000;
 
-        for (Map<String, Object> row : rows) {
-            TaskBase task = taskMapper.mapToTask(row, run);
-            if (task != null) {
-                run.getTasks().put(task.getId(), task);
+    /** Temporary steps (intermediate modify steps created when splitting). */
+    private List<RunTaskStep> stepsTemp = null;
+
+    /** Final ordered list of steps. */
+    private List<RunTaskStep> steps = null;
+
+    private final Run run;
+
+    public RunTask() {
+        this.run = null;
+    }
+
+    public RunTask(Run run) {
+        this.run = run;
+    }
+
+    /**
+     * Add a task to the appropriate task lists based on its blocs.
+     * Called during Pass 2 (Verify) of ProcessTasksServiceImpl.
+     *
+     * @param task the task that has been processed and verified
+     */
+    public void addTask(TaskBase task) {
+        if (task.getBlocsModify().size() > 0) {
+            tasksModifier.put(task.getId(), task);
+        }
+        if (task.getBlocsUpdate().size() > 0) {
+            tasksUpdate.put(task.getId(), task);
+        }
+    }
+
+    /**
+     * Build the ordered list of execution steps from all collected tasks.
+     * This is the main aggregation method called by Step 5.
+     *
+     * <p>Step ordering:
+     * <ol>
+     *   <li>UPDATE step — all blocsUpdate, directCall=false (SOAP)</li>
+     *   <li>PAGINATION step — blocs with pagination=true</li>
+     *   <li>Intermediate MODIFY steps (if split due to box count limit)</li>
+     *   <li>Final MODIFY step — remaining blocsModify</li>
+     * </ol>
+     *
+     * Cross-reference: QXP.Engine.Core.Run_Task.Get_Steps()
+     *
+     * @return the ordered list of RunTaskStep
+     */
+    public List<RunTaskStep> getSteps() {
+        if (steps != null) {
+            return steps;
+        }
+
+        int index = 0;
+        int nbModify = 0;
+
+        stepsTemp = new ArrayList<>();
+        steps = new ArrayList<>();
+
+        // ================================================================
+        // Step 1: UPDATE step — all text value changes (SOAP/ParamsValue)
+        // Direct_Call = false → goes through QuarkXPress Manager (SOAP)
+        // ================================================================
+
+        RunTaskStep updateStep = new RunTaskStep(run);
+        updateStep.setDirectCall(false);
+
+        if (!tasksUpdate.isEmpty()) {
+            for (TaskBase task : tasksUpdate.values()) {
+                updateStep.getBlocsUpdate().addAll(task.getBlocsUpdate().values());
             }
         }
 
-        log.info("Loaded {} tasks for runId: {}", run.getTasks().size(), run.getId());
+        if (!updateStep.getBlocsUpdate().isEmpty()) {
+            steps.add(updateStep);
+        }
 
-        loadTaskExceptions(run);
+        // ================================================================
+        // Step 2: PAGINATION step — blocs with pagination=true
+        // Step 3+: MODIFY steps — remaining structural modifications
+        // ================================================================
 
-        //adding did_Task
-        TaskDid didTask = new TaskDid(TaskDid.DID_TASK_ID, run);
-        run.getTasks().put(didTask.getId(), didTask);
-        log.info("DID task added for runId: {}", run.getId());
-    }
+        RunTaskStep paginationStep = new RunTaskStep(run);
+        RunTaskStep modifyStep = new RunTaskStep(run);
 
-    private void loadTaskExceptions(Run run) {
-        log.info("Loading task exceptions for runId: {}", run.getId());
+        for (TaskBase taskModify : tasksModifier.values()) {
+            if (taskModify.getBlocsModify().isEmpty()) {
+                continue;
+            }
 
-        List<Map<String, Object>> rows = getTaskExceptionsBusiness.execute(run.getId());
-        TaskBase cachedTask = null;
-        int loadedCount = 0;
-        int missingTaskCount = 0;
-        int duplicateBlocCount = 0;
+            boolean haveModifyPagination = false;
+            boolean haveModify = false;
 
-        for (Map<String, Object> row : rows) {
-            int idTache = taskExceptionMapper.getIdTache(row);
-            String nomBloc = taskExceptionMapper.getNomBloc(row);
-
-            // Local cache: reuse last task if same id
-            if (cachedTask == null || cachedTask.getId() != idTache) {
-                if (run.getTasks().containsKey(idTache)) {
-                    cachedTask = run.getTasks().get(idTache);
+            for (BlocBase bloc : taskModify.getBlocsModify().values()) {
+                if (bloc.isPagination()) {
+                    // Pagination blocs → pagination step
+                    haveModifyPagination = true;
+                    paginationStep.getBlocsModify().add(bloc);
                 } else {
-                    cachedTask = null;
-                    missingTaskCount++;
-                    run.getErrors().add(new RunError(RunError.UNSPECIFIED, String.format(
-                            "impossible de définir l'exception [%s] pour la tache %d "
-                                    + "qui est introuvable dans le run %d",
-                            nomBloc, idTache, run.getId())));
-                    log.warn("Task {} not found in run {} for bloc exception '{}'", idTache, run.getId(), nomBloc);
-                    continue;
+                    // Regular modify blocs → modify step
+                    nbModify += bloc.getNbBox();
+                    haveModify = true;
+                    modifyStep.getBlocsModify().add(bloc);
+                }
+
+                // Check if we need to split into a new modify step
+                if (splitStepBoxNumber > 0 && nbModify > splitStepBoxNumber) {
+                    // Remove old and add new evaluateInfo task reference
+                    modifyStep.removeEvaluateInfoTask(taskModify);
+                    modifyStep.addEvaluateInfoTask(taskModify);
+
+                    // Save current modify step to temp list
+                    stepsTemp.add(modifyStep);
+
+                    // Create new modify step
+                    modifyStep = new RunTaskStep(run);
+                    haveModify = false;
+                    nbModify = 0;
                 }
             }
 
-            TaskException taskException = taskExceptionMapper.mapToTaskException(row);
+            // Register evaluateInfo callbacks
+            if (haveModifyPagination) {
+                paginationStep.addEvaluateInfoTask(taskModify);
+                paginationStep.setPagination(true);
+            }
 
-            if (cachedTask.getExceptions().containsKey(nomBloc)) {
-                duplicateBlocCount++;
-                run.getErrors().add(new RunError(RunError.UNSPECIFIED, String.format(
-                        "Le bloc %s est déjà défini dans la tache %s du run %d",
-                        nomBloc, cachedTask.getDebugInfo(), run.getId())));
-                log.warn("Duplicate bloc exception '{}' for taskId {} in run {}",
-                        nomBloc, cachedTask.getId(), run.getId());
-            } else {
-                cachedTask.getExceptions().put(nomBloc, taskException);
-                loadedCount++;
+            if (haveModify) {
+                modifyStep.removeEvaluateInfoTask(taskModify);
+                modifyStep.addEvaluateInfoTask(taskModify);
             }
         }
 
-        log.info("Task exception loading completed for run [{}]: {} loaded, {} missing-task rows skipped, "
-                        + "{} duplicate-block rows skipped",
-                run.getId(), loadedCount, missingTaskCount, duplicateBlocCount);
+        // Add steps in correct order:
+        // 1. Pagination step (page operations first)
+        if (!paginationStep.getBlocsModify().isEmpty()) {
+            steps.add(paginationStep);
+        }
+
+        // 2. Intermediate modify steps (from splitting)
+        if (!stepsTemp.isEmpty()) {
+            steps.addAll(stepsTemp);
+        }
+
+        // 3. Final modify step
+        if (!modifyStep.getBlocsModify().isEmpty()) {
+            steps.add(modifyStep);
+        }
+
+        // Number the steps
+        for (RunTaskStep step : steps) {
+            step.setIndex(index++);
+        }
+
+        return steps;
+    }
+
+    /**
+     * Get total number of excluded boxes across all steps.
+     *
+     * Cross-reference: .NET Run_Task.NbExcludeBoxes
+     */
+    public int getNbExcludeBoxes() {
+        int excludes = 0;
+        if (steps != null) {
+            for (RunTaskStep step : steps) {
+                excludes += step.getNbBoxExcluded();
+            }
+        }
+        return excludes;
+    }
+
+    /** Returns the maximum-box budget calculated for the final execution step. */
+    public int getLastNbMaxDocBoxes() {
+        if (steps == null || steps.isEmpty()) {
+            return 0;
+        }
+        return steps.get(steps.size() - 1).getNbMaxBoxes();
+    }
+
+    /**
+     * Set the split step box number (maximum blocs per modify step).
+     *
+     * @param splitStepBoxNumber max blocs per step
+     */
+    public void setSplitStepBoxNumber(int splitStepBoxNumber) {
+        this.splitStepBoxNumber = splitStepBoxNumber;
     }
 }
-```
+````
 
-### `src/main/java/com/socgen/sgs/api/quark/engine/business/LoadTemplatesBusiness.java`
+### `src/main/java/com/socgen/sgs/api/quark/engine/business/QxpsCallerBusiness.java`
 
-SHA-256: `87254c58c8d0d42f5684a9b68dc8d498cac5fbb5850ef6782065280517a2072e`
+SHA-256: `932ebf5f3fd217b8fd0be65b890d050c3a08125437ca2ed8509b298262eddf5a`
 
-```java
+````java
 package com.socgen.sgs.api.quark.engine.business;
 
 import com.socgen.sgs.api.quark.engine.domain.DocumentDomain;
 import com.socgen.sgs.api.quark.engine.domain.Run;
 import com.socgen.sgs.api.quark.engine.domain.RunError;
-import com.socgen.sgs.api.quark.engine.domain.dynamic.template.Template;
-import com.socgen.sgs.api.quark.engine.domain.task.TaskDynamique;
-import com.socgen.sgs.api.quark.engine.infra.dao.GetGabaritTemplateDao;
-import com.socgen.sgs.api.quark.engine.mapper.TemplateMapper;
+import com.socgen.sgs.api.quark.engine.domain.RunTaskStep;
+import com.socgen.sgs.api.quark.engine.domain.modifier.QxpsModifier;
+import com.socgen.sgs.api.quark.engine.domain.port.FilePoolPort;
+import com.socgen.sgs.api.quark.engine.dto.QxpsCallerResult;
+import com.socgen.sgs.api.quark.engine.infra.interop.qxps.client.QxpsHttpClient;
+import com.socgen.sgs.api.quark.engine.infra.interop.qxps.config.QxpsProperties;
+import com.socgen.sgs.api.quark.engine.infra.interop.qxps.exception.QxpsException;
+import com.socgen.sgs.api.quark.engine.infra.interop.qxps.helper.QxpsProjectSerializer;
+import com.socgen.sgs.api.quark.engine.infra.interop.qxps.message.*;
+import com.socgen.sgs.api.quark.engine.infra.interop.qxps.model.QxpsResponseInfo;
+import com.socgen.sgs.api.quark.engine.infra.interop.qxpsm.QxpsmSoapClient;
+import com.socgen.sgs.api.quark.engine.integration.soap.generated.NameValueParam;
+import com.socgen.sgs.api.quark.engine.integration.soap.generated.Project;
+import com.socgen.sgs.api.quark.engine.integration.soap.generated.QContentData;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
- * Business component for loading templates from the database into a Run.
+ * Business bridge that drives QuarkXPress Server / Manager for a run's modification steps and final
+ * renders. This is the service → infra boundary: the {@code service} layer calls this {@code business}
+ * class, which in turn calls the {@code infra.interop} clients (same shape as service → business → dao).
  *
- * Cross-reference: .NET Proxy_Template.Load_Templates(Run)
+ * <p>Cross-reference: QXP.Engine.Core.QXPS_Caller.
  */
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class LoadTemplatesBusiness {
+public class QxpsCallerBusiness {
 
-    private final GetGabaritTemplateDao getGabaritTemplateDao;
-    private final TemplateMapper templateMapper;
+    private static final String MODIFY_NAME_PATTERN = "Modify_%s.xml";
+    private static final String NEW_GABARIT_NAME_WITH_ID_PATTERN = "%s_%d_%d.%s";
+    private static final String NEW_GABARIT_NAME_PATTERN = "%s_%d.%s";
+    // .NET uses {0:HHmmssff} (2 fractional-second digits); Java 'SS' = 2 fraction digits. Finding #62.
+    private static final DateTimeFormatter TIMESTAMP_FORMAT = DateTimeFormatter.ofPattern("HHmmssSS");
 
-    /**
-     * Load all templates for the run's gabarit template into run.getTemplates().
-     *
-     * @param run the run to populate with templates
-     */
-    public void execute(Run run) {
-        // .NET Run.cs:132-165 only loads the template + templates when at least one dynamic task is
-        // TODO (GetEnumerable<Task_Dynamique>(true)); otherwise it does nothing. Finding #56.
-        boolean hasDynamicTodo = run.getTasks().values().stream()
-                .anyMatch(t -> t instanceof TaskDynamique && t.isTodo());
-        if (!hasDynamicTodo) {
-            log.info("No TODO dynamic task for run [{}], skipping template loading", run.getId());
+    private final QxpsHttpClient qxpsHttpClient;
+    private final QxpsmSoapClient qxpsmSoapClient;
+    private final QxpsProperties qxpsProperties;
+    private final FilePoolPort filePool;
+
+    // ========================================================================
+    // Process — execute all steps
+    // Cross-reference: QXPS_Caller.Process()
+    // ========================================================================
+
+    public void process(Run run) {
+        if (run.getRunProperties().isModeDegrade()) {
+            log.info("Mode degrade detected — no modifications executed for run [{}]", run.getId());
             return;
         }
 
-        int idGabaritTemplate = run.getRunProperties().getIdGabaritTemplate();
-        if (idGabaritTemplate == Integer.MIN_VALUE) {
-            // .NET raises Exception_Run(MSG_Missing_ID_Gabarit_Template, Gabarit.ID) → Bloquante:
-            // a dynamic run with no template id is a hard configuration error, not a silent skip.
-            // Finding #56.
-            Object gabId = run.getGabarit() != null ? run.getGabarit().getId() : run.getId();
-            run.getErrors().add(new RunError(RunError.BLOQUANTE, String.format(
-                    "Manque l'identifiant du gabarit template pour le gabarit %s", gabId)));
-            log.error("Missing id_gabarit_template for run [{}] which has TODO dynamic tasks", run.getId());
-            return;
-        }
+        List<RunTaskStep> steps = run.getRunTask().getSteps();
+        boolean stopProcess = false;
 
-        log.info("Loading templates for idGabaritTemplate={} in run [{}]",
-                idGabaritTemplate, run.getId());
+        log.info("Starting step execution for run [{}] with {} steps", run.getId(), steps.size());
 
-        // Load the gabarit TEMPLATE document itself FIRST (parity: .NET Run.cs:152
-        // this.Gabarit_Template = Get_Gabarit_Template(this); then :157 Load_Templates(this)).
-        // Dynamic tasks clone their blocs from this document — without it TaskDynamique.prepare
-        // would upload the wrong document. Finding #6/#22.
-        DocumentDomain gabaritTemplate = getGabaritTemplateDao.getGabaritTemplate(idGabaritTemplate);
-        run.setGabaritTemplate(gabaritTemplate);
-        if (gabaritTemplate != null) {
-            // The DAO builder sets fileName but not filePoolPath; populate it the same way the source
-            // gabarit is set up (GetGabaritBusiness.preparePaths → getPoolPath), so the upload key and
-            // every later pool lookup resolve to the same R_<runId>/<fileName> string.
-            gabaritTemplate.setFilePoolPath(run.getRunProperties().getPoolPath(gabaritTemplate.getFileName()));
+        for (RunTaskStep step : steps) {
+            log.info("Preparing step [{}] for run [{}]", step.getIndex(), run.getId());
 
-            // .NET Run_Base.Mode_Degrade degrades the run when either QXP document is oversized.
-            if (gabaritTemplate.evaluateModeDegrade(run.getSizeLimitBeforeFailSoft())) {
-                log.warn("Gabarit template {} bytes exceeds limit {} → setting Mode_Degrade for run [{}]",
-                        gabaritTemplate.getData().length, run.getSizeLimitBeforeFailSoft(), run.getId());
-                gabaritTemplate.setModeDegrade(true);
-                run.getRunProperties().setModeDegrade(true);
+            step.prepare(stopProcess);
+
+            log.info("Executing step [{}]: add={} update={} excluded={}",
+                    step.getIndex(), step.getNbBoxAdded(),
+                    step.getNbBoxUpdate(), step.getNbBoxExcluded());
+
+            if (step.isFullExclude()) {
+                log.info("Step [{}] fully excluded — nothing to execute", step.getIndex());
+            } else {
+                if (step.getPrepareStep() != null) {
+                    log.info("Executing prepare sub-step for step [{}]", step.getIndex());
+                    executeStep(run, step.getPrepareStep());
+                }
+                executeStep(run, step);
             }
+
+            stopProcess = stopProcess || step.isPartialExclude();
+            log.info("Step [{}] completed for run [{}]", step.getIndex(), run.getId());
+        }
+
+        int nbExcluded = run.getRunTask().getNbExcludeBoxes();
+        if (nbExcluded > 0) {
+            int maximum = run.getRunTask().getLastNbMaxDocBoxes();
+            String message = String.format(
+                    "La taille du document (%d boxes) ne permettait pas d'effectuer toutes les modifications, %d Boxes ont été exclues",
+                    maximum, nbExcluded);
+            run.getErrors().add(new RunError(RunError.CRITIQUE, message));
+            run.trace(message);
+            log.warn("Run [{}]: {} boxes excluded; final step maximum={}",
+                    run.getId(), nbExcluded, maximum);
+        }
+
+        log.info("All steps completed for run [{}]", run.getId());
+    }
+
+    // ========================================================================
+    // Execute — single step
+    // Cross-reference: QXPS_Caller.Execute(Run_Task_Step)
+    // ========================================================================
+
+    private void executeStep(Run run, RunTaskStep step) {
+        DocumentDomain gabarit = run.getGabarit();
+        String currentDocName = gabarit.getFilePoolPath();
+        String newGabaritName = getNewGabaritNameExt(
+                gabarit, run.currentQxpsExecutionNumber());
+        String poolBasePath = qxpsProperties.getPool().getDefaultPath();
+        String saveAsPath = run.getRunProperties().getPoolPathAbsolute("", poolBasePath);
+
+        QxpsModifier modifier = new QxpsModifier();
+        modifier.addRange(step.getBlocsModify());
+
+        if (step.isDirectCall()) {
+            executeDirectCall(run, step, modifier, currentDocName, saveAsPath, newGabaritName);
         } else {
-            // .NET Get_Gabarit_Template returns null for an empty cursor and still loads the named
-            // template definitions. Dynamic tasks then fail independently during Prepare (Critique),
-            // instead of turning the whole Load phase into a Bloquante error.
-            log.warn("No gabarit template document found for id {} in run {}; "
-                            + "dynamic tasks will report their own Prepare errors",
-                    idGabaritTemplate, run.getId());
+            executeSoapCall(step, modifier, currentDocName, saveAsPath, newGabaritName);
         }
 
-        List<Map<String, Object>> rows = getGabaritTemplateDao.getTemplates(idGabaritTemplate);
+        updateGabaritAfterStep(run, newGabaritName, currentDocName);
 
-        run.getTemplates().clear();
+        run.advanceQxpsExecutionNumber();
+    }
 
-        for (Map<String, Object> row : rows) {
-            Template template = templateMapper.mapToTemplate(row);
-            if (template != null) {
-                if (template.getName() == null) {
-                    // Dictionary.Add in .NET rejects a null key during Load as well.
-                    log.error("Template with null name found for gabaritTemplateId {} in run {}",
-                            idGabaritTemplate, run.getId());
-                    throw new IllegalStateException(String.format(
-                            "Template name is null for gabarit template %d", idGabaritTemplate));
-                }
-                if (run.getTemplates().containsKey(template.getName())) {
-                    // .NET uses Dictionary.Add: a duplicate name throws during Load. The top-level
-                    // run handler records that load failure as Bloquante and sets status ERROR.
-                    log.error("Duplicate template name '{}' for gabaritTemplateId {} in run {}",
-                            template.getName(), idGabaritTemplate, run.getId());
-                    throw new IllegalStateException(String.format(
-                            "Duplicate template name '%s' for gabarit template %d",
-                            template.getName(), idGabaritTemplate));
-                }
-                run.getTemplates().put(template.getName(), template);
+    // ========================================================================
+    // HTTP (directCall=true)
+    // ========================================================================
+
+    private void executeDirectCall(Run run, RunTaskStep step, QxpsModifier modifier,
+                                   String documentName, String saveAsPath,
+                                   String newGabaritName) {
+        // All messages for this step are combined into ONE QuarkXPress Server URL and sent
+        // as ONE HTTP call (sorted by priority by the request builder), exactly like .NET
+        // QXPS_Caller.Execute(): ParamsValue + Modify + SaveAs + QXP rendered in a single call.
+        // Cross-reference: QXPS_Caller.Execute(Run_Task_Step).
+        List<QxpsMessage> messages = new ArrayList<>();
+
+        // 1. ParamsValue (name/value updates) — query only, no path.
+        if (!step.getNameValues().isEmpty()) {
+            NameValueParam[] nvArray = step.getNameValues().toArray(new NameValueParam[0]);
+            messages.add(new ParamsValueMessage(nvArray));
+            log.debug("ParamsValue queued with {} entries", nvArray.length);
+        }
+
+        // 2. Modify — the modify XML is uploaded as a SEPARATE standalone POST first
+        //    (matching .NET QXPS_File_Manager.Addfile), then referenced by the combined call.
+        if (!modifier.isEmpty()) {
+            Project project = modifier.getProject();
+            byte[] modifyXml = QxpsProjectSerializer.toBytes(project);
+            // Scope the modify file to the run's pool directory (R_<runId>/Modify_xxx.xml) for per-run
+            // isolation, mirroring .NET GetPoolPath. Both the upload and the reference use the same
+            // scoped name. Findings #27/#31.
+            String modifyFileName = run.getRunProperties().getPoolPath(
+                    String.format(MODIFY_NAME_PATTERN, LocalDateTime.now().format(TIMESTAMP_FORMAT)));
+
+            // Standalone upload of the modify XML to the document pool.
+            qxpsHttpClient.execute(modifyFileName, new AddFileMessage(modifyXml));
+
+            // Reference to the uploaded modify file (added to the combined call).
+            messages.add(new ModifyMessage(modifyFileName));
+        }
+
+        // 3. SaveAs — replace=true, saveToPool=false (matches .NET Execute(): the file is written
+        //    to the absolute pool dir on the Quark host, but not registered in the server pool).
+        messages.add(new SaveAsMessage(saveAsPath, newGabaritName, true, false));
+
+        // 4. QXP render — forces QuarkXPress to render/save the document as QXP before SaveAs.
+        messages.add(new QxpRenderMessage());
+
+        // ONE combined call.
+        qxpsHttpClient.executeCombined(documentName, messages);
+    }
+
+    // ========================================================================
+    // SOAP (directCall=false)
+    // ========================================================================
+
+    private void executeSoapCall(RunTaskStep step, QxpsModifier modifier,
+                                 String documentName, String saveAsPath,
+                                 String newGabaritName) {
+        Project project = modifier.isEmpty() ? null : modifier.getProject();
+
+        QContentData result = qxpsmSoapClient.executeStep(
+                documentName, step.getNameValues(), project,
+                saveAsPath, newGabaritName);
+
+        if (result != null && result.getStreamValue() != null) {
+            log.debug("SOAP call returned {} bytes of QXP data",
+                    result.getStreamValue().length);
+        }
+    }
+
+    // ========================================================================
+    // Render — final outputs
+    // Cross-reference: QXPS_Caller.Render()
+    // ========================================================================
+
+    public QxpsCallerResult render(Run run, boolean renderPdf, boolean renderJpg,
+                                   boolean renderQxp, String compression, String downsample) {
+        String documentName = run.getGabarit().getFilePoolPath();
+        QxpsCallerResult result = new QxpsCallerResult();
+
+        log.info("Starting final renders for run [{}]", run.getId());
+
+        if (renderJpg) {
+            // .NET QXPS_Caller.Render: the JPG render is NOT guarded — a failure must propagate
+            // so the run is marked ERROR (do not swallow).
+            QxpsResponseInfo response = qxpsHttpClient.execute(
+                    documentName, new JpegRenderMessage());
+            result.setJpgData(response.getBinaryResponse());
+            log.info("JPEG render completed for run [{}]", run.getId());
+        }
+
+        // ONLY a QXPS render error (e.g. empty document) is non-blocking for PDF — matches .NET
+        // Render() which catches QXPS_Exception but rethrows any other Exception.
+        if (renderPdf) {
+            try {
+                PdfRenderMessage pdfMessage = new PdfRenderMessage();
+                // All three down-sample params take the down-sample value; all three compression
+                // params take the compression value (matches .NET: ColorImageDownSample =
+                // GrayscaleImageDownSample = MonochromeImagedownSample = Value_Compression;
+                // ColorCompression = GrayscaleCompression = MonochromeCompression = Compression).
+                pdfMessage.setColorImageDownSample(downsample);
+                pdfMessage.setGrayscaleImageDownSample(downsample);
+                pdfMessage.setMonochromeImageDownSample(downsample);
+                pdfMessage.setColorCompression(compression);
+                pdfMessage.setGrayscaleCompression(compression);
+                pdfMessage.setMonochromeCompression(compression);
+                QxpsResponseInfo response = qxpsHttpClient.execute(documentName, pdfMessage);
+                result.setPdfData(response.getBinaryResponse());
+                log.info("PDF render completed for run [{}]", run.getId());
+            } catch (QxpsException e) {
+                run.getErrors().add(new RunError(
+                        RunError.CRITIQUE, "Rendu Impossible du document pdf"));
+                log.warn("PDF render failed for run [{}]; exceptionType={}; continuing with QXP render",
+                        run.getId(), e.getClass().getSimpleName());
             }
         }
 
-        log.info("Loaded {} templates for run [{}]", run.getTemplates().size(), run.getId());
+        if (renderQxp) {
+            // .NET QXPS_Caller.Render: the QXP fetch is NOT guarded — a failure must propagate
+            // so the run is marked ERROR (do not swallow).
+            // The latest QXP version is already saved in the pool — fetch it via a 'literal'
+            // call (no re-render), exactly like .NET: QXPS_Helper.GetFileData(Gabarit.FilePoolPath).
+            QxpsResponseInfo response = qxpsHttpClient.execute(
+                    documentName, new LiteralMessage());
+            result.setQxpData(response.getBinaryResponse());
+            log.info("QXP fetched (literal) for run [{}]", run.getId());
+        }
+
+        log.info("All renders completed for run [{}]", run.getId());
+        return result;
+    }
+
+    // ========================================================================
+    // Helpers
+    // ========================================================================
+
+    private void updateGabaritAfterStep(Run run, String newGabaritName, String previousDocName) {
+        DocumentDomain gabarit = run.getGabarit();
+        String newPoolPath = run.getRunProperties().getPoolPath(newGabaritName);
+        // Absolute path on the Quark host, kept consistent with the new pool name. Finding #92.
+        String newFullPath = run.getRunProperties().getPoolPathAbsolute(
+                newGabaritName, qxpsProperties.getPool().getDefaultPath());
+
+        // Download the freshly-saved QXP binary via a 'literal' call (no re-render), exactly
+        // like .NET Document.Change_Document() → QXPS_Helper.GetFileData(filePoolPath).
+        byte[] newData = qxpsHttpClient.execute(newPoolPath, new LiteralMessage()).getBinaryResponse();
+
+        // Swap the gabarit to the new version (name/pool path/abs path + binary, purges cached XML/Project).
+        gabarit.changeDocument(newGabaritName, newPoolPath, newFullPath, newData);
+
+        // Register the new pool file as known so it is not re-uploaded later.
+        // Cross-reference: .NET QXPS_File_Manager.Addfile_Inform(newPoolName).
+        filePool.inform(newPoolPath);
+
+        log.debug("Gabarit changed: [{}] → [{}] ({} bytes)",
+                previousDocName, newPoolPath, newData != null ? newData.length : 0);
+    }
+
+    private String getNewGabaritNameExt(DocumentDomain gabarit, int executionCount) {
+        // Use the Format verbatim (no case change) so the generated gabarit name matches the pool name
+        // the server produces (lowercasing it would diverge). Finding #57.
+        if (gabarit.getId() != null && gabarit.getId() > 0) {
+            return String.format(NEW_GABARIT_NAME_WITH_ID_PATTERN,
+                    gabarit.getPrefix(), gabarit.getId(), executionCount,
+                    gabarit.getFormat() != null ? gabarit.getFormat() : "QXP");
+        } else {
+            return String.format(NEW_GABARIT_NAME_PATTERN,
+                    gabarit.getName(), executionCount,
+                    gabarit.getFormat() != null ? gabarit.getFormat() : "QXP");
+        }
     }
 }
-```
+````
 
-### `src/main/java/com/socgen/sgs/api/quark/engine/infra/dao/impl/GetGabaritTemplateDaoImpl.java`
+### `src/main/java/com/socgen/sgs/api/quark/engine/infra/dao/impl/RunStartUpdateDaoImpl.java`
 
-SHA-256: `32072ee2b1764d28caeec91d2c58b3788b891deaa4739d74c97079f9de0983ec`
+SHA-256: `360dc66e9654fdd29ce18e1e4c7097a862abdd79d6f662eba82f77b54b82ce5a`
 
-```java
+````java
 package com.socgen.sgs.api.quark.engine.infra.dao.impl;
 
-import com.socgen.sgs.api.quark.engine.domain.DocumentDomain;
-import com.socgen.sgs.api.quark.engine.infra.dao.GetGabaritTemplateDao;
+import com.socgen.sgs.api.quark.engine.domain.Run;
+import com.socgen.sgs.api.quark.engine.infra.dao.RunStartUpdateDao;
 import lombok.extern.slf4j.Slf4j;
-import oracle.jdbc.OracleTypes;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.ColumnMapRowMapper;
-import org.springframework.jdbc.core.SqlOutParameter;
 import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.sql.Types;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.time.LocalDateTime;
 
 /**
- * Calls Oracle functions QXP_PK_TEMPLATE.Get_Gabarit_Template and Get_Templates.
+ * Implementation of RunStartUpdateDao that executes the Start_Run Oracle procedure
  */
 @Repository
 @Slf4j
-public class GetGabaritTemplateDaoImpl implements GetGabaritTemplateDao {
+public class RunStartUpdateDaoImpl implements RunStartUpdateDao {
 
-    private static final String RESULT_KEY = "result_cursor";
-    private static final String PACKAGE     = "QXP_PK_TEMPLATE";
+    static final int START_DATE_SQL_TYPE = Types.TIMESTAMP;
 
-    private final SimpleJdbcCall getGabaritTemplateCall;
-    private final SimpleJdbcCall getTemplatesCall;
+    private final SimpleJdbcCall startRunCall;
 
     @Autowired
-    public GetGabaritTemplateDaoImpl(DataSource dataSource) {
-        this.getGabaritTemplateCall = new SimpleJdbcCall(dataSource)
-                .withCatalogName(PACKAGE)
-                .withFunctionName("Get_Gabarit_Template")
+    public RunStartUpdateDaoImpl(DataSource dataSource) {
+        // Start_Run is a PROCEDURE in QXP_PK_RUN catalog
+        this.startRunCall = new SimpleJdbcCall(dataSource)
+                .withCatalogName("QXP_PK_RUN")
+                .withProcedureName("Start_Run")
                 .withoutProcedureColumnMetaDataAccess()
                 .declareParameters(
-                        new SqlOutParameter(RESULT_KEY, OracleTypes.CURSOR,
-                                (rs, rowNum) -> mapGabaritTemplate(rs)),
-                        new SqlParameter("p_id_gabarit_template", Types.NUMERIC)
+                        new SqlParameter("p_id_run", Types.NUMERIC),
+                        new SqlParameter("p_run_status", Types.NUMERIC),
+                        new SqlParameter("p_date_debut", START_DATE_SQL_TYPE)
                 );
-
-        this.getTemplatesCall = new SimpleJdbcCall(dataSource)
-                .withCatalogName(PACKAGE)
-                .withFunctionName("Get_Templates")
-                .withoutProcedureColumnMetaDataAccess()
-                .declareParameters(
-                        new SqlOutParameter(RESULT_KEY, OracleTypes.CURSOR, new ColumnMapRowMapper()),
-                        new SqlParameter("p_id_gabarit_template", Types.NUMERIC)
-                );
-    }
-
-    private DocumentDomain mapGabaritTemplate(ResultSet rs) throws SQLException {
-        int id = rs.getInt("id_gabarit_template");
-        return DocumentDomain.builder()
-                .id(id)
-                .name(rs.getString("nom"))
-                .data(rs.getBytes("contenu"))
-                .format("QXP")
-                .prefix(DocumentDomain.FILE_GABARIT_TEMPLATE_PREFIX)
-                .gabarit(true)
-                .fileName(String.format("%s_%d.%s",
-                        DocumentDomain.FILE_GABARIT_TEMPLATE_PREFIX, id, "QXP"))
-                .build();
     }
 
     @Override
-    public DocumentDomain getGabaritTemplate(int idGabaritTemplate) {
-        log.info("Fetching gabarit template for idGabaritTemplate: {}", idGabaritTemplate);
+    public void startRun(Run run) {
+        log.info("Starting run with ID: {}", run.getId());
 
+        // Set start date to current time if not already set
+        LocalDateTime startDate = run.getStartDate();
+        if (startDate == null) {
+            startDate = LocalDateTime.now();
+            run.setStartDate(startDate);
+        }
+
+        // Prepare parameters for the procedure
         MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("p_id_gabarit_template", idGabaritTemplate);
+                .addValue("p_id_run", run.getId())
+                .addValue("p_run_status", run.getStatus().getStatusCode())
+                .addValue("p_date_debut", Timestamp.valueOf(startDate));
 
-        Map<String, Object> result = getGabaritTemplateCall.execute(params);
+        try {
+            // Execute the procedure
+            startRunCall.execute(params);
+            log.info("Successfully started run with ID: {}", run.getId());
+        } catch (Exception e) {
+            log.error("Error starting run with ID: {}", run.getId(), e);
+            throw new RuntimeException("Failed to start run: " + run.getId(), e);
+        }
+    }
+}
+````
 
-        @SuppressWarnings("unchecked")
-        List<DocumentDomain> rows = (List<DocumentDomain>) result.get(RESULT_KEY);
+### `src/main/java/com/socgen/sgs/api/quark/engine/domain/helper/InvariantValueConverter.java`
 
-        if (rows == null || rows.isEmpty()) {
-            // .NET Proxy_Template.Get_Gabarit_Template returns null when its cursor is empty.
-            log.warn("No gabarit template found for idGabaritTemplate: {}", idGabaritTemplate);
+SHA-256: `7cacfd6dd6465e2d4ee2bc787d10c2306ff90c685c8965b52c22afb2a204605e`
+
+````java
+package com.socgen.sgs.api.quark.engine.domain.helper;
+
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.math.RoundingMode;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
+import java.time.temporal.ChronoField;
+import java.time.temporal.TemporalAccessor;
+import java.util.List;
+import java.util.Locale;
+
+/**
+ * Culture-invariant conversions used at the database boundary.
+ *
+ * <p>The numeric path models a 96-bit decimal coefficient with a scale from 0 to 28. Excess
+ * fractional precision is rounded half-even. Integer conversion truncates toward zero and is
+ * checked, so a parsed value outside the signed 32-bit range fails instead of wrapping.
+ */
+public final class InvariantValueConverter {
+
+    public static final BigDecimal DECIMAL_UNSET =
+            new BigDecimal("-79228162514264337593543950335");
+    public static final LocalDateTime DATE_TIME_UNSET = LocalDateTime.of(1, 1, 1, 0, 0);
+
+    private static final BigInteger MAX_DECIMAL_COEFFICIENT =
+            new BigInteger("79228162514264337593543950335");
+    private static final int MAX_DECIMAL_SCALE = 28;
+
+    private static final List<DateTimeFormatter> DATE_TIME_FORMATTERS = List.of(
+            dateTimeFormatter("M/d/uuuu", " ", false),
+            dateTimeFormatter("M/d/uuuu", " ", true),
+            dateTimeFormatter("uuuu-M-d", " ", false),
+            dateTimeFormatter("uuuu-M-d", " ", true),
+            dateTimeFormatter("uuuu-M-d", "T", false),
+            englishDateTimeFormatter("MMMM d, uuuu", false),
+            englishDateTimeFormatter("MMMM d, uuuu", true),
+            englishDateTimeFormatter("MMM d, uuuu", false),
+            englishDateTimeFormatter("MMM d, uuuu", true),
+            englishDateTimeFormatter("d MMMM uuuu", false),
+            englishDateTimeFormatter("d MMMM uuuu", true),
+            englishDateTimeFormatter("d MMM uuuu", false),
+            englishDateTimeFormatter("d MMM uuuu", true),
+            englishDateTimeFormatter("MMM d uuuu", false),
+            englishDateTimeFormatter("MMM d uuuu", true),
+            reducedYearDateTimeFormatter(false),
+            reducedYearDateTimeFormatter(true),
+            dateTimeFormatter("M-d-uuuu", " ", false),
+            dateTimeFormatter("M-d-uuuu", " ", true)
+    );
+
+    private static final List<DateTimeFormatter> DATE_FORMATTERS = List.of(
+            strictDateFormatter("M/d/uuuu"),
+            strictDateFormatter("uuuu-M-d"),
+            strictEnglishDateFormatter("MMMM d, uuuu"),
+            strictEnglishDateFormatter("MMM d, uuuu"),
+            strictEnglishDateFormatter("d MMMM uuuu"),
+            strictEnglishDateFormatter("d MMM uuuu"),
+            strictEnglishDateFormatter("MMM d uuuu"),
+            strictDateFormatter("uuuu/M/d"),
+            strictDateFormatter("M-d-uuuu"),
+            reducedYearDateFormatter()
+    );
+
+    private InvariantValueConverter() {
+    }
+
+    /** Returns the unset sentinel for empty, malformed, or non-representable input. */
+    public static BigDecimal toDecimal(String value) {
+        BigDecimal parsed = parseDecimal(value);
+        return parsed != null ? parsed : DECIMAL_UNSET;
+    }
+
+    /**
+     * Returns the unset sentinel for empty/malformed input and throws for a parsed Int32 overflow.
+     */
+    public static int toInt32(String value) {
+        BigDecimal parsed = parseDecimal(value);
+        if (parsed == null) {
+            return Integer.MIN_VALUE;
+        }
+        return parsed.setScale(0, RoundingMode.DOWN).intValueExact();
+    }
+
+    /** Returns the unset sentinel for empty, malformed, or out-of-range input. */
+    public static LocalDateTime toDateTime(String value) {
+        if (value == null || value.isEmpty()) {
+            return DATE_TIME_UNSET;
+        }
+
+        String candidate = value.strip();
+        if (candidate.isEmpty()) {
+            return DATE_TIME_UNSET;
+        }
+
+        LocalDateTime offsetDateTime = parseOffsetDateTime(candidate);
+        if (offsetDateTime != null) {
+            return offsetDateTime;
+        }
+
+        for (DateTimeFormatter formatter : DATE_TIME_FORMATTERS) {
+            try {
+                TemporalAccessor parsed = formatter.parse(candidate);
+                LocalDate date = LocalDate.from(parsed);
+                LocalTime time = LocalTime.from(parsed);
+                return LocalDateTime.of(date, time);
+            } catch (DateTimeParseException ignored) {
+                // Try the next invariant form.
+            }
+        }
+
+        for (DateTimeFormatter formatter : DATE_FORMATTERS) {
+            try {
+                return LocalDate.parse(candidate, formatter).atStartOfDay();
+            } catch (DateTimeParseException ignored) {
+                // Try the next invariant form.
+            }
+        }
+
+        LocalDate today = LocalDate.now();
+        for (DateTimeFormatter formatter : List.of(
+                strictEnglishDateFormatter("MMMM d"),
+                strictEnglishDateFormatter("MMM d"))) {
+            try {
+                TemporalAccessor parsed = formatter.parse(candidate);
+                return LocalDate.of(
+                        today.getYear(),
+                        parsed.get(ChronoField.MONTH_OF_YEAR),
+                        parsed.get(ChronoField.DAY_OF_MONTH)).atStartOfDay();
+            } catch (DateTimeParseException ignored) {
+                // Try the next invariant form.
+            }
+        }
+
+        for (DateTimeFormatter formatter : List.of(
+                strictEnglishDateFormatter("uuuu MMMM"),
+                strictEnglishDateFormatter("uuuu MMM"))) {
+            try {
+                TemporalAccessor parsed = formatter.parse(candidate);
+                return LocalDate.of(
+                        parsed.get(ChronoField.YEAR),
+                        parsed.get(ChronoField.MONTH_OF_YEAR),
+                        1).atStartOfDay();
+            } catch (DateTimeParseException ignored) {
+                // Try the next invariant form.
+            }
+        }
+
+        for (DateTimeFormatter formatter : List.of(
+                timeOnlyFormatter(false),
+                timeOnlyFormatter(true))) {
+            try {
+                return LocalDateTime.of(today, LocalTime.parse(candidate, formatter));
+            } catch (DateTimeParseException ignored) {
+                // Try the next invariant form.
+            }
+        }
+
+        return DATE_TIME_UNSET;
+    }
+
+    private static LocalDateTime parseOffsetDateTime(String candidate) {
+        String normalized = candidate.indexOf('T') >= 0
+                ? candidate
+                : candidate.replaceFirst(" ", "T");
+        try {
+            return OffsetDateTime.parse(normalized, DateTimeFormatter.ISO_OFFSET_DATE_TIME)
+                    .atZoneSameInstant(ZoneId.systemDefault())
+                    .toLocalDateTime();
+        } catch (DateTimeParseException ignored) {
+            return null;
+        }
+    }
+
+    private static BigDecimal parseDecimal(String value) {
+        if (value == null || value.isEmpty()) {
             return null;
         }
 
-        log.info("Successfully retrieved gabarit template for idGabaritTemplate: {}", idGabaritTemplate);
-        return rows.get(0);
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public List<Map<String, Object>> getTemplates(int idGabaritTemplate) {
-        log.info("Fetching templates for idGabaritTemplate: {}", idGabaritTemplate);
-
-        MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("p_id_gabarit_template", idGabaritTemplate);
-
-        Map<String, Object> result = getTemplatesCall.execute(params);
-        List<Map<String, Object>> rows = (List<Map<String, Object>>) result.get(RESULT_KEY);
-
-        if (rows == null) {
-            log.warn("No templates returned for idGabaritTemplate: {}", idGabaritTemplate);
-            return Collections.emptyList();
+        String candidate = value.replace(" ", "").strip();
+        if (candidate.isEmpty()) {
+            return null;
         }
 
-        log.info("Fetched {} template rows for idGabaritTemplate: {}", rows.size(), idGabaritTemplate);
-        return rows;
+        int currencyIndex = candidate.indexOf('¤');
+        if (currencyIndex >= 0) {
+            boolean validCurrencyPosition = currencyIndex == 0
+                    || currencyIndex == candidate.length() - 1
+                    || (currencyIndex == 1 && "+-(".indexOf(candidate.charAt(0)) >= 0)
+                    || (currencyIndex == candidate.length() - 2
+                        && "+-)".indexOf(candidate.charAt(candidate.length() - 1)) >= 0);
+            if (!validCurrencyPosition || currencyIndex != candidate.lastIndexOf('¤')) {
+                return null;
+            }
+            candidate = candidate.substring(0, currencyIndex)
+                    + candidate.substring(currencyIndex + 1);
+        }
+
+        boolean negativeByParentheses = candidate.startsWith("(") && candidate.endsWith(")");
+        if (negativeByParentheses) {
+            candidate = candidate.substring(1, candidate.length() - 1);
+        } else if (candidate.indexOf('(') >= 0 || candidate.indexOf(')') >= 0) {
+            return null;
+        }
+
+        if (candidate.isEmpty()) {
+            return null;
+        }
+
+        boolean negativeByTrailingSign = candidate.endsWith("-");
+        boolean positiveByTrailingSign = candidate.endsWith("+");
+        if (negativeByTrailingSign || positiveByTrailingSign) {
+            candidate = candidate.substring(0, candidate.length() - 1);
+        }
+
+        boolean negativeByLeadingSign = candidate.startsWith("-");
+        boolean positiveByLeadingSign = candidate.startsWith("+");
+        if (negativeByLeadingSign || positiveByLeadingSign) {
+            candidate = candidate.substring(1);
+        }
+
+        int signCount = (negativeByParentheses ? 1 : 0)
+                + (negativeByTrailingSign || positiveByTrailingSign ? 1 : 0)
+                + (negativeByLeadingSign || positiveByLeadingSign ? 1 : 0);
+        if (signCount > 1 || candidate.isEmpty()) {
+            return null;
+        }
+
+        int exponentIndex = Math.max(candidate.indexOf('e'), candidate.indexOf('E'));
+        String mantissa = exponentIndex >= 0 ? candidate.substring(0, exponentIndex) : candidate;
+        String exponent = exponentIndex >= 0 ? candidate.substring(exponentIndex) : "";
+        if (exponentIndex >= 0
+                && (exponent.length() < 2 || !exponent.matches("[eE][+-]?\\d+"))) {
+            return null;
+        }
+
+        int decimalIndex = mantissa.indexOf('.');
+        if (decimalIndex != mantissa.lastIndexOf('.')) {
+            return null;
+        }
+        if (mantissa.startsWith(",")
+                || (decimalIndex >= 0 && mantissa.substring(decimalIndex + 1).indexOf(',') >= 0)) {
+            return null;
+        }
+
+        String normalizedMantissa = mantissa.replace(",", "");
+        if (!normalizedMantissa.matches("(?:\\d+(?:\\.\\d*)?|\\.\\d+)")) {
+            return null;
+        }
+
+        try {
+            BigDecimal parsed = new BigDecimal(normalizedMantissa + exponent);
+            if (negativeByParentheses || negativeByTrailingSign || negativeByLeadingSign) {
+                parsed = parsed.negate();
+            }
+            return fitDecimal(parsed);
+        } catch (NumberFormatException | ArithmeticException ignored) {
+            return null;
+        }
+    }
+
+    private static BigDecimal fitDecimal(BigDecimal value) {
+        BigDecimal fitted = value;
+        if (fitted.scale() < 0) {
+            fitted = fitted.setScale(0);
+        }
+        if (fitted.scale() > MAX_DECIMAL_SCALE) {
+            fitted = fitted.setScale(MAX_DECIMAL_SCALE, RoundingMode.HALF_EVEN);
+        }
+
+        while (fitted.unscaledValue().abs().compareTo(MAX_DECIMAL_COEFFICIENT) > 0
+                && fitted.scale() > 0) {
+            fitted = fitted.setScale(fitted.scale() - 1, RoundingMode.HALF_EVEN);
+        }
+
+        return fitted.unscaledValue().abs().compareTo(MAX_DECIMAL_COEFFICIENT) <= 0
+                ? fitted
+                : null;
+    }
+
+    private static DateTimeFormatter dateTimeFormatter(
+            String datePattern, String separator, boolean twelveHour) {
+        DateTimeFormatterBuilder builder = new DateTimeFormatterBuilder()
+                .parseCaseInsensitive()
+                .appendPattern(datePattern)
+                .appendLiteral(separator);
+        appendTime(builder, twelveHour);
+        return builder.toFormatter(Locale.ENGLISH).withResolverStyle(ResolverStyle.STRICT);
+    }
+
+    private static DateTimeFormatter englishDateTimeFormatter(String datePattern, boolean twelveHour) {
+        return dateTimeFormatter(datePattern, " ", twelveHour);
+    }
+
+    private static DateTimeFormatter reducedYearDateTimeFormatter(boolean twelveHour) {
+        DateTimeFormatterBuilder builder = new DateTimeFormatterBuilder()
+                .parseCaseInsensitive()
+                .appendPattern("M/d/")
+                .appendValueReduced(ChronoField.YEAR, 2, 2, 1930)
+                .appendLiteral(' ');
+        appendTime(builder, twelveHour);
+        return builder.toFormatter(Locale.ENGLISH).withResolverStyle(ResolverStyle.STRICT);
+    }
+
+    private static void appendTime(DateTimeFormatterBuilder builder, boolean twelveHour) {
+        builder.appendValue(twelveHour ? ChronoField.CLOCK_HOUR_OF_AMPM : ChronoField.HOUR_OF_DAY)
+                .appendLiteral(':')
+                .appendValue(ChronoField.MINUTE_OF_HOUR);
+        builder.optionalStart()
+                .appendLiteral(':')
+                .appendValue(ChronoField.SECOND_OF_MINUTE)
+                .optionalStart()
+                .appendFraction(ChronoField.NANO_OF_SECOND, 0, 7, true)
+                .optionalEnd()
+                .optionalEnd();
+        if (twelveHour) {
+            builder.appendLiteral(' ').appendText(ChronoField.AMPM_OF_DAY);
+        }
+        builder.parseDefaulting(ChronoField.SECOND_OF_MINUTE, 0)
+                .parseDefaulting(ChronoField.NANO_OF_SECOND, 0);
+    }
+
+    private static DateTimeFormatter strictDateFormatter(String pattern) {
+        return new DateTimeFormatterBuilder()
+                .parseCaseInsensitive()
+                .appendPattern(pattern)
+                .toFormatter(Locale.ENGLISH)
+                .withResolverStyle(ResolverStyle.STRICT);
+    }
+
+    private static DateTimeFormatter strictEnglishDateFormatter(String pattern) {
+        return strictDateFormatter(pattern);
+    }
+
+    private static DateTimeFormatter reducedYearDateFormatter() {
+        return new DateTimeFormatterBuilder()
+                .parseCaseInsensitive()
+                .appendPattern("M/d/")
+                .appendValueReduced(ChronoField.YEAR, 2, 2, 1930)
+                .toFormatter(Locale.ENGLISH)
+                .withResolverStyle(ResolverStyle.STRICT);
+    }
+
+    private static DateTimeFormatter timeOnlyFormatter(boolean twelveHour) {
+        DateTimeFormatterBuilder builder = new DateTimeFormatterBuilder().parseCaseInsensitive();
+        appendTime(builder, twelveHour);
+        return builder.toFormatter(Locale.ENGLISH).withResolverStyle(ResolverStyle.STRICT);
     }
 }
-```
+````
 
-### `src/main/java/com/socgen/sgs/api/quark/engine/mapper/TaskMapper.java`
+### `src/main/java/com/socgen/sgs/api/quark/engine/domain/InParam.java`
 
-SHA-256: `c5c7e75f64e87afe0649fd67d72c195b8d61d53cde89862eb8bffed905cce04e`
+SHA-256: `378f762d094c108383eb9351c609d35392492e84b65d45da0141bac6cfd2cadb`
 
-```java
+````java
+package com.socgen.sgs.api.quark.engine.domain;
+import com.socgen.sgs.api.quark.engine.enums.DataTypeEnum;
+import com.socgen.sgs.api.quark.engine.domain.helper.InvariantValueConverter;
+import lombok.Getter;
+
+import java.time.LocalDateTime;
+
+/**
+ * Immutable domain value object representing a typed input parameter for a run.
+ * Mirrors QXPDataOracle.OraParameter from the .NET implementation.
+ * The raw string is retained for traceable domain behavior. Integer, decimal and date values are
+ * converted once when the parameter is loaded; all other types retain the raw string.
+ */
+@Getter
+public class InParam {
+
+    private final String name;
+    private final DataTypeEnum type;
+    private final String stringValue;
+    private final Object value;
+
+    public InParam(String name, int type, String stringValue) {
+        this(name, DataTypeEnum.fromCode(type), stringValue);
+    }
+
+    public InParam(String name, DataTypeEnum type, String stringValue) {
+        this.name = name;
+        this.type = type;
+        this.stringValue = stringValue;
+        this.value = toTypedValue(type, stringValue);
+    }
+
+    private static Object toTypedValue(DataTypeEnum type, String stringValue) {
+        if (type == null) {
+            return stringValue;
+        }
+        switch (type) {
+            case INT:
+                return InvariantValueConverter.toInt32(stringValue);
+            case DECIMAL:
+                return InvariantValueConverter.toDecimal(stringValue);
+            case DATE:
+                LocalDateTime dateTime = InvariantValueConverter.toDateTime(stringValue);
+                return dateTime;
+            default:
+                return stringValue;
+        }
+    }
+}
+````
+
+### `src/main/java/com/socgen/sgs/api/quark/engine/mapper/InParamSqlMapper.java`
+
+SHA-256: `282b8aa63d3a4b4a6a584660a55848c0a9c8918ca6f07e75f4b01bacc1c590d1`
+
+````java
 package com.socgen.sgs.api.quark.engine.mapper;
 
-import com.socgen.sgs.api.quark.engine.domain.Run;
-import com.socgen.sgs.api.quark.engine.domain.dynamic.report.DBreakRules;
-import com.socgen.sgs.api.quark.engine.domain.dynamic.report.DMasterPage;
-import com.socgen.sgs.api.quark.engine.domain.task.*;
+import com.socgen.sgs.api.quark.engine.domain.InParam;
+import com.socgen.sgs.api.quark.engine.domain.helper.InvariantValueConverter;
 import com.socgen.sgs.api.quark.engine.enums.DataTypeEnum;
-import com.socgen.sgs.api.quark.engine.enums.TaskTypeEnum;
-import com.socgen.sgs.api.quark.engine.domain.port.FilePoolPort;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.jdbc.core.SqlParameterValue;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
-import java.util.Map;
-
-@Component
-@Slf4j
-@RequiredArgsConstructor
-public class TaskMapper {
-
-    private final FilePoolPort filePoolPort;
-
-    public TaskBase mapToTask(Map<String, Object> row, Run run) {
-        int idTache = getInt(row, "ID_TACHE");
-        int idTypeTache = getInt(row, "ID_TYPE_TACHE");
-        TaskTypeEnum taskType = TaskTypeEnum.fromCode(idTypeTache); // it's a single time used variable, pass it directly
-
-        TaskBase task = createTaskByType(taskType, idTache, run, row);
-        if (task != null) {
-            mapCommonFields(row, task);
-        }
-        return task;
-    }
-
-    private TaskBase createTaskByType(TaskTypeEnum taskType, int idTache, Run run, Map<String, Object> row) {
-        switch (taskType) {
-            case SQL:
-                TaskSql taskSql = new TaskSql(idTache, run);
-                mapTaskSql(row, taskSql);
-                return taskSql;
-            case DOC_EOS:
-                TaskDocument taskDoc = new TaskDocument(idTache, run);
-                mapTaskDocument(row, taskDoc);
-                return taskDoc;
-            case DOC_QXP:
-                TaskQxpPrevious taskQxp = new TaskQxpPrevious(idTache, run);
-                mapTaskQxpPrevious(row, taskQxp);
-                return taskQxp;
-            case SQL_DYNAMIQUE:
-                TaskDynamique taskDyn = new TaskDynamique(idTache, run);
-                taskDyn.setFilePoolService(filePoolPort);
-                mapTaskDynamique(row, taskDyn);
-                return taskDyn;
-            case COMPARTIMENTS:
-                TaskCompartiment taskComp = new TaskCompartiment(idTache, run);
-                mapTaskCompartiment(row, taskComp);
-                return taskComp;
-            default:
-                log.warn("Unknown task type code: {} for taskId: {}", taskType, idTache);
-                return null;
-        }
-    }
-
-    private void mapTaskSql(Map<String, Object> row, TaskSql task) {
-        task.setSql(getString(row, "SQL"));
-        task.setShowZero(getBoolean(row, "AFFICHER_ZERO"));
-        // Oracle NULL maps to int.MinValue in the .NET OraDataReader conversion layer. This sentinel
-        // selects the framework's default numeric pattern; mapping NULL to 0 changes output formatting.
-        task.setNbDecimal(getIntOrDefault(row, "NB_DECIMAL", Integer.MIN_VALUE));
-        task.setDecimalSignificative(getBoolean(row, "DECIMAL_SIGNIFICATIVE"));
-        task.setStoreData(getBoolean(row, "STORE_DATA"));
-
-        int idDataType = getInt(row, "OUTPUT_DATA_TYPE");
-        try {
-            task.setDataType(DataTypeEnum.fromCode(idDataType));
-        } catch (Exception e) {
-            log.error("Invalid data type {} for taskId {}", idDataType, task.getId());
-        }
-    }
-
-    private void mapTaskDocument(Map<String, Object> row, TaskDocument task) {
-        task.setFormatDocument(getString(row, "FORMAT"));
-        task.setRotationImage(getBoolean(row, "ROTATION_IMAGE"));
-        task.setIdSousCategorie(getInt(row, "ID_SOUS_CATEGORIE"));
-        task.setOffsetValues(getString(row, "CROP_IMAGE_VALUES"));
-        task.setConserverStyle(getBoolean(row, "CONSERVER_STYLE"));
-        task.setSourceBlocName(getString(row, "BLOC_SOURCE"));
-        task.setDestinationBlocName(getString(row, "BLOC_DESTINATION"));
-        task.setPositionValues(getString(row, "POSITION_IMAGE"));
-    }
-
-    private void mapTaskQxpPrevious(Map<String, Object> row, TaskQxpPrevious task) {
-        task.setConserverStyle(getBoolean(row, "CONSERVER_STYLE"));
-        task.setPreviousTypeRapport(getString(row, "PREVIOUS_TYPE_RAPPORT"));
-        task.setSourceBlocName(getString(row, "BLOC_SOURCE"));
-        task.setDestinationBlocName(getString(row, "BLOC_DESTINATION"));
-    }
-
-    private void mapTaskDynamique(Map<String, Object> row, TaskDynamique task) {
-        task.setSql(getString(row, "SQL"));
-        task.setDestinationBlocName(getString(row, "BLOC_DESTINATION"));
-        task.setControlOverflow(getBoolean(row, "CONTROL_OVERFLOW"));
-        task.setNewPageTable(getBoolean(row, "NEW_PAGE_TABLE"));
-        task.setNbColumn(getInt(row, "NB_COLUMN"));
-        task.setStoreData(getBoolean(row, "STORE_DATA"));
-
-        BigDecimal colSpace = getBigDecimal(row, "COLUMN_SPACE");
-        if (colSpace != null) {
-            task.setColumnSpace(colSpace);
-        }
-
-        String codeMasterPage = getString(row, "CODE_MASTER_PAGE");
-        task.setMasterPage(isSet(codeMasterPage) ? new DMasterPage(codeMasterPage) : DMasterPage.DEFAULT);
-
-        String pageBreakRules = getString(row, "PAGE_BREAK_RULES");
-        task.setPageBreakRules(isSet(pageBreakRules) ? new DBreakRules(pageBreakRules) : DBreakRules.DEFAULT);
-
-        String columnBreakRules = getString(row, "COLUMN_BREAK_RULES");
-        task.setColumnBreakRules(isSet(columnBreakRules) ? new DBreakRules(columnBreakRules) : DBreakRules.DEFAULT);
-    }
-
-    private void mapTaskCompartiment(Map<String, Object> row, TaskCompartiment task) {
-        task.setDestinationBlocName(getString(row, "BLOC_DESTINATION"));
-        task.setIdGabaritFils(getInt(row, "ID_GABARIT_FILS"));
-
-        String codeMasterPage = getString(row, "CODE_MASTER_PAGE");
-        task.setMasterPage(isSet(codeMasterPage) ? new DMasterPage(codeMasterPage) : DMasterPage.DEFAULT);
-    }
-
-    private void mapCommonFields(Map<String, Object> row, TaskBase task) {
-        String nullString = getString(row, "CHAMPS_VIDE");
-        if (isSet(nullString)) {
-            task.setNullString(nullString);
-        }
-        task.setTodo(getBoolean(row, "TODO"));
-        task.setCommentaire(getString(row, "COMMENTAIRE"));
-    }
-
-    // --- Utility extraction methods ---
-
-    private String getString(Map<String, Object> row, String key) {
-        Object val = row.get(key);
-        return val != null ? val.toString() : null;
-    }
-
-    private int getInt(Map<String, Object> row, String key) {
-        return getIntOrDefault(row, key, 0);
-    }
-
-    private int getIntOrDefault(Map<String, Object> row, String key, int defaultValue) {
-        Object val = row.get(key);
-        if (val instanceof Number) {
-            return ((Number) val).intValue();
-        }
-        return defaultValue;
-    }
-
-    private boolean getBoolean(Map<String, Object> row, String key) {
-        Object val = row.get(key);
-        if (val instanceof Number) {
-            return ((Number) val).intValue() != 0;
-        }
-        if (val instanceof Boolean) {
-            return (Boolean) val;
-        }
-        return false;
-    }
-
-    private BigDecimal getBigDecimal(Map<String, Object> row, String key) {
-        Object val = row.get(key);
-        if (val instanceof BigDecimal) {
-            return (BigDecimal) val;
-        }
-        if (val instanceof Number) {
-            return BigDecimal.valueOf(((Number) val).doubleValue());
-        }
-        return null;
-    }
-
-    private boolean isSet(String value) {
-        return value != null && !value.isBlank();
-    }
-}
-```
-
-### `src/main/java/com/socgen/sgs/api/quark/engine/domain/helper/DataTypeHelper.java`
-
-SHA-256: `b8bc4958c79af74041f07e6d116f5ed4dd6f8eda577f6d222519f38116439b47`
-
-```java
-package com.socgen.sgs.api.quark.engine.domain.helper;
-
-import com.socgen.sgs.api.quark.engine.enums.DataTypeEnum;
-
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Locale;
-
-/** Converts raw DB values to formatted strings based on DataTypeEnum configuration. */
-public final class DataTypeHelper {
-
-    private static final int DEFAULT_FRACTION_DIGITS = 2;
-
-    private static final DateTimeFormatter DATE_FMT = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-    private static final DateTimeFormatter DATETIME_FMT = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
-
-    /**
-     * fr-FR symbols (NBSP thousands grouping, ',' decimal, "€" currency). The .NET engine renders
-     * under the French thread culture, matching the existing decimal formatting in this class.
-     */
-    private static final DecimalFormatSymbols FR_SYMBOLS = new DecimalFormatSymbols(Locale.FRANCE);
-
-    private DataTypeHelper() {
-    }
-
-    public static String outputToString(Object value, DataTypeEnum dataType, int nbDecimal,
-                                        boolean showZero, String nullString, boolean decimalSignificative) {
-        if (value == null) {
-            return nullString;
-        }
-
-        String raw = value.toString().trim();
-        if (raw.isEmpty()) {
-            return nullString;
-        }
-
-        switch (dataType) {
-            case INT:
-                return formatInteger(raw, showZero, nullString);
-            case DECIMAL:
-                return formatDecimal(raw, nbDecimal, showZero, nullString, decimalSignificative);
-            case CURRENCY:
-                // .NET CurrencyPattern "#,##0.{0} {1}" → number + " " + currency symbol (fr-FR → "€").
-                // No ×100. Cross-reference: Data_Type_Helper.GetStringCurrency. Finding #14.
-                return formatWithSuffix(raw, nbDecimal, showZero, nullString, decimalSignificative,
-                        " " + FR_SYMBOLS.getCurrencySymbol());
-            case POURCENTAGE:
-                // Data is stored SCALED (15 == 15%), confirmed from QXP_PK_KII SQL ((montant/actif)*100
-                // to produce, taux*vb/100 to consume). So append a single " %" WITHOUT multiplying by 100,
-                // matching .NET's correct formatter QXP_Format_Helper (plain number + literal " %").
-                // This is a deliberate, user-approved deviation from the engine's
-                // Data_Type_Helper.GetStringPourcentage, which is bugged (×100 via the "%" specifier PLUS
-                // a second appended " %", flagged "// TODO à voir si c'est correct") and would render 15
-                // as "1 500,00 % %". Finding #14.
-                return formatWithSuffix(raw, nbDecimal, showZero, nullString, decimalSignificative, " %");
-            case DATE:
-                return formatDate(raw, nullString);
-            case DATE_TIME:
-                return formatDateTime(raw, nullString);
-            default:
-                return raw;
-        }
-    }
-
-    private static String formatInteger(String raw, boolean showZero, String nullString) {
-        try {
-            long val = Long.parseLong(raw);
-            if (val == 0 && !showZero) return nullString;
-            // Grouped output (NBSP under fr-FR), matching .NET GetStringInt which uses the "n" format
-            // specifier (always groups). Finding #12.
-            return new DecimalFormat("#,##0", FR_SYMBOLS).format(val);
-        } catch (NumberFormatException e) {
-            return raw;
-        }
-    }
-
-    private static String formatDecimal(String raw, int nbDecimal, boolean showZero,
-                                        String nullString, boolean decimalSignificative) {
-        try {
-            String formatted = formatDecimalCore(raw, nbDecimal, showZero, decimalSignificative);
-            return formatted == null ? nullString : formatted;
-        } catch (NumberFormatException e) {
-            return raw;
-        }
-    }
-
-    /** DECIMAL formatting with a trailing suffix (currency symbol or " %"); suffix is omitted when the
-     *  value is treated as null (zero with showZero=false) or unparseable. */
-    private static String formatWithSuffix(String raw, int nbDecimal, boolean showZero,
-                                           String nullString, boolean decimalSignificative, String suffix) {
-        try {
-            String formatted = formatDecimalCore(raw, nbDecimal, showZero, decimalSignificative);
-            return formatted == null ? nullString : formatted + suffix;
-        } catch (NumberFormatException e) {
-            return raw;
-        }
-    }
-
-    /**
-     * Core decimal formatter shared by DECIMAL / CURRENCY / POURCENTAGE.
-     * Returns the formatted number, or {@code null} to signal "use nullString" (zero with showZero=false).
-     * Throws {@link NumberFormatException} on unparseable input so callers can fall back to the raw value.
-     *
-     * <p>decimalSignificative drives the fraction digits, matching .NET GetDecimalPattern:
-     * true → fixed nbDecimal decimals with trailing zeros ('0' pattern); false → suppress trailing
-     * zeros up to nbDecimal ('#' pattern). Finding #13. Rounding is HALF_UP (round half away from
-     * zero), matching .NET Decimal.ToString, instead of DecimalFormat's default HALF_EVEN.
-     */
-    private static String formatDecimalCore(String raw, int nbDecimal, boolean showZero,
-                                            boolean decimalSignificative) {
-        BigDecimal val = new BigDecimal(raw);
-        if (val.compareTo(BigDecimal.ZERO) == 0 && !showZero) {
-            return null;
-        }
-        boolean hasConfiguredPrecision = nbDecimal >= 0 && nbDecimal <= 10;
-        int fractionDigits = hasConfiguredPrecision ? nbDecimal : DEFAULT_FRACTION_DIGITS;
-        DecimalFormat df = new DecimalFormat("#,##0", FR_SYMBOLS);
-        df.setMaximumFractionDigits(fractionDigits);
-        // .NET falls back to standard "n"/"c"/"p" formats when NB_DECIMAL is unset or outside
-        // 0..10. Those formats use the culture's fixed default precision (2 for fr-FR), regardless
-        // of DECIMAL_SIGNIFICATIVE. Percentage retains this port's approved scaled-data behavior.
-        df.setMinimumFractionDigits(hasConfiguredPrecision && !decimalSignificative ? 0 : fractionDigits);
-        df.setRoundingMode(RoundingMode.HALF_UP);
-        return df.format(val);
-    }
-
-    private static String formatDate(String raw, String nullString) {
-        try {
-            LocalDate date = LocalDate.parse(raw.substring(0, 10));
-            return date.format(DATE_FMT);
-        } catch (Exception e) {
-            return raw.isEmpty() ? nullString : raw;
-        }
-    }
-
-    private static String formatDateTime(String raw, String nullString) {
-        try {
-            LocalDateTime dt = LocalDateTime.parse(raw.substring(0, 19));
-            return dt.format(DATETIME_FMT);
-        } catch (Exception e) {
-            return raw.isEmpty() ? nullString : raw;
-        }
-    }
-}
-```
-
-## Test classes
-
-### `src/test/java/com/socgen/sgs/api/quark/engine/domain/RunTest.java`
-
-SHA-256: `159c3184e5f24b629636fd9f02529b2fc043e6c358fddc1d22ee248d7b1d951f`
-
-```java
-package com.socgen.sgs.api.quark.engine.domain;
-
-import com.socgen.sgs.api.quark.engine.business.GetGabaritBusiness;
-import com.socgen.sgs.api.quark.engine.business.GetGabaritXmlBusiness;
-import com.socgen.sgs.api.quark.engine.domain.port.DocumentIdentityPort;
-import com.socgen.sgs.api.quark.engine.domain.port.FilePoolPort;
-import com.socgen.sgs.api.quark.engine.domain.xml.QxpXml;
-import com.socgen.sgs.api.quark.engine.enums.GabaritSourceEnum;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.BeforeEach;
-
+import java.sql.Timestamp;
+import java.sql.Types;
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import com.socgen.sgs.api.quark.engine.domain.task.TaskBase;
-import com.socgen.sgs.api.quark.engine.domain.dynamic.template.Template;
+/**
+ * Maps run InParams to a flat parameter map for the dynamic-SQL named binds.
+ *
+ * <p>Binds the TYPED value for each param, mirroring .NET
+ * {@code Data_Type_Helper.InputToTypedValue} + {@code ConversionInvariante} (InParam.cs:54 sets
+ * {@code _value = InputToTypedValue(_string_value, _type)}, InParams.cs:69 binds {@code inParam.Value}):
+ * <ul>
+ *   <li>INT      → {@link Integer} (Int32 truncation); unset/unparseable → typed SQL NULL</li>
+ *   <li>DECIMAL  → {@link BigDecimal}; unset/unparseable → typed SQL NULL</li>
+ *   <li>DATE     → an Oracle {@code DATE} ({@link oracle.sql.DATE}, time-preserving) so the gabarit SQL's
+ *       {@code to_date(?)} round-trips under any session date format; unset/unparseable → typed SQL NULL</li>
+ *   <li>An unset value binds as SQL NULL (not the MIN_VALUE placeholder), matching how the legacy
+ *       Oracle parameter layer converts an unset sentinel to a null bind.</li>
+ *   <li>DATE_TIME and every other type → the RAW STRING — .NET's switch has no case for DateTime(5)
+ *       (nor Text/Currency/Pourcentage), so it falls to {@code default: return value}.</li>
+ * </ul>
+ * Findings #21, #49, #50, #51.
+ */
+@Component
+public class InParamSqlMapper {
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
-@DisplayName("Run Tests")
-class RunTest {
-
-    private Run run;
-
-    @BeforeEach
-    void setUp() {
-        run = new Run();
+    public Map<String, Object> toParameterMap(Map<String, InParam> inParams) {
+        Map<String, Object> params = new LinkedHashMap<>();
+        for (Map.Entry<String, InParam> entry : inParams.entrySet()) {
+            params.put(entry.getKey(), toTypedValue(entry.getValue()));
+        }
+        return params;
     }
 
-    @Test
-    @DisplayName("Should create Run with no arguments")
-    void shouldCreateRunWithNoArguments() {
-        assertNull(run.getId());
-        assertNull(run.getName());
-        assertNull(run.getStatus());
-        assertNull(run.getStartDate());
-        assertNull(run.getRunProperties());
-        assertNull(run.getGabarit());
-        assertNotNull(run.getInParams());
-        assertNotNull(run.getTasks());
-    }
-
-    @Test
-    @DisplayName("Should create Run with all arguments")
-    void shouldCreateRunWithAllArguments() {
-        RunStatus status = RunStatus.TO_GENERATE;
-        LocalDateTime startDate = LocalDateTime.now();
-        RunProperties props = new RunProperties();
-        DocumentDomain gabarit = new DocumentDomain();
-        Map<String, InParam> inParams = new LinkedHashMap<>();
-        Map<Integer, TaskBase> tasks = new LinkedHashMap<>();
-        Map<String, Template> templates = new LinkedHashMap<>();
-
-        Run fullRun = new Run();
-        fullRun.setId(1);
-        fullRun.setName("TestRun");
-        fullRun.setStatus(status);
-        fullRun.setStartDate(startDate);
-        fullRun.setRunProperties(props);
-        fullRun.setGabarit(gabarit);
-        fullRun.setInParams(inParams);
-        fullRun.setTasks(tasks);
-        fullRun.setTemplates(templates);
-
-        assertEquals(1, fullRun.getId());
-        assertEquals("TestRun", fullRun.getName());
-        assertEquals(status, fullRun.getStatus());
-        assertEquals(startDate, fullRun.getStartDate());
-        assertEquals(props, fullRun.getRunProperties());
-        assertEquals(gabarit, fullRun.getGabarit());
-    }
-
-    @Test
-    @DisplayName("Should set and get id")
-    void shouldSetAndGetId() {
-        run.setId(42);
-        assertEquals(42, run.getId());
-    }
-
-    @Test
-    @DisplayName("Should set and get name")
-    void shouldSetAndGetName() {
-        run.setName("MyRun");
-        assertEquals("MyRun", run.getName());
-    }
-
-    @Test
-    @DisplayName("Should set and get status")
-    void shouldSetAndGetStatus() {
-        run.setStatus(RunStatus.RUNNING);
-        assertEquals(RunStatus.RUNNING, run.getStatus());
-    }
-
-    @Test
-    @DisplayName("Should set and get start date")
-    void shouldSetAndGetStartDate() {
-        LocalDateTime now = LocalDateTime.now();
-        run.setStartDate(now);
-        assertEquals(now, run.getStartDate());
-    }
-
-    @Test
-    @DisplayName("Should set and get run properties")
-    void shouldSetAndGetRunProperties() {
-        RunProperties props = new RunProperties();
-        run.setRunProperties(props);
-        assertEquals(props, run.getRunProperties());
-    }
-
-    @Test
-    @DisplayName("Should set and get gabarit")
-    void shouldSetAndGetGabarit() {
-        DocumentDomain gabarit = new DocumentDomain();
-        run.setGabarit(gabarit);
-        assertEquals(gabarit, run.getGabarit());
-    }
-
-    @Test
-    @DisplayName("Should manage in params map")
-    void shouldManageInParamsMap() {
-        InParam param = new InParam("param1", 1, "value1");
-        run.getInParams().put("param1", param);
-
-        assertTrue(run.getInParams().containsKey("param1"));
-        assertEquals(param, run.getInParams().get("param1"));
-    }
-
-    @Test
-    @DisplayName("Should have ordered in params map")
-    void shouldHaveOrderedInParamsMap() {
-        run.getInParams().put("param1", new InParam("p1", 1, "v1"));
-        run.getInParams().put("param2", new InParam("p2", 1, "v2"));
-        run.getInParams().put("param3", new InParam("p3", 1, "v3"));
-
-        Map<String, InParam> params = run.getInParams();
-        assertEquals(3, params.size());
-    }
-
-    @Test
-    @DisplayName("Should throw exception when preparing gabarit without run properties")
-    void shouldThrowExceptionWhenPreparingGabaritWithoutRunProperties() {
-        run.setId(100);
-        run.setRunProperties(null);
-
-        assertThrows(IllegalStateException.class, () -> run.prepareGabarit(null, null, null, null));
-    }
-
-    @Test
-    @DisplayName("Structural XML retrieval failure switches to degraded mode and skips DID")
-    void xmlRetrievalFailureUsesFailSoftMode() {
-        GetGabaritBusiness getGabaritBusiness = mock(GetGabaritBusiness.class);
-        GetGabaritXmlBusiness getGabaritXmlBusiness = mock(GetGabaritXmlBusiness.class);
-        FilePoolPort filePoolPort = mock(FilePoolPort.class);
-        DocumentIdentityPort documentIdentityPort = mock(DocumentIdentityPort.class);
-        RunProperties properties = new RunProperties();
-        properties.setGabaritSource(GabaritSourceEnum.GABARIT);
-        properties.setIdGabarit(45);
-        DocumentDomain document = DocumentDomain.builder()
-                .id(45)
-                .format("QXP")
-                .data(new byte[]{1, 2, 3})
-                .filePoolPath("R_100/G_45.QXP")
-                .build();
-        run.setId(100);
-        run.setRunProperties(properties);
-        when(getGabaritBusiness.getAndPrepareGabarit(properties, 45)).thenReturn(document);
-        when(getGabaritXmlBusiness.fetchXml(document.getFilePoolPath())).thenReturn("");
-
-        run.prepareGabarit(getGabaritBusiness, getGabaritXmlBusiness, filePoolPort, documentIdentityPort);
-
-        assertTrue(properties.isModeDegrade());
-        assertTrue(document.isModeDegrade());
-        assertSame(QxpXml.EMPTY, document.getQxpXml());
-        verify(filePoolPort).addFile(document.getFilePoolPath(), document.getData());
-        verifyNoInteractions(documentIdentityPort);
-    }
-
-    @Test
-    @DisplayName("Oversized gabarit marks both document and run as degraded")
-    void oversizedGabaritMarksDocumentAndRunDegraded() {
-        GetGabaritBusiness getGabaritBusiness = mock(GetGabaritBusiness.class);
-        GetGabaritXmlBusiness getGabaritXmlBusiness = mock(GetGabaritXmlBusiness.class);
-        FilePoolPort filePoolPort = mock(FilePoolPort.class);
-        DocumentIdentityPort documentIdentityPort = mock(DocumentIdentityPort.class);
-        Run sizeLimitedRun = new Run(2);
-        sizeLimitedRun.setId(100);
-        RunProperties properties = new RunProperties();
-        properties.setGabaritSource(GabaritSourceEnum.GABARIT);
-        properties.setIdGabarit(45);
-        sizeLimitedRun.setRunProperties(properties);
-        DocumentDomain document = DocumentDomain.builder()
-                .id(45).format("QXP").data(new byte[]{1, 2, 3})
-                .filePoolPath("R_100/G_45.QXP").build();
-        when(getGabaritBusiness.getAndPrepareGabarit(properties, 45)).thenReturn(document);
-
-        sizeLimitedRun.prepareGabarit(
-                getGabaritBusiness, getGabaritXmlBusiness, filePoolPort, documentIdentityPort);
-
-        assertTrue(document.isModeDegrade());
-        assertTrue(properties.isModeDegrade());
-        verifyNoInteractions(getGabaritXmlBusiness, documentIdentityPort);
-    }
-
-    @Test
-    @DisplayName("Malformed structural XML also switches to degraded mode")
-    void xmlParsingFailureUsesFailSoftMode() {
-        GetGabaritBusiness getGabaritBusiness = mock(GetGabaritBusiness.class);
-        GetGabaritXmlBusiness getGabaritXmlBusiness = mock(GetGabaritXmlBusiness.class);
-        FilePoolPort filePoolPort = mock(FilePoolPort.class);
-        DocumentIdentityPort documentIdentityPort = mock(DocumentIdentityPort.class);
-        RunProperties properties = new RunProperties();
-        properties.setGabaritSource(GabaritSourceEnum.GABARIT);
-        properties.setIdGabarit(45);
-        DocumentDomain document = DocumentDomain.builder()
-                .id(45).format("QXP").data(new byte[]{1})
-                .filePoolPath("R_100/G_45.QXP").build();
-        run.setId(100);
-        run.setRunProperties(properties);
-        when(getGabaritBusiness.getAndPrepareGabarit(properties, 45)).thenReturn(document);
-        when(getGabaritXmlBusiness.fetchXml(document.getFilePoolPath())).thenReturn("<PROJECT>");
-
-        run.prepareGabarit(getGabaritBusiness, getGabaritXmlBusiness, filePoolPort, documentIdentityPort);
-
-        assertTrue(properties.isModeDegrade());
-        assertSame(QxpXml.EMPTY, document.getQxpXml());
-        verifyNoInteractions(documentIdentityPort);
+    private Object toTypedValue(InParam inParam) {
+        Object value = inParam.getValue();
+        DataTypeEnum type = inParam.getType();
+        if (type == null) {
+            return value;
+        }
+        switch (type) {
+            case INT: {
+                Integer i = (Integer) value;
+                return i == Integer.MIN_VALUE ? new SqlParameterValue(Types.NUMERIC, null) : i;
+            }
+            case DECIMAL: {
+                BigDecimal d = (BigDecimal) value;
+                return InvariantValueConverter.DECIMAL_UNSET.compareTo(d) == 0
+                        ? new SqlParameterValue(Types.NUMERIC, null)
+                        : d;
+            }
+            case DATE: {
+                LocalDateTime dateTime = (LocalDateTime) value;
+                return InvariantValueConverter.DATE_TIME_UNSET.equals(dateTime)
+                        ? new SqlParameterValue(Types.DATE, null)
+                        : new oracle.sql.DATE(Timestamp.valueOf(dateTime));
+            }
+            default:
+                // DATE_TIME (5), TEXT, CURRENCY, POURCENTAGE, UNSPECIFIED, CUSTOM → raw string
+                // (.NET Data_Type_Helper.InputToTypedValue `default: return value`).
+                return value;
+        }
     }
 }
-```
+````
+
+### `src/main/java/com/socgen/sgs/api/quark/engine/infra/dao/impl/GetInParamsDaoImpl.java`
+
+SHA-256: `216f499dbcc858c0eccf33713a0e38b32b62d0e3c8aac703e3148608ecb2d9e0`
+
+````java
+package com.socgen.sgs.api.quark.engine.infra.dao.impl;
+import com.socgen.sgs.api.quark.engine.domain.InParam;
+import com.socgen.sgs.api.quark.engine.domain.Run;
+import com.socgen.sgs.api.quark.engine.infra.dao.GetInParamsDao;
+import com.socgen.sgs.api.quark.engine.mapper.InParamMapper;
+import lombok.extern.slf4j.Slf4j;
+import oracle.jdbc.OracleTypes;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.SqlOutParameter;
+import org.springframework.jdbc.core.SqlParameter;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcCall;
+import org.springframework.stereotype.Repository;
+import javax.sql.DataSource;
+import java.sql.Types;
+import java.util.List;
+import java.util.Map;
+/**
+ * Calls Oracle function QXP_PK_RUN.Get_In_Params and populates run.inParams.
+ */
+@Repository
+@Slf4j
+public class GetInParamsDaoImpl implements GetInParamsDao {
+    private static final String RESULT_KEY = "result_cursor";
+    private final SimpleJdbcCall getInParamsCall;
+    @Autowired
+    public GetInParamsDaoImpl(DataSource dataSource, InParamMapper inParamMapper) {
+        this.getInParamsCall = new SimpleJdbcCall(dataSource)
+                .withCatalogName("QXP_PK_RUN")
+                .withFunctionName("Get_In_Params")
+                .withoutProcedureColumnMetaDataAccess()
+                .declareParameters(
+                        new SqlOutParameter(RESULT_KEY, OracleTypes.CURSOR,
+                                (rs, rowNum) -> inParamMapper.mapFromResultSet(rs)),
+                        new SqlParameter("p_id_suivi", Types.NUMERIC)
+                );
+    }
+    @Override
+    public void getInParams(Run run) {
+        log.info("Fetching in-params for idSuivi: {}", run.getRunProperties().getIdSuivi());
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("p_id_suivi", run.getRunProperties().getIdSuivi());
+        try {
+            Map<String, Object> result = getInParamsCall.execute(params);
+            log.debug("Input-parameter call returned keys: {}", result.keySet());
+            @SuppressWarnings("unchecked")
+            List<InParam> rows = (List<InParam>) result.get(RESULT_KEY);
+            run.getInParams().clear();
+            if (rows != null) {
+                for (InParam inParam : rows) {
+                    if (run.getInParams().containsKey(inParam.getName())) {
+                        throw new IllegalStateException(String.format(
+                                "Duplicate input parameter name for suivi %d",
+                                run.getRunProperties().getIdSuivi()));
+                    }
+                    run.getInParams().put(inParam.getName(), inParam);
+                }
+            }
+            log.info("Loaded {} in-params for idSuivi: {}",
+                    run.getInParams().size(), run.getRunProperties().getIdSuivi());
+        } catch (Exception e) {
+            log.error("Error fetching in-params for idSuivi: {}; exceptionType={}",
+                    run.getRunProperties().getIdSuivi(), e.getClass().getSimpleName());
+            throw new RuntimeException("Failed to fetch in-params for idSuivi: "
+                    + run.getRunProperties().getIdSuivi(), e);
+        }
+    }
+}
+````
+
+### `src/main/java/com/socgen/sgs/api/quark/engine/domain/collection/AddOnlyLinkedHashMap.java`
+
+SHA-256: `f8a60d26c2c26f8a3e4ae3613dd4e1d215406ac8a50079fa45fc3456efd215a9`
+
+````java
+package com.socgen.sgs.api.quark.engine.domain.collection;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+/**
+ * Insertion-ordered map whose direct insertion operation rejects null and duplicate keys.
+ * Existing entries may still be removed or the map cleared between processing passes.
+ */
+public final class AddOnlyLinkedHashMap<K, V> extends LinkedHashMap<K, V> {
+
+    @Override
+    public V put(K key, V value) {
+        if (key == null) {
+            throw new IllegalArgumentException("Null key is not allowed");
+        }
+        if (containsKey(key)) {
+            throw new IllegalStateException("Duplicate key is not allowed");
+        }
+        return super.put(key, value);
+    }
+
+    @Override
+    public void putAll(Map<? extends K, ? extends V> values) {
+        for (Map.Entry<? extends K, ? extends V> entry : values.entrySet()) {
+            put(entry.getKey(), entry.getValue());
+        }
+    }
+}
+````
+
+### `src/main/java/com/socgen/sgs/api/quark/engine/domain/task/TaskBase.java`
+
+SHA-256: `5eea8ce0fe7e5a8588b7fc7404e0de1faf8d08027439af9df50cfeda4ac18709`
+
+````java
+package com.socgen.sgs.api.quark.engine.domain.task;
+import com.socgen.sgs.api.quark.engine.domain.DataNameValue;
+import com.socgen.sgs.api.quark.engine.domain.Run;
+import com.socgen.sgs.api.quark.engine.domain.bloc.BlocBase;
+import com.socgen.sgs.api.quark.engine.domain.collection.AddOnlyLinkedHashMap;
+import com.socgen.sgs.api.quark.engine.domain.dynamic.report.DMasterPage;
+import com.socgen.sgs.api.quark.engine.enums.SubTaskTypeEnum;
+import lombok.Getter;
+import lombok.Setter;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+/** Abstract base class for all task types in a run. */
+@Getter
+@Setter
+public abstract class TaskBase {
+    private static final String DEF_NULL_STRING    = " ";
+    private static final String DEBUG_INFO_PATTERN = "[%d - %s]";
+    private final int    id;
+    private final Run    run;
+    private String         commentaire;
+    private boolean        todo;
+    private boolean        toLoad;
+    private boolean        allwaysReprocess       = false;
+    private String         sourceBlocName;
+    private String         destinationBlocName;
+    private String         nullString             = DEF_NULL_STRING;
+    private SubTaskTypeEnum subTaskType;
+    private boolean        inError                = false;
+    private DMasterPage    masterPage;
+    /** Task properties for page/layout configuration. */
+    private final TaskProperties properties = new TaskProperties();
+    /** Blocs for value update (NameValue command). Keyed by bloc name. */
+    private final Map<String, BlocBase> blocsUpdate = new AddOnlyLinkedHashMap<>();
+    /** Blocs for structure/value modification (Modify command). Keyed by bloc name. */
+    private final Map<String, BlocBase> blocsModify = new AddOnlyLinkedHashMap<>();
+    /** Exception tasks keyed by bloc name. */
+    private final Map<String, TaskException> exceptions = new LinkedHashMap<>();
+    /** Data generated by this task. */
+    private final List<DataNameValue> dataNamesValues = new ArrayList<>();
+    protected TaskBase(int id, Run run) {
+        this.id         = id;
+        this.run        = run;
+        this.masterPage = DMasterPage.DEFAULT;
+    }
+    /** Prepares the task. */
+    public abstract void prepare();
+    /**
+     * Evaluates properties linked to the latest version of the gabarit.
+     * Executed between each step before real execution.
+     * Override in specific task types.
+     */
+    public void evaluateInfo() {
+        // Re-evaluate the destination bloc's page/layout from the current gabarit XML.
+        // Cross-reference: .NET Task_Base.Evaluate_Info().
+        if (destinationBlocName != null && !destinationBlocName.isBlank()) {
+            properties.setPageNum(getRun().getGabarit().getQxpXml().getPageNum(destinationBlocName));
+            properties.setLayoutName(getRun().getGabarit().getQxpXml().getLayoutName(destinationBlocName));
+        }
+    }
+    /**
+     * Returns the page ID evaluated from the relative page offset.
+     *
+     * @param condName     conditional bloc name
+     * @param relativePage relative page index
+     * @return evaluated page ID
+     */
+    public int getPageIdFromRelative(String condName, int relativePage) {
+        int spreadNum;
+        // A conditional bloc, when set, drives the page evaluation; otherwise use the task's own page.
+        // Cross-reference: .NET Task_Base.Get_Page_ID_From_Relative().
+        if (condName != null && !condName.isBlank()) {
+            spreadNum = getRun().getGabarit().getQxpXml().getPageNum(condName);
+        } else {
+            spreadNum = properties.getPageNum();
+        }
+        return spreadNum + relativePage;
+    }
+    /**
+     * Returns the spread ID from a given page ID.
+     *
+     * @param pageId    the page ID
+     * @param lagSpread whether spread 1 was deleted (double-page handling)
+     * @return the evaluated spread ID
+     */
+    public int getSpreadIdFromPageId(int pageId, boolean lagSpread) {
+        int nbPageBySpread = run.getRunProperties().getNbPageBySpread();
+        if (nbPageBySpread == 1) {
+            return pageId;
+        }
+        if (pageId == 1) {
+            return 1;
+        }
+        double val = lagSpread
+                ? (double) pageId / nbPageBySpread + 1
+                : (double) (pageId + 1) / nbPageBySpread;
+        return (int) Math.ceil(val);
+    }
+    /** Returns the debug info string in format [id - commentaire]. */
+    public String getDebugInfo() {
+        return String.format(DEBUG_INFO_PATTERN, this.id, this.commentaire);
+    }
+    /** Resets blocs and data generated during a previous processing step. */
+    public void resetProcess() {
+        blocsUpdate.clear();
+        blocsModify.clear();
+        dataNamesValues.clear();
+    }
+    /** Whether this task makes direct calls to QuarkXPress Server. Override if needed. */
+    public boolean isDirectCall() {
+        return false;
+    }
+    /** Whether this task is in degraded mode. Override in specific task types. */
+    public boolean isModeDegrade() {
+        return false;
+    }
+}
+````
+
+### `src/main/java/com/socgen/sgs/api/quark/engine/domain/modifier/ModifierSpread.java`
+
+SHA-256: `77d427ba7bff2e82005aa5c565548085d457e46d5801f0ad774a5fb3429a7892`
+
+````java
+package com.socgen.sgs.api.quark.engine.domain.modifier;
+
+import com.socgen.sgs.api.quark.engine.enums.BlocActionEnum;
+import com.socgen.sgs.api.quark.engine.domain.collection.AddOnlyLinkedHashMap;
+import com.socgen.sgs.api.quark.engine.enums.TaskActionTypeEnum;
+import com.socgen.sgs.api.quark.engine.integration.soap.generated.Box;
+import com.socgen.sgs.api.quark.engine.integration.soap.generated.DeleteCells;
+import com.socgen.sgs.api.quark.engine.integration.soap.generated.Geometry;
+import com.socgen.sgs.api.quark.engine.integration.soap.generated.Page;
+import com.socgen.sgs.api.quark.engine.integration.soap.generated.Spread;
+import com.socgen.sgs.api.quark.engine.integration.soap.generated.Table;
+import com.socgen.sgs.api.quark.engine.enums.SubTaskTypeEnum;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Represents a spread in a modifier project hierarchy.
+ * Aggregates boxes, pages, tables, and groups, then converts them to SOAP SDK objects.
+ *
+ * Cross-reference: QXP.Engine.Core.Spread (Modifier namespace)
+ */
+@Getter
+@Setter
+public class ModifierSpread {
+
+    private static final String BLOC_OPERATION_CREATE = "CREATE";
+    private static final String BLOC_OPERATION_DELETE = "DELETE";
+
+    private String uid;
+    private final Map<String, ModifierBox> boxes = new AddOnlyLinkedHashMap<>();
+    private final Map<String, ModifierBox> boxesExtra = new AddOnlyLinkedHashMap<>();
+    private final Map<String, ModifierGroup> groups = new AddOnlyLinkedHashMap<>();
+    private final Map<String, ModifierTable> tables = new LinkedHashMap<>();
+    private final Map<String, ModifierPage> pages = new LinkedHashMap<>();
+    private boolean create = false;
+
+    public ModifierSpread() {
+    }
+
+    /**
+     * Build SDK Box array from normal boxes.
+     * Cross-reference: .NET Spread.GetSDKBoxes()
+     */
+    public Box[] getSdkBoxes() {
+        List<Box> destBoxes = new ArrayList<>();
+
+        // Normal boxes
+        destBoxes.addAll(evaluateSdkBoxes(boxes, false));
+
+        // Groups
+        for (ModifierGroup grp : groups.values()) {
+            if (grp.getSrcBoxes() != null) {
+                for (Box newBox : grp.getSrcBoxes()) {
+                    newBox.setOperation(BLOC_OPERATION_CREATE);
+                    newBox.setUID("");
+                    destBoxes.add(newBox);
+                    if (newBox.getGeometry() == null) {
+                        newBox.setGeometry(new Geometry());
+                    }
+                    newBox.getGeometry().setPage(String.valueOf(grp.getPageId()));
+                }
+            }
+        }
+
+        return destBoxes.toArray(new Box[0]);
+    }
+
+    /**
+     * Build SDK Box array from extra boxes.
+     * Cross-reference: .NET Spread.GetSDKBoxesExtra()
+     */
+    public Box[] getSdkBoxesExtra() {
+        List<Box> destBoxes = new ArrayList<>(evaluateSdkBoxes(boxesExtra, true));
+        return destBoxes.toArray(new Box[0]);
+    }
+
+    private List<Box> evaluateSdkBoxes(Map<String, ModifierBox> boxMap, boolean ignoreOperation) {
+        List<Box> destBoxes = new ArrayList<>();
+        for (ModifierBox bx : boxMap.values()) {
+            Box box = bx.getSrcBox();
+            switch (bx.getAction()) {
+                case CREATE:
+                    if (!ignoreOperation) {
+                        box.setOperation(BLOC_OPERATION_CREATE);
+                    }
+                    box.setUID("");
+                    if (box.getGeometry() == null) {
+                        box.setGeometry(new Geometry());
+                    }
+                    box.getGeometry().setPage(String.valueOf(bx.getPageId()));
+                    break;
+                case MOVE:
+                    if (box.getGeometry() != null) {
+                        box.getGeometry().setPage(String.valueOf(bx.getPageId()));
+                    }
+                    break;
+                default:
+                    break;
+            }
+            destBoxes.add(box);
+        }
+        return destBoxes;
+    }
+
+    /**
+     * Build SDK Table array.
+     * Cross-reference: .NET Spread.GetSDKTables()
+     */
+    public Table[] getSdkTables() {
+        List<Table> sdkTables = new ArrayList<>();
+
+        for (ModifierTable tab : tables.values()) {
+            if (tab.getAction() == BlocActionEnum.REMOVE) {
+                Table table = new Table();
+                table.setName(tab.getName());
+                table.setOperation(BLOC_OPERATION_DELETE);
+                sdkTables.add(table);
+            } else if (tab.getTask() != null
+                    && tab.getTask().getSubTaskType() == SubTaskTypeEnum.FILE_QXP_PREVIOUS
+                    && tab.getSrcTable() != null) {
+                Table table = tab.getSrcTable();
+                table.setName(tab.getName());
+                sdkTables.add(table);
+            } else {
+                Table table = new Table();
+                table.setName(tab.getName());
+
+                List<ModifierLigne> lignes = new ArrayList<>(tab.getLignes().values());
+                lignes.sort(Comparator.comparingInt(ModifierLigne::getIndex).reversed());
+
+                List<DeleteCells> deleteCellsList = new ArrayList<>();
+                for (ModifierLigne ligne : lignes) {
+                    DeleteCells dc = new DeleteCells();
+                    dc.setType("ROW");
+                    dc.setBaseIndex(String.valueOf(ligne.getIndex()));
+                    dc.setDeleteCount("1");
+                    deleteCellsList.add(dc);
+                }
+                if (!deleteCellsList.isEmpty()) {
+                    table.setDeleteCells(deleteCellsList.toArray(new DeleteCells[0]));
+                    sdkTables.add(table);
+                }
+            }
+        }
+
+        return sdkTables.toArray(new Table[0]);
+    }
+
+    /**
+     * Build SDK Page array.
+     * Cross-reference: .NET Spread.GetSDKPages()
+     */
+    public Page[] getSdkPages() {
+        List<Page> sdkPages = new ArrayList<>();
+
+        for (ModifierPage pg : pages.values()) {
+            Page page = new Page();
+            page.setUID(pg.getUid());
+
+            // Page operation is driven first by the task's action, then (only when NONE) by the
+            // bloc that created the page. Cross-reference: .NET Spread.GetSDKPages().
+            TaskActionTypeEnum taskAction = (pg.getTask() != null && pg.getTask().getProperties() != null)
+                    ? pg.getTask().getProperties().getTaskAction()
+                    : TaskActionTypeEnum.NONE;
+
+            String operation = null;
+            switch (taskAction) {
+                case NONE:
+                    switch (pg.getAction()) {
+                        case REMOVE:
+                            operation = BLOC_OPERATION_DELETE;
+                            break;
+                        case CREATE:
+                            operation = BLOC_OPERATION_CREATE;
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case REMOVE:
+                    operation = BLOC_OPERATION_DELETE;
+                    break;
+                default: // UPDATE / CREATE → page creation
+                    operation = BLOC_OPERATION_CREATE;
+                    break;
+            }
+
+            page.setOperation(operation);
+
+            if (BLOC_OPERATION_CREATE.equals(operation)) {
+                if (pg.getTask() != null && pg.getTask().getMasterPage() != null) {
+                    page.setMaster(pg.getTask().getMasterPage().getMasterPageId(0));
+                }
+                page.setPosition(pg.getPosition());
+
+                if (pg.getIndexPosition() == 0) {
+                    this.create = true;
+                }
+            }
+            sdkPages.add(page);
+
+            // Dummy page handling for double-page layouts
+            if (pg.isCreateDummyNextPage()) {
+                String nextPageId = String.valueOf(Integer.parseInt(pg.getUid()) + 1);
+
+                Page dummyCreate = new Page();
+                dummyCreate.setUID(nextPageId);
+                dummyCreate.setOperation(BLOC_OPERATION_CREATE);
+                sdkPages.add(dummyCreate);
+
+                Page dummyDelete = new Page();
+                dummyDelete.setUID(nextPageId);
+                dummyDelete.setOperation(BLOC_OPERATION_DELETE);
+                sdkPages.add(dummyDelete);
+            }
+        }
+
+        return sdkPages.toArray(new Page[0]);
+    }
+}
+````
+
+### `src/main/java/com/socgen/sgs/api/quark/engine/domain/modifier/QxpsModifier.java`
+
+SHA-256: `ab177cbfe6f272ec1562037ea7f0134442defbf75e343ad5978aea2c029d538e`
+
+````java
+package com.socgen.sgs.api.quark.engine.domain.modifier;
+
+import com.socgen.sgs.api.quark.engine.domain.bloc.BlocBase;
+import com.socgen.sgs.api.quark.engine.domain.bloc.BlocBox;
+import com.socgen.sgs.api.quark.engine.domain.bloc.BlocGroup;
+import com.socgen.sgs.api.quark.engine.domain.bloc.BlocLigne;
+import com.socgen.sgs.api.quark.engine.domain.bloc.BlocPage;
+import com.socgen.sgs.api.quark.engine.domain.bloc.BlocTable;
+import com.socgen.sgs.api.quark.engine.domain.RunError;
+import com.socgen.sgs.api.quark.engine.enums.BlocActionEnum;
+import com.socgen.sgs.api.quark.engine.integration.soap.generated.Box;
+import com.socgen.sgs.api.quark.engine.integration.soap.generated.Project;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Aggregates all bloc types into a project hierarchy for sending to QuarkXPress Server.
+ * Converts BlocBox/BlocPage/BlocTable/BlocGroup/BlocLigne into the Modifier structure
+ * (ModifierProjet → ModifierLayout → ModifierSpread → ModifierBox/Page/Table/Group).
+ *
+ * Cross-reference: QXP.Engine.Core.QXPS_Modifier
+ */
+@Getter
+@Slf4j
+public class QxpsModifier {
+
+    private final ModifierProjet projet = new ModifierProjet();
+    private boolean empty = true;
+    private final List<BlocBase> blocs = new ArrayList<>();
+
+    public QxpsModifier() {
+    }
+
+    /**
+     * Add a list of blocs to the modifier.
+     */
+    public void addRange(Iterable<BlocBase> blocs) {
+        for (BlocBase bloc : blocs) {
+            add(bloc);
+        }
+    }
+
+    /**
+     * Add a single bloc to the modifier hierarchy.
+     * Routes to the correct typed add method based on bloc class.
+     *
+     * Cross-reference: .NET QXPS_Modifier.Add(Bloc_Base)
+     */
+    public void add(BlocBase bloc) {
+        if (bloc.isExclude()) {
+            return;
+        }
+        blocs.add(bloc);
+
+        if (bloc instanceof BlocBox) {
+            addBlocBox((BlocBox) bloc);
+        } else if (bloc instanceof BlocGroup) {
+            addBlocGroup((BlocGroup) bloc);
+        } else if (bloc instanceof BlocTable) {
+            addBlocTable((BlocTable) bloc);
+        } else if (bloc instanceof BlocLigne) {
+            addBlocLigne((BlocLigne) bloc);
+        } else if (bloc instanceof BlocPage) {
+            addBlocPage((BlocPage) bloc);
+        }
+    }
+
+    private void addBlocBox(BlocBox bloc) {
+        ModifierSpread spread = addGetSpread(bloc);
+        if (spread == null) return;
+
+        ModifierBox box = new ModifierBox();
+        box.setName(bloc.getName());
+        box.setAction(bloc.getAction());
+        box.setPageId(bloc.getPageId());
+        box.setValue(bloc.getValue());
+        box.setSrcBox(getBox(bloc, false));
+        spread.getBoxes().put(box.getName(), box);
+
+        if (bloc.getSrcExtraBox() != null) {
+            ModifierBox extraBox = new ModifierBox();
+            extraBox.setName(bloc.getName());
+            extraBox.setAction(bloc.getAction());
+            extraBox.setPageId(bloc.getPageId());
+            extraBox.setValue(bloc.getValue());
+            extraBox.setSrcBox(getBox(bloc, true));
+            spread.getBoxesExtra().put(extraBox.getName(), extraBox);
+        }
+    }
+
+    private void addBlocGroup(BlocGroup bloc) {
+        ModifierSpread spread = addGetSpread(bloc);
+        if (spread == null) return;
+
+        ModifierGroup group = new ModifierGroup();
+        group.setName(bloc.getName());
+        group.setPageId(bloc.getPageId());
+        group.setAction(bloc.getAction());
+        group.setSrcBoxes(bloc.getSrcBoxes());
+        spread.getGroups().put(group.getName(), group);
+    }
+
+    private void addBlocTable(BlocTable bloc) {
+        ModifierSpread spread = addGetSpread(bloc);
+        if (spread == null) return;
+
+        if (!spread.getTables().containsKey(bloc.getName())) {
+            ModifierTable table = new ModifierTable();
+            table.setName(bloc.getName());
+            table.setAction(bloc.getAction());
+            table.setTask(bloc.getTask());
+            table.setSrcTable(bloc.getSrcTable());
+            spread.getTables().put(table.getName(), table);
+        } else {
+            ModifierTable existing = spread.getTables().get(bloc.getName());
+            if (bloc.getAction() == BlocActionEnum.REMOVE) {
+                existing.setAction(bloc.getAction());
+                existing.getLignes().clear();
+            }
+        }
+    }
+
+    private void addBlocLigne(BlocLigne bloc) {
+        ModifierTable table = addGetTable(bloc);
+        if (table == null) return;
+
+        ModifierLigne ligne = new ModifierLigne();
+        ligne.setIndex(bloc.getIndex());
+
+        if (!table.getLignes().containsKey(bloc.getIndex())
+                && table.getAction() != BlocActionEnum.REMOVE) {
+            table.getLignes().put(ligne.getIndex(), ligne);
+        }
+    }
+
+    private void addBlocPage(BlocPage bloc) {
+        ModifierSpread spread = addGetSpread(bloc);
+        if (spread == null) return;
+
+        ModifierPage page = new ModifierPage();
+        page.setAction(bloc.getAction());
+        page.setUid(String.valueOf(bloc.getPageId()));
+        page.setPosition(bloc.getPosition());
+        page.setIndexPosition(bloc.getIndexPosition());
+        page.setName(bloc.getName());
+        page.setTask(bloc.getTask());
+        page.setCreateDummyNextPage(bloc.isCreateNextDummyPage());
+
+        if (!spread.getPages().containsKey(page.getUid())) {
+            spread.getPages().put(page.getUid(), page);
+        }
+    }
+
+    // ========================================================================
+    // Hierarchy navigation helpers
+    // ========================================================================
+
+    private ModifierLayout addGetLayout(BlocBase bloc) {
+        String layoutName;
+        if (bloc.getCondName() != null && !bloc.getCondName().isBlank()) {
+            layoutName = bloc.getTask().getRun().getGabarit()
+                    .getQxpXml().getLayoutName(bloc.getCondName());
+        } else {
+            layoutName = bloc.getTask().getProperties().getLayoutName();
+        }
+
+        if (layoutName == null || layoutName.isBlank()) {
+            return null;
+        }
+
+        return projet.getLayouts().computeIfAbsent(layoutName, k -> {
+            ModifierLayout layout = new ModifierLayout();
+            layout.setName(layoutName);
+            return layout;
+        });
+    }
+
+    private ModifierSpread addGetSpread(BlocBase bloc) {
+        ModifierLayout layout = addGetLayout(bloc);
+        if (layout == null) {
+            // Parity: .NET QXPS_Modifier records Empty_Layout_Or_Spread_For_Bloc (Errors.Add(string) →
+            // Error_Type.Unspecified) as an audit-trail entry; it does NOT fail the run. Finding #65.
+            bloc.getTask().getRun().getErrors().add(new RunError(RunError.UNSPECIFIED,
+                    "Layout ou Spread NULL pour le bloc " + bloc.getName()));
+            log.warn("No layout found for bloc [{}]", bloc.getName());
+            return null;
+        }
+
+        empty = false;
+        String spreadUid = String.valueOf(bloc.getSpreadId());
+
+        return layout.getSpreads().computeIfAbsent(spreadUid, k -> {
+            ModifierSpread spread = new ModifierSpread();
+            spread.setUid(spreadUid);
+            return spread;
+        });
+    }
+
+    private ModifierTable addGetTable(BlocBase bloc) {
+        ModifierSpread spread = addGetSpread(bloc);
+        if (spread == null) return null;
+
+        return spread.getTables().computeIfAbsent(bloc.getParentName(), k -> {
+            ModifierTable table = new ModifierTable();
+            table.setName(bloc.getParentName());
+            table.setAction(BlocActionEnum.NONE);
+            table.setTask(bloc.getTask());
+            return table;
+        });
+    }
+
+    private Box getBox(BlocBox blocBox, boolean fromExtraSrc) {
+        return fromExtraSrc ? blocBox.getSrcExtraBox() : blocBox.getSrcBox();
+    }
+
+    // ========================================================================
+    // Output
+    // ========================================================================
+
+    /**
+     * Get the SOAP Project structure.
+     * Cross-reference: .NET QXPS_Modifier.GetProject()
+     */
+    public Project getProject() {
+        return projet.getSdkProject();
+    }
+}
+````
+
+### `src/main/java/com/socgen/sgs/api/quark/engine/domain/exception/EngineException.java`
+
+SHA-256: `cc159ff6cd7b962402d7a7a9d9b2158801c54eaa20a5ded213f8b3bdfd14f2b3`
+
+````java
+package com.socgen.sgs.api.quark.engine.domain.exception;
+
+import com.socgen.sgs.api.quark.engine.domain.RunError;
+
+/**
+ * Controlled engine failure carrying an explicit persisted severity and a payload-safe message.
+ *
+ * <p>Only messages from this controlled exception type participate in the persisted chain. Raw
+ * messages from JDBC, HTTP, XML, SQL or other untyped causes are deliberately excluded.
+ */
+public final class EngineException extends RuntimeException {
+
+    private static final String CHAIN_PREFIX = "==> ";
+
+    private final int category;
+
+    public EngineException(int category, String safeMessage) {
+        this(category, safeMessage, null);
+    }
+
+    public EngineException(int category, String safeMessage, Throwable cause) {
+        super(requireSafeMessage(safeMessage), cause);
+        if (category < RunError.UNSPECIFIED || category > RunError.BLOQUANTE) {
+            throw new IllegalArgumentException("Unsupported engine error category");
+        }
+        this.category = category;
+    }
+
+    public int getCategory() {
+        return category;
+    }
+
+    /** Returns controlled messages from outermost to innermost, one per line. */
+    public String getSafeMessageChain() {
+        StringBuilder chain = new StringBuilder(System.lineSeparator());
+        EngineException current = this;
+        while (current != null) {
+            chain.append(CHAIN_PREFIX)
+                    .append(current.getMessage())
+                    .append(System.lineSeparator());
+            current = current.getCause() instanceof EngineException
+                    ? (EngineException) current.getCause()
+                    : null;
+        }
+        return chain.toString();
+    }
+
+    private static String requireSafeMessage(String safeMessage) {
+        if (safeMessage == null || safeMessage.isEmpty()) {
+            throw new IllegalArgumentException("Safe engine error message is required");
+        }
+        return safeMessage;
+    }
+}
+````
+
+## Focused test files
 
 ### `src/test/java/com/socgen/sgs/api/quark/engine/service/impl/LoadTasksServiceImplTest.java`
 
-SHA-256: `bd06b41c533cf8814cc1e914d6605b4147bf542872c72f6f599d274c504205e7`
+SHA-256: `4cac64385504a26b3c153255d4b4593e567c635f88f91e2a1f5ee8d07aac6f00`
 
-```java
+````java
 package com.socgen.sgs.api.quark.engine.service.impl;
 
 import com.socgen.sgs.api.quark.engine.business.GetTaskExceptionsBusiness;
@@ -1302,6 +2500,42 @@ class LoadTasksServiceImplTest {
         assertEquals(1, run.getTasks().size());
         assertTrue(run.getTasks().containsKey(0)); // only DID task
         verify(getTaskExceptionsBusiness, times(1)).execute(100);
+    }
+
+    @Test
+    @DisplayName("Duplicate mapped task ID fails instead of replacing the first task")
+    void duplicateMappedTaskIdFails() {
+        Map<String, Object> row1 = new HashMap<>();
+        Map<String, Object> row2 = new HashMap<>();
+        row1.put("ROW", 1);
+        row2.put("ROW", 2);
+        TaskSql first = new TaskSql(10, run);
+        TaskSql second = new TaskSql(10, run);
+        when(getTasksBusiness.execute(100)).thenReturn(List.of(row1, row2));
+        when(taskMapper.mapToTask(row1, run)).thenReturn(first);
+        when(taskMapper.mapToTask(row2, run)).thenReturn(second);
+
+        IllegalStateException failure = assertThrows(
+                IllegalStateException.class, () -> loadTasksService.loadTasks(run));
+
+        assertSame(first, run.getTasks().get(10));
+        assertTrue(failure.getMessage().contains("task id 10"));
+        assertTrue(failure.getMessage().contains("run 100"));
+        verifyNoInteractions(getTaskExceptionsBusiness);
+    }
+
+    @Test
+    @DisplayName("Database task ID zero collides with the synthetic DID task")
+    void databaseTaskZeroFailsBeforeDidReplacement() {
+        Map<String, Object> row = new HashMap<>();
+        TaskSql databaseTask = new TaskSql(0, run);
+        when(getTasksBusiness.execute(100)).thenReturn(List.of(row));
+        when(taskMapper.mapToTask(row, run)).thenReturn(databaseTask);
+        when(getTaskExceptionsBusiness.execute(100)).thenReturn(Collections.emptyList());
+
+        assertThrows(IllegalStateException.class, () -> loadTasksService.loadTasks(run));
+        assertSame(databaseTask, run.getTasks().get(0));
+        verify(getTaskExceptionsBusiness).execute(100);
     }
 
     // --- loadTasks: exception loading ---
@@ -1542,132 +2776,1050 @@ class LoadTasksServiceImplTest {
         assertSame(exc, task20.getExceptions().get("BLOC_OK"));
     }
 }
-```
+````
 
-### `src/test/java/com/socgen/sgs/api/quark/engine/business/LoadTemplatesBusinessTest.java`
+### `src/test/java/com/socgen/sgs/api/quark/engine/service/task/impl/DidTaskPostProcessStrategyTest.java`
 
-SHA-256: `e8821ea225d5b8ae0d10e8e8f2c937657cc5cedbbdc4299e0863321089031f6c`
+SHA-256: `b6f366526d41629b2896407b7b038c29650faf930b6b241f2b04028920a4c212`
 
-```java
-package com.socgen.sgs.api.quark.engine.business;
+````java
+package com.socgen.sgs.api.quark.engine.service.task.impl;
 
 import com.socgen.sgs.api.quark.engine.domain.DocumentDomain;
 import com.socgen.sgs.api.quark.engine.domain.Run;
+import com.socgen.sgs.api.quark.engine.domain.RunError;
 import com.socgen.sgs.api.quark.engine.domain.RunProperties;
-import com.socgen.sgs.api.quark.engine.domain.dynamic.template.Template;
-import com.socgen.sgs.api.quark.engine.domain.task.TaskDynamique;
-import com.socgen.sgs.api.quark.engine.infra.dao.GetGabaritTemplateDao;
-import com.socgen.sgs.api.quark.engine.mapper.TemplateMapper;
+import com.socgen.sgs.api.quark.engine.domain.bloc.BlocBox;
+import com.socgen.sgs.api.quark.engine.domain.task.TaskDid;
+import com.socgen.sgs.api.quark.engine.domain.task.TaskSql;
+import com.socgen.sgs.api.quark.engine.domain.xml.QxpXml;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+class DidTaskPostProcessStrategyTest {
+
+    private SystemTaskProcessStrategy systemTaskProcessStrategy;
+    private DidTaskPostProcessStrategy strategy;
+    private Run run;
+    private TaskDid didTask;
+    private QxpXml qxpXml;
+
+    @BeforeEach
+    void setUp() {
+        systemTaskProcessStrategy = mock(SystemTaskProcessStrategy.class);
+        strategy = new DidTaskPostProcessStrategy(systemTaskProcessStrategy);
+        qxpXml = mock(QxpXml.class);
+
+        run = new Run();
+        run.setId(100);
+        run.setRunProperties(new RunProperties());
+        DocumentDomain document = new DocumentDomain();
+        document.setQxpXml(qxpXml);
+        run.setGabarit(document);
+        didTask = new TaskDid(TaskDid.DID_TASK_ID, run);
+        run.getTasks().put(didTask.getId(), didTask);
+    }
+
+    @Test
+    void missingDidInValueBranchAddsExactUnspecifiedErrorAndReturns() {
+        when(qxpXml.getUID("DID")).thenReturn("");
+
+        strategy.postProcess(didTask);
+
+        assertEquals(1, run.getErrors().size());
+        assertEquals(RunError.UNSPECIFIED, run.getErrors().get(0).getCategory());
+        assertEquals("Le bloc DID est absent du document", run.getErrors().get(0).getMessage());
+        verify(systemTaskProcessStrategy, never()).process(didTask);
+    }
+
+    @Test
+    void whitespaceUidIsConfiguredTextAndContinuesValueProcessing() {
+        when(qxpXml.getUID("DID")).thenReturn(" ");
+
+        strategy.postProcess(didTask);
+
+        assertEquals(0, run.getErrors().size());
+        verify(systemTaskProcessStrategy).process(didTask);
+    }
+
+    @Test
+    void missingDidInMoveBranchAddsExactUnspecifiedErrorAndReturns() {
+        TaskSql paginationTask = new TaskSql(10, run);
+        BlocBox paginationBloc = new BlocBox(paginationTask, "PAGE", "value");
+        paginationBloc.setPagination(true);
+        paginationTask.getBlocsModify().put(paginationBloc.getName(), paginationBloc);
+        run.getTasks().put(paginationTask.getId(), paginationTask);
+        when(qxpXml.getBlocInfo("DID")).thenReturn(null);
+
+        strategy.postProcess(didTask);
+
+        assertEquals(1, run.getErrors().size());
+        assertEquals(RunError.UNSPECIFIED, run.getErrors().get(0).getCategory());
+        assertEquals("Le bloc DID est absent du document", run.getErrors().get(0).getMessage());
+        verify(systemTaskProcessStrategy, never()).process(didTask);
+    }
+}
+````
+
+### `src/test/java/com/socgen/sgs/api/quark/engine/domain/RunTest.java`
+
+SHA-256: `b5c225e903cfa4bb6c11583196976b6205edb2ef16deee0fe8328d538d12f83c`
+
+````java
+package com.socgen.sgs.api.quark.engine.domain;
+
+import com.socgen.sgs.api.quark.engine.business.GetGabaritBusiness;
+import com.socgen.sgs.api.quark.engine.business.GetGabaritXmlBusiness;
+import com.socgen.sgs.api.quark.engine.domain.port.DocumentIdentityPort;
+import com.socgen.sgs.api.quark.engine.domain.port.FilePoolPort;
+import com.socgen.sgs.api.quark.engine.domain.xml.QxpXml;
+import com.socgen.sgs.api.quark.engine.enums.GabaritSourceEnum;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.BeforeEach;
+
+import java.time.LocalDateTime;
+import java.util.LinkedHashMap;
 import java.util.Map;
+
+import com.socgen.sgs.api.quark.engine.domain.task.TaskBase;
+import com.socgen.sgs.api.quark.engine.domain.dynamic.template.Template;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@DisplayName("LoadTemplatesBusiness parity tests")
-class LoadTemplatesBusinessTest {
+@DisplayName("Run Tests")
+class RunTest {
 
-    private GetGabaritTemplateDao dao;
-    private TemplateMapper mapper;
-    private LoadTemplatesBusiness business;
     private Run run;
 
     @BeforeEach
     void setUp() {
-        dao = mock(GetGabaritTemplateDao.class);
-        mapper = mock(TemplateMapper.class);
-        business = new LoadTemplatesBusiness(dao, mapper);
         run = new Run();
+    }
+
+    @Test
+    @DisplayName("Should create Run with no arguments")
+    void shouldCreateRunWithNoArguments() {
+        assertNull(run.getId());
+        assertNull(run.getName());
+        assertNull(run.getStatus());
+        assertNull(run.getStartDate());
+        assertNull(run.getRunProperties());
+        assertNull(run.getGabarit());
+        assertNotNull(run.getInParams());
+        assertNotNull(run.getTasks());
+        assertEquals(1, run.currentQxpsExecutionNumber());
+    }
+
+    @Test
+    @DisplayName("QXPS execution numbering is owned by each run and advances explicitly")
+    void qxpsExecutionNumberIsRunScoped() {
+        Run anotherRun = new Run();
+
+        run.advanceQxpsExecutionNumber();
+        run.advanceQxpsExecutionNumber();
+
+        assertEquals(3, run.currentQxpsExecutionNumber());
+        assertEquals(1, anotherRun.currentQxpsExecutionNumber());
+    }
+
+    @Test
+    @DisplayName("Should create Run with all arguments")
+    void shouldCreateRunWithAllArguments() {
+        RunStatus status = RunStatus.TO_GENERATE;
+        LocalDateTime startDate = LocalDateTime.now();
+        RunProperties props = new RunProperties();
+        DocumentDomain gabarit = new DocumentDomain();
+        Map<String, InParam> inParams = new LinkedHashMap<>();
+        Map<Integer, TaskBase> tasks = new LinkedHashMap<>();
+        Map<String, Template> templates = new LinkedHashMap<>();
+
+        Run fullRun = new Run();
+        fullRun.setId(1);
+        fullRun.setName("TestRun");
+        fullRun.setStatus(status);
+        fullRun.setStartDate(startDate);
+        fullRun.setRunProperties(props);
+        fullRun.setGabarit(gabarit);
+        fullRun.setInParams(inParams);
+        fullRun.setTasks(tasks);
+        fullRun.setTemplates(templates);
+
+        assertEquals(1, fullRun.getId());
+        assertEquals("TestRun", fullRun.getName());
+        assertEquals(status, fullRun.getStatus());
+        assertEquals(startDate, fullRun.getStartDate());
+        assertEquals(props, fullRun.getRunProperties());
+        assertEquals(gabarit, fullRun.getGabarit());
+    }
+
+    @Test
+    @DisplayName("Should set and get id")
+    void shouldSetAndGetId() {
+        run.setId(42);
+        assertEquals(42, run.getId());
+    }
+
+    @Test
+    @DisplayName("Should set and get name")
+    void shouldSetAndGetName() {
+        run.setName("MyRun");
+        assertEquals("MyRun", run.getName());
+    }
+
+    @Test
+    @DisplayName("Should set and get status")
+    void shouldSetAndGetStatus() {
+        run.setStatus(RunStatus.RUNNING);
+        assertEquals(RunStatus.RUNNING, run.getStatus());
+    }
+
+    @Test
+    @DisplayName("Should set and get start date")
+    void shouldSetAndGetStartDate() {
+        LocalDateTime now = LocalDateTime.now();
+        run.setStartDate(now);
+        assertEquals(now, run.getStartDate());
+    }
+
+    @Test
+    @DisplayName("Should set and get run properties")
+    void shouldSetAndGetRunProperties() {
+        RunProperties props = new RunProperties();
+        run.setRunProperties(props);
+        assertEquals(props, run.getRunProperties());
+    }
+
+    @Test
+    @DisplayName("Should set and get gabarit")
+    void shouldSetAndGetGabarit() {
+        DocumentDomain gabarit = new DocumentDomain();
+        run.setGabarit(gabarit);
+        assertEquals(gabarit, run.getGabarit());
+    }
+
+    @Test
+    @DisplayName("Should manage in params map")
+    void shouldManageInParamsMap() {
+        InParam param = new InParam("param1", 1, "value1");
+        run.getInParams().put("param1", param);
+
+        assertTrue(run.getInParams().containsKey("param1"));
+        assertEquals(param, run.getInParams().get("param1"));
+    }
+
+    @Test
+    @DisplayName("Should have ordered in params map")
+    void shouldHaveOrderedInParamsMap() {
+        run.getInParams().put("param1", new InParam("p1", 1, "v1"));
+        run.getInParams().put("param2", new InParam("p2", 1, "v2"));
+        run.getInParams().put("param3", new InParam("p3", 1, "v3"));
+
+        Map<String, InParam> params = run.getInParams();
+        assertEquals(3, params.size());
+    }
+
+    @Test
+    @DisplayName("Should throw exception when preparing gabarit without run properties")
+    void shouldThrowExceptionWhenPreparingGabaritWithoutRunProperties() {
         run.setId(100);
+        run.setRunProperties(null);
+
+        assertThrows(IllegalStateException.class, () -> run.prepareGabarit(null, null, null, null));
+    }
+
+    @Test
+    @DisplayName("Structural XML retrieval failure switches to degraded mode and skips DID")
+    void xmlRetrievalFailureUsesFailSoftMode() {
+        GetGabaritBusiness getGabaritBusiness = mock(GetGabaritBusiness.class);
+        GetGabaritXmlBusiness getGabaritXmlBusiness = mock(GetGabaritXmlBusiness.class);
+        FilePoolPort filePoolPort = mock(FilePoolPort.class);
+        DocumentIdentityPort documentIdentityPort = mock(DocumentIdentityPort.class);
         RunProperties properties = new RunProperties();
-        properties.setRunId(100);
-        properties.setIdGabaritTemplate(3);
-        run.setRunProperties(properties);
-        TaskDynamique dynamicTask = new TaskDynamique(40, run);
-        dynamicTask.setTodo(true);
-        run.getTasks().put(40, dynamicTask);
-    }
-
-    @Test
-    @DisplayName("Missing template document does not abort Load and definitions are still loaded")
-    void missingTemplateDocumentIsDeferredToTaskPrepare() {
-        Map<String, Object> row = Map.of("NOM", "A");
-        Template template = new Template();
-        template.setName("A");
-        when(dao.getGabaritTemplate(3)).thenReturn(null);
-        when(dao.getTemplates(3)).thenReturn(List.of(row));
-        when(mapper.mapToTemplate(row)).thenReturn(template);
-
-        assertDoesNotThrow(() -> business.execute(run));
-
-        assertNull(run.getGabaritTemplate());
-        assertSame(template, run.getTemplates().get("A"));
-    }
-
-    @Test
-    @DisplayName("Oversized gabarit template marks both document and run as degraded")
-    void oversizedTemplateMarksDocumentAndRunDegraded() {
-        run.setSizeLimitBeforeFailSoft(2);
+        properties.setGabaritSource(GabaritSourceEnum.GABARIT);
+        properties.setIdGabarit(45);
         DocumentDomain document = DocumentDomain.builder()
-                .id(3).format("QXP").data(new byte[]{1, 2, 3})
-                .fileName("GT_3.QXP").build();
-        when(dao.getGabaritTemplate(3)).thenReturn(document);
-        when(dao.getTemplates(3)).thenReturn(List.of());
+                .id(45)
+                .format("QXP")
+                .data(new byte[]{1, 2, 3})
+                .filePoolPath("R_100/G_45.QXP")
+                .build();
+        run.setId(100);
+        run.setRunProperties(properties);
+        when(getGabaritBusiness.getAndPrepareGabarit(properties, 45)).thenReturn(document);
+        when(getGabaritXmlBusiness.fetchXml(document.getFilePoolPath())).thenReturn("");
 
-        business.execute(run);
+        run.prepareGabarit(getGabaritBusiness, getGabaritXmlBusiness, filePoolPort, documentIdentityPort);
+
+        assertTrue(properties.isModeDegrade());
+        assertTrue(document.isModeDegrade());
+        assertSame(QxpXml.EMPTY, document.getQxpXml());
+        verify(filePoolPort).addFile(document.getFilePoolPath(), document.getData());
+        verifyNoInteractions(documentIdentityPort);
+    }
+
+    @Test
+    @DisplayName("Oversized gabarit marks both document and run as degraded")
+    void oversizedGabaritMarksDocumentAndRunDegraded() {
+        GetGabaritBusiness getGabaritBusiness = mock(GetGabaritBusiness.class);
+        GetGabaritXmlBusiness getGabaritXmlBusiness = mock(GetGabaritXmlBusiness.class);
+        FilePoolPort filePoolPort = mock(FilePoolPort.class);
+        DocumentIdentityPort documentIdentityPort = mock(DocumentIdentityPort.class);
+        Run sizeLimitedRun = new Run(2);
+        sizeLimitedRun.setId(100);
+        RunProperties properties = new RunProperties();
+        properties.setGabaritSource(GabaritSourceEnum.GABARIT);
+        properties.setIdGabarit(45);
+        sizeLimitedRun.setRunProperties(properties);
+        DocumentDomain document = DocumentDomain.builder()
+                .id(45).format("QXP").data(new byte[]{1, 2, 3})
+                .filePoolPath("R_100/G_45.QXP").build();
+        when(getGabaritBusiness.getAndPrepareGabarit(properties, 45)).thenReturn(document);
+
+        sizeLimitedRun.prepareGabarit(
+                getGabaritBusiness, getGabaritXmlBusiness, filePoolPort, documentIdentityPort);
 
         assertTrue(document.isModeDegrade());
-        assertTrue(run.getRunProperties().isModeDegrade());
+        assertTrue(properties.isModeDegrade());
+        verifyNoInteractions(getGabaritXmlBusiness, documentIdentityPort);
     }
 
     @Test
-    @DisplayName("Duplicate template names fail Load like .NET Dictionary.Add")
-    void duplicateTemplateNamesAreRejected() {
-        Map<String, Object> row1 = Map.of("ID_TEMPLATE", 673);
-        Map<String, Object> row2 = Map.of("ID_TEMPLATE", 1107);
-        Template first = new Template();
-        first.setName("SWAP_N1_RSA");
-        Template second = new Template();
-        second.setName("SWAP_N1_RSA");
-        when(dao.getGabaritTemplate(3)).thenReturn(null);
-        when(dao.getTemplates(3)).thenReturn(List.of(row1, row2));
-        when(mapper.mapToTemplate(row1)).thenReturn(first);
-        when(mapper.mapToTemplate(row2)).thenReturn(second);
+    @DisplayName("Malformed structural XML also switches to degraded mode")
+    void xmlParsingFailureUsesFailSoftMode() {
+        GetGabaritBusiness getGabaritBusiness = mock(GetGabaritBusiness.class);
+        GetGabaritXmlBusiness getGabaritXmlBusiness = mock(GetGabaritXmlBusiness.class);
+        FilePoolPort filePoolPort = mock(FilePoolPort.class);
+        DocumentIdentityPort documentIdentityPort = mock(DocumentIdentityPort.class);
+        RunProperties properties = new RunProperties();
+        properties.setGabaritSource(GabaritSourceEnum.GABARIT);
+        properties.setIdGabarit(45);
+        DocumentDomain document = DocumentDomain.builder()
+                .id(45).format("QXP").data(new byte[]{1})
+                .filePoolPath("R_100/G_45.QXP").build();
+        run.setId(100);
+        run.setRunProperties(properties);
+        when(getGabaritBusiness.getAndPrepareGabarit(properties, 45)).thenReturn(document);
+        when(getGabaritXmlBusiness.fetchXml(document.getFilePoolPath())).thenReturn("<PROJECT>");
 
-        IllegalStateException error = assertThrows(IllegalStateException.class,
-                () -> business.execute(run));
+        run.prepareGabarit(getGabaritBusiness, getGabaritXmlBusiness, filePoolPort, documentIdentityPort);
 
-        assertTrue(error.getMessage().contains("SWAP_N1_RSA"));
-        assertSame(first, run.getTemplates().get("SWAP_N1_RSA"));
-    }
-
-    @Test
-    @DisplayName("Null template name fails Load like a null .NET Dictionary key")
-    void nullTemplateNameIsRejected() {
-        Map<String, Object> row = Map.of("ID_TEMPLATE", 1);
-        Template template = new Template();
-        template.setName(null);
-        when(dao.getGabaritTemplate(3)).thenReturn(null);
-        when(dao.getTemplates(3)).thenReturn(List.of(row));
-        when(mapper.mapToTemplate(row)).thenReturn(template);
-
-        assertThrows(IllegalStateException.class, () -> business.execute(run));
+        assertTrue(properties.isModeDegrade());
+        assertSame(QxpXml.EMPTY, document.getQxpXml());
+        verifyNoInteractions(documentIdentityPort);
     }
 }
-```
+````
 
-### `src/test/java/com/socgen/sgs/api/quark/engine/infra/dao/impl/GetGabaritTemplateDaoImplTest.java`
+### `src/test/java/com/socgen/sgs/api/quark/engine/business/QxpsCallerBusinessWave1Test.java`
 
-SHA-256: `3565b7121f489e9115c032fa451acd0d7a5acb087d858dc56829ae896422a3b7`
+SHA-256: `c08b814206842090bded4ca1046064a38a05c32501dde4016994959c139f1aa6`
 
-```java
-package com.socgen.sgs.api.quark.engine.infra.dao.impl;
+````java
+package com.socgen.sgs.api.quark.engine.business;
 
 import com.socgen.sgs.api.quark.engine.domain.DocumentDomain;
+import com.socgen.sgs.api.quark.engine.domain.Run;
+import com.socgen.sgs.api.quark.engine.domain.RunError;
+import com.socgen.sgs.api.quark.engine.domain.RunProperties;
+import com.socgen.sgs.api.quark.engine.domain.RunTask;
+import com.socgen.sgs.api.quark.engine.domain.RunTaskStep;
+import com.socgen.sgs.api.quark.engine.domain.port.FilePoolPort;
+import com.socgen.sgs.api.quark.engine.infra.interop.qxps.client.QxpsHttpClient;
+import com.socgen.sgs.api.quark.engine.infra.interop.qxps.config.QxpsProperties;
+import com.socgen.sgs.api.quark.engine.infra.interop.qxps.exception.QxpsException;
+import com.socgen.sgs.api.quark.engine.infra.interop.qxps.message.LiteralMessage;
+import com.socgen.sgs.api.quark.engine.infra.interop.qxps.message.PdfRenderMessage;
+import com.socgen.sgs.api.quark.engine.infra.interop.qxps.model.QxpsRequestInfo;
+import com.socgen.sgs.api.quark.engine.infra.interop.qxps.model.QxpsResponseInfo;
+import com.socgen.sgs.api.quark.engine.infra.interop.qxpsm.QxpsmSoapClient;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.springframework.http.HttpMethod;
+
+import java.net.URI;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+class QxpsCallerBusinessWave1Test {
+
+    private QxpsHttpClient httpClient;
+    private QxpsmSoapClient soapClient;
+    private FilePoolPort filePool;
+    private QxpsCallerBusiness business;
+    private Run run;
+
+    @BeforeEach
+    void setUp() {
+        httpClient = mock(QxpsHttpClient.class);
+        soapClient = mock(QxpsmSoapClient.class);
+        filePool = mock(FilePoolPort.class);
+        QxpsProperties properties = new QxpsProperties();
+        properties.getPool().setDefaultPath("D:\\Documents\\");
+        business = new QxpsCallerBusiness(httpClient, soapClient, properties, filePool);
+
+        RunProperties runProperties = new RunProperties();
+        runProperties.setRunId(7);
+        run = new Run();
+        run.setId(7);
+        run.setRunProperties(runProperties);
+        DocumentDomain gabarit = new DocumentDomain();
+        gabarit.setId(45);
+        gabarit.setPrefix("G");
+        gabarit.setName("Gabarit");
+        gabarit.setFormat("QXP");
+        gabarit.setFilePoolPath("R_7/G_45.QXP");
+        run.setGabarit(gabarit);
+    }
+
+    @Test
+    void excludedBoxesAddTheExactCritiqueErrorWithoutStoppingProcessing() {
+        RunTask runTask = mock(RunTask.class);
+        when(runTask.getSteps()).thenReturn(List.of());
+        when(runTask.getNbExcludeBoxes()).thenReturn(2);
+        when(runTask.getLastNbMaxDocBoxes()).thenReturn(16900);
+        run.setRunTask(runTask);
+
+        business.process(run);
+
+        assertEquals(1, run.getErrors().size());
+        assertEquals(RunError.CRITIQUE, run.getErrors().get(0).getCategory());
+        assertEquals(
+                "La taille du document (16900 boxes) ne permettait pas d'effectuer toutes les modifications, 2 Boxes ont été exclues",
+                run.getErrors().get(0).getMessage());
+    }
+
+    @Test
+    void pdfQxpsFailureAddsCritiqueAndContinuesWithQxpFetch() {
+        QxpsRequestInfo request = new QxpsRequestInfo(
+                URI.create("https://example.invalid/render?secret=value"), HttpMethod.GET, null);
+        when(httpClient.execute(anyString(), any(PdfRenderMessage.class)))
+                .thenThrow(new QxpsException(request, "payload"));
+        QxpsResponseInfo literal = new QxpsResponseInfo();
+        literal.setBinaryResponse(new byte[]{4, 5});
+        when(httpClient.execute(anyString(), any(LiteralMessage.class))).thenReturn(literal);
+
+        assertEquals(2,
+                business.render(run, true, false, true, "true", "300").getQxpData().length);
+
+        assertEquals(1, run.getErrors().size());
+        assertEquals(RunError.CRITIQUE, run.getErrors().get(0).getCategory());
+        assertEquals("Rendu Impossible du document pdf", run.getErrors().get(0).getMessage());
+        verify(httpClient).execute(anyString(), any(LiteralMessage.class));
+    }
+
+    @Test
+    void untypedPdfFailureStillPropagates() {
+        when(httpClient.execute(anyString(), any(PdfRenderMessage.class)))
+                .thenThrow(new IllegalStateException("internal failure"));
+
+        assertThrows(IllegalStateException.class,
+                () -> business.render(run, true, false, true, "true", "300"));
+
+        assertEquals(0, run.getErrors().size());
+        verify(httpClient, never()).execute(anyString(), any(LiteralMessage.class));
+    }
+
+    @Test
+    void repeatedProcessingContinuesRunOwnedExecutionNumbers() {
+        RunTaskStep step = executableSoapStep();
+        RunTask runTask = mock(RunTask.class);
+        when(runTask.getSteps()).thenReturn(List.of(step));
+        when(runTask.getNbExcludeBoxes()).thenReturn(0);
+        run.setRunTask(runTask);
+        QxpsResponseInfo literal = new QxpsResponseInfo();
+        literal.setBinaryResponse(new byte[]{1});
+        when(httpClient.execute(anyString(), any(LiteralMessage.class))).thenReturn(literal);
+
+        business.process(run);
+        business.process(run);
+
+        ArgumentCaptor<String> names = ArgumentCaptor.forClass(String.class);
+        verify(soapClient, times(2)).executeStep(
+                anyString(), anyList(), isNull(), anyString(), names.capture());
+        assertEquals(List.of("G_45_1.QXP", "G_45_2.QXP"), names.getAllValues());
+        assertEquals(3, run.currentQxpsExecutionNumber());
+    }
+
+    @Test
+    void differentRunsDoNotShareExecutionNumbers() {
+        RunTaskStep firstStep = executableSoapStep();
+        RunTask firstRunTask = mock(RunTask.class);
+        when(firstRunTask.getSteps()).thenReturn(List.of(firstStep));
+        run.setRunTask(firstRunTask);
+
+        Run secondRun = new Run();
+        secondRun.setId(8);
+        RunProperties secondProperties = new RunProperties();
+        secondProperties.setRunId(8);
+        secondRun.setRunProperties(secondProperties);
+        DocumentDomain secondGabarit = new DocumentDomain();
+        secondGabarit.setId(46);
+        secondGabarit.setPrefix("H");
+        secondGabarit.setName("Second");
+        secondGabarit.setFormat("QXP");
+        secondGabarit.setFilePoolPath("R_8/H_46.QXP");
+        secondRun.setGabarit(secondGabarit);
+        RunTaskStep secondStep = executableSoapStep();
+        RunTask secondRunTask = mock(RunTask.class);
+        when(secondRunTask.getSteps()).thenReturn(List.of(secondStep));
+        secondRun.setRunTask(secondRunTask);
+
+        QxpsResponseInfo literal = new QxpsResponseInfo();
+        literal.setBinaryResponse(new byte[]{1});
+        when(httpClient.execute(anyString(), any(LiteralMessage.class))).thenReturn(literal);
+
+        business.process(run);
+        business.process(secondRun);
+
+        ArgumentCaptor<String> names = ArgumentCaptor.forClass(String.class);
+        verify(soapClient, times(2)).executeStep(
+                anyString(), anyList(), isNull(), anyString(), names.capture());
+        assertEquals(List.of("G_45_1.QXP", "H_46_1.QXP"), names.getAllValues());
+    }
+
+    @Test
+    void failedExecutionDoesNotAdvanceTheRunCounter() {
+        RunTaskStep step = executableSoapStep();
+        RunTask runTask = mock(RunTask.class);
+        when(runTask.getSteps()).thenReturn(List.of(step));
+        run.setRunTask(runTask);
+        when(soapClient.executeStep(anyString(), anyList(), isNull(), anyString(), anyString()))
+                .thenThrow(new RuntimeException("failure"));
+
+        assertThrows(RuntimeException.class, () -> business.process(run));
+
+        assertEquals(1, run.currentQxpsExecutionNumber());
+        verify(httpClient, never()).execute(anyString(), any(LiteralMessage.class));
+    }
+
+    private RunTaskStep executableSoapStep() {
+        RunTaskStep step = mock(RunTaskStep.class);
+        when(step.getBlocsModify()).thenReturn(List.of());
+        when(step.getNameValues()).thenReturn(List.of());
+        when(step.isDirectCall()).thenReturn(false);
+        when(step.isFullExclude()).thenReturn(false);
+        return step;
+    }
+}
+````
+
+### `src/test/java/com/socgen/sgs/api/quark/engine/infra/dao/impl/RunStartUpdateDaoImplTest.java`
+
+SHA-256: `3d875e8b659af923c415db356b958f07f9e4f025914e0d934f2eb28b9508fcb4`
+
+````java
+package com.socgen.sgs.api.quark.engine.infra.dao.impl;
+
+import com.socgen.sgs.api.quark.engine.domain.Run;
+import com.socgen.sgs.api.quark.engine.domain.RunStatus;
+import com.socgen.sgs.api.quark.engine.infra.dao.RunStartUpdateDao;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.ArgumentCaptor;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcCall;
+import org.springframework.test.util.ReflectionTestUtils;
+
+import javax.sql.DataSource;
+import java.time.LocalDateTime;
+import java.sql.Timestamp;
+import java.sql.Types;
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
+@ExtendWith(MockitoExtension.class)
+@DisplayName("RunStartUpdateDaoImpl Tests")
+class RunStartUpdateDaoImplTest {
+
+    @Mock
+    private DataSource dataSource;
+
+    @Mock
+    private SimpleJdbcCall simpleJdbcCall;
+
+    private RunStartUpdateDao dao;
+    private Run run;
+
+    @BeforeEach
+    void setUp() {
+        dao = new RunStartUpdateDaoImpl(dataSource);
+        ReflectionTestUtils.setField(dao, "startRunCall", simpleJdbcCall);
+
+        run = new Run();
+        run.setId(77);
+        run.setStatus(RunStatus.RUNNING);
+        run.setStartDate(LocalDateTime.now());
+    }
+
+    @Test
+    @DisplayName("Should execute startRun procedure successfully")
+    void shouldExecuteStartRunProcedure() {
+        when(simpleJdbcCall.execute(any(SqlParameterSource.class))).thenReturn(Map.of());
+
+        assertDoesNotThrow(() -> dao.startRun(run));
+
+        verify(simpleJdbcCall, times(1)).execute(any(SqlParameterSource.class));
+    }
+
+    @Test
+    @DisplayName("Should bind the exact start timestamp without dropping the time")
+    void shouldBindExactStartTimestamp() {
+        LocalDateTime expected = LocalDateTime.of(2026, 8, 18, 14, 37, 42);
+        run.setStartDate(expected);
+        when(simpleJdbcCall.execute(any(SqlParameterSource.class))).thenReturn(Map.of());
+        ArgumentCaptor<SqlParameterSource> params = ArgumentCaptor.forClass(SqlParameterSource.class);
+
+        dao.startRun(run);
+
+        verify(simpleJdbcCall).execute(params.capture());
+        assertEquals(Timestamp.valueOf(expected), params.getValue().getValue("p_date_debut"));
+        assertEquals(Types.TIMESTAMP, RunStartUpdateDaoImpl.START_DATE_SQL_TYPE);
+    }
+
+    @Test
+    @DisplayName("Should use current time when run startDate is null")
+    void shouldUseCurrentTimeWhenStartDateNull() {
+        run.setStartDate(null);
+        when(simpleJdbcCall.execute(any(SqlParameterSource.class))).thenReturn(Map.of());
+
+        assertDoesNotThrow(() -> dao.startRun(run));
+
+        assertNotNull(run.getStartDate());
+        verify(simpleJdbcCall, times(1)).execute(any(SqlParameterSource.class));
+    }
+
+    @Test
+    @DisplayName("Should throw RuntimeException when procedure call fails")
+    void shouldThrowRuntimeExceptionOnFailure() {
+        when(simpleJdbcCall.execute(any(SqlParameterSource.class)))
+                .thenThrow(new RuntimeException("db error"));
+
+        assertThrows(RuntimeException.class, () -> dao.startRun(run));
+    }
+
+    @Test
+    @DisplayName("Should include correct status code in parameters")
+    void shouldIncludeStatusCodeInParams() {
+        run.setStatus(RunStatus.TO_GENERATE);
+        when(simpleJdbcCall.execute(any(SqlParameterSource.class))).thenReturn(Map.of());
+
+        dao.startRun(run);
+
+        verify(simpleJdbcCall).execute(any(SqlParameterSource.class));
+    }
+}
+````
+
+### `src/test/java/com/socgen/sgs/api/quark/engine/domain/helper/InvariantValueConverterTest.java`
+
+SHA-256: `6e9bcafcc67d19c4ab57c2205491d2189ea34d6af16fa141721cad9eb7c8b073`
+
+````java
+package com.socgen.sgs.api.quark.engine.domain.helper;
+
+import org.junit.jupiter.api.Test;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+class InvariantValueConverterTest {
+
+    @Test
+    void parsesInvariantNumericFormsAndAppliesCheckedInt32Conversion() {
+        assertEquals(1234, InvariantValueConverter.toInt32("1,234"));
+        assertEquals(1234, InvariantValueConverter.toInt32("1 234"));
+        assertEquals(-123, InvariantValueConverter.toInt32("(123)"));
+        assertEquals(-123, InvariantValueConverter.toInt32("123-"));
+        assertEquals(-123, InvariantValueConverter.toInt32("-¤123"));
+        assertEquals(-123, InvariantValueConverter.toInt32("123¤-"));
+        assertEquals(-123, InvariantValueConverter.toInt32("¤(123)"));
+        assertEquals(12, InvariantValueConverter.toInt32("1,,2"));
+        assertEquals(1000, InvariantValueConverter.toInt32("1e3"));
+        assertEquals(12, InvariantValueConverter.toInt32("12.9"));
+        assertEquals(Integer.MIN_VALUE, InvariantValueConverter.toInt32("not-a-number"));
+        assertThrows(ArithmeticException.class,
+                () -> InvariantValueConverter.toInt32("2147483648"));
+    }
+
+    @Test
+    void modelsDecimalRangeScaleAndHalfEvenRounding() {
+        assertEquals(new BigDecimal("79228162514264337593543950335"),
+                InvariantValueConverter.toDecimal("79228162514264337593543950335"));
+        assertEquals(InvariantValueConverter.DECIMAL_UNSET,
+                InvariantValueConverter.toDecimal("79228162514264337593543950336"));
+        assertEquals(new BigDecimal("0.1234567890123456789012345679"),
+                InvariantValueConverter.toDecimal("0.123456789012345678901234567895"));
+        assertEquals(new BigDecimal("12345678901234567890123456790"),
+                InvariantValueConverter.toDecimal("12345678901234567890123456789.5"));
+    }
+
+    @Test
+    void parsesProvenAndCommonInvariantDateForms() {
+        assertEquals(LocalDateTime.of(2025, 12, 31, 0, 0),
+                InvariantValueConverter.toDateTime("12/31/2025 00:00:00"));
+        assertEquals(LocalDateTime.of(2025, 1, 2, 3, 4, 5),
+                InvariantValueConverter.toDateTime("1/2/2025 3:4:5"));
+        assertEquals(LocalDateTime.of(2025, 12, 31, 23, 30),
+                InvariantValueConverter.toDateTime("12/31/2025 11:30 PM"));
+        assertEquals(LocalDateTime.of(2025, 12, 31, 0, 0),
+                InvariantValueConverter.toDateTime("December 31, 2025"));
+        assertEquals(LocalDateTime.of(2025, 12, 31, 14, 30),
+                InvariantValueConverter.toDateTime("2025-12-31T14:30:00"));
+        assertEquals(LocalDateTime.of(2025, 12, 31, 0, 0),
+                InvariantValueConverter.toDateTime("12/31/25"));
+        assertEquals(LocalDateTime.of(2025, 12, 31, 0, 0),
+                InvariantValueConverter.toDateTime("2025/12/31"));
+        assertEquals(LocalDateTime.of(2025, 12, 31, 14, 30),
+                InvariantValueConverter.toDateTime("31 Dec 2025 14:30"));
+    }
+
+    @Test
+    void returnsDateSentinelForEmptyDayFirstAndInvalidDates() {
+        assertEquals(InvariantValueConverter.DATE_TIME_UNSET,
+                InvariantValueConverter.toDateTime(""));
+        assertEquals(InvariantValueConverter.DATE_TIME_UNSET,
+                InvariantValueConverter.toDateTime("31/12/2025"));
+        assertEquals(InvariantValueConverter.DATE_TIME_UNSET,
+                InvariantValueConverter.toDateTime("02/29/2025"));
+    }
+}
+````
+
+### `src/test/java/com/socgen/sgs/api/quark/engine/domain/InParamTest.java`
+
+SHA-256: `474c0f01aff42c1f3d246f471f5edc233c2377c2c96e5dc6f27800d7e9b9532a`
+
+````java
+package com.socgen.sgs.api.quark.engine.domain;
+
+import com.socgen.sgs.api.quark.engine.enums.DataTypeEnum;
+import com.socgen.sgs.api.quark.engine.domain.helper.InvariantValueConverter;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.DisplayName;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+@DisplayName("InParam Tests")
+class InParamTest {
+
+    @Test
+    @DisplayName("Should create InParam with int type code and string value")
+    void shouldCreateInParamWithIntTypeCode() {
+        InParam param = new InParam("paramName", 1, "testValue");
+
+        assertEquals("paramName", param.getName());
+        assertEquals(DataTypeEnum.TEXT, param.getType());
+        assertEquals("testValue", param.getStringValue());
+    }
+
+    @Test
+    @DisplayName("Should create InParam with DataTypeEnum and string value")
+    void shouldCreateInParamWithDataTypeEnum() {
+        InParam param = new InParam("paramName", DataTypeEnum.TEXT, "testValue");
+
+        assertEquals("paramName", param.getName());
+        assertEquals(DataTypeEnum.TEXT, param.getType());
+        assertEquals("testValue", param.getStringValue());
+    }
+
+    @Test
+    @DisplayName("Should store numeric string as-is for INT type")
+    void shouldStoreNumericStringForIntType() {
+        InParam param = new InParam("intParam", DataTypeEnum.INT, "42");
+
+        assertEquals("intParam", param.getName());
+        assertEquals(DataTypeEnum.INT, param.getType());
+        assertEquals("42", param.getStringValue());
+        assertEquals(42, param.getValue());
+    }
+
+    @Test
+    @DisplayName("Should store decimal string as-is for DECIMAL type")
+    void shouldStoreDecimalString() {
+        InParam param = new InParam("decimalParam", DataTypeEnum.DECIMAL, "3.14");
+
+        assertEquals("decimalParam", param.getName());
+        assertEquals(DataTypeEnum.DECIMAL, param.getType());
+        assertEquals("3.14", param.getStringValue());
+        assertEquals(new java.math.BigDecimal("3.14"), param.getValue());
+    }
+
+    @Test
+    @DisplayName("Should store currency string as-is for CURRENCY type")
+    void shouldStoreCurrencyString() {
+        InParam param = new InParam("currencyParam", DataTypeEnum.CURRENCY, "99.99");
+
+        assertEquals("currencyParam", param.getName());
+        assertEquals(DataTypeEnum.CURRENCY, param.getType());
+        assertEquals("99.99", param.getStringValue());
+        assertEquals("99.99", param.getValue());
+    }
+
+    @Test
+    @DisplayName("Should store pourcentage string as-is for POURCENTAGE type")
+    void shouldStorePourcentageString() {
+        InParam param = new InParam("pourcentageParam", DataTypeEnum.POURCENTAGE, "25.5");
+
+        assertEquals("pourcentageParam", param.getName());
+        assertEquals(DataTypeEnum.POURCENTAGE, param.getType());
+        assertEquals("25.5", param.getStringValue());
+        assertEquals("25.5", param.getValue());
+    }
+
+    @Test
+    @DisplayName("Should store non-numeric string for INT type without error")
+    void shouldStoreNonNumericStringForIntType() {
+        InParam param = new InParam("invalidIntParam", DataTypeEnum.INT, "notANumber");
+
+        assertEquals("invalidIntParam", param.getName());
+        assertEquals(DataTypeEnum.INT, param.getType());
+        assertEquals("notANumber", param.getStringValue());
+        assertEquals(Integer.MIN_VALUE, param.getValue());
+    }
+
+    @Test
+    @DisplayName("Should handle null string value")
+    void shouldHandleNullStringValue() {
+        InParam param = new InParam("nullParam", DataTypeEnum.TEXT, null);
+
+        assertEquals("nullParam", param.getName());
+        assertEquals(DataTypeEnum.TEXT, param.getType());
+        assertNull(param.getStringValue());
+    }
+
+    @Test
+    @DisplayName("Should handle empty string value")
+    void shouldHandleEmptyStringValue() {
+        InParam param = new InParam("emptyParam", DataTypeEnum.TEXT, "");
+
+        assertEquals("emptyParam", param.getName());
+        assertEquals(DataTypeEnum.TEXT, param.getType());
+        assertEquals("", param.getStringValue());
+    }
+
+    @Test
+    @DisplayName("Should keep string value as-is for TEXT type")
+    void shouldKeepStringValueAsIsForTextType() {
+        InParam param = new InParam("textParam", DataTypeEnum.TEXT, "some text 123");
+
+        assertEquals("textParam", param.getName());
+        assertEquals(DataTypeEnum.TEXT, param.getType());
+        assertEquals("some text 123", param.getStringValue());
+    }
+
+    @Test
+    @DisplayName("Should retain DATE text and convert its typed value during loading")
+    void shouldKeepDateStringAsIsForDateType() {
+        InParam param = new InParam("dateParam", DataTypeEnum.DATE, "2024-01-15");
+
+        assertEquals("dateParam", param.getName());
+        assertEquals(DataTypeEnum.DATE, param.getType());
+        assertEquals("2024-01-15", param.getStringValue());
+        assertEquals(java.time.LocalDateTime.of(2024, 1, 15, 0, 0), param.getValue());
+    }
+
+    @Test
+    @DisplayName("Should keep datetime string as-is for DATE_TIME type - Oracle handles conversion")
+    void shouldKeepDateTimeStringAsIsForDateTimeType() {
+        InParam param = new InParam("dtParam", DataTypeEnum.DATE_TIME, "2024-01-15T10:30:00");
+
+        assertEquals("dtParam", param.getName());
+        assertEquals(DataTypeEnum.DATE_TIME, param.getType());
+        assertEquals("2024-01-15T10:30:00", param.getStringValue());
+    }
+
+    @Test
+    @DisplayName("Should keep dd/MM/yyyy format as-is for DATE type")
+    void shouldKeepSlashDateFormatAsIs() {
+        InParam param = new InParam("dateParam", DataTypeEnum.DATE, "15/01/2024");
+
+        assertEquals(DataTypeEnum.DATE, param.getType());
+        assertEquals("15/01/2024", param.getStringValue());
+    }
+
+    @Test
+    @DisplayName("Should keep any date string as-is even if unparseable")
+    void shouldKeepUnparseableDateAsIs() {
+        InParam param = new InParam("dateParam", DataTypeEnum.DATE, "not-a-date");
+
+        assertEquals("not-a-date", param.getStringValue());
+        assertEquals(InvariantValueConverter.DATE_TIME_UNSET, param.getValue());
+    }
+
+    @Test
+    @DisplayName("Parsed integer overflow fails while the parameter row is loaded")
+    void shouldFailOnParsedInt32Overflow() {
+        assertThrows(ArithmeticException.class,
+                () -> new InParam("intParam", DataTypeEnum.INT, "2147483648"));
+    }
+
+    @Test
+    @DisplayName("Should be immutable")
+    void shouldBeImmutable() {
+        InParam param = new InParam("param", DataTypeEnum.TEXT, "value");
+
+        assertEquals("param", param.getName());
+        assertEquals("value", param.getStringValue());
+    }
+}
+````
+
+### `src/test/java/com/socgen/sgs/api/quark/engine/mapper/InParamSqlMapperTest.java`
+
+SHA-256: `8bd8b435f57cec5d7095a55f5b28f34ac6e309d8b590400a7179f069e9a62d8b`
+
+````java
+package com.socgen.sgs.api.quark.engine.mapper;
+
+import com.socgen.sgs.api.quark.engine.domain.InParam;
+import com.socgen.sgs.api.quark.engine.enums.DataTypeEnum;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.jdbc.core.SqlParameterValue;
+
+import oracle.sql.DATE;
+
+import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.sql.Types;
+import java.time.LocalDateTime;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+@DisplayName("InParamSqlMapper typed-binding Tests")
+class InParamSqlMapperTest {
+
+    private final InParamSqlMapper mapper = new InParamSqlMapper();
+
+    private Object map(DataTypeEnum type, String value) {
+        Map<String, InParam> in = new LinkedHashMap<>();
+        in.put("p", new InParam("p", type, value));
+        return mapper.toParameterMap(in).get("p");
+    }
+
+    /** Assert the mapped value is a typed SQL NULL of the expected java.sql.Types code. */
+    private void assertTypedNull(int expectedSqlType, Object actual) {
+        SqlParameterValue v = assertInstanceOf(SqlParameterValue.class, actual);
+        assertEquals(expectedSqlType, v.getSqlType());
+        assertNull(v.getValue());
+    }
+
+    @Test
+    @DisplayName("#51 INT binds a typed Integer (truncating toward zero); unset/unparseable → typed SQL NULL")
+    void intTyped() {
+        assertEquals(123, map(DataTypeEnum.INT, "123"));
+        assertEquals(12, map(DataTypeEnum.INT, "12.9"));      // (int)decimal truncates
+        assertEquals(1234, map(DataTypeEnum.INT, "1,234"));
+        assertEquals(-123, map(DataTypeEnum.INT, "(123)"));
+        assertTypedNull(Types.NUMERIC, map(DataTypeEnum.INT, ""));
+        assertTypedNull(Types.NUMERIC, map(DataTypeEnum.INT, "abc"));
+        assertTypedNull(Types.NUMERIC, map(DataTypeEnum.INT, "-2147483648"));
+        assertThrows(ArithmeticException.class,
+                () -> map(DataTypeEnum.INT, "2147483648"));
+    }
+
+    @Test
+    @DisplayName("#51 DECIMAL binds a typed BigDecimal; unset/unparseable → typed SQL NULL")
+    void decimalTyped() {
+        assertEquals(new BigDecimal("12.50"), map(DataTypeEnum.DECIMAL, "12.50"));
+        assertEquals(new BigDecimal("1000"), map(DataTypeEnum.DECIMAL, "1e3"));
+        assertTypedNull(Types.NUMERIC, map(DataTypeEnum.DECIMAL, ""));
+        assertTypedNull(Types.NUMERIC, map(DataTypeEnum.DECIMAL, "n/a"));
+        assertTypedNull(Types.NUMERIC,
+                map(DataTypeEnum.DECIMAL, "-79228162514264337593543950335"));
+        assertTypedNull(Types.NUMERIC,
+                map(DataTypeEnum.DECIMAL, "79228162514264337593543950336"));
+    }
+
+    @Test
+    @DisplayName("#50 DATE binds a time-preserving oracle.sql.DATE; unparseable → typed SQL NULL")
+    void dateTimePreserving() throws Exception {
+        Object result = map(DataTypeEnum.DATE, "12/29/2023 14:30:00");
+        DATE oracleDate = assertInstanceOf(DATE.class, result);
+        Timestamp expected = Timestamp.valueOf(LocalDateTime.of(2023, 12, 29, 14, 30, 0));
+        assertEquals(expected, oracleDate.timestampValue());
+        assertTypedNull(Types.DATE, map(DataTypeEnum.DATE, ""));
+        assertTypedNull(Types.DATE, map(DataTypeEnum.DATE, "31/12/2025"));
+    }
+
+    @Test
+    @DisplayName("#21 DATE_TIME (and TEXT) bind the RAW STRING (matches .NET switch default)")
+    void dateTimeAndTextRawString() {
+        assertEquals("12/29/2023 14:30:00", map(DataTypeEnum.DATE_TIME, "12/29/2023 14:30:00"));
+        assertEquals("hello", map(DataTypeEnum.TEXT, "hello"));
+    }
+
+    @Test
+    @DisplayName("All four report parameters are retained and typed independently")
+    void mapsAllFourReportParametersTogether() throws Exception {
+        Map<String, InParam> input = new LinkedHashMap<>();
+        input.put("p_code_port", new InParam("p_code_port", DataTypeEnum.TEXT, "101005"));
+        input.put("p_date_echeance",
+                new InParam("p_date_echeance", DataTypeEnum.DATE, "12/30/2022 00:00:00"));
+        input.put("p_id_gabarit", new InParam("p_id_gabarit", DataTypeEnum.INT, "329"));
+        input.put("p_id_unit_code", new InParam("p_id_unit_code", DataTypeEnum.TEXT, "_A"));
+
+        Map<String, Object> result = mapper.toParameterMap(input);
+
+        assertEquals(java.util.List.of(
+                        "p_code_port", "p_date_echeance", "p_id_gabarit", "p_id_unit_code"),
+                new java.util.ArrayList<>(result.keySet()));
+        assertEquals("101005", result.get("p_code_port"));
+        DATE oracleDate = assertInstanceOf(DATE.class, result.get("p_date_echeance"));
+        assertEquals(Timestamp.valueOf("2022-12-30 00:00:00"), oracleDate.timestampValue());
+        assertEquals(329, result.get("p_id_gabarit"));
+        assertEquals("_A", result.get("p_id_unit_code"));
+    }
+}
+````
+
+### `src/test/java/com/socgen/sgs/api/quark/engine/infra/dao/impl/GetInParamsDaoImplTest.java`
+
+SHA-256: `d0935689642b694f6b89b8fa0510814f9560d5cd5d1f2a40d68919e7120b7ed3`
+
+````java
+package com.socgen.sgs.api.quark.engine.infra.dao.impl;
+
+import com.socgen.sgs.api.quark.engine.domain.InParam;
+import com.socgen.sgs.api.quark.engine.domain.Run;
+import com.socgen.sgs.api.quark.engine.domain.RunProperties;
+import com.socgen.sgs.api.quark.engine.infra.dao.GetInParamsDao;
+import com.socgen.sgs.api.quark.engine.mapper.InParamMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -1679,7 +3831,6 @@ import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import javax.sql.DataSource;
-import java.sql.ResultSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -1689,847 +3840,259 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-@DisplayName("GetGabaritTemplateDaoImpl parity tests")
-class GetGabaritTemplateDaoImplTest {
+@DisplayName("GetInParamsDaoImpl Tests")
+class GetInParamsDaoImplTest {
 
-    @Mock private DataSource dataSource;
-    @Mock private SimpleJdbcCall getGabaritTemplateCall;
-    @Mock private ResultSet resultSet;
-    private GetGabaritTemplateDaoImpl dao;
+    @Mock
+    private DataSource dataSource;
 
-    @BeforeEach
-    void setUp() {
-        dao = new GetGabaritTemplateDaoImpl(dataSource);
-        ReflectionTestUtils.setField(dao, "getGabaritTemplateCall", getGabaritTemplateCall);
-    }
+    @Mock
+    private InParamMapper inParamMapper;
 
-    @Test
-    @DisplayName("Empty cursor returns null like .NET")
-    void emptyCursorReturnsNull() {
-        Map<String, Object> result = new HashMap<>();
-        result.put("result_cursor", List.of());
-        when(getGabaritTemplateCall.execute(any(SqlParameterSource.class))).thenReturn(result);
+    @Mock
+    private SimpleJdbcCall simpleJdbcCall;
 
-        assertNull(dao.getGabaritTemplate(3));
-    }
-
-    @Test
-    @DisplayName("Gabarit template filename uses uppercase QXP extension")
-    void filenameUsesUppercaseQxpExtension() throws Exception {
-        when(resultSet.getInt("id_gabarit_template")).thenReturn(3);
-        when(resultSet.getString("nom")).thenReturn("RSA");
-        when(resultSet.getBytes("contenu")).thenReturn(new byte[]{1});
-
-        DocumentDomain document = ReflectionTestUtils.invokeMethod(dao, "mapGabaritTemplate", resultSet);
-
-        assertNotNull(document);
-        assertEquals("GT_3.QXP", document.getFileName());
-    }
-}
-```
-
-### `src/test/java/com/socgen/sgs/api/quark/engine/mapper/TaskMapperTest.java`
-
-SHA-256: `5a861b10588299a9c9de532d8c74027d3a3ba9edc726b4d3a35d9c1ac3c60375`
-
-```java
-package com.socgen.sgs.api.quark.engine.mapper;
-
-import com.socgen.sgs.api.quark.engine.domain.Run;
-import com.socgen.sgs.api.quark.engine.domain.dynamic.report.DBreakRules;
-import com.socgen.sgs.api.quark.engine.domain.dynamic.report.DMasterPage;
-import com.socgen.sgs.api.quark.engine.domain.task.*;
-import com.socgen.sgs.api.quark.engine.enums.DataTypeEnum;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-
-import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-
-@DisplayName("TaskMapper Tests")
-class TaskMapperTest {
-
-    private TaskMapper mapper;
+    private GetInParamsDao dao;
     private Run run;
 
     @BeforeEach
     void setUp() {
-        mapper = new TaskMapper(mock(com.socgen.sgs.api.quark.engine.domain.port.FilePoolPort.class));
+        dao = new GetInParamsDaoImpl(dataSource, inParamMapper);
+        ReflectionTestUtils.setField(dao, "getInParamsCall", simpleJdbcCall);
+
+        RunProperties props = new RunProperties();
+        props.setIdSuivi(55);
         run = new Run();
-        run.setId(100);
-    }
-
-    // --- SQL task mapping ---
-
-    @Test
-    @DisplayName("Should map SQL task with all fields")
-    void shouldMapSqlTask() {
-        Map<String, Object> row = buildBaseRow(10, 1);
-        row.put("SQL", "SELECT 1 FROM DUAL");
-        row.put("AFFICHER_ZERO", 1);
-        row.put("NB_DECIMAL", 2);
-        row.put("DECIMAL_SIGNIFICATIVE", 1);
-        row.put("STORE_DATA", 0);
-        row.put("OUTPUT_DATA_TYPE", 1);
-
-        TaskBase result = mapper.mapToTask(row, run);
-
-        assertNotNull(result);
-        assertInstanceOf(TaskSql.class, result);
-        TaskSql task = (TaskSql) result;
-        assertEquals(10, task.getId());
-        assertEquals("SELECT 1 FROM DUAL", task.getSql());
-        assertTrue(task.isShowZero());
-        assertEquals(2, task.getNbDecimal());
-        assertTrue(task.isDecimalSignificative());
-        assertFalse(task.isStoreData());
-        assertEquals(DataTypeEnum.TEXT, task.getDataType());
+        run.setId(1);
+        run.setRunProperties(props);
     }
 
     @Test
-    @DisplayName("Should preserve .NET unset sentinel when NB_DECIMAL is NULL")
-    void shouldMapNullNbDecimalToUnsetSentinel() {
-        Map<String, Object> row = buildBaseRow(12, 1);
-        row.put("SQL", "SELECT 1 FROM DUAL");
-        row.put("AFFICHER_ZERO", 1);
-        row.put("NB_DECIMAL", null);
-        row.put("DECIMAL_SIGNIFICATIVE", 0);
-        row.put("STORE_DATA", 0);
-        row.put("OUTPUT_DATA_TYPE", 3);
+    @DisplayName("Should populate run inParams from cursor results")
+    void shouldPopulateInParams() {
+        InParam param1 = new InParam("P1", 1, "val1");
+        InParam param2 = new InParam("P2", 2, "100");
 
-        TaskSql task = (TaskSql) mapper.mapToTask(row, run);
+        Map<String, Object> result = new HashMap<>();
+        result.put("result_cursor", List.of(param1, param2));
+        when(simpleJdbcCall.execute(any(SqlParameterSource.class))).thenReturn(result);
 
-        assertEquals(Integer.MIN_VALUE, task.getNbDecimal());
+        dao.getInParams(run);
+
+        assertEquals(2, run.getInParams().size());
+        assertSame(param1, run.getInParams().get("P1"));
+        assertSame(param2, run.getInParams().get("P2"));
     }
 
     @Test
-    @DisplayName("Should map SQL task with unknown data type gracefully")
-    void shouldHandleUnknownDataTypeInSqlTask() {
-        Map<String, Object> row = buildBaseRow(11, 1);
-        row.put("SQL", "");
-        row.put("AFFICHER_ZERO", 0);
-        row.put("NB_DECIMAL", 0);
-        row.put("DECIMAL_SIGNIFICATIVE", 0);
-        row.put("STORE_DATA", 0);
-        row.put("OUTPUT_DATA_TYPE", 999);
+    @DisplayName("Should clear existing inParams before loading")
+    void shouldClearExistingInParams() {
+        run.getInParams().put("OLD", new InParam("OLD", 1, "old"));
 
-        TaskBase result = mapper.mapToTask(row, run);
+        Map<String, Object> result = new HashMap<>();
+        result.put("result_cursor", List.of(new InParam("NEW", 1, "new")));
+        when(simpleJdbcCall.execute(any(SqlParameterSource.class))).thenReturn(result);
 
-        assertNotNull(result);
-        assertInstanceOf(TaskSql.class, result);
-        // fromCode(999) returns UNSPECIFIED — no exception thrown
-        assertEquals(DataTypeEnum.UNSPECIFIED, ((TaskSql) result).getDataType());
-    }
+        dao.getInParams(run);
 
-    // --- DOC_EOS task mapping ---
-
-    @Test
-    @DisplayName("Should map DOC_EOS task with all fields")
-    void shouldMapDocEosTask() {
-        Map<String, Object> row = buildBaseRow(20, 2);
-        row.put("FORMAT", "PDF");
-        row.put("ROTATION_IMAGE", 1);
-        row.put("ID_SOUS_CATEGORIE", 5);
-        row.put("CROP_IMAGE_VALUES", "10,20,30,40");
-        row.put("CONSERVER_STYLE", 0);
-        row.put("BLOC_SOURCE", "src_bloc");
-        row.put("BLOC_DESTINATION", "dest_bloc");
-        row.put("POSITION_IMAGE", "0,0,100,100");
-
-        TaskBase result = mapper.mapToTask(row, run);
-
-        assertNotNull(result);
-        assertInstanceOf(TaskDocument.class, result);
-        TaskDocument task = (TaskDocument) result;
-        assertEquals(20, task.getId());
-        assertEquals("PDF", task.getFormatDocument());
-        assertTrue(task.isRotationImage());
-        assertEquals(5, task.getIdSousCategorie());
-        assertEquals("10,20,30,40", task.getOffsetValues());
-        assertFalse(task.isConserverStyle());
-        assertEquals("src_bloc", task.getSourceBlocName());
-        assertEquals("dest_bloc", task.getDestinationBlocName());
-        assertEquals("0,0,100,100", task.getPositionValues());
-    }
-
-    // --- DOC_QXP task mapping ---
-
-    @Test
-    @DisplayName("Should map DOC_QXP task with all fields")
-    void shouldMapDocQxpTask() {
-        Map<String, Object> row = buildBaseRow(30, 3);
-        row.put("CONSERVER_STYLE", 1);
-        row.put("PREVIOUS_TYPE_RAPPORT", "PREV_TYPE");
-        row.put("BLOC_SOURCE", "qxp_src");
-        row.put("BLOC_DESTINATION", "qxp_dest");
-
-        TaskBase result = mapper.mapToTask(row, run);
-
-        assertNotNull(result);
-        assertInstanceOf(TaskQxpPrevious.class, result);
-        TaskQxpPrevious task = (TaskQxpPrevious) result;
-        assertEquals(30, task.getId());
-        assertTrue(task.isConserverStyle());
-        assertEquals("PREV_TYPE", task.getPreviousTypeRapport());
-        assertEquals("qxp_src", task.getSourceBlocName());
-        assertEquals("qxp_dest", task.getDestinationBlocName());
-    }
-
-    // --- SQL_DYNAMIQUE task mapping ---
-
-    @Test
-    @DisplayName("Should map SQL_DYNAMIQUE task with all fields including rules and master page")
-    void shouldMapDynamiqueTaskWithRules() {
-        Map<String, Object> row = buildBaseRow(40, 4);
-        row.put("SQL", "SELECT * FROM TABLE");
-        row.put("BLOC_DESTINATION", "dyn_dest");
-        row.put("CONTROL_OVERFLOW", 1);
-        row.put("NEW_PAGE_TABLE", 1);
-        row.put("NB_COLUMN", 3);
-        row.put("COLUMN_SPACE", new BigDecimal("2.5"));
-        row.put("CODE_MASTER_PAGE", "5|6");
-        row.put("PAGE_BREAK_RULES", "1:2|3:4");
-        row.put("COLUMN_BREAK_RULES", "5:6");
-        row.put("STORE_DATA", 1);
-
-        TaskBase result = mapper.mapToTask(row, run);
-
-        assertNotNull(result);
-        assertInstanceOf(TaskDynamique.class, result);
-        TaskDynamique task = (TaskDynamique) result;
-        assertEquals(40, task.getId());
-        assertEquals("SELECT * FROM TABLE", task.getSql());
-        assertEquals("dyn_dest", task.getDestinationBlocName());
-        assertTrue(task.isControlOverflow());
-        assertTrue(task.isNewPageTable());
-        assertEquals(3, task.getNbColumn());
-        assertEquals(new BigDecimal("2.5"), task.getColumnSpace());
-        assertNotSame(DMasterPage.DEFAULT, task.getMasterPage());
-        assertNotSame(DBreakRules.DEFAULT, task.getPageBreakRules());
-        assertNotSame(DBreakRules.DEFAULT, task.getColumnBreakRules());
-        assertTrue(task.isStoreData());
+        assertFalse(run.getInParams().containsKey("OLD"));
+        assertTrue(run.getInParams().containsKey("NEW"));
     }
 
     @Test
-    @DisplayName("Should map SQL_DYNAMIQUE task with defaults when optional fields are null")
-    void shouldMapDynamiqueTaskWithDefaults() {
-        Map<String, Object> row = buildBaseRow(41, 4);
-        row.put("SQL", "SELECT 1");
-        row.put("BLOC_DESTINATION", "dest");
-        row.put("CONTROL_OVERFLOW", 0);
-        row.put("NEW_PAGE_TABLE", 0);
-        row.put("NB_COLUMN", 1);
-        row.put("STORE_DATA", 0);
-        // CODE_MASTER_PAGE, PAGE_BREAK_RULES, COLUMN_BREAK_RULES, COLUMN_SPACE not set
+    @DisplayName("Should leave inParams empty when cursor returns null")
+    void shouldLeaveEmptyWhenCursorNull() {
+        Map<String, Object> result = new HashMap<>();
+        result.put("result_cursor", null);
+        when(simpleJdbcCall.execute(any(SqlParameterSource.class))).thenReturn(result);
 
-        TaskBase result = mapper.mapToTask(row, run);
+        dao.getInParams(run);
 
-        assertNotNull(result);
-        TaskDynamique task = (TaskDynamique) result;
-        assertSame(DMasterPage.DEFAULT, task.getMasterPage());
-        assertSame(DBreakRules.DEFAULT, task.getPageBreakRules());
-        assertSame(DBreakRules.DEFAULT, task.getColumnBreakRules());
+        assertTrue(run.getInParams().isEmpty());
     }
 
     @Test
-    @DisplayName("Should map SQL_DYNAMIQUE task with Number column space (not BigDecimal)")
-    void shouldMapDynamiqueTaskWithNumberColumnSpace() {
-        Map<String, Object> row = buildBaseRow(42, 4);
-        row.put("SQL", "SELECT 1");
-        row.put("BLOC_DESTINATION", "dest");
-        row.put("CONTROL_OVERFLOW", 0);
-        row.put("NEW_PAGE_TABLE", 0);
-        row.put("NB_COLUMN", 1);
-        row.put("STORE_DATA", 0);
-        row.put("COLUMN_SPACE", 3.0);
+    @DisplayName("Should leave inParams empty when cursor returns empty list")
+    void shouldLeaveEmptyWhenCursorEmpty() {
+        Map<String, Object> result = new HashMap<>();
+        result.put("result_cursor", List.of());
+        when(simpleJdbcCall.execute(any(SqlParameterSource.class))).thenReturn(result);
 
-        TaskBase result = mapper.mapToTask(row, run);
+        dao.getInParams(run);
 
-        assertNotNull(result);
-        TaskDynamique task = (TaskDynamique) result;
-        assertEquals(0, BigDecimal.valueOf(3.0).compareTo(task.getColumnSpace()));
-    }
-
-    // --- COMPARTIMENTS task mapping ---
-
-    @Test
-    @DisplayName("Should map COMPARTIMENTS task with master page")
-    void shouldMapCompartimentTask() {
-        Map<String, Object> row = buildBaseRow(50, 5);
-        row.put("BLOC_DESTINATION", "comp_dest");
-        row.put("ID_GABARIT_FILS", 77);
-        row.put("CODE_MASTER_PAGE", "9");
-
-        TaskBase result = mapper.mapToTask(row, run);
-
-        assertNotNull(result);
-        assertInstanceOf(TaskCompartiment.class, result);
-        TaskCompartiment task = (TaskCompartiment) result;
-        assertEquals(50, task.getId());
-        assertEquals("comp_dest", task.getDestinationBlocName());
-        assertEquals(77, task.getIdGabaritFils());
-        assertNotSame(DMasterPage.DEFAULT, task.getMasterPage());
+        assertTrue(run.getInParams().isEmpty());
     }
 
     @Test
-    @DisplayName("Should map COMPARTIMENTS task with default master page when null")
-    void shouldMapCompartimentTaskWithDefaultMasterPage() {
-        Map<String, Object> row = buildBaseRow(51, 5);
-        row.put("BLOC_DESTINATION", "comp_dest");
-        row.put("ID_GABARIT_FILS", 88);
+    @DisplayName("Duplicate parameter name fails without replacing the first cursor row")
+    void duplicateParameterNameFails() {
+        InParam before = new InParam("BEFORE", 1, "before");
+        InParam first = new InParam("P", 1, "first");
+        InParam second = new InParam("P", 1, "second");
+        InParam after = new InParam("AFTER", 1, "after");
+        Map<String, Object> result = new HashMap<>();
+        result.put("result_cursor", List.of(before, first, second, after));
+        when(simpleJdbcCall.execute(any(SqlParameterSource.class))).thenReturn(result);
 
-        TaskBase result = mapper.mapToTask(row, run);
+        RuntimeException failure = assertThrows(RuntimeException.class, () -> dao.getInParams(run));
 
-        assertNotNull(result);
-        TaskCompartiment task = (TaskCompartiment) result;
-        assertSame(DMasterPage.DEFAULT, task.getMasterPage());
-    }
-
-    // --- Unknown/SYSTEM task type ---
-
-    @Test
-    @DisplayName("Should return null for unknown task type (SYSTEM = 0)")
-    void shouldReturnNullForUnknownTaskType() {
-        Map<String, Object> row = buildBaseRow(99, 0);
-
-        TaskBase result = mapper.mapToTask(row, run);
-
-        assertNull(result);
+        assertSame(first, run.getInParams().get("P"));
+        assertFalse(run.getInParams().containsKey("AFTER"));
+        assertInstanceOf(IllegalStateException.class, failure.getCause());
     }
 
     @Test
-    @DisplayName("Should return null for unmapped task type code")
-    void shouldReturnNullForUnmappedCode() {
-        Map<String, Object> row = buildBaseRow(99, 999);
+    @DisplayName("Duplicate empty parameter name fails without replacing the first cursor row")
+    void duplicateEmptyParameterNameFails() {
+        InParam first = new InParam("", 1, "first");
+        InParam second = new InParam("", 1, "second");
+        Map<String, Object> result = new HashMap<>();
+        result.put("result_cursor", List.of(first, second));
+        when(simpleJdbcCall.execute(any(SqlParameterSource.class))).thenReturn(result);
 
-        TaskBase result = mapper.mapToTask(row, run);
+        RuntimeException failure = assertThrows(RuntimeException.class, () -> dao.getInParams(run));
 
-        assertNull(result);
-    }
-
-    // --- Common fields mapping ---
-
-    @Test
-    @DisplayName("Should map common fields (CHAMPS_VIDE, TODO, COMMENTAIRE)")
-    void shouldMapCommonFields() {
-        Map<String, Object> row = buildBaseRow(10, 1);
-        row.put("SQL", "SELECT 1");
-        row.put("AFFICHER_ZERO", 0);
-        row.put("NB_DECIMAL", 0);
-        row.put("DECIMAL_SIGNIFICATIVE", 0);
-        row.put("STORE_DATA", 0);
-        row.put("OUTPUT_DATA_TYPE", 0);
-        row.put("CHAMPS_VIDE", "N/A");
-        row.put("TODO", 1);
-        row.put("COMMENTAIRE", "test comment");
-
-        TaskBase result = mapper.mapToTask(row, run);
-
-        assertNotNull(result);
-        assertEquals("N/A", result.getNullString());
-        assertTrue(result.isTodo());
-        assertEquals("test comment", result.getCommentaire());
+        assertSame(first, run.getInParams().get(""));
+        assertInstanceOf(IllegalStateException.class, failure.getCause());
     }
 
     @Test
-    @DisplayName("Should keep default nullString when CHAMPS_VIDE is blank or null")
-    void shouldKeepDefaultNullStringWhenBlank() {
-        Map<String, Object> row = buildBaseRow(10, 1);
-        row.put("SQL", "");
-        row.put("AFFICHER_ZERO", 0);
-        row.put("NB_DECIMAL", 0);
-        row.put("DECIMAL_SIGNIFICATIVE", 0);
-        row.put("STORE_DATA", 0);
-        row.put("OUTPUT_DATA_TYPE", 0);
-        row.put("CHAMPS_VIDE", "   ");
-        row.put("TODO", 0);
+    @DisplayName("Should throw RuntimeException when DAO call fails")
+    void shouldThrowRuntimeExceptionOnFailure() {
+        when(simpleJdbcCall.execute(any(SqlParameterSource.class)))
+                .thenThrow(new RuntimeException("db error"));
 
-        TaskBase result = mapper.mapToTask(row, run);
-
-        assertNotNull(result);
-        assertEquals(" ", result.getNullString());
-    }
-
-    // --- Utility method edge cases ---
-
-    @Test
-    @DisplayName("Should handle Boolean type in getBoolean")
-    void shouldHandleBooleanType() {
-        Map<String, Object> row = buildBaseRow(10, 1);
-        row.put("SQL", "");
-        row.put("AFFICHER_ZERO", Boolean.TRUE);
-        row.put("NB_DECIMAL", 0);
-        row.put("DECIMAL_SIGNIFICATIVE", 0);
-        row.put("STORE_DATA", 0);
-        row.put("OUTPUT_DATA_TYPE", 0);
-        row.put("TODO", 0);
-
-        TaskBase result = mapper.mapToTask(row, run);
-
-        assertNotNull(result);
-        assertTrue(((TaskSql) result).isShowZero());
-    }
-
-    @Test
-    @DisplayName("Should return false for non-number non-boolean in getBoolean")
-    void shouldReturnFalseForStringInBooleanField() {
-        Map<String, Object> row = buildBaseRow(10, 1);
-        row.put("SQL", "");
-        row.put("AFFICHER_ZERO", "not_a_number");
-        row.put("NB_DECIMAL", 0);
-        row.put("DECIMAL_SIGNIFICATIVE", 0);
-        row.put("STORE_DATA", 0);
-        row.put("OUTPUT_DATA_TYPE", 0);
-        row.put("TODO", 0);
-
-        TaskBase result = mapper.mapToTask(row, run);
-
-        assertNotNull(result);
-        assertFalse(((TaskSql) result).isShowZero());
-    }
-
-    @Test
-    @DisplayName("Should return 0 for non-number in getInt")
-    void shouldReturnZeroForNonNumberInGetInt() {
-        Map<String, Object> row = new HashMap<>();
-        row.put("ID_TACHE", "not_a_number");
-        row.put("ID_TYPE_TACHE", 1);
-        row.put("SQL", "");
-        row.put("AFFICHER_ZERO", 0);
-        row.put("NB_DECIMAL", 0);
-        row.put("DECIMAL_SIGNIFICATIVE", 0);
-        row.put("STORE_DATA", 0);
-        row.put("OUTPUT_DATA_TYPE", 0);
-        row.put("TODO", 0);
-
-        TaskBase result = mapper.mapToTask(row, run);
-
-        assertNotNull(result);
-        assertEquals(0, result.getId());
-    }
-
-    @Test
-    @DisplayName("Should return null string for null value in getString")
-    void shouldReturnNullForNullStringField() {
-        Map<String, Object> row = buildBaseRow(10, 1);
-        row.put("SQL", null);
-        row.put("AFFICHER_ZERO", 0);
-        row.put("NB_DECIMAL", 0);
-        row.put("DECIMAL_SIGNIFICATIVE", 0);
-        row.put("STORE_DATA", 0);
-        row.put("OUTPUT_DATA_TYPE", 0);
-        row.put("TODO", 0);
-
-        TaskBase result = mapper.mapToTask(row, run);
-
-        assertNotNull(result);
-        assertNull(((TaskSql) result).getSql());
-    }
-
-    // --- Helper ---
-
-    private Map<String, Object> buildBaseRow(int idTache, int idTypeTache) {
-        Map<String, Object> row = new HashMap<>();
-        row.put("ID_TACHE", idTache);
-        row.put("ID_TYPE_TACHE", idTypeTache);
-        row.put("CHAMPS_VIDE", null);
-        row.put("TODO", 0);
-        row.put("COMMENTAIRE", null);
-        return row;
+        assertThrows(RuntimeException.class, () -> dao.getInParams(run));
     }
 }
-```
+````
 
-### `src/test/java/com/socgen/sgs/api/quark/engine/domain/helper/DataTypeHelperTest.java`
+### `src/test/java/com/socgen/sgs/api/quark/engine/domain/collection/AddOnlyLinkedHashMapTest.java`
 
-SHA-256: `601c1b72a2e66288ab2a729bb53645f217f78e2999e3c32722055ceb5250f78e`
+SHA-256: `9f5b0cdefa3ce8e6fb06b31abe53f79250d5b7c4d34059ec1a3f73706da24249`
 
-```java
-package com.socgen.sgs.api.quark.engine.domain.helper;
+````java
+package com.socgen.sgs.api.quark.engine.domain.collection;
 
-import com.socgen.sgs.api.quark.engine.enums.DataTypeEnum;
-import org.junit.jupiter.api.DisplayName;
+import com.socgen.sgs.api.quark.engine.domain.Run;
+import com.socgen.sgs.api.quark.engine.domain.bloc.BlocBox;
+import com.socgen.sgs.api.quark.engine.domain.modifier.ModifierBox;
+import com.socgen.sgs.api.quark.engine.domain.modifier.ModifierGroup;
+import com.socgen.sgs.api.quark.engine.domain.modifier.ModifierSpread;
+import com.socgen.sgs.api.quark.engine.domain.modifier.QxpsModifier;
+import com.socgen.sgs.api.quark.engine.domain.task.TaskSql;
 import org.junit.jupiter.api.Test;
 
-import java.text.DecimalFormatSymbols;
-import java.util.Locale;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@DisplayName("DataTypeHelper formatting Tests")
-class DataTypeHelperTest {
-
-    // Use the JVM's actual fr-FR symbols so assertions survive CLDR grouping-char changes
-    // (the grouping separator may be NBSP U+00A0 or NNBSP U+202F depending on the JDK/CLDR).
-    private static final DecimalFormatSymbols FR = new DecimalFormatSymbols(Locale.FRANCE);
-    private static final char GRP = FR.getGroupingSeparator();
-    private static final char DEC = FR.getDecimalSeparator();
-    private static final String CUR = FR.getCurrencySymbol();
+class AddOnlyLinkedHashMapTest {
 
     @Test
-    @DisplayName("#12 INT output is grouped (thousands separators)")
-    void intIsGrouped() {
-        assertEquals("1" + GRP + "234" + GRP + "567",
-                DataTypeHelper.outputToString("1234567", DataTypeEnum.INT, 0, true, "-", false));
+    void acceptsUniqueEmptyAndWhitespaceKeysInInsertionOrder() {
+        Map<String, Integer> values = new AddOnlyLinkedHashMap<>();
+        values.put("", 1);
+        values.put(" ", 2);
+        values.put("A", 3);
+
+        assertEquals(java.util.List.of("", " ", "A"),
+                new java.util.ArrayList<>(values.keySet()));
     }
 
     @Test
-    @DisplayName("INT zero with showZero=false returns nullString")
-    void intZeroNotShown() {
-        assertEquals("N/A", DataTypeHelper.outputToString("0", DataTypeEnum.INT, 0, false, "N/A", false));
+    void rejectsNullAndDuplicateKeysWithoutReplacingTheFirstValue() {
+        Map<String, Integer> values = new AddOnlyLinkedHashMap<>();
+        values.put("A", 1);
+
+        assertThrows(IllegalArgumentException.class, () -> values.put(null, 2));
+        assertThrows(IllegalStateException.class, () -> values.put("A", 2));
+        assertEquals(1, values.get("A"));
     }
 
     @Test
-    @DisplayName("#13 decimalSignificative=true keeps fixed trailing zeros")
-    void decimalSignificativeKeepsZeros() {
-        assertEquals("12" + DEC + "50",
-                DataTypeHelper.outputToString("12.5", DataTypeEnum.DECIMAL, 2, true, "-", true));
+    void clearAllowsAKeyToBeAddedInANewProcessingPass() {
+        Map<String, Integer> values = new AddOnlyLinkedHashMap<>();
+        values.put("A", 1);
+        values.clear();
+        values.put("A", 2);
+
+        assertEquals(2, values.get("A"));
     }
 
     @Test
-    @DisplayName("#13 decimalSignificative=false suppresses trailing zeros")
-    void decimalNotSignificativeSuppressesZeros() {
-        assertEquals("12" + DEC + "5",
-                DataTypeHelper.outputToString("12.50", DataTypeEnum.DECIMAL, 2, true, "-", false));
-        assertEquals("12",
-                DataTypeHelper.outputToString("12", DataTypeEnum.DECIMAL, 2, true, "-", false));
-    }
+    void taskAndModifierOwnedCollectionsUseAddOnlySemantics() {
+        TaskSql task = new TaskSql(10, new Run());
+        BlocBox first = new BlocBox(task, "B", "first");
+        BlocBox second = new BlocBox(task, "B", "second");
+        task.getBlocsUpdate().put("B", first);
+        ModifierSpread spread = new ModifierSpread();
+        spread.getBoxes().put("B", new ModifierBox());
+        spread.getBoxesExtra().put("B", new ModifierBox());
+        spread.getGroups().put("G", new ModifierGroup());
 
-    @Test
-    @DisplayName("Decimal rounding is HALF_UP (away from zero)")
-    void decimalRoundsHalfUp() {
-        assertEquals("2" + DEC + "35",
-                DataTypeHelper.outputToString("2.345", DataTypeEnum.DECIMAL, 2, true, "-", true));
-    }
-
-    @Test
-    @DisplayName("#14 CURRENCY appends the currency symbol, no ×100")
-    void currencyAppendsSymbol() {
-        assertEquals("1" + GRP + "234" + DEC + "50 " + CUR,
-                DataTypeHelper.outputToString("1234.5", DataTypeEnum.CURRENCY, 2, true, "-", true));
-    }
-
-    @Test
-    @DisplayName("#14 POURCENTAGE appends single ' %' and does NOT multiply by 100 (data is scaled)")
-    void percentScaledSinglePercent() {
-        // 15 means 15% — must render "15,00 %", NOT "1 500,00 % %"
-        assertEquals("15" + DEC + "00 %",
-                DataTypeHelper.outputToString("15", DataTypeEnum.POURCENTAGE, 2, true, "-", true));
-        // significative=false suppresses the trailing zeros
-        assertEquals("15 %",
-                DataTypeHelper.outputToString("15", DataTypeEnum.POURCENTAGE, 2, true, "-", false));
-    }
-
-    @Test
-    @DisplayName("CURRENCY/POURCENTAGE zero with showZero=false returns nullString (no suffix)")
-    void zeroNotShownHasNoSuffix() {
-        assertEquals("-", DataTypeHelper.outputToString("0", DataTypeEnum.CURRENCY, 2, false, "-", true));
-        assertEquals("-", DataTypeHelper.outputToString("0", DataTypeEnum.POURCENTAGE, 2, false, "-", true));
-    }
-
-    @Test
-    @DisplayName("NULL NB_DECIMAL sentinel uses fixed two-digit .NET default formats")
-    void unsetNbDecimalUsesDefaultPrecision() {
-        int unset = Integer.MIN_VALUE;
-        assertEquals("1" + GRP + "234" + DEC + "50",
-                DataTypeHelper.outputToString("1234.5", DataTypeEnum.DECIMAL, unset, true, "-", false));
-        assertEquals("1" + GRP + "234" + DEC + "50 " + CUR,
-                DataTypeHelper.outputToString("1234.5", DataTypeEnum.CURRENCY, unset, true, "-", false));
-        assertEquals("15" + DEC + "00 %",
-                DataTypeHelper.outputToString("15", DataTypeEnum.POURCENTAGE, unset, true, "-", false));
-    }
-
-    @Test
-    @DisplayName("NB_DECIMAL outside .NET supported range also uses default precision")
-    void invalidNbDecimalUsesDefaultPrecision() {
-        assertEquals("12" + DEC + "35",
-                DataTypeHelper.outputToString("12.345", DataTypeEnum.DECIMAL, 11, true, "-", true));
+        assertThrows(IllegalStateException.class,
+                () -> task.getBlocsUpdate().put("B", second));
+        assertThrows(IllegalStateException.class,
+                () -> spread.getBoxes().put("B", new ModifierBox()));
+        assertThrows(IllegalStateException.class,
+                () -> spread.getBoxesExtra().put("B", new ModifierBox()));
+        assertThrows(IllegalStateException.class,
+                () -> spread.getGroups().put("G", new ModifierGroup()));
+        assertThrows(NullPointerException.class, () -> new QxpsModifier().add(null));
     }
 }
-```
+````
 
-### `src/test/java/com/socgen/sgs/api/quark/engine/service/impl/ProcessTasksServiceImplPrepareTest.java`
+### `src/test/java/com/socgen/sgs/api/quark/engine/domain/exception/EngineExceptionTest.java`
 
-SHA-256: `452a5a9f7258edb2e5f5dca47083d4471434fcd9e61b7660e52b7686f5bd8bbc`
+SHA-256: `73c04d6abe42b4f868acaf5ffce24a540994f38ad63003fd74643ca231800d05`
 
-```java
-package com.socgen.sgs.api.quark.engine.service.impl;
+````java
+package com.socgen.sgs.api.quark.engine.domain.exception;
 
-import com.socgen.sgs.api.quark.engine.domain.Run;
 import com.socgen.sgs.api.quark.engine.domain.RunError;
-import com.socgen.sgs.api.quark.engine.domain.port.FilePoolPort;
-import com.socgen.sgs.api.quark.engine.domain.task.TaskDynamique;
-import com.socgen.sgs.api.quark.engine.domain.task.TaskSql;
-import com.socgen.sgs.api.quark.engine.service.task.TaskPostProcessService;
-import com.socgen.sgs.api.quark.engine.service.task.TaskProcessService;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@DisplayName("ProcessTasksServiceImpl Prepare parity tests")
-class ProcessTasksServiceImplPrepareTest {
+class EngineExceptionTest {
 
     @Test
-    @DisplayName("Missing gabarit template fails only its dynamic task and Prepare continues")
-    void missingGabaritTemplateIsPerTaskCritiqueError() {
-        ProcessTasksServiceImpl service = new ProcessTasksServiceImpl(
-                mock(TaskProcessService.class), mock(TaskPostProcessService.class));
-        Run run = new Run();
-        run.setId(100);
-        TaskDynamique dynamicTask = new TaskDynamique(40, run);
-        dynamicTask.setTodo(true);
-        dynamicTask.setFilePoolService(mock(FilePoolPort.class));
-        TaskSql followingTask = new TaskSql(50, run);
-        run.getTasks().put(40, dynamicTask);
-        run.getTasks().put(50, followingTask);
+    void preservesSeverityAndControlledOuterToInnerMessages() {
+        EngineException inner = new EngineException(RunError.UNSPECIFIED, "safe inner");
+        EngineException outer = new EngineException(RunError.CRITIQUE, "safe outer", inner);
 
-        assertDoesNotThrow(() -> service.prepareTasks(run));
+        assertEquals(RunError.CRITIQUE, outer.getCategory());
+        assertEquals(System.lineSeparator()
+                        + "==> safe outer" + System.lineSeparator()
+                        + "==> safe inner" + System.lineSeparator(),
+                outer.getSafeMessageChain());
+    }
 
-        assertTrue(dynamicTask.isInError());
-        assertFalse(followingTask.isInError());
-        assertEquals(1, run.getErrors().size());
-        assertEquals(RunError.CRITIQUE, run.getErrors().get(0).getCategory());
-        assertTrue(run.getErrors().get(0).getMessage().contains("40"));
+    @Test
+    void excludesRawMessageFromUntypedCause() {
+        EngineException failure = new EngineException(
+                RunError.BLOQUANTE,
+                "safe database context",
+                new RuntimeException("select secret_value from hidden_table"));
+
+        assertFalse(failure.getSafeMessageChain().contains("secret_value"));
+        assertEquals(System.lineSeparator()
+                        + "==> safe database context" + System.lineSeparator(),
+                failure.getSafeMessageChain());
+    }
+
+    @Test
+    void rejectsUnsupportedSeverityAndMissingSafeMessage() {
+        assertThrows(IllegalArgumentException.class,
+                () -> new EngineException(0, "message"));
+        assertThrows(IllegalArgumentException.class,
+                () -> new EngineException(RunError.CRITIQUE, ""));
     }
 }
-```
+````
 
-### `src/test/java/com/socgen/sgs/api/quark/engine/service/impl/ProcessRunServiceImplTest.java`
-
-SHA-256: `1c3fda560d3258d1448fb7de4ca5b1b4f68f3070b092e1132ff865eb8a9f047c`
-
-```java
-package com.socgen.sgs.api.quark.engine.service.impl;
-
-import com.socgen.sgs.api.quark.engine.business.GetGabaritBusiness;
-import com.socgen.sgs.api.quark.engine.business.GetInParamsBusiness;
-import com.socgen.sgs.api.quark.engine.business.GetRunPropertiesBusiness;
-import com.socgen.sgs.api.quark.engine.business.RunStartUpdateBusiness;
-import com.socgen.sgs.api.quark.engine.domain.Run;
-import com.socgen.sgs.api.quark.engine.domain.DocumentDomain;
-import com.socgen.sgs.api.quark.engine.domain.RunError;
-import com.socgen.sgs.api.quark.engine.domain.RunProperties;
-import com.socgen.sgs.api.quark.engine.domain.RunStatus;
-import com.socgen.sgs.api.quark.engine.dto.RunIdDto;
-import com.socgen.sgs.api.quark.engine.enums.GabaritSourceEnum;
-import com.socgen.sgs.api.quark.engine.service.LoadTasksService;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.util.ReflectionTestUtils;
-
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
-
-@ExtendWith(MockitoExtension.class)
-@DisplayName("ProcessRunServiceImpl Tests")
-class ProcessRunServiceImplTest {
-
-    @InjectMocks
-    private ProcessRunServiceImpl processRunService;
-
-    @Mock
-    private RunStartUpdateBusiness runStartUpdateBusiness;
-    @Mock
-    private GetRunPropertiesBusiness getRunPropertiesBusiness;
-    @Mock
-    private GetGabaritBusiness getGabaritBusiness;
-    @Mock
-    private GetInParamsBusiness getInParamsBusiness;
-    @Mock
-    private LoadTasksService loadTasksService;
-    @Mock
-    private com.socgen.sgs.api.quark.engine.domain.port.FilePoolPort filePoolPort;
-    @Mock
-    private com.socgen.sgs.api.quark.engine.domain.port.DocumentIdentityPort documentIdentityPort;
-    @Mock
-    private com.socgen.sgs.api.quark.engine.service.ProcessTasksService processTasksService;
-    // Dependencies added across later batches — required so the orchestrator pipeline does not NPE.
-    @Mock
-    private com.socgen.sgs.api.quark.engine.service.QxpsCallerService qxpsCallerService;
-    @Mock
-    private com.socgen.sgs.api.quark.engine.service.CheckService checkService;
-    @Mock
-    private com.socgen.sgs.api.quark.engine.business.LoadTemplatesBusiness loadTemplatesBusiness;
-    @Mock
-    private com.socgen.sgs.api.quark.engine.business.LoadTaskDocumentsBusiness loadTaskDocumentsBusiness;
-    @Mock
-    private com.socgen.sgs.api.quark.engine.business.EndRunBusiness endRunBusiness;
-    @Mock
-    private com.socgen.sgs.api.quark.engine.business.GetGabaritXmlBusiness getGabaritXmlBusiness;
-
-    private RunProperties runProperties;
-
-    @BeforeEach
-    void setUp() {
-        ReflectionTestUtils.setField(processRunService, "sizeLimitBeforeFailSoft", 209715200L);
-        ReflectionTestUtils.setField(processRunService, "nbBoxMax", 17500);
-        ReflectionTestUtils.setField(processRunService, "averageBoxSize", 3400);
-        runProperties = new RunProperties();
-        runProperties.setGabaritSource(GabaritSourceEnum.GABARIT);
-        runProperties.setIdGabarit(10);
-        // render() returns a result object; stub it (lenient — only the full-pipeline tests reach it)
-        // so buildRunResult does not NPE on a null render result.
-        lenient().when(qxpsCallerService.render(any(), anyBoolean(), anyBoolean(), anyBoolean(), any(), any()))
-                .thenReturn(new com.socgen.sgs.api.quark.engine.dto.QxpsCallerResult());
-    }
-
-    // --- runProcessor ---
-
-    @Test
-    @DisplayName("Should initialise run with correct id, status and startDate then call load")
-    void shouldInitialiseRunAndCallLoad() {
-        when(getRunPropertiesBusiness.execute(any(RunIdDto.class))).thenReturn(runProperties);
-        when(getGabaritBusiness.getAndPrepareGabarit(any(), any())).thenReturn(null);
-
-        processRunService.runProcessor(new RunIdDto(42));
-
-        ArgumentCaptor<Run> runCaptor = ArgumentCaptor.forClass(Run.class);
-        verify(runStartUpdateBusiness).execute(runCaptor.capture());
-        Run captured = runCaptor.getValue();
-
-        assertEquals(42, captured.getId());
-        // The captured Run is the same mutable instance the orchestrator drives to completion; with
-        // all collaborators mocked the pipeline finishes successfully, so its final status is GENERATED.
-        assertEquals(RunStatus.GENERATED, captured.getStatus());
-        assertNotNull(captured.getStartDate());
-    }
-
-    @Test
-    @DisplayName("Structural XML failure renders in degraded mode and finishes Generated")
-    void xmlFailureCompletesThroughDegradedRenderPath() {
-        DocumentDomain gabarit = DocumentDomain.builder()
-                .id(10)
-                .format("QXP")
-                .data(new byte[]{1, 2, 3})
-                .filePoolPath("R_42/G_10.QXP")
-                .build();
-        when(getRunPropertiesBusiness.execute(any(RunIdDto.class))).thenReturn(runProperties);
-        when(getGabaritBusiness.getAndPrepareGabarit(any(), any())).thenReturn(gabarit);
-        when(getGabaritXmlBusiness.fetchXml(gabarit.getFilePoolPath())).thenReturn("");
-
-        Run result = processRunService.runProcessor(new RunIdDto(42));
-
-        assertEquals(RunStatus.GENERATED, result.getStatus());
-        assertTrue(result.getRunProperties().isModeDegrade());
-        assertTrue(result.getErrors().stream().anyMatch(error -> error.getCategory() == RunError.CRITIQUE));
-        verify(getInParamsBusiness, never()).execute(any());
-        verify(loadTasksService, never()).loadTasks(any());
-        verify(processTasksService, never()).prepareTasks(any());
-        verify(qxpsCallerService).render(eq(result), eq(true), eq(false), eq(true), eq("true"), eq("300"));
-        verify(endRunBusiness).execute(result);
-    }
-
-    @Test
-    @DisplayName("Should call runStartUpdateBusiness before load")
-    void shouldCallStartUpdateBeforeLoad() {
-        when(getRunPropertiesBusiness.execute(any(RunIdDto.class))).thenReturn(runProperties);
-        when(getGabaritBusiness.getAndPrepareGabarit(any(), any())).thenReturn(null);
-
-        processRunService.runProcessor(new RunIdDto(1));
-
-        verify(runStartUpdateBusiness, times(1)).execute(any(Run.class));
-        verify(getRunPropertiesBusiness, times(1)).execute(any(RunIdDto.class));
-        verify(loadTasksService, times(1)).loadTasks(any(Run.class));
-    }
-
-    // --- load ---
-
-    @Test
-    @DisplayName("Should set run properties and runId on the run")
-    void shouldSetRunPropertiesAndRunId() {
-        when(getRunPropertiesBusiness.execute(any(RunIdDto.class))).thenReturn(runProperties);
-        when(getGabaritBusiness.getAndPrepareGabarit(any(), any())).thenReturn(null);
-
-        Run run = new Run();
-        run.setId(55);
-        processRunService.load(run);
-
-        assertEquals(55, run.getRunProperties().getRunId());
-        assertSame(runProperties, run.getRunProperties());
-    }
-
-    @Test
-    @DisplayName("Should call all four load steps in order")
-    void shouldCallAllLoadStepsInOrder() {
-        when(getRunPropertiesBusiness.execute(any(RunIdDto.class))).thenReturn(runProperties);
-        when(getGabaritBusiness.getAndPrepareGabarit(any(), any())).thenReturn(null);
-
-        Run run = new Run();
-        run.setId(10);
-        processRunService.load(run);
-
-        var order = inOrder(getRunPropertiesBusiness, getGabaritBusiness, getInParamsBusiness, loadTasksService);
-        order.verify(getRunPropertiesBusiness).execute(any(RunIdDto.class));
-        order.verify(getGabaritBusiness).getAndPrepareGabarit(any(), any());
-        order.verify(getInParamsBusiness).execute(run);
-        order.verify(loadTasksService).loadTasks(run);
-    }
-
-    @Test
-    @DisplayName("Should record ERROR (not propagate) when runStartUpdateBusiness throws")
-    void shouldPropagateExceptionFromStartUpdate() {
-        doThrow(new RuntimeException("start failed")).when(runStartUpdateBusiness).execute(any(Run.class));
-
-        // runProcessor catches top-level failures, marks the run ERROR, and still runs End_Run in the
-        // finally block (parity: .NET Run_Base.Launch try/catch/finally) — it does NOT propagate.
-        Run result = processRunService.runProcessor(new RunIdDto(1));
-
-        assertEquals(RunStatus.ERROR, result.getStatus());
-        verify(getRunPropertiesBusiness, never()).execute(any());
-        verify(endRunBusiness, atLeastOnce()).execute(any(Run.class));
-    }
-
-    @Test
-    @DisplayName("Should propagate exception thrown during load")
-    void shouldPropagateExceptionFromLoad() {
-        when(getRunPropertiesBusiness.execute(any(RunIdDto.class)))
-                .thenThrow(new RuntimeException("properties failed"));
-
-        Run run = new Run();
-        run.setId(1);
-        assertThrows(RuntimeException.class, () -> processRunService.load(run));
-    }
-
-    // --- getRunProperties ---
-
-    @Test
-    @DisplayName("Should return RunProperties from business layer")
-    void shouldReturnRunPropertiesFromBusiness() {
-        RunIdDto dto = new RunIdDto(99);
-        when(getRunPropertiesBusiness.execute(dto)).thenReturn(runProperties);
-
-        RunProperties result = processRunService.getRunProperties(dto);
-
-        assertNotNull(result);
-        assertSame(runProperties, result);
-        verify(getRunPropertiesBusiness, times(1)).execute(dto);
-    }
-
-    // --- fetchActiveRunIds ---
-
-    @Test
-    @DisplayName("Should return empty list for fetchActiveRunIds")
-    void shouldReturnEmptyListForFetchActiveRunIds() {
-        List<Integer> result = processRunService.fetchActiveRunIds();
-
-        assertNotNull(result);
-        assertTrue(result.isEmpty());
-    }
-}
-```
