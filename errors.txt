@@ -6,3 +6,1000 @@ and i hope it does not come under ove
 logback-spring.xml - why do we need this?
 
 why emoji in "assertFalse(rendered.contains("😀"));"?
+
+C:\Users\rgurram062722\bin\idea-IU-26.1\plugins\maven\lib\maven3\bin\mvn.cmd -Didea.version=2026.1 -Dmaven.ext.class.path=C:\Users\rgurram062722\bin\idea-IU-26.1\plugins\maven\lib\intellij.maven.rt\maven-event-listener.jar -Djansi.passthrough=true -Dstyle.color=always -s C:\Users\rgurram062722\.m2\Settings.xml -Dmaven.repo.local=C:\Users\rgurram062722\.m2\repository clean install -f pom.xml
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] --------------< com.socgen.sgs.api:quark-engine-service >---------------
+[INFO] Building quark-batch-job REST API 1.0.0-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.2.0:clean (default-clean) @ quark-engine-service ---
+[INFO] Deleting C:\Users\rgurram062722\Documents\GitHub\engine service repo\quark-engine\target
+[INFO] 
+[INFO] --- build-helper:3.6.1:parse-version (parse-version) @ quark-engine-service ---
+[INFO] 
+[INFO] --- jacoco:0.8.12:prepare-agent (agent-for-ut) @ quark-engine-service ---
+[INFO] argLine set to "-javaagent:C:\\Users\\rgurram062722\\.m2\\repository\\org\\jacoco\\org.jacoco.agent\\0.8.12\\org.jacoco.agent-0.8.12-runtime.jar=destfile=C:\\Users\\rgurram062722\\Documents\\GitHub\\engine service repo\\quark-engine\\target\\jacoco.exec"
+[INFO] 
+[INFO] --- git-commit-id:9.0.2:revision (get-the-git-infos) @ quark-engine-service ---
+[INFO] 
+[INFO] --- jaxb2:0.15.3:generate (default) @ quark-engine-service ---
+[WARNING] No schemas to compile. Skipping XJC execution. 
+[INFO] 
+[INFO] --- build-helper:3.6.1:add-source (add-source) @ quark-engine-service ---
+[INFO] Source directory: C:\Users\rgurram062722\Documents\GitHub\engine service repo\quark-engine\target\generated-sources\xjc added.
+[INFO] Source directory: C:\Users\rgurram062722\Documents\GitHub\engine service repo\quark-engine\target\generated-sources\openapi\src\main\java added.
+[INFO] 
+[INFO] --- axistools:1.4:wsdl2java (generate-qxpsmsdk) @ quark-engine-service ---
+[INFO] about to add compile source root
+[INFO] Processing wsdl: C:\Users\rgurram062722\Documents\GitHub\engine service repo\quark-engine\src\main\resources\wsdl\RequestService.wsdl
+log4j:WARN No appenders could be found for logger (org.apache.axis.i18n.ProjectResourceBundle).
+log4j:WARN Please initialize the log4j system properly.
+[INFO] 
+[INFO] --- spring-boot:3.5.15:build-info (default) @ quark-engine-service ---
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ quark-engine-service ---
+[INFO] Copying 6 resources from src\main\resources to target\classes
+[INFO] skip non existing resourceDirectory C:\Users\rgurram062722\Documents\GitHub\engine service repo\quark-engine\target\generated-sources\xjc
+[INFO] 
+[INFO] --- compiler:3.13.0:compile (default-compile) @ quark-engine-service ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 499 source files with javac [debug deprecation release 21] to target\classes
+[WARNING] /C:/Users/rgurram062722/Documents/GitHub/engine service repo/quark-engine/src/main/java/com/socgen/sgs/api/quark/engine/infra/interop/qxpsm/QxpsmSoapClient.java:[57,65] URL(java.lang.String) in java.net.URL has been deprecated
+[WARNING] /C:/Users/rgurram062722/Documents/GitHub/engine service repo/quark-engine/src/main/java/com/socgen/sgs/api/quark/engine/infra/interop/qxpsm/QxpsmSoapClient.java:[143,65] URL(java.lang.String) in java.net.URL has been deprecated
+[WARNING] /C:/Users/rgurram062722/Documents/GitHub/engine service repo/quark-engine/src/main/java/com/socgen/sgs/api/quark/engine/infra/interop/qxps/request/QxpsRequestBuilder.java:[84,17] fromHttpUrl(java.lang.String) in org.springframework.web.util.UriComponentsBuilder has been deprecated
+[WARNING] /C:/Users/rgurram062722/Documents/GitHub/engine service repo/quark-engine/src/main/java/com/socgen/sgs/api/quark/engine/infra/dao/impl/EndRunDaoImpl.java:[113,20] setPlsqlIndexTable(int,java.lang.Object,int,int,int,int) in oracle.jdbc.OraclePreparedStatement has been deprecated
+[WARNING] /C:/Users/rgurram062722/Documents/GitHub/engine service repo/quark-engine/src/main/java/com/socgen/sgs/api/quark/engine/infra/dao/impl/EndRunDaoImpl.java:[115,20] setPlsqlIndexTable(int,java.lang.Object,int,int,int,int) in oracle.jdbc.OraclePreparedStatement has been deprecated
+[WARNING] /C:/Users/rgurram062722/Documents/GitHub/engine service repo/quark-engine/src/main/java/com/socgen/sgs/api/quark/engine/infra/dao/impl/InsertDataStorageDaoImpl.java:[46,20] setPlsqlIndexTable(int,java.lang.Object,int,int,int,int) in oracle.jdbc.OraclePreparedStatement has been deprecated
+[WARNING] /C:/Users/rgurram062722/Documents/GitHub/engine service repo/quark-engine/src/main/java/com/socgen/sgs/api/quark/engine/infra/dao/impl/InsertDataStorageDaoImpl.java:[47,20] setPlsqlIndexTable(int,java.lang.Object,int,int,int,int) in oracle.jdbc.OraclePreparedStatement has been deprecated
+[WARNING] /C:/Users/rgurram062722/Documents/GitHub/engine service repo/quark-engine/src/main/java/com/socgen/sgs/api/quark/engine/infra/dao/impl/InsertDataStorageDaoImpl.java:[48,20] setPlsqlIndexTable(int,java.lang.Object,int,int,int,int) in oracle.jdbc.OraclePreparedStatement has been deprecated
+[WARNING] /C:/Users/rgurram062722/Documents/GitHub/engine service repo/quark-engine/src/main/java/com/socgen/sgs/api/quark/engine/infra/dao/impl/InsertDataStorageDaoImpl.java:[50,20] setPlsqlIndexTable(int,java.lang.Object,int,int,int,int) in oracle.jdbc.OraclePreparedStatement has been deprecated
+[WARNING] /C:/Users/rgurram062722/Documents/GitHub/engine service repo/quark-engine/src/main/java/com/socgen/sgs/api/quark/engine/integration/soap/generated/RequestServiceLocator.java:[45,24] URL(java.lang.String) in java.net.URL has been deprecated
+[WARNING] /C:/Users/rgurram062722/Documents/GitHub/engine service repo/quark-engine/src/main/java/com/socgen/sgs/api/quark/engine/integration/soap/generated/RequestServiceLocator.java:[76,211] URL(java.lang.String) in java.net.URL has been deprecated
+[WARNING] /C:/Users/rgurram062722/Documents/GitHub/engine service repo/quark-engine/src/main/java/com/socgen/sgs/api/quark/engine/integration/soap/generated/RequestServiceSoap11BindingStub.java:[2592,77] Long(long) in java.lang.Long has been deprecated and marked for removal
+[WARNING] /C:/Users/rgurram062722/Documents/GitHub/engine service repo/quark-engine/src/main/java/com/socgen/sgs/api/quark/engine/integration/soap/generated/RequestServiceSoap11BindingStub.java:[2660,60] Integer(int) in java.lang.Integer has been deprecated and marked for removal
+[WARNING] /C:/Users/rgurram062722/Documents/GitHub/engine service repo/quark-engine/src/main/java/com/socgen/sgs/api/quark/engine/integration/soap/generated/RequestServiceSoap11BindingStub.java:[2680,68] Integer(int) in java.lang.Integer has been deprecated and marked for removal
+[WARNING] /C:/Users/rgurram062722/Documents/GitHub/engine service repo/quark-engine/src/main/java/com/socgen/sgs/api/quark/engine/integration/soap/generated/RequestServiceSoap11BindingStub.java:[2882,85] Integer(int) in java.lang.Integer has been deprecated and marked for removal
+[WARNING] /C:/Users/rgurram062722/Documents/GitHub/engine service repo/quark-engine/src/main/java/com/socgen/sgs/api/quark/engine/integration/soap/generated/RequestServiceSoap11BindingStub.java:[2956,84] Integer(int) in java.lang.Integer has been deprecated and marked for removal
+[INFO] /C:/Users/rgurram062722/Documents/GitHub/engine service repo/quark-engine/src/main/java/com/socgen/sgs/api/quark/engine/integration/soap/generated/RequestServiceLocator.java: Some input files use unchecked or unsafe operations.
+[INFO] /C:/Users/rgurram062722/Documents/GitHub/engine service repo/quark-engine/src/main/java/com/socgen/sgs/api/quark/engine/integration/soap/generated/RequestServiceLocator.java: Recompile with -Xlint:unchecked for details.
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ quark-engine-service ---
+[INFO] Copying 2 resources from src\test\resources to target\test-classes
+[INFO] 
+[INFO] --- compiler:3.13.0:testCompile (default-testCompile) @ quark-engine-service ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 102 source files with javac [debug deprecation release 21] to target\test-classes
+[WARNING] /C:/Users/rgurram062722/Documents/GitHub/engine service repo/quark-engine/src/test/java/com/socgen/sgs/api/quark/engine/infra/api/v1/EngineServiceControllerTest.java:[30,6] org.springframework.boot.test.mock.mockito.MockBean in org.springframework.boot.test.mock.mockito has been deprecated and marked for removal
+[WARNING] /C:/Users/rgurram062722/Documents/GitHub/engine service repo/quark-engine/src/test/java/com/socgen/sgs/api/quark/engine/infra/api/v1/EngineServiceControllerTest.java:[30,6] org.springframework.boot.test.mock.mockito.MockBean in org.springframework.boot.test.mock.mockito has been deprecated and marked for removal
+[WARNING] /C:/Users/rgurram062722/Documents/GitHub/engine service repo/quark-engine/src/test/java/com/socgen/sgs/api/quark/engine/infra/api/v1/EngineServiceControllerTest.java:[30,6] org.springframework.boot.test.mock.mockito.MockBean in org.springframework.boot.test.mock.mockito has been deprecated and marked for removal
+[WARNING] /C:/Users/rgurram062722/Documents/GitHub/engine service repo/quark-engine/src/test/java/com/socgen/sgs/api/quark/engine/infra/api/v1/EngineServiceControllerTest.java:[30,6] org.springframework.boot.test.mock.mockito.MockBean in org.springframework.boot.test.mock.mockito has been deprecated and marked for removal
+[WARNING] /C:/Users/rgurram062722/Documents/GitHub/engine service repo/quark-engine/src/test/java/com/socgen/sgs/api/quark/engine/infra/api/v1/EngineServiceControllerTest.java:[30,6] org.springframework.boot.test.mock.mockito.MockBean in org.springframework.boot.test.mock.mockito has been deprecated and marked for removal
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ quark-engine-service ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running com.socgen.sgs.api.quark.engine.CleanArchitectureLayersTest
+01:32:02.322 [main] INFO com.tngtech.archunit.core.PluginLoader -- Detected Java version 21.0.11
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.911 s -- in com.socgen.sgs.api.quark.engine.CleanArchitectureLayersTest
+[INFO] Running com.socgen.sgs.api.quark.engine.WrongFrameworksTest
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.436 s -- in com.socgen.sgs.api.quark.engine.WrongFrameworksTest
+[INFO] Running com.socgen.sgs.api.quark.engine.business.DocumentStructureBusinessTest
+Mockito is currently self-attaching to enable the inline-mock-maker. This will no longer work in future releases of the JDK. Please add Mockito as an agent to your build as described in Mockito's documentation: https://javadoc.io/doc/org.mockito/mockito-core/latest/org.mockito/org/mockito/Mockito.html#0.3
+WARNING: A Java agent has been loaded dynamically (C:\Users\rgurram062722\.m2\repository\net\bytebuddy\byte-buddy-agent\1.17.8\byte-buddy-agent-1.17.8.jar)
+WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning
+WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information
+WARNING: Dynamic loading of agents will be disallowed by default in a future release
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+Standard Commons Logging discovery in action with spring-jcl: please remove commons-logging.jar from classpath in order to avoid potential conflicts
+01:32:10.977 [main] WARN com.socgen.sgs.api.quark.engine.business.DocumentStructureBusiness -- QXP project unavailable; cached empty structure for run [42], documentId [20], failureType [IllegalStateException]
+01:32:10.994 [main] WARN com.socgen.sgs.api.quark.engine.business.DocumentStructureBusiness -- QXP XML unavailable; cached empty structure for run [42], documentId [10], failureType [IllegalStateException]
+01:32:11.000 [main] WARN com.socgen.sgs.api.quark.engine.business.DocumentStructureBusiness -- QXP XML unavailable; cached empty structure for run [42], documentId [11], failureType [IllegalStateException]
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.294 s -- in com.socgen.sgs.api.quark.engine.business.DocumentStructureBusinessTest
+[INFO] Running com.socgen.sgs.api.quark.engine.business.EndRunBusinessTest
+01:32:11.366 [main] INFO com.socgen.sgs.api.quark.engine.business.EndRunBusiness -- Finalizing run [509199] with status [GENERATED]
+01:32:11.369 [main] INFO com.socgen.sgs.api.quark.engine.business.EndRunBusiness -- Stored QXP document [id=1001, 1 bytes] in QXP_DOCUMENT for run [509199]
+01:32:11.370 [main] INFO com.socgen.sgs.api.quark.engine.business.EndRunBusiness -- Stored PDF document [id=1002, 1 bytes] in QXP_DOCUMENT for run [509199]
+01:32:11.372 [main] INFO com.socgen.sgs.api.quark.engine.business.EndRunBusiness -- Run [509199] finalized successfully
+01:32:11.396 [main] INFO com.socgen.sgs.api.quark.engine.business.EndRunBusiness -- Finalizing run [509199] with status [GENERATED]
+01:32:11.396 [main] INFO com.socgen.sgs.api.quark.engine.business.EndRunBusiness -- Stored QXP document [id=1001, 0 bytes] in QXP_DOCUMENT for run [509199]
+01:32:11.397 [main] INFO com.socgen.sgs.api.quark.engine.business.EndRunBusiness -- No PDF generated for run [509199] � nothing stored in QXP_DOCUMENT
+01:32:11.397 [main] INFO com.socgen.sgs.api.quark.engine.business.EndRunBusiness -- Run [509199] finalized successfully
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.380 s -- in com.socgen.sgs.api.quark.engine.business.EndRunBusinessTest
+[INFO] Running com.socgen.sgs.api.quark.engine.business.GetDocumentProjectBusinessTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.081 s -- in com.socgen.sgs.api.quark.engine.business.GetDocumentProjectBusinessTest
+[INFO] Running com.socgen.sgs.api.quark.engine.business.GetGabaritBusinessTest
+01:32:11.741 [main] INFO com.socgen.sgs.api.quark.engine.business.GetGabaritBusiness -- Fetching source-follow-up template document for idSuiviGabaritSource=400
+01:32:11.741 [main] INFO com.socgen.sgs.api.quark.engine.business.GetGabaritBusiness -- Prepared template document paths; documentId=null, dataBytes=0
+01:32:11.754 [main] INFO com.socgen.sgs.api.quark.engine.business.GetGabaritBusiness -- Fetching certified template document for idSuivi=300
+01:32:11.758 [main] INFO com.socgen.sgs.api.quark.engine.business.GetGabaritBusiness -- Prepared template document paths; documentId=null, dataBytes=0
+01:32:11.763 [main] INFO com.socgen.sgs.api.quark.engine.business.GetGabaritBusiness -- Fetching source-follow-up template document for idSuiviGabaritSource=400
+01:32:11.763 [main] INFO com.socgen.sgs.api.quark.engine.business.GetGabaritBusiness -- Prepared template document paths; documentId=null, dataBytes=0
+01:32:11.766 [main] INFO com.socgen.sgs.api.quark.engine.business.GetGabaritBusiness -- Fetching template metadata for idGabarit=5
+01:32:11.767 [main] INFO com.socgen.sgs.api.quark.engine.business.GetGabaritBusiness -- Prepared template document paths; documentId=null, dataBytes=0
+01:32:11.770 [main] INFO com.socgen.sgs.api.quark.engine.business.GetGabaritBusiness -- Fetching template metadata for idGabarit=5
+01:32:11.770 [main] INFO com.socgen.sgs.api.quark.engine.business.GetGabaritBusiness -- Prepared template document paths; documentId=null, dataBytes=0
+01:32:11.775 [main] INFO com.socgen.sgs.api.quark.engine.business.GetGabaritBusiness -- Fetching current template document for idSuivi=200
+01:32:11.775 [main] INFO com.socgen.sgs.api.quark.engine.business.GetGabaritBusiness -- Prepared template document paths; documentId=null, dataBytes=0
+01:32:11.779 [main] INFO com.socgen.sgs.api.quark.engine.business.GetGabaritBusiness -- Fetching current template document for idSuivi=200
+01:32:11.781 [main] INFO com.socgen.sgs.api.quark.engine.business.GetGabaritBusiness -- Prepared template document paths; documentId=null, dataBytes=0
+01:32:11.785 [main] INFO com.socgen.sgs.api.quark.engine.business.GetGabaritBusiness -- Fetching certified template document for idSuivi=300
+01:32:11.785 [main] INFO com.socgen.sgs.api.quark.engine.business.GetGabaritBusiness -- Prepared template document paths; documentId=null, dataBytes=0
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.283 s -- in com.socgen.sgs.api.quark.engine.business.GetGabaritBusinessTest
+[INFO] Running com.socgen.sgs.api.quark.engine.business.GetInParamsBusinessTest
+01:32:11.850 [main] INFO com.socgen.sgs.api.quark.engine.business.GetInParamsBusiness -- Business layer: loading in-params for runId: 42
+01:32:11.853 [main] INFO com.socgen.sgs.api.quark.engine.business.GetInParamsBusiness -- Business layer: loading in-params for runId: 42
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.062 s -- in com.socgen.sgs.api.quark.engine.business.GetInParamsBusinessTest
+[INFO] Running com.socgen.sgs.api.quark.engine.business.GetRunPropertiesBusinessTest
+01:32:11.917 [main] INFO com.socgen.sgs.api.quark.engine.business.GetRunPropertiesBusiness -- Business layer: fetching run properties for runId: 100
+01:32:11.921 [main] INFO com.socgen.sgs.api.quark.engine.business.GetRunPropertiesBusiness -- Business layer: fetching run properties for runId: 55
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.063 s -- in com.socgen.sgs.api.quark.engine.business.GetRunPropertiesBusinessTest
+[INFO] Running com.socgen.sgs.api.quark.engine.business.LoadTaskDocumentsBusinessTest
+01:32:12.130 [main] ERROR com.socgen.sgs.api.quark.engine.business.LoadTaskDocumentsBusiness -- Document loading failed for run [42], task [15], cause type [ArithmeticException]
+01:32:12.134 [main] WARN com.socgen.sgs.api.quark.engine.business.LoadTaskDocumentsBusiness -- No document found for task [7], subcategory [5]
+01:32:12.134 [main] WARN com.socgen.sgs.api.quark.engine.business.LoadTaskDocumentsBusiness -- No document found for task [8], subcategory [5]
+01:32:12.143 [main] INFO com.socgen.sgs.api.quark.engine.business.LoadTaskDocumentsBusiness -- Loaded 2 PDF page(s) for document 1051059
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.216 s -- in com.socgen.sgs.api.quark.engine.business.LoadTaskDocumentsBusinessTest
+[INFO] Running com.socgen.sgs.api.quark.engine.business.LoadTemplatesBusinessTest
+01:32:12.284 [main] INFO com.socgen.sgs.api.quark.engine.business.LoadTemplatesBusiness -- Loading templates for idGabaritTemplate=3 in run [100]
+01:32:12.284 [main] WARN com.socgen.sgs.api.quark.engine.business.LoadTemplatesBusiness -- No dynamic template document found for id 3 in run 100; dynamic tasks will report their own Prepare errors
+01:32:12.285 [main] INFO com.socgen.sgs.api.quark.engine.business.LoadTemplatesBusiness -- Loaded 1 templates for run [100]
+01:32:12.290 [main] INFO com.socgen.sgs.api.quark.engine.business.LoadTemplatesBusiness -- Loading templates for idGabaritTemplate=3 in run [100]
+01:32:12.290 [main] WARN com.socgen.sgs.api.quark.engine.business.LoadTemplatesBusiness -- No dynamic template document found for id 3 in run 100; dynamic tasks will report their own Prepare errors
+01:32:12.291 [main] ERROR com.socgen.sgs.api.quark.engine.business.LoadTemplatesBusiness -- Template with null name found for dynamicTemplateId 3 in run 100
+01:32:12.294 [main] INFO com.socgen.sgs.api.quark.engine.business.LoadTemplatesBusiness -- Loading templates for idGabaritTemplate=3 in run [100]
+01:32:12.294 [main] WARN com.socgen.sgs.api.quark.engine.business.LoadTemplatesBusiness -- Dynamic template document size 3 bytes exceeds limit 2 bytes; entering degraded mode for run [100]
+01:32:12.295 [main] INFO com.socgen.sgs.api.quark.engine.business.LoadTemplatesBusiness -- Loaded 0 templates for run [100]
+01:32:12.298 [main] INFO com.socgen.sgs.api.quark.engine.business.LoadTemplatesBusiness -- Loading templates for idGabaritTemplate=3 in run [100]
+01:32:12.298 [main] WARN com.socgen.sgs.api.quark.engine.business.LoadTemplatesBusiness -- No dynamic template document found for id 3 in run 100; dynamic tasks will report their own Prepare errors
+01:32:12.299 [main] ERROR com.socgen.sgs.api.quark.engine.business.LoadTemplatesBusiness -- Duplicate template name for dynamicTemplateId [3] in run [100]
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.147 s -- in com.socgen.sgs.api.quark.engine.business.LoadTemplatesBusinessTest
+[INFO] Running com.socgen.sgs.api.quark.engine.business.ProcessSqlBusinessTest
+01:32:12.419 [main] INFO com.socgen.sgs.api.quark.engine.business.ProcessSqlBusiness -- SQL task [53] (run [509199]) fetched 3 rows
+01:32:12.419 [main] ERROR com.socgen.sgs.api.quark.engine.business.ProcessSqlBusiness -- Error adding one SQL row block for task [53], run [509199]; causeType=IllegalArgumentException
+01:32:12.424 [main] INFO com.socgen.sgs.api.quark.engine.business.ProcessSqlBusiness -- SQL task [53] (run [509199]) fetched 2 rows
+01:32:12.424 [main] WARN com.socgen.sgs.api.quark.engine.business.ProcessSqlBusiness -- Duplicate SQL-result block in task [53], run [509199]
+01:32:12.428 [main] INFO com.socgen.sgs.api.quark.engine.business.ProcessSqlBusiness -- SQL task [53] (run [509199]) fetched 3 rows
+01:32:12.524 [main] INFO com.socgen.sgs.api.quark.engine.business.ProcessSqlBusiness -- SQL task [53] (run [509199]) fetched 1 rows
+01:32:12.531 [main] INFO com.socgen.sgs.api.quark.engine.business.ProcessSqlBusiness -- SQL task [53] (run [509199]) fetched 1 rows
+01:32:12.535 [main] INFO com.socgen.sgs.api.quark.engine.business.ProcessSqlBusiness -- SQL task [53] (run [509199]) fetched 0 rows
+01:32:12.535 [main] WARN com.socgen.sgs.api.quark.engine.business.ProcessSqlBusiness -- No SQL data returned for task 53
+01:32:12.542 [main] INFO com.socgen.sgs.api.quark.engine.business.ProcessSqlBusiness -- SQL task [53] (run [509199]) fetched 0 rows
+01:32:12.542 [main] WARN com.socgen.sgs.api.quark.engine.business.ProcessSqlBusiness -- No SQL data returned for task 53
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.241 s -- in com.socgen.sgs.api.quark.engine.business.ProcessSqlBusinessTest
+[INFO] Running com.socgen.sgs.api.quark.engine.business.QxpsCallerBusinessExecutionTest
+01:32:12.687 [main] INFO com.socgen.sgs.api.quark.engine.business.QxpsCallerBusiness -- Starting final renders for run [7]
+01:32:12.855 [main] INFO com.socgen.sgs.api.quark.engine.business.QxpsCallerBusiness -- Starting step execution for run [7] with 1 steps
+01:32:12.858 [main] INFO com.socgen.sgs.api.quark.engine.business.QxpsCallerBusiness -- Preparing step [0] for run [7]
+01:32:12.860 [main] INFO com.socgen.sgs.api.quark.engine.business.QxpsCallerBusiness -- Executing step [0]: add=0 update=0 excluded=0
+01:32:12.871 [main] INFO com.socgen.sgs.api.quark.engine.business.QxpsCallerBusiness -- Step [0] completed for run [7]
+01:32:12.873 [main] INFO com.socgen.sgs.api.quark.engine.business.QxpsCallerBusiness -- All steps completed for run [7]
+01:32:12.873 [main] INFO com.socgen.sgs.api.quark.engine.business.QxpsCallerBusiness -- Starting step execution for run [8] with 1 steps
+01:32:12.874 [main] INFO com.socgen.sgs.api.quark.engine.business.QxpsCallerBusiness -- Preparing step [0] for run [8]
+01:32:12.874 [main] INFO com.socgen.sgs.api.quark.engine.business.QxpsCallerBusiness -- Executing step [0]: add=0 update=0 excluded=0
+01:32:12.875 [main] INFO com.socgen.sgs.api.quark.engine.business.QxpsCallerBusiness -- Step [0] completed for run [8]
+01:32:12.875 [main] INFO com.socgen.sgs.api.quark.engine.business.QxpsCallerBusiness -- All steps completed for run [8]
+01:32:12.892 [main] INFO com.socgen.sgs.api.quark.engine.business.QxpsCallerBusiness -- Starting final renders for run [7]
+01:32:12.893 [main] WARN com.socgen.sgs.api.quark.engine.business.QxpsCallerBusiness -- PDF render failed for run [7]; exceptionType=QxpsException; continuing with QXP render
+01:32:12.893 [main] INFO com.socgen.sgs.api.quark.engine.business.QxpsCallerBusiness -- QXP fetched (literal) for run [7]
+01:32:12.893 [main] INFO com.socgen.sgs.api.quark.engine.business.QxpsCallerBusiness -- All renders completed for run [7]
+01:32:12.898 [main] INFO com.socgen.sgs.api.quark.engine.business.QxpsCallerBusiness -- Starting step execution for run [7] with 0 steps
+01:32:12.898 [main] WARN com.socgen.sgs.api.quark.engine.business.QxpsCallerBusiness -- Run [7]: 2 boxes excluded; final step maximum=16900
+01:32:12.898 [main] INFO com.socgen.sgs.api.quark.engine.business.QxpsCallerBusiness -- All steps completed for run [7]
+01:32:12.906 [main] INFO com.socgen.sgs.api.quark.engine.business.QxpsCallerBusiness -- Starting step execution for run [7] with 1 steps
+01:32:12.906 [main] INFO com.socgen.sgs.api.quark.engine.business.QxpsCallerBusiness -- Preparing step [0] for run [7]
+01:32:12.907 [main] INFO com.socgen.sgs.api.quark.engine.business.QxpsCallerBusiness -- Executing step [0]: add=0 update=0 excluded=0
+01:32:12.907 [main] INFO com.socgen.sgs.api.quark.engine.business.QxpsCallerBusiness -- Executing prepare sub-step for step [0]
+01:32:12.909 [main] INFO com.socgen.sgs.api.quark.engine.business.QxpsCallerBusiness -- Step [0] completed for run [7]
+01:32:12.909 [main] INFO com.socgen.sgs.api.quark.engine.business.QxpsCallerBusiness -- All steps completed for run [7]
+01:32:12.921 [main] INFO com.socgen.sgs.api.quark.engine.business.QxpsCallerBusiness -- Starting step execution for run [7] with 1 steps
+01:32:12.922 [main] INFO com.socgen.sgs.api.quark.engine.business.QxpsCallerBusiness -- Preparing step [0] for run [7]
+01:32:12.922 [main] INFO com.socgen.sgs.api.quark.engine.business.QxpsCallerBusiness -- Executing step [0]: add=0 update=0 excluded=0
+01:32:12.936 [main] INFO com.socgen.sgs.api.quark.engine.business.QxpsCallerBusiness -- Starting step execution for run [7] with 1 steps
+01:32:12.937 [main] INFO com.socgen.sgs.api.quark.engine.business.QxpsCallerBusiness -- Preparing step [0] for run [7]
+01:32:12.940 [main] INFO com.socgen.sgs.api.quark.engine.business.QxpsCallerBusiness -- Executing step [0]: add=0 update=0 excluded=0
+01:32:12.942 [main] INFO com.socgen.sgs.api.quark.engine.business.QxpsCallerBusiness -- Step [0] completed for run [7]
+01:32:12.943 [main] INFO com.socgen.sgs.api.quark.engine.business.QxpsCallerBusiness -- All steps completed for run [7]
+01:32:12.943 [main] INFO com.socgen.sgs.api.quark.engine.business.QxpsCallerBusiness -- Starting step execution for run [7] with 1 steps
+01:32:12.944 [main] INFO com.socgen.sgs.api.quark.engine.business.QxpsCallerBusiness -- Preparing step [0] for run [7]
+01:32:12.944 [main] INFO com.socgen.sgs.api.quark.engine.business.QxpsCallerBusiness -- Executing step [0]: add=0 update=0 excluded=0
+01:32:12.945 [main] INFO com.socgen.sgs.api.quark.engine.business.QxpsCallerBusiness -- Step [0] completed for run [7]
+01:32:12.946 [main] INFO com.socgen.sgs.api.quark.engine.business.QxpsCallerBusiness -- All steps completed for run [7]
+01:32:12.960 [main] INFO com.socgen.sgs.api.quark.engine.business.QxpsCallerBusiness -- Starting step execution for run [7] with 2 steps
+01:32:12.960 [main] INFO com.socgen.sgs.api.quark.engine.business.QxpsCallerBusiness -- Preparing step [0] for run [7]
+01:32:12.961 [main] INFO com.socgen.sgs.api.quark.engine.business.QxpsCallerBusiness -- Executing step [0]: add=0 update=0 excluded=0
+01:32:12.963 [main] INFO com.socgen.sgs.api.quark.engine.business.QxpsCallerBusiness -- Step [0] completed for run [7]
+01:32:12.963 [main] INFO com.socgen.sgs.api.quark.engine.business.QxpsCallerBusiness -- Preparing step [0] for run [7]
+01:32:12.967 [main] INFO com.socgen.sgs.api.quark.engine.business.QxpsCallerBusiness -- Executing step [0]: add=0 update=0 excluded=0
+01:32:12.969 [main] INFO com.socgen.sgs.api.quark.engine.business.QxpsCallerBusiness -- Step [0] completed for run [7]
+01:32:12.969 [main] INFO com.socgen.sgs.api.quark.engine.business.QxpsCallerBusiness -- All steps completed for run [7]
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.415 s -- in com.socgen.sgs.api.quark.engine.business.QxpsCallerBusinessExecutionTest
+[INFO] Running com.socgen.sgs.api.quark.engine.business.RunStartUpdateBusinessTest
+01:32:13.039 [main] INFO com.socgen.sgs.api.quark.engine.business.RunStartUpdateBusiness -- Business layer: starting run with ID: 77
+01:32:13.042 [main] INFO com.socgen.sgs.api.quark.engine.business.RunStartUpdateBusiness -- Business layer: starting run with ID: 77
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.068 s -- in com.socgen.sgs.api.quark.engine.business.RunStartUpdateBusinessTest
+[INFO] Running com.socgen.sgs.api.quark.engine.config.EngineFormattingPropertiesTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.010 s -- in com.socgen.sgs.api.quark.engine.config.EngineFormattingPropertiesTest
+[INFO] Running com.socgen.sgs.api.quark.engine.diagnostic.DiagnosticContextTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.004 s -- in com.socgen.sgs.api.quark.engine.diagnostic.DiagnosticContextTest
+[INFO] Running com.socgen.sgs.api.quark.engine.diagnostic.LoggingSourcePolicyTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.833 s -- in com.socgen.sgs.api.quark.engine.diagnostic.LoggingSourcePolicyTest
+[INFO] Running com.socgen.sgs.api.quark.engine.diagnostic.SafeDiagnosticTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.016 s -- in com.socgen.sgs.api.quark.engine.diagnostic.SafeDiagnosticTest
+[INFO] Running com.socgen.sgs.api.quark.engine.domain.bloc.BlocBaseTest
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.006 s -- in com.socgen.sgs.api.quark.engine.domain.bloc.BlocBaseTest
+[INFO] Running com.socgen.sgs.api.quark.engine.domain.collection.AddOnlyLinkedHashMapTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.011 s -- in com.socgen.sgs.api.quark.engine.domain.collection.AddOnlyLinkedHashMapTest
+[INFO] Running com.socgen.sgs.api.quark.engine.domain.DataNameValueTest
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.009 s -- in com.socgen.sgs.api.quark.engine.domain.DataNameValueTest
+[INFO] Running com.socgen.sgs.api.quark.engine.domain.DocumentDomainTest
+[INFO] Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.009 s -- in com.socgen.sgs.api.quark.engine.domain.DocumentDomainTest
+[INFO] Running com.socgen.sgs.api.quark.engine.domain.DocumentIdentityLegacyContractTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.072 s -- in com.socgen.sgs.api.quark.engine.domain.DocumentIdentityLegacyContractTest
+[INFO] Running com.socgen.sgs.api.quark.engine.domain.dynamic.report.DMasterPageTest
+[INFO] Tests run: 13, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.009 s -- in com.socgen.sgs.api.quark.engine.domain.dynamic.report.DMasterPageTest
+[INFO] Running com.socgen.sgs.api.quark.engine.domain.dynamic.report.DynamicBreakRuleContractTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.009 s -- in com.socgen.sgs.api.quark.engine.domain.dynamic.report.DynamicBreakRuleContractTest
+[INFO] Running com.socgen.sgs.api.quark.engine.domain.element.TBoxGeometryContractTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.026 s -- in com.socgen.sgs.api.quark.engine.domain.element.TBoxGeometryContractTest
+[INFO] Running com.socgen.sgs.api.quark.engine.domain.exception.EngineExceptionTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s -- in com.socgen.sgs.api.quark.engine.domain.exception.EngineExceptionTest
+[INFO] Running com.socgen.sgs.api.quark.engine.domain.helper.CheckedDecimalArithmeticTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.017 s -- in com.socgen.sgs.api.quark.engine.domain.helper.CheckedDecimalArithmeticTest
+[INFO] Running com.socgen.sgs.api.quark.engine.domain.helper.ConfiguredNumberConverterTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.004 s -- in com.socgen.sgs.api.quark.engine.domain.helper.ConfiguredNumberConverterTest
+[INFO] Running com.socgen.sgs.api.quark.engine.domain.helper.DataTypeHelperTest
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.016 s -- in com.socgen.sgs.api.quark.engine.domain.helper.DataTypeHelperTest
+[INFO] Running com.socgen.sgs.api.quark.engine.domain.helper.DocumentIdentityHelperTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.005 s -- in com.socgen.sgs.api.quark.engine.domain.helper.DocumentIdentityHelperTest
+[INFO] Running com.socgen.sgs.api.quark.engine.domain.helper.DynamiquePageBreakHelperTest
+01:32:14.157 [main] WARN com.socgen.sgs.api.quark.engine.domain.helper.DynamiquePageBreakHelper -- Break rule ignored � not enough space on page 3 column 1 for task [40]
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.014 s -- in com.socgen.sgs.api.quark.engine.domain.helper.DynamiquePageBreakHelperTest
+[INFO] Running com.socgen.sgs.api.quark.engine.domain.helper.InvariantValueConverterTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.007 s -- in com.socgen.sgs.api.quark.engine.domain.helper.InvariantValueConverterTest
+[INFO] Running com.socgen.sgs.api.quark.engine.domain.helper.MathHelperTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s -- in com.socgen.sgs.api.quark.engine.domain.helper.MathHelperTest
+[INFO] Running com.socgen.sgs.api.quark.engine.domain.InParamTest
+[INFO] Tests run: 16, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.017 s -- in com.socgen.sgs.api.quark.engine.domain.InParamTest
+[INFO] Running com.socgen.sgs.api.quark.engine.domain.modifier.ModifierLegacyContractTest
+01:32:14.234 [main] WARN com.socgen.sgs.api.quark.engine.domain.modifier.QxpsModifier -- No layout found while preparing one modifier block
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.029 s -- in com.socgen.sgs.api.quark.engine.domain.modifier.ModifierLegacyContractTest
+[INFO] Running com.socgen.sgs.api.quark.engine.domain.project.QxpProjectGroupScopeTest
+01:32:14.296 [main] WARN com.socgen.sgs.api.quark.engine.domain.project.QxpProject -- Unable to evaluate one project group for task [7]
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.063 s -- in com.socgen.sgs.api.quark.engine.domain.project.QxpProjectGroupScopeTest
+[INFO] Running com.socgen.sgs.api.quark.engine.domain.RunAuditTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.002 s -- in com.socgen.sgs.api.quark.engine.domain.RunAuditTest
+[INFO] Running com.socgen.sgs.api.quark.engine.domain.RunErrorTraceTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.002 s -- in com.socgen.sgs.api.quark.engine.domain.RunErrorTraceTest
+[INFO] Running com.socgen.sgs.api.quark.engine.domain.RunExecutionContextTest
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.011 s -- in com.socgen.sgs.api.quark.engine.domain.RunExecutionContextTest
+[INFO] Running com.socgen.sgs.api.quark.engine.domain.RunIdTest
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.006 s -- in com.socgen.sgs.api.quark.engine.domain.RunIdTest
+[INFO] Running com.socgen.sgs.api.quark.engine.domain.RunPropertiesTest
+[INFO] Tests run: 15, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.015 s -- in com.socgen.sgs.api.quark.engine.domain.RunPropertiesTest
+[INFO] Running com.socgen.sgs.api.quark.engine.domain.RunStatusTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.004 s -- in com.socgen.sgs.api.quark.engine.domain.RunStatusTest
+[INFO] Running com.socgen.sgs.api.quark.engine.domain.RunTaskSplittingTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.194 s -- in com.socgen.sgs.api.quark.engine.domain.RunTaskSplittingTest
+[INFO] Running com.socgen.sgs.api.quark.engine.domain.RunTaskStepPaginationAndBudgetTest
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.010 s -- in com.socgen.sgs.api.quark.engine.domain.RunTaskStepPaginationAndBudgetTest
+[INFO] Running com.socgen.sgs.api.quark.engine.domain.RunTest
+01:32:14.714 [main] WARN com.socgen.sgs.api.quark.engine.domain.xml.QxpXml -- Cannot create QxpXml from null/blank XML
+01:32:14.719 [main] WARN com.socgen.sgs.api.quark.engine.business.DocumentStructureBusiness -- QXP XML unavailable; cached empty structure for run [100], documentId [45], failureType [IllegalStateException]
+01:32:14.719 [main] WARN com.socgen.sgs.api.quark.engine.domain.Run -- Unable to load structural XML; continuing run [100] in degraded mode
+01:32:14.730 [main] WARN com.socgen.sgs.api.quark.engine.domain.xml.QxpXml -- Cannot create QxpXml from null/blank XML
+01:32:14.740 [main] WARN com.socgen.sgs.api.quark.engine.business.DocumentStructureBusiness -- QXP XML unavailable; cached empty structure for run [100], documentId [45], failureType [IllegalStateException]
+01:32:14.740 [main] WARN com.socgen.sgs.api.quark.engine.domain.Run -- Unable to load structural XML; continuing run [100] in degraded mode
+01:32:14.744 [main] WARN com.socgen.sgs.api.quark.engine.domain.Run -- Template size 3 bytes exceeds limit 2 bytes; entering degraded mode for runId=100
+[INFO] Tests run: 15, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.170 s -- in com.socgen.sgs.api.quark.engine.domain.RunTest
+[INFO] Running com.socgen.sgs.api.quark.engine.domain.StoreDataTypeTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s -- in com.socgen.sgs.api.quark.engine.domain.StoreDataTypeTest
+[INFO] Running com.socgen.sgs.api.quark.engine.domain.task.TaskDocumentTargetTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.055 s -- in com.socgen.sgs.api.quark.engine.domain.task.TaskDocumentTargetTest
+[INFO] Running com.socgen.sgs.api.quark.engine.domain.task.TaskExceptionTest
+[INFO] Tests run: 12, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.007 s -- in com.socgen.sgs.api.quark.engine.domain.task.TaskExceptionTest
+[INFO] Running com.socgen.sgs.api.quark.engine.domain.task.TaskImageOffsetTest
+[INFO] Tests run: 12, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.007 s -- in com.socgen.sgs.api.quark.engine.domain.task.TaskImageOffsetTest
+[INFO] Running com.socgen.sgs.api.quark.engine.domain.task.TaskImagePositionTest
+[INFO] Tests run: 13, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.012 s -- in com.socgen.sgs.api.quark.engine.domain.task.TaskImagePositionTest
+[INFO] Running com.socgen.sgs.api.quark.engine.domain.task.TaskPropertiesTest
+[INFO] Tests run: 12, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.008 s -- in com.socgen.sgs.api.quark.engine.domain.task.TaskPropertiesTest
+[INFO] Running com.socgen.sgs.api.quark.engine.domain.TaskCompartimentModeTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.002 s -- in com.socgen.sgs.api.quark.engine.domain.TaskCompartimentModeTest
+[INFO] Running com.socgen.sgs.api.quark.engine.domain.trace.RunTraceTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.025 s -- in com.socgen.sgs.api.quark.engine.domain.trace.RunTraceTest
+[INFO] Running com.socgen.sgs.api.quark.engine.dto.RunIdDtoTest
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.004 s -- in com.socgen.sgs.api.quark.engine.dto.RunIdDtoTest
+[INFO] Running com.socgen.sgs.api.quark.engine.enums.AbsoluteRepeatTypeTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.004 s -- in com.socgen.sgs.api.quark.engine.enums.AbsoluteRepeatTypeTest
+[INFO] Running com.socgen.sgs.api.quark.engine.enums.BlocActionEnumTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.002 s -- in com.socgen.sgs.api.quark.engine.enums.BlocActionEnumTest
+[INFO] Running com.socgen.sgs.api.quark.engine.enums.DataTypeEnumTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.002 s -- in com.socgen.sgs.api.quark.engine.enums.DataTypeEnumTest
+[INFO] Running com.socgen.sgs.api.quark.engine.enums.DocumentFormatEnumTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.002 s -- in com.socgen.sgs.api.quark.engine.enums.DocumentFormatEnumTest
+[INFO] Running com.socgen.sgs.api.quark.engine.enums.GabaritSourceEnumTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.002 s -- in com.socgen.sgs.api.quark.engine.enums.GabaritSourceEnumTest
+[INFO] Running com.socgen.sgs.api.quark.engine.enums.SubTaskTypeEnumTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.005 s -- in com.socgen.sgs.api.quark.engine.enums.SubTaskTypeEnumTest
+[INFO] Running com.socgen.sgs.api.quark.engine.enums.TaskActionTypeEnumTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.004 s -- in com.socgen.sgs.api.quark.engine.enums.TaskActionTypeEnumTest
+[INFO] Running com.socgen.sgs.api.quark.engine.enums.TaskExceptionTypeEnumTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s -- in com.socgen.sgs.api.quark.engine.enums.TaskExceptionTypeEnumTest
+[INFO] Running com.socgen.sgs.api.quark.engine.enums.TypeRapportEnumTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s -- in com.socgen.sgs.api.quark.engine.enums.TypeRapportEnumTest
+[INFO] Running com.socgen.sgs.api.quark.engine.infra.api.v1.EngineServiceControllerTest
+01:32:15.416 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.socgen.sgs.api.quark.engine.infra.api.v1.EngineServiceControllerTest]: EngineServiceControllerTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+01:32:16.039 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.socgen.sgs.api.quark.engine.Application for test class com.socgen.sgs.api.quark.engine.infra.api.v1.EngineServiceControllerTest
+01:32:16.303 [main] INFO org.springframework.boot.devtools.restart.RestartApplicationListener -- Restart disabled due to context in which it is running
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::               (v3.5.15)
+
+2026-08-23 01:32:17.573 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.a.v.EngineServiceControllerTest - Starting EngineServiceControllerTest using Java 21.0.11 with PID 23144 (started by rgurram062722 in C:\Users\rgurram062722\Documents\GitHub\engine service repo\quark-engine)
+2026-08-23 01:32:17.585 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.a.v.EngineServiceControllerTest - No active profile set, falling back to 1 default profile: "default"
+2026-08-23 01:32:22.032 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.b.t.m.w.SpringBootMockServletContext - Initializing Spring TestDispatcherServlet ''
+2026-08-23 01:32:22.033 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.t.w.s.TestDispatcherServlet - Initializing Servlet ''
+2026-08-23 01:32:22.034 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.t.w.s.TestDispatcherServlet - Completed initialization in 1 ms
+2026-08-23 01:32:22.229 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.a.v.EngineServiceControllerTest - Started EngineServiceControllerTest in 5.948 seconds (process running for 24.577)
+
+MockHttpServletRequest:
+      HTTP Method = POST
+      Request URI = /api/v1/EngineService/processRun/77
+       Parameters = {_csrf=[8jgb2tB2wSbJI3GJ1fjuw0NPqK0t8nlPH09-n5_sUQvcLdTmwAF_7elPpUTkE0bs5dXa-3Aqhc9OkE9iKS5Mp66JM23tHefT]}
+          Headers = []
+             Body = null
+    Session Attrs = {SPRING_SECURITY_CONTEXT=SecurityContextImpl [Authentication=UsernamePasswordAuthenticationToken [Principal=org.springframework.security.core.userdetails.User [Username=user, Password=[PROTECTED], Enabled=true, AccountNonExpired=true, CredentialsNonExpired=true, AccountNonLocked=true, Granted Authorities=[ROLE_USER]], Credentials=[PROTECTED], Authenticated=true, Details=null, Granted Authorities=[ROLE_USER]]]}
+
+Handler:
+             Type = org.springframework.web.servlet.resource.ResourceHttpRequestHandler
+
+Async:
+    Async started = false
+     Async result = null
+
+Resolved Exception:
+             Type = org.springframework.web.servlet.resource.NoResourceFoundException
+
+ModelAndView:
+        View name = null
+             View = null
+            Model = null
+
+FlashMap:
+       Attributes = null
+
+MockHttpServletResponse:
+           Status = 404
+    Error message = No static resource api/v1/EngineService/processRun/77.
+          Headers = [Vary:"Origin", "Access-Control-Request-Method", "Access-Control-Request-Headers", X-Content-Type-Options:"nosniff", X-XSS-Protection:"0", Cache-Control:"no-cache, no-store, max-age=0, must-revalidate", Pragma:"no-cache", Expires:"0", X-Frame-Options:"DENY"]
+     Content type = null
+             Body = 
+    Forwarded URL = null
+   Redirected URL = null
+          Cookies = []
+
+MockHttpServletRequest:
+      HTTP Method = GET
+      Request URI = /api/v1/EngineService/fetchRunProperties/99
+       Parameters = {}
+          Headers = [Accept:"application/json"]
+             Body = null
+    Session Attrs = {SPRING_SECURITY_CONTEXT=SecurityContextImpl [Authentication=UsernamePasswordAuthenticationToken [Principal=org.springframework.security.core.userdetails.User [Username=user, Password=[PROTECTED], Enabled=true, AccountNonExpired=true, CredentialsNonExpired=true, AccountNonLocked=true, Granted Authorities=[ROLE_USER]], Credentials=[PROTECTED], Authenticated=true, Details=null, Granted Authorities=[ROLE_USER]]]}
+
+Handler:
+             Type = org.springframework.web.servlet.resource.ResourceHttpRequestHandler
+
+Async:
+    Async started = false
+     Async result = null
+
+Resolved Exception:
+             Type = org.springframework.web.servlet.resource.NoResourceFoundException
+
+ModelAndView:
+        View name = null
+             View = null
+            Model = null
+
+FlashMap:
+       Attributes = null
+
+MockHttpServletResponse:
+           Status = 404
+    Error message = No static resource api/v1/EngineService/fetchRunProperties/99.
+          Headers = [Vary:"Origin", "Access-Control-Request-Method", "Access-Control-Request-Headers", X-Content-Type-Options:"nosniff", X-XSS-Protection:"0", Cache-Control:"no-cache, no-store, max-age=0, must-revalidate", Pragma:"no-cache", Expires:"0", X-Frame-Options:"DENY"]
+     Content type = null
+             Body = 
+    Forwarded URL = null
+   Redirected URL = null
+          Cookies = []
+
+MockHttpServletRequest:
+      HTTP Method = POST
+      Request URI = /api/v1/EngineService/processRun/100
+       Parameters = {_csrf=[ahry0LH2gpGjNScQaIOhC1mef26rJoIEXvsLZi6J7IUUTBG-D3zKtoHE56eODUQmDK6VPz_6UgzIRLQpbs4yUE-w1eMjeSCO]}
+          Headers = [Content-Type:"application/json;charset=UTF-8"]
+             Body = null
+    Session Attrs = {SPRING_SECURITY_CONTEXT=SecurityContextImpl [Authentication=UsernamePasswordAuthenticationToken [Principal=org.springframework.security.core.userdetails.User [Username=user, Password=[PROTECTED], Enabled=true, AccountNonExpired=true, CredentialsNonExpired=true, AccountNonLocked=true, Granted Authorities=[ROLE_USER]], Credentials=[PROTECTED], Authenticated=true, Details=null, Granted Authorities=[ROLE_USER]]]}
+
+Handler:
+             Type = org.springframework.web.servlet.resource.ResourceHttpRequestHandler
+
+Async:
+    Async started = false
+     Async result = null
+
+Resolved Exception:
+             Type = org.springframework.web.servlet.resource.NoResourceFoundException
+
+ModelAndView:
+        View name = null
+             View = null
+            Model = null
+
+FlashMap:
+       Attributes = null
+
+MockHttpServletResponse:
+           Status = 404
+    Error message = No static resource api/v1/EngineService/processRun/100.
+          Headers = [Vary:"Origin", "Access-Control-Request-Method", "Access-Control-Request-Headers", X-Content-Type-Options:"nosniff", X-XSS-Protection:"0", Cache-Control:"no-cache, no-store, max-age=0, must-revalidate", Pragma:"no-cache", Expires:"0", X-Frame-Options:"DENY"]
+     Content type = null
+             Body = 
+    Forwarded URL = null
+   Redirected URL = null
+          Cookies = []
+
+MockHttpServletRequest:
+      HTTP Method = POST
+      Request URI = /api/v1/EngineService/processRun/100
+       Parameters = {_csrf=[snKrk_-sz4mK-RjHHFxloRFo6douoTrez0nKwP6djFtdluid1BOa9s2ere-nyyCjfnFRwHQMxONMkg3zrHGspcestW048N_8]}
+          Headers = [Content-Type:"application/json;charset=UTF-8"]
+             Body = null
+    Session Attrs = {SPRING_SECURITY_CONTEXT=SecurityContextImpl [Authentication=UsernamePasswordAuthenticationToken [Principal=org.springframework.security.core.userdetails.User [Username=user, Password=[PROTECTED], Enabled=true, AccountNonExpired=true, CredentialsNonExpired=true, AccountNonLocked=true, Granted Authorities=[ROLE_USER]], Credentials=[PROTECTED], Authenticated=true, Details=null, Granted Authorities=[ROLE_USER]]]}
+
+Handler:
+             Type = org.springframework.web.servlet.resource.ResourceHttpRequestHandler
+
+Async:
+    Async started = false
+     Async result = null
+
+Resolved Exception:
+             Type = org.springframework.web.servlet.resource.NoResourceFoundException
+
+ModelAndView:
+        View name = null
+             View = null
+            Model = null
+
+FlashMap:
+       Attributes = null
+
+MockHttpServletResponse:
+           Status = 404
+    Error message = No static resource api/v1/EngineService/processRun/100.
+          Headers = [Vary:"Origin", "Access-Control-Request-Method", "Access-Control-Request-Headers", X-Content-Type-Options:"nosniff", X-XSS-Protection:"0", Cache-Control:"no-cache, no-store, max-age=0, must-revalidate", Pragma:"no-cache", Expires:"0", X-Frame-Options:"DENY"]
+     Content type = null
+             Body = 
+    Forwarded URL = null
+   Redirected URL = null
+          Cookies = []
+
+MockHttpServletRequest:
+      HTTP Method = GET
+      Request URI = /api/v1/EngineService/fetchRunProperties/200
+       Parameters = {}
+          Headers = [Accept:"application/json"]
+             Body = null
+    Session Attrs = {SPRING_SECURITY_CONTEXT=SecurityContextImpl [Authentication=UsernamePasswordAuthenticationToken [Principal=org.springframework.security.core.userdetails.User [Username=user, Password=[PROTECTED], Enabled=true, AccountNonExpired=true, CredentialsNonExpired=true, AccountNonLocked=true, Granted Authorities=[ROLE_USER]], Credentials=[PROTECTED], Authenticated=true, Details=null, Granted Authorities=[ROLE_USER]]]}
+
+Handler:
+             Type = org.springframework.web.servlet.resource.ResourceHttpRequestHandler
+
+Async:
+    Async started = false
+     Async result = null
+
+Resolved Exception:
+             Type = org.springframework.web.servlet.resource.NoResourceFoundException
+
+ModelAndView:
+        View name = null
+             View = null
+            Model = null
+
+FlashMap:
+       Attributes = null
+
+MockHttpServletResponse:
+           Status = 404
+    Error message = No static resource api/v1/EngineService/fetchRunProperties/200.
+          Headers = [Vary:"Origin", "Access-Control-Request-Method", "Access-Control-Request-Headers", X-Content-Type-Options:"nosniff", X-XSS-Protection:"0", Cache-Control:"no-cache, no-store, max-age=0, must-revalidate", Pragma:"no-cache", Expires:"0", X-Frame-Options:"DENY"]
+     Content type = null
+             Body = 
+    Forwarded URL = null
+   Redirected URL = null
+          Cookies = []
+
+MockHttpServletRequest:
+      HTTP Method = GET
+      Request URI = /api/v1/EngineService/fetchRunProperties/33
+       Parameters = {}
+          Headers = []
+             Body = null
+    Session Attrs = {SPRING_SECURITY_CONTEXT=SecurityContextImpl [Authentication=UsernamePasswordAuthenticationToken [Principal=org.springframework.security.core.userdetails.User [Username=user, Password=[PROTECTED], Enabled=true, AccountNonExpired=true, CredentialsNonExpired=true, AccountNonLocked=true, Granted Authorities=[ROLE_USER]], Credentials=[PROTECTED], Authenticated=true, Details=null, Granted Authorities=[ROLE_USER]]]}
+
+Handler:
+             Type = org.springframework.web.servlet.resource.ResourceHttpRequestHandler
+
+Async:
+    Async started = false
+     Async result = null
+
+Resolved Exception:
+             Type = org.springframework.web.servlet.resource.NoResourceFoundException
+
+ModelAndView:
+        View name = null
+             View = null
+            Model = null
+
+FlashMap:
+       Attributes = null
+
+MockHttpServletResponse:
+           Status = 404
+    Error message = No static resource api/v1/EngineService/fetchRunProperties/33.
+          Headers = [Vary:"Origin", "Access-Control-Request-Method", "Access-Control-Request-Headers", X-Content-Type-Options:"nosniff", X-XSS-Protection:"0", Cache-Control:"no-cache, no-store, max-age=0, must-revalidate", Pragma:"no-cache", Expires:"0", X-Frame-Options:"DENY"]
+     Content type = null
+             Body = 
+    Forwarded URL = null
+   Redirected URL = null
+          Cookies = []
+[ERROR] Tests run: 6, Failures: 6, Errors: 0, Skipped: 0, Time elapsed: 7.512 s <<< FAILURE! -- in com.socgen.sgs.api.quark.engine.infra.api.v1.EngineServiceControllerTest
+[ERROR] com.socgen.sgs.api.quark.engine.infra.api.v1.EngineServiceControllerTest.shouldPassCorrectRunIdToProcessor -- Time elapsed: 0.142 s <<< FAILURE!
+java.lang.AssertionError: Status expected:<200> but was:<404>
+	at org.springframework.test.util.AssertionErrors.fail(AssertionErrors.java:61)
+	at org.springframework.test.util.AssertionErrors.assertEquals(AssertionErrors.java:128)
+	at org.springframework.test.web.servlet.result.StatusResultMatchers.lambda$matcher$9(StatusResultMatchers.java:640)
+	at org.springframework.test.web.servlet.MockMvc$1.andExpect(MockMvc.java:214)
+	at com.socgen.sgs.api.quark.engine.infra.api.v1.EngineServiceControllerTest.shouldPassCorrectRunIdToProcessor(EngineServiceControllerTest.java:70)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+
+[ERROR] com.socgen.sgs.api.quark.engine.infra.api.v1.EngineServiceControllerTest.shouldReturn500WhenFetchRunPropertiesFails -- Time elapsed: 0.014 s <<< FAILURE!
+java.lang.AssertionError: Status expected:<500> but was:<404>
+	at org.springframework.test.util.AssertionErrors.fail(AssertionErrors.java:61)
+	at org.springframework.test.util.AssertionErrors.assertEquals(AssertionErrors.java:128)
+	at org.springframework.test.web.servlet.result.StatusResultMatchers.lambda$matcher$9(StatusResultMatchers.java:640)
+	at org.springframework.test.web.servlet.MockMvc$1.andExpect(MockMvc.java:214)
+	at com.socgen.sgs.api.quark.engine.infra.api.v1.EngineServiceControllerTest.shouldReturn500WhenFetchRunPropertiesFails(EngineServiceControllerTest.java:100)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+
+[ERROR] com.socgen.sgs.api.quark.engine.infra.api.v1.EngineServiceControllerTest.shouldReturn200WhenProcessRunSucceeds -- Time elapsed: 0.014 s <<< FAILURE!
+java.lang.AssertionError: Status expected:<200> but was:<404>
+	at org.springframework.test.util.AssertionErrors.fail(AssertionErrors.java:61)
+	at org.springframework.test.util.AssertionErrors.assertEquals(AssertionErrors.java:128)
+	at org.springframework.test.web.servlet.result.StatusResultMatchers.lambda$matcher$9(StatusResultMatchers.java:640)
+	at org.springframework.test.web.servlet.MockMvc$1.andExpect(MockMvc.java:214)
+	at com.socgen.sgs.api.quark.engine.infra.api.v1.EngineServiceControllerTest.shouldReturn200WhenProcessRunSucceeds(EngineServiceControllerTest.java:44)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+
+[ERROR] com.socgen.sgs.api.quark.engine.infra.api.v1.EngineServiceControllerTest.shouldReturn500WhenProcessRunFails -- Time elapsed: 0.015 s <<< FAILURE!
+java.lang.AssertionError: Status expected:<500> but was:<404>
+	at org.springframework.test.util.AssertionErrors.fail(AssertionErrors.java:61)
+	at org.springframework.test.util.AssertionErrors.assertEquals(AssertionErrors.java:128)
+	at org.springframework.test.web.servlet.result.StatusResultMatchers.lambda$matcher$9(StatusResultMatchers.java:640)
+	at org.springframework.test.web.servlet.MockMvc$1.andExpect(MockMvc.java:214)
+	at com.socgen.sgs.api.quark.engine.infra.api.v1.EngineServiceControllerTest.shouldReturn500WhenProcessRunFails(EngineServiceControllerTest.java:59)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+
+[ERROR] com.socgen.sgs.api.quark.engine.infra.api.v1.EngineServiceControllerTest.shouldReturn200WithRunProperties -- Time elapsed: 0.013 s <<< FAILURE!
+java.lang.AssertionError: Status expected:<200> but was:<404>
+	at org.springframework.test.util.AssertionErrors.fail(AssertionErrors.java:61)
+	at org.springframework.test.util.AssertionErrors.assertEquals(AssertionErrors.java:128)
+	at org.springframework.test.web.servlet.result.StatusResultMatchers.lambda$matcher$9(StatusResultMatchers.java:640)
+	at org.springframework.test.web.servlet.MockMvc$1.andExpect(MockMvc.java:214)
+	at com.socgen.sgs.api.quark.engine.infra.api.v1.EngineServiceControllerTest.shouldReturn200WithRunProperties(EngineServiceControllerTest.java:86)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+
+[ERROR] com.socgen.sgs.api.quark.engine.infra.api.v1.EngineServiceControllerTest.shouldPassCorrectRunIdToGetRunProperties -- Time elapsed: 0.013 s <<< FAILURE!
+java.lang.AssertionError: Status expected:<200> but was:<404>
+	at org.springframework.test.util.AssertionErrors.fail(AssertionErrors.java:61)
+	at org.springframework.test.util.AssertionErrors.assertEquals(AssertionErrors.java:128)
+	at org.springframework.test.web.servlet.result.StatusResultMatchers.lambda$matcher$9(StatusResultMatchers.java:640)
+	at org.springframework.test.web.servlet.MockMvc$1.andExpect(MockMvc.java:214)
+	at com.socgen.sgs.api.quark.engine.infra.api.v1.EngineServiceControllerTest.shouldPassCorrectRunIdToGetRunProperties(EngineServiceControllerTest.java:110)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+
+[INFO] Running com.socgen.sgs.api.quark.engine.infra.dao.impl.AuditDaoImplTest
+2026-08-23 01:32:22.695 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.dao.impl.AuditDaoImpl - Audit row inserted for run [42]
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.228 s -- in com.socgen.sgs.api.quark.engine.infra.dao.impl.AuditDaoImplTest
+[INFO] Running com.socgen.sgs.api.quark.engine.infra.dao.impl.DocumentDateTimeBindingTest
+2026-08-23 01:32:22.704 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.GetDocumentDaoImpl - Fetching reference document for subcategory [5] and language [1]
+2026-08-23 01:32:22.704 WARN  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.GetDocumentDaoImpl - No reference document found for sousCategorie=5
+2026-08-23 01:32:22.710 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.GetCompartimentRunsDaoImpl - Fetching compartment runs for parent template [1], child template [2]
+2026-08-23 01:32:22.711 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.GetCompartimentRunsDaoImpl - Found 4 compartment runs for template=1
+2026-08-23 01:32:22.713 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.GetCompartimentRunsDaoImpl - Fetching compartment runs for parent template [1], child template [2]
+2026-08-23 01:32:22.713 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.GetCompartimentRunsDaoImpl - Found 0 compartment runs for template=1
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.015 s -- in com.socgen.sgs.api.quark.engine.infra.dao.impl.DocumentDateTimeBindingTest
+[INFO] Running com.socgen.sgs.api.quark.engine.infra.dao.impl.DynamicQueryPortImplTest
+2026-08-23 01:32:22.721 ERROR [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.DynamicQueryPortImpl - Dynamic SQL execution failed; bind count [0]
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.006 s -- in com.socgen.sgs.api.quark.engine.infra.dao.impl.DynamicQueryPortImplTest
+[INFO] Running com.socgen.sgs.api.quark.engine.infra.dao.impl.GetGabaritDaoImplTest
+2026-08-23 01:32:22.737 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.GetGabaritDaoImpl - Fetching template metadata for idGabarit=1
+2026-08-23 01:32:22.737 ERROR [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.GetGabaritDaoImpl - Error fetching template metadata for idGabarit=1; causeType=RuntimeException
+2026-08-23 01:32:22.740 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.GetGabaritDaoImpl - Fetching template metadata for idGabarit=99
+2026-08-23 01:32:22.740 ERROR [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.GetGabaritDaoImpl - No template metadata found for idGabarit=99
+2026-08-23 01:32:22.744 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.GetGabaritDaoImpl - Fetching template metadata for idGabarit=1
+2026-08-23 01:32:22.744 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.GetGabaritDaoImpl - Successfully retrieved template metadata for idGabarit=1
+2026-08-23 01:32:22.747 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.GetGabaritDaoImpl - Fetching template metadata for idGabarit=99
+2026-08-23 01:32:22.747 ERROR [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.GetGabaritDaoImpl - No template metadata found for idGabarit=99
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.017 s -- in com.socgen.sgs.api.quark.engine.infra.dao.impl.GetGabaritDaoImplTest
+[INFO] Running com.socgen.sgs.api.quark.engine.infra.dao.impl.GetGabaritDocumentCertifieDaoImplTest
+2026-08-23 01:32:22.764 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.GetGabaritDocumentCertifieDaoImpl - Fetching certified template document for idSuivi=300
+2026-08-23 01:32:22.765 ERROR [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.GetGabaritDocumentCertifieDaoImpl - Error fetching certified template document for idSuivi=300; causeType=RuntimeException
+2026-08-23 01:32:22.768 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.GetGabaritDocumentCertifieDaoImpl - Fetching certified template document for idSuivi=300
+2026-08-23 01:32:22.769 ERROR [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.GetGabaritDocumentCertifieDaoImpl - No certified template document found for idSuivi=300
+2026-08-23 01:32:22.771 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.GetGabaritDocumentCertifieDaoImpl - Fetching certified template document for idSuivi=300
+2026-08-23 01:32:22.771 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.GetGabaritDocumentCertifieDaoImpl - Successfully retrieved certified template document for idSuivi=300
+2026-08-23 01:32:22.774 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.GetGabaritDocumentCertifieDaoImpl - Fetching certified template document for idSuivi=300
+2026-08-23 01:32:22.774 ERROR [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.GetGabaritDocumentCertifieDaoImpl - No certified template document found for idSuivi=300
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.023 s -- in com.socgen.sgs.api.quark.engine.infra.dao.impl.GetGabaritDocumentCertifieDaoImplTest
+[INFO] Running com.socgen.sgs.api.quark.engine.infra.dao.impl.GetGabaritDocumentDaoImplTest
+2026-08-23 01:32:22.787 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.GetGabaritDocumentDaoImpl - Fetching template document for idSuivi=200
+2026-08-23 01:32:22.788 ERROR [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.GetGabaritDocumentDaoImpl - Error fetching template document for idSuivi=200; causeType=RuntimeException
+2026-08-23 01:32:22.791 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.GetGabaritDocumentDaoImpl - Fetching template document for idSuivi=200
+2026-08-23 01:32:22.791 ERROR [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.GetGabaritDocumentDaoImpl - No template document found for idSuivi=200
+2026-08-23 01:32:22.793 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.GetGabaritDocumentDaoImpl - Fetching template document for idSuivi=200
+2026-08-23 01:32:22.794 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.GetGabaritDocumentDaoImpl - Successfully retrieved template document for idSuivi=200
+2026-08-23 01:32:22.796 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.GetGabaritDocumentDaoImpl - Fetching template document for idSuivi=200
+2026-08-23 01:32:22.796 ERROR [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.GetGabaritDocumentDaoImpl - No template document found for idSuivi=200
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.020 s -- in com.socgen.sgs.api.quark.engine.infra.dao.impl.GetGabaritDocumentDaoImplTest
+[INFO] Running com.socgen.sgs.api.quark.engine.infra.dao.impl.GetGabaritTemplateDaoImplTest
+2026-08-23 01:32:23.017 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.GetGabaritTemplateDaoImpl - Fetching dynamic template document for idGabaritTemplate=3
+2026-08-23 01:32:23.018 WARN  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.GetGabaritTemplateDaoImpl - No dynamic template document found for idGabaritTemplate=3
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.220 s -- in com.socgen.sgs.api.quark.engine.infra.dao.impl.GetGabaritTemplateDaoImplTest
+[INFO] Running com.socgen.sgs.api.quark.engine.infra.dao.impl.GetInParamsDaoImplTest
+2026-08-23 01:32:23.073 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.GetInParamsDaoImpl - Fetching in-params for idSuivi: 55
+2026-08-23 01:32:23.073 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.GetInParamsDaoImpl - Loaded 0 in-params for idSuivi: 55
+2026-08-23 01:32:23.076 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.GetInParamsDaoImpl - Fetching in-params for idSuivi: 55
+2026-08-23 01:32:23.077 ERROR [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.GetInParamsDaoImpl - Error fetching in-params for idSuivi: 55; exceptionType=IllegalStateException
+2026-08-23 01:32:23.082 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.GetInParamsDaoImpl - Fetching in-params for idSuivi: 55
+2026-08-23 01:32:23.082 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.GetInParamsDaoImpl - Loaded 1 in-params for idSuivi: 55
+2026-08-23 01:32:23.084 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.GetInParamsDaoImpl - Fetching in-params for idSuivi: 55
+2026-08-23 01:32:23.084 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.GetInParamsDaoImpl - Loaded 0 in-params for idSuivi: 55
+2026-08-23 01:32:23.087 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.GetInParamsDaoImpl - Fetching in-params for idSuivi: 55
+2026-08-23 01:32:23.088 ERROR [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.GetInParamsDaoImpl - Error fetching in-params for idSuivi: 55; exceptionType=IllegalStateException
+2026-08-23 01:32:23.091 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.GetInParamsDaoImpl - Fetching in-params for idSuivi: 55
+2026-08-23 01:32:23.091 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.GetInParamsDaoImpl - Loaded 2 in-params for idSuivi: 55
+2026-08-23 01:32:23.093 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.GetInParamsDaoImpl - Fetching in-params for idSuivi: 55
+2026-08-23 01:32:23.094 ERROR [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.GetInParamsDaoImpl - Error fetching in-params for idSuivi: 55; exceptionType=RuntimeException
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.074 s -- in com.socgen.sgs.api.quark.engine.infra.dao.impl.GetInParamsDaoImplTest
+[INFO] Running com.socgen.sgs.api.quark.engine.infra.dao.impl.GetRunPropertiesDaoImplTest
+2026-08-23 01:32:23.151 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.GetRunPropertiesDaoImpl - Fetching run properties for runId: 1
+2026-08-23 01:32:23.153 ERROR [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.GetRunPropertiesDaoImpl - Error fetching run properties for runId: 1; causeType=RuntimeException
+2026-08-23 01:32:23.156 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.GetRunPropertiesDaoImpl - Fetching run properties for runId: 99
+2026-08-23 01:32:23.156 ERROR [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.GetRunPropertiesDaoImpl - No run properties found for runId: 99
+2026-08-23 01:32:23.161 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.GetRunPropertiesDaoImpl - Fetching run properties for runId: 99
+2026-08-23 01:32:23.161 ERROR [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.GetRunPropertiesDaoImpl - No run properties found for runId: 99
+2026-08-23 01:32:23.165 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.GetRunPropertiesDaoImpl - Fetching run properties for runId: 1
+2026-08-23 01:32:23.165 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.GetRunPropertiesDaoImpl - Successfully retrieved run properties for runId: 1
+2026-08-23 01:32:23.168 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.GetRunPropertiesDaoImpl - Fetching run properties for runId: 100
+2026-08-23 01:32:23.168 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.GetRunPropertiesDaoImpl - Successfully retrieved run properties for runId: 100
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.071 s -- in com.socgen.sgs.api.quark.engine.infra.dao.impl.GetRunPropertiesDaoImplTest
+[INFO] Running com.socgen.sgs.api.quark.engine.infra.dao.impl.GetTaskExceptionsDaoImplTest
+2026-08-23 01:32:23.176 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.GetTaskExceptionsDaoImpl - Fetching task exceptions for runId: 100
+2026-08-23 01:32:23.177 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.GetTaskExceptionsDaoImpl - Fetched 2 task exception rows for runId: 100
+2026-08-23 01:32:23.179 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.GetTaskExceptionsDaoImpl - Fetching task exceptions for runId: 100
+2026-08-23 01:32:23.180 WARN  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.GetTaskExceptionsDaoImpl - No task exceptions returned for runId: 100
+2026-08-23 01:32:23.182 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.GetTaskExceptionsDaoImpl - Fetching task exceptions for runId: 100
+2026-08-23 01:32:23.182 WARN  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.GetTaskExceptionsDaoImpl - No task exceptions returned for runId: 100
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.011 s -- in com.socgen.sgs.api.quark.engine.infra.dao.impl.GetTaskExceptionsDaoImplTest
+[INFO] Running com.socgen.sgs.api.quark.engine.infra.dao.impl.GetTasksDaoImplTest
+2026-08-23 01:32:23.195 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.impl.GetTasksDaoImpl - Fetching tasks for runId: 100
+2026-08-23 01:32:23.195 WARN  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.impl.GetTasksDaoImpl - No tasks returned for runId: 100
+2026-08-23 01:32:23.199 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.impl.GetTasksDaoImpl - Fetching tasks for runId: 100
+2026-08-23 01:32:23.200 WARN  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.impl.GetTasksDaoImpl - No tasks returned for runId: 100
+2026-08-23 01:32:23.203 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.impl.GetTasksDaoImpl - Fetching tasks for runId: 100
+2026-08-23 01:32:23.203 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.impl.GetTasksDaoImpl - Fetched 2 task rows for runId: 100
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.016 s -- in com.socgen.sgs.api.quark.engine.infra.dao.impl.GetTasksDaoImplTest
+[INFO] Running com.socgen.sgs.api.quark.engine.infra.dao.impl.InsertDocumentDaoImplTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.009 s -- in com.socgen.sgs.api.quark.engine.infra.dao.impl.InsertDocumentDaoImplTest
+[INFO] Running com.socgen.sgs.api.quark.engine.infra.dao.impl.RunStartUpdateDaoImplTest
+2026-08-23 01:32:23.220 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.RunStartUpdateDaoImpl - Starting run with ID: 77
+2026-08-23 01:32:23.221 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.RunStartUpdateDaoImpl - Successfully started run with ID: 77
+2026-08-23 01:32:23.224 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.RunStartUpdateDaoImpl - Starting run with ID: 77
+2026-08-23 01:32:23.224 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.RunStartUpdateDaoImpl - Successfully started run with ID: 77
+2026-08-23 01:32:23.228 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.RunStartUpdateDaoImpl - Starting run with ID: 77
+2026-08-23 01:32:23.228 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.RunStartUpdateDaoImpl - Successfully started run with ID: 77
+2026-08-23 01:32:23.229 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.RunStartUpdateDaoImpl - Starting run with ID: 77
+2026-08-23 01:32:23.229 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.RunStartUpdateDaoImpl - Successfully started run with ID: 77
+2026-08-23 01:32:23.233 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.RunStartUpdateDaoImpl - Starting run with ID: 77
+2026-08-23 01:32:23.233 ERROR [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.RunStartUpdateDaoImpl - Error starting run with ID: 77; causeType=RuntimeException
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.016 s -- in com.socgen.sgs.api.quark.engine.infra.dao.impl.RunStartUpdateDaoImplTest
+[INFO] Running com.socgen.sgs.api.quark.engine.infra.dao.impl.TaskSqlDaoImplTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.131 s -- in com.socgen.sgs.api.quark.engine.infra.dao.impl.TaskSqlDaoImplTest
+[INFO] Running com.socgen.sgs.api.quark.engine.infra.interop.qxps.exception.QxpsExceptionSafetyTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.002 s -- in com.socgen.sgs.api.quark.engine.infra.interop.qxps.exception.QxpsExceptionSafetyTest
+[INFO] Running com.socgen.sgs.api.quark.engine.infra.interop.qxps.helper.QxpsProjectSerializerTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.029 s -- in com.socgen.sgs.api.quark.engine.infra.interop.qxps.helper.QxpsProjectSerializerTest
+[INFO] Running com.socgen.sgs.api.quark.engine.mapper.InParamMapperTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.007 s -- in com.socgen.sgs.api.quark.engine.mapper.InParamMapperTest
+[INFO] Running com.socgen.sgs.api.quark.engine.mapper.InParamSqlMapperTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.020 s -- in com.socgen.sgs.api.quark.engine.mapper.InParamSqlMapperTest
+[INFO] Running com.socgen.sgs.api.quark.engine.mapper.RunPropertiesMapperTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.023 s -- in com.socgen.sgs.api.quark.engine.mapper.RunPropertiesMapperTest
+[INFO] Running com.socgen.sgs.api.quark.engine.mapper.TaskExceptionMapperTest
+[INFO] Tests run: 14, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.013 s -- in com.socgen.sgs.api.quark.engine.mapper.TaskExceptionMapperTest
+[INFO] Running com.socgen.sgs.api.quark.engine.mapper.TaskMapperTest
+2026-08-23 01:32:23.498 WARN  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.engine.mapper.TaskMapper - Unknown task type code: SYSTEM for taskId: 99
+2026-08-23 01:32:23.505 WARN  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.engine.mapper.TaskMapper - Unknown task type code: SYSTEM for taskId: 99
+[INFO] Tests run: 21, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.028 s -- in com.socgen.sgs.api.quark.engine.mapper.TaskMapperTest
+[INFO] Running com.socgen.sgs.api.quark.engine.mapper.TemplateMapperTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.004 s -- in com.socgen.sgs.api.quark.engine.mapper.TemplateMapperTest
+[INFO] Running com.socgen.sgs.api.quark.engine.service.impl.CheckServiceImplTest
+2026-08-23 01:32:23.659 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.impl.CheckServiceImpl - Starting Check step for run [42]
+2026-08-23 01:32:23.661 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.impl.CheckServiceImpl - Run [42] has overflow control enabled
+2026-08-23 01:32:23.661 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.impl.CheckServiceImpl - Document contains 1 box(es) in overflow
+2026-08-23 01:32:23.662 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.impl.CheckServiceImpl - Task [7] has 1 box(es) in overflow � will be re-processed
+2026-08-23 01:32:23.662 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.impl.CheckServiceImpl - Re-processing 1 task(s) due to overflow
+2026-08-23 01:32:23.663 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.impl.CheckServiceImpl - Check step completed for run [42]
+2026-08-23 01:32:23.673 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.impl.CheckServiceImpl - Starting Check step for run [42]
+2026-08-23 01:32:23.674 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.impl.CheckServiceImpl - Run [42] has overflow control enabled
+2026-08-23 01:32:23.677 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.impl.CheckServiceImpl - Document contains 0 box(es) in overflow
+2026-08-23 01:32:23.677 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.impl.CheckServiceImpl - Check step completed for run [42]
+2026-08-23 01:32:23.679 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.impl.CheckServiceImpl - Starting Check step for run [42]
+2026-08-23 01:32:23.679 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.impl.CheckServiceImpl - Check step completed for run [42]
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.154 s -- in com.socgen.sgs.api.quark.engine.service.impl.CheckServiceImplTest
+[INFO] Running com.socgen.sgs.api.quark.engine.service.impl.LoadTasksServiceImplTest
+2026-08-23 01:32:23.907 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.LoadTasksServiceImpl - Loading tasks for runId: 100
+2026-08-23 01:32:23.908 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.LoadTasksServiceImpl - Loaded 1 tasks for runId: 100
+2026-08-23 01:32:23.908 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.LoadTasksServiceImpl - Loading task exceptions for runId: 100
+2026-08-23 01:32:23.909 WARN  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.LoadTasksServiceImpl - Task [999] not found in run [100] for one block exception
+2026-08-23 01:32:23.909 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.LoadTasksServiceImpl - Task exception loading completed for run [100]: 1 loaded, 1 missing-task rows skipped, 0 duplicate-block rows skipped
+2026-08-23 01:32:23.909 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.LoadTasksServiceImpl - DID task added for runId: 100
+2026-08-23 01:32:23.916 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.LoadTasksServiceImpl - Loading tasks for runId: 100
+2026-08-23 01:32:23.917 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.LoadTasksServiceImpl - Loaded 0 tasks for runId: 100
+2026-08-23 01:32:23.917 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.LoadTasksServiceImpl - Loading task exceptions for runId: 100
+2026-08-23 01:32:23.917 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.LoadTasksServiceImpl - Task exception loading completed for run [100]: 0 loaded, 0 missing-task rows skipped, 0 duplicate-block rows skipped
+2026-08-23 01:32:23.917 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.LoadTasksServiceImpl - DID task added for runId: 100
+2026-08-23 01:32:23.919 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.LoadTasksServiceImpl - Loading tasks for runId: 100
+2026-08-23 01:32:23.920 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.LoadTasksServiceImpl - Loaded 0 tasks for runId: 100
+2026-08-23 01:32:23.920 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.LoadTasksServiceImpl - Loading task exceptions for runId: 100
+2026-08-23 01:32:23.920 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.LoadTasksServiceImpl - Task exception loading completed for run [100]: 0 loaded, 0 missing-task rows skipped, 0 duplicate-block rows skipped
+2026-08-23 01:32:23.920 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.LoadTasksServiceImpl - DID task added for runId: 100
+2026-08-23 01:32:23.923 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.LoadTasksServiceImpl - Loading tasks for runId: 100
+2026-08-23 01:32:23.924 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.LoadTasksServiceImpl - Loaded 1 tasks for runId: 100
+2026-08-23 01:32:23.924 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.LoadTasksServiceImpl - Loading task exceptions for runId: 100
+2026-08-23 01:32:23.924 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.LoadTasksServiceImpl - Task exception loading completed for run [100]: 1 loaded, 0 missing-task rows skipped, 0 duplicate-block rows skipped
+2026-08-23 01:32:23.924 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.LoadTasksServiceImpl - DID task added for runId: 100
+2026-08-23 01:32:23.927 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.LoadTasksServiceImpl - Loading tasks for runId: 100
+2026-08-23 01:32:23.927 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.LoadTasksServiceImpl - Loaded 1 tasks for runId: 100
+2026-08-23 01:32:23.927 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.LoadTasksServiceImpl - Loading task exceptions for runId: 100
+2026-08-23 01:32:23.928 WARN  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.LoadTasksServiceImpl - Duplicate block exception for task [10] in run [100]
+2026-08-23 01:32:23.928 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.LoadTasksServiceImpl - Task exception loading completed for run [100]: 0 loaded, 0 missing-task rows skipped, 1 duplicate-block rows skipped
+2026-08-23 01:32:23.928 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.LoadTasksServiceImpl - DID task added for runId: 100
+2026-08-23 01:32:23.932 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.LoadTasksServiceImpl - Loading tasks for runId: 100
+2026-08-23 01:32:23.932 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.LoadTasksServiceImpl - Loaded 2 tasks for runId: 100
+2026-08-23 01:32:23.932 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.LoadTasksServiceImpl - Loading task exceptions for runId: 100
+2026-08-23 01:32:23.932 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.LoadTasksServiceImpl - Task exception loading completed for run [100]: 0 loaded, 0 missing-task rows skipped, 0 duplicate-block rows skipped
+2026-08-23 01:32:23.933 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.LoadTasksServiceImpl - DID task added for runId: 100
+2026-08-23 01:32:23.935 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.LoadTasksServiceImpl - Loading tasks for runId: 100
+2026-08-23 01:32:23.935 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.LoadTasksServiceImpl - Loaded 2 tasks for runId: 100
+2026-08-23 01:32:23.935 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.LoadTasksServiceImpl - Loading task exceptions for runId: 100
+2026-08-23 01:32:23.935 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.LoadTasksServiceImpl - Task exception loading completed for run [100]: 2 loaded, 0 missing-task rows skipped, 0 duplicate-block rows skipped
+2026-08-23 01:32:23.935 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.LoadTasksServiceImpl - DID task added for runId: 100
+2026-08-23 01:32:23.939 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.LoadTasksServiceImpl - Loading tasks for runId: 100
+2026-08-23 01:32:23.940 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.LoadTasksServiceImpl - Loaded 1 tasks for runId: 100
+2026-08-23 01:32:23.940 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.LoadTasksServiceImpl - Loading task exceptions for runId: 100
+2026-08-23 01:32:23.940 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.LoadTasksServiceImpl - Task exception loading completed for run [100]: 0 loaded, 0 missing-task rows skipped, 0 duplicate-block rows skipped
+2026-08-23 01:32:23.943 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.LoadTasksServiceImpl - Loading tasks for runId: 100
+2026-08-23 01:32:23.943 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.LoadTasksServiceImpl - Loaded 1 tasks for runId: 100
+2026-08-23 01:32:23.943 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.LoadTasksServiceImpl - Loading task exceptions for runId: 100
+2026-08-23 01:32:23.944 WARN  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.LoadTasksServiceImpl - Duplicate block exception for task [10] in run [100]
+2026-08-23 01:32:23.944 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.LoadTasksServiceImpl - Task exception loading completed for run [100]: 1 loaded, 0 missing-task rows skipped, 1 duplicate-block rows skipped
+2026-08-23 01:32:23.944 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.LoadTasksServiceImpl - DID task added for runId: 100
+2026-08-23 01:32:23.946 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.LoadTasksServiceImpl - Loading tasks for runId: 100
+2026-08-23 01:32:23.946 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.LoadTasksServiceImpl - Loaded 0 tasks for runId: 100
+2026-08-23 01:32:23.946 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.LoadTasksServiceImpl - Loading task exceptions for runId: 100
+2026-08-23 01:32:23.948 WARN  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.LoadTasksServiceImpl - Task [999] not found in run [100] for one block exception
+2026-08-23 01:32:23.948 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.LoadTasksServiceImpl - Task exception loading completed for run [100]: 0 loaded, 1 missing-task rows skipped, 0 duplicate-block rows skipped
+2026-08-23 01:32:23.948 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.LoadTasksServiceImpl - DID task added for runId: 100
+2026-08-23 01:32:23.950 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.LoadTasksServiceImpl - Loading tasks for runId: 100
+2026-08-23 01:32:23.952 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.LoadTasksServiceImpl - Loading tasks for runId: 100
+2026-08-23 01:32:23.952 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.LoadTasksServiceImpl - Loaded 1 tasks for runId: 100
+2026-08-23 01:32:23.952 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.LoadTasksServiceImpl - Loading task exceptions for runId: 100
+2026-08-23 01:32:23.952 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.LoadTasksServiceImpl - Task exception loading completed for run [100]: 0 loaded, 0 missing-task rows skipped, 0 duplicate-block rows skipped
+2026-08-23 01:32:23.953 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.LoadTasksServiceImpl - DID task added for runId: 100
+2026-08-23 01:32:23.956 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.LoadTasksServiceImpl - Loading tasks for runId: 100
+2026-08-23 01:32:23.956 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.LoadTasksServiceImpl - Loaded 1 tasks for runId: 100
+2026-08-23 01:32:23.956 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.LoadTasksServiceImpl - Loading task exceptions for runId: 100
+2026-08-23 01:32:23.956 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.LoadTasksServiceImpl - Task exception loading completed for run [100]: 2 loaded, 0 missing-task rows skipped, 0 duplicate-block rows skipped
+2026-08-23 01:32:23.956 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.LoadTasksServiceImpl - DID task added for runId: 100
+[INFO] Tests run: 13, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.275 s -- in com.socgen.sgs.api.quark.engine.service.impl.LoadTasksServiceImplTest
+[INFO] Running com.socgen.sgs.api.quark.engine.service.impl.ProcessRunServiceImplTest
+2026-08-23 01:32:24.598 INFO  [main] [runId=99 suiviId= taskId= stepIndex= childRunId=99] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Retrieving properties for runId: 99
+2026-08-23 01:32:24.598 INFO  [main] [runId=99 suiviId= taskId= stepIndex= childRunId=99] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Successfully retrieved properties for runId: 99
+2026-08-23 01:32:24.600 INFO  [main] [runId=99 suiviId= taskId= stepIndex= childRunId=99] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Retrieving properties for runId: 99
+2026-08-23 01:32:24.600 INFO  [main] [runId=99 suiviId= taskId= stepIndex= childRunId=99] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Successfully retrieved properties for runId: 99
+2026-08-23 01:32:24.605 INFO  [main] [runId=99 suiviId= taskId= stepIndex= childRunId=99] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Retrieving properties for runId: 99
+2026-08-23 01:32:24.605 INFO  [main] [runId=99 suiviId= taskId= stepIndex= childRunId=99] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Successfully retrieved properties for runId: 99
+2026-08-23 01:32:24.616 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Processing run with runId: 42
+2026-08-23 01:32:24.618 INFO  [main] [runId=42 suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Run started successfully with runId: 42
+2026-08-23 01:32:24.618 INFO  [main] [runId=42 suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Loading run with runId: 42
+2026-08-23 01:32:24.618 INFO  [main] [runId=42 suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Retrieving properties for runId: 42
+2026-08-23 01:32:24.618 INFO  [main] [runId=42 suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Successfully retrieved properties for runId: 42
+2026-08-23 01:32:24.620 INFO  [main] [runId=42 suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Run loading completed for runId: 42
+2026-08-23 01:32:24.620 INFO  [main] [runId=42 suiviId=0 taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Run completed for runId: 42 with status: GENERATED
+2026-08-23 01:32:24.627 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Processing run with runId: 1
+2026-08-23 01:32:24.627 ERROR [main] [runId=1 suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Run [1] failed; exceptionType=RuntimeException
+2026-08-23 01:32:24.628 INFO  [main] [runId=1 suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Run completed for runId: 1 with status: ERROR
+2026-08-23 01:32:24.636 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Processing run with runId: 42
+2026-08-23 01:32:24.636 INFO  [main] [runId=42 suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Run started successfully with runId: 42
+2026-08-23 01:32:24.636 INFO  [main] [runId=42 suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Loading run with runId: 42
+2026-08-23 01:32:24.636 INFO  [main] [runId=42 suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Retrieving properties for runId: 42
+2026-08-23 01:32:24.637 INFO  [main] [runId=42 suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Successfully retrieved properties for runId: 42
+2026-08-23 01:32:24.637 INFO  [main] [runId=42 suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Run loading completed for runId: 42
+2026-08-23 01:32:24.639 ERROR [main] [runId=42 suiviId=0 taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - End_Run failed for run [42]; exceptionType=RuntimeException
+2026-08-23 01:32:24.639 INFO  [main] [runId=42 suiviId=0 taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Run completed for runId: 42 with status: ERROR
+2026-08-23 01:32:24.644 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Processing run with runId: 99
+2026-08-23 01:32:24.644 INFO  [main] [runId=99 suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Run started successfully with runId: 99
+2026-08-23 01:32:24.644 INFO  [main] [runId=99 suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Loading run with runId: 99
+2026-08-23 01:32:24.644 INFO  [main] [runId=99 suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Retrieving properties for runId: 99
+2026-08-23 01:32:24.644 INFO  [main] [runId=99 suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Successfully retrieved properties for runId: 99
+2026-08-23 01:32:24.646 INFO  [main] [runId=99 suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Run loading completed for runId: 99
+2026-08-23 01:32:24.646 INFO  [main] [runId=99 suiviId=0 taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Run completed for runId: 99 with status: GENERATED
+2026-08-23 01:32:24.649 INFO  [main] [runId=99 suiviId= taskId= stepIndex= childRunId=99] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Retrieving properties for runId: 99
+2026-08-23 01:32:24.650 INFO  [main] [runId=99 suiviId= taskId= stepIndex= childRunId=99] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Successfully retrieved properties for runId: 99
+2026-08-23 01:32:24.656 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Loading run with runId: 1
+2026-08-23 01:32:24.657 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Retrieving properties for runId: 1
+2026-08-23 01:32:24.665 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Loading run with runId: 10
+2026-08-23 01:32:24.665 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Retrieving properties for runId: 10
+2026-08-23 01:32:24.665 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Successfully retrieved properties for runId: 10
+2026-08-23 01:32:24.666 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Run loading completed for runId: 10
+2026-08-23 01:32:24.672 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Processing run with runId: 99
+2026-08-23 01:32:24.672 INFO  [main] [runId=99 suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Run started successfully with runId: 99
+2026-08-23 01:32:24.672 INFO  [main] [runId=99 suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Loading run with runId: 99
+2026-08-23 01:32:24.672 INFO  [main] [runId=99 suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Retrieving properties for runId: 99
+2026-08-23 01:32:24.673 INFO  [main] [runId=99 suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Successfully retrieved properties for runId: 99
+2026-08-23 01:32:24.673 INFO  [main] [runId=99 suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Run loading completed for runId: 99
+2026-08-23 01:32:24.673 INFO  [main] [runId=99 suiviId=0 taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Run completed for runId: 99 with status: GENERATED
+2026-08-23 01:32:24.677 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Processing run with runId: 42
+2026-08-23 01:32:24.678 INFO  [main] [runId=42 suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Run started successfully with runId: 42
+2026-08-23 01:32:24.678 INFO  [main] [runId=42 suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Loading run with runId: 42
+2026-08-23 01:32:24.678 INFO  [main] [runId=42 suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Retrieving properties for runId: 42
+2026-08-23 01:32:24.679 INFO  [main] [runId=42 suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Successfully retrieved properties for runId: 42
+2026-08-23 01:32:24.706 WARN  [main] [runId=42 suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.b.DocumentStructureBusiness - QXP XML unavailable; cached empty structure for run [42], documentId [10], failureType [PotentialStubbingProblem]
+2026-08-23 01:32:24.706 WARN  [main] [runId=42 suiviId= taskId= stepIndex= childRunId=] c.s.sgs.api.quark.engine.domain.Run - Unable to load structural XML; continuing run [42] in degraded mode
+2026-08-23 01:32:24.706 INFO  [main] [runId=42 suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Run loading completed for runId: 42
+2026-08-23 01:32:24.707 INFO  [main] [runId=42 suiviId=0 taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Run completed for runId: 42 with status: GENERATED
+2026-08-23 01:32:24.713 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Processing run with runId: 1
+2026-08-23 01:32:24.714 INFO  [main] [runId=1 suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Run started successfully with runId: 1
+2026-08-23 01:32:24.714 INFO  [main] [runId=1 suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Loading run with runId: 1
+2026-08-23 01:32:24.714 INFO  [main] [runId=1 suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Retrieving properties for runId: 1
+2026-08-23 01:32:24.714 INFO  [main] [runId=1 suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Successfully retrieved properties for runId: 1
+2026-08-23 01:32:24.714 INFO  [main] [runId=1 suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Run loading completed for runId: 1
+2026-08-23 01:32:24.715 INFO  [main] [runId=1 suiviId=0 taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Run completed for runId: 1 with status: GENERATED
+2026-08-23 01:32:24.721 INFO  [main] [runId=99 suiviId= taskId= stepIndex= childRunId=99] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Retrieving properties for runId: 99
+2026-08-23 01:32:24.722 INFO  [main] [runId=99 suiviId= taskId= stepIndex= childRunId=99] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Successfully retrieved properties for runId: 99
+2026-08-23 01:32:24.722 ERROR [main] [runId=99 suiviId= taskId= stepIndex= childRunId=99] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Previous child run [99] failed; cause type [IllegalStateException]
+2026-08-23 01:32:24.726 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Retrieving properties for runId: 99
+2026-08-23 01:32:24.726 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Successfully retrieved properties for runId: 99
+2026-08-23 01:32:24.730 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Loading run with runId: 55
+2026-08-23 01:32:24.730 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Retrieving properties for runId: 55
+2026-08-23 01:32:24.730 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Successfully retrieved properties for runId: 55
+2026-08-23 01:32:24.730 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Run loading completed for runId: 55
+[INFO] Tests run: 16, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.765 s -- in com.socgen.sgs.api.quark.engine.service.impl.ProcessRunServiceImplTest
+[INFO] Running com.socgen.sgs.api.quark.engine.service.impl.ProcessTasksServiceImplPrepareTest
+2026-08-23 01:32:24.859 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessTasksServiceImpl - Preparing tasks for runId: 100
+2026-08-23 01:32:24.863 ERROR [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessTasksServiceImpl - Task phase failed: phase [prepare], task [40], run [100], cause [IllegalStateException]
+2026-08-23 01:32:24.864 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessTasksServiceImpl - Task preparation completed for runId: 100
+2026-08-23 01:32:24.865 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessTasksServiceImpl - Preparing tasks for runId: 101
+2026-08-23 01:32:24.866 ERROR [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessTasksServiceImpl - Task phase failed: phase [prepare], task [1], run [101], cause [IllegalStateException]
+2026-08-23 01:32:24.866 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessTasksServiceImpl - Task preparation completed for runId: 101
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.133 s -- in com.socgen.sgs.api.quark.engine.service.impl.ProcessTasksServiceImplPrepareTest
+[INFO] Running com.socgen.sgs.api.quark.engine.service.impl.ProcessTasksServiceImplTest
+2026-08-23 01:32:24.874 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessTasksServiceImpl - Processing tasks for runId: 43
+2026-08-23 01:32:24.875 ERROR [main] [runId= suiviId= taskId=7 stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessTasksServiceImpl - Task phase failed: phase [process], task [7], run [43], cause [IllegalStateException]
+2026-08-23 01:32:24.880 WARN  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessTasksServiceImpl - Task [8] in run [43] has no blocks after processing
+2026-08-23 01:32:24.880 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessTasksServiceImpl - Task processing completed for runId: 43
+2026-08-23 01:32:24.882 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessTasksServiceImpl - Processing tasks for runId: 42
+2026-08-23 01:32:24.883 ERROR [main] [runId= suiviId= taskId=7 stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessTasksServiceImpl - Task phase failed: phase [process], task [7], run [42], cause [EngineException]
+2026-08-23 01:32:24.883 WARN  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessTasksServiceImpl - Task [8] in run [42] has no blocks after processing
+2026-08-23 01:32:24.883 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessTasksServiceImpl - Task processing completed for runId: 42
+2026-08-23 01:32:24.943 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessTasksServiceImpl - Processing tasks for runId: 44
+2026-08-23 01:32:24.946 ERROR [main] [runId= suiviId= taskId=1 stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessTasksServiceImpl - Task phase failed: phase [reset], task [1], run [44], cause [IllegalStateException]
+2026-08-23 01:32:24.948 ERROR [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessTasksServiceImpl - Task phase failed: phase [post-process], task [2], run [44], cause [EngineException]
+2026-08-23 01:32:24.949 WARN  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessTasksServiceImpl - Task [3] in run [44] has no blocks after processing
+2026-08-23 01:32:24.949 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessTasksServiceImpl - Task processing completed for runId: 44
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.081 s -- in com.socgen.sgs.api.quark.engine.service.impl.ProcessTasksServiceImplTest
+[INFO] Running com.socgen.sgs.api.quark.engine.service.RunFactoryTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s -- in com.socgen.sgs.api.quark.engine.service.RunFactoryTest
+[INFO] Running com.socgen.sgs.api.quark.engine.service.task.impl.CompartimentTaskProcessStrategyTest
+2026-08-23 01:32:25.026 WARN  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.d.helper.TElementHelper - Static TElement not found for [MOVE_BLOC]
+2026-08-23 01:32:25.026 WARN  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.d.helper.TElementHelper - Cannot get MOVE_BLOC template for anchor movement
+2026-08-23 01:32:25.030 WARN  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.t.i.CompartimentTaskProcessStrategy - Child run [99] QXP project is unavailable; continuing without child boxes
+2026-08-23 01:32:25.032 INFO  [main] [runId=9 suiviId= taskId= stepIndex= childRunId=9] c.s.s.a.q.e.s.t.i.CompartimentTaskProcessStrategy - Generating child run [9] for compartment task [5]
+2026-08-23 01:32:25.033 INFO  [main] [runId=-7 suiviId= taskId= stepIndex= childRunId=-7] c.s.s.a.q.e.s.t.i.CompartimentTaskProcessStrategy - Reusing previous document for child run [-7] in compartment task [5]
+2026-08-23 01:32:25.040 WARN  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.t.i.CompartimentTaskProcessStrategy - No run found for compartment [C] in task [5], run [42]
+2026-08-23 01:32:25.043 WARN  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.t.i.CompartimentTaskProcessStrategy - Child run [99] has no final QXP, skipping
+2026-08-23 01:32:25.090 WARN  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.t.i.CompartimentTaskProcessStrategy - No compartment runs found for task [5] in run [42]
+[INFO] Tests run: 13, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.135 s -- in com.socgen.sgs.api.quark.engine.service.task.impl.CompartimentTaskProcessStrategyTest
+[INFO] Running com.socgen.sgs.api.quark.engine.service.task.impl.DidTaskPostProcessStrategyTest
+2026-08-23 01:32:25.160 WARN  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.t.i.DidTaskPostProcessStrategy - Missing DID box for run [100] in MOVE branch; DID update skipped
+2026-08-23 01:32:25.168 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.t.i.DidTaskPostProcessStrategy - DID update mode: NAME_VALUE for run [100]
+2026-08-23 01:32:25.169 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.t.i.DidTaskPostProcessStrategy - DID task post-process completed for run [100]
+2026-08-23 01:32:25.171 WARN  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.t.i.DidTaskPostProcessStrategy - Missing DID box for run [100] in NAME_VALUE branch; DID update skipped
+2026-08-23 01:32:25.176 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.t.i.DidTaskPostProcessStrategy - DID update mode: MOVE for run [100]
+2026-08-23 01:32:25.176 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.t.i.DidTaskPostProcessStrategy - DID task post-process completed for run [100]
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.087 s -- in com.socgen.sgs.api.quark.engine.service.task.impl.DidTaskPostProcessStrategyTest
+[INFO] Running com.socgen.sgs.api.quark.engine.service.task.impl.DocumentTaskProcessStrategyTest
+2026-08-23 01:32:25.250 WARN  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.t.i.DocumentTaskProcessStrategy - Document task [100] has no destination block
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.095 s -- in com.socgen.sgs.api.quark.engine.service.task.impl.DocumentTaskProcessStrategyTest
+[INFO] Running com.socgen.sgs.api.quark.engine.service.task.impl.DynamiqueTaskProcessStrategyTest
+2026-08-23 01:32:25.346 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.t.i.DynamiqueTaskProcessStrategy - Dynamic task [40] (run [900]) SQL fetched 1 rows
+2026-08-23 01:32:25.347 ERROR [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.t.i.DynamiqueTaskProcessStrategy - Dynamic SQL failed for task [40], run [900], cause [IllegalStateException]
+2026-08-23 01:32:25.349 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.t.i.DynamiqueTaskProcessStrategy - Dynamic task [40] (run [900]) SQL fetched 0 rows
+2026-08-23 01:32:25.350 INFO  [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.t.i.DynamiqueTaskProcessStrategy - No SQL data for dynamic task [40]
+2026-08-23 01:32:25.375 ERROR [main] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.t.i.DynamiqueTaskProcessStrategy - Dynamic SQL failed for task [40], run [900], cause [IllegalStateException]
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.100 s -- in com.socgen.sgs.api.quark.engine.service.task.impl.DynamiqueTaskProcessStrategyTest
+[INFO] Running com.socgen.sgs.api.quark.engine.service.task.impl.QxpPreviousTaskProcessStrategyTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.013 s -- in com.socgen.sgs.api.quark.engine.service.task.impl.QxpPreviousTaskProcessStrategyTest
+[INFO] Running com.socgen.sgs.api.quark.engine.service.task.impl.SystemTaskProcessStrategyTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.002 s -- in com.socgen.sgs.api.quark.engine.service.task.impl.SystemTaskProcessStrategyTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[ERROR] Failures: 
+[ERROR]   EngineServiceControllerTest.shouldPassCorrectRunIdToGetRunProperties:110 Status expected:<200> but was:<404>
+[ERROR]   EngineServiceControllerTest.shouldPassCorrectRunIdToProcessor:70 Status expected:<200> but was:<404>
+[ERROR]   EngineServiceControllerTest.shouldReturn200WhenProcessRunSucceeds:44 Status expected:<200> but was:<404>
+[ERROR]   EngineServiceControllerTest.shouldReturn200WithRunProperties:86 Status expected:<200> but was:<404>
+[ERROR]   EngineServiceControllerTest.shouldReturn500WhenFetchRunPropertiesFails:100 Status expected:<500> but was:<404>
+[ERROR]   EngineServiceControllerTest.shouldReturn500WhenProcessRunFails:59 Status expected:<500> but was:<404>
+[INFO] 
+[ERROR] Tests run: 518, Failures: 6, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  01:53 min
+[INFO] Finished at: 2026-08-23T01:32:25+05:30
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:3.5.3:test (default-test) on project quark-engine-service: There are test failures.
+[ERROR] 
+[ERROR] See C:\Users\rgurram062722\Documents\GitHub\engine service repo\quark-engine\target\surefire-reports for the individual test results.
+[ERROR] See dump files (if any exist) [date].dump, [date]-jvmRun[N].dump and [date].dumpstream.
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException
+
