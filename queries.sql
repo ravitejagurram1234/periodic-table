@@ -19,9 +19,13 @@ Safety
     data. Keep exports in the approved evidence location.
 
 Usage
-  1. Edit the DEFINE values below.
-  2. Run/export each QOFF block separately so its result has the filename shown.
-  3. Execute PRE blocks before POST /processRun and POST blocks afterwards.
+  1. Run QOFF-00, QOFF-01 and QOFF-01A to select a historical baseline.
+  2. Recreate that business case through the normal UI/backend workflow.
+  3. Set CREATED_AFTER and FUND_CODE, then use QOFF-02 to locate the fresh ID.
+  4. Set RUN_ID to that fresh ID and require QOFF-02B to return PASS.
+  5. Run/export each QOFF block separately so its result has the filename shown.
+  6. Execute the PRE blocks before POST /processRun and the POST blocks
+     afterwards as directed by the companion guide.
 
 The statements use Oracle SQL Developer/SQLcl substitution variables.
 ===============================================================================
@@ -32,6 +36,8 @@ SET VERIFY OFF
 DEFINE RUN_ID = 0
 DEFINE CREATED_AFTER = "25/08/2026 00:00:00"
 DEFINE FUND_CODE = REPLACE_ME
+DEFINE CANDIDATE_LOOKBACK_DAYS = 7300
+DEFINE CANDIDATES_PER_GROUP = 10
 
 
 /* ---------------------------------------------------------------------------
@@ -158,6 +164,172 @@ FETCH FIRST 200 ROWS ONLY;
 
 
 /* ---------------------------------------------------------------------------
+   QOFF-01A - Ranked valid baselines by scenario, report type and compartment mode
+   Export: planning/02_ranked_scenario_candidates.csv
+
+   Selection aid only. NEVER call processRun for an ID returned here.
+
+   SIMPLE      = selected active change tasks, but no dynamic/compartment task
+   DYNAMIC     = at least one selected active type-4 task
+   COMPARTMENT = at least one selected active type-5 task
+
+   A candidate must have selected active tasks and a non-empty generated QXP.
+   This proves historical reachability, not that a future fresh run has the same
+   inputs. Recreate the business configuration and validate the fresh ID with
+   QOFF-02, QOFF-02B and all mandatory pre-run queries.
+   --------------------------------------------------------------------------- */
+WITH run_profile AS (
+    SELECT
+        run_record.id_run,
+        run_record.id_suivi,
+        suivi.id_type_rapport,
+        report_type.libelle AS report_type_label,
+        suivi.id_fnd_code,
+        suivi.id_unit_code,
+        suivi.id_langue,
+        language.nom_langue,
+        suivi.date_echeance,
+        suivi.id_gabarit,
+        run_record.gabarit_source,
+        run_record.mode_compart,
+        gabarit.pagination_double,
+        NVL(gabarit.store_data_type, 0) AS store_data_type,
+        COUNT(DISTINCT task.id_tache) AS selected_active_task_count,
+        COUNT(DISTINCT CASE WHEN task.id_type_tache BETWEEN 1 AND 5
+                            THEN task.id_tache END) AS selected_change_task_count,
+        COUNT(DISTINCT CASE WHEN task.id_type_tache = 1
+                            THEN task.id_tache END) AS sql_tasks,
+        COUNT(DISTINCT CASE WHEN task.id_type_tache = 2
+                            THEN task.id_tache END) AS document_tasks,
+        COUNT(DISTINCT CASE WHEN task.id_type_tache = 3
+                            THEN task.id_tache END) AS qxp_block_tasks,
+        COUNT(DISTINCT CASE WHEN task.id_type_tache = 4
+                            THEN task.id_tache END) AS dynamic_tasks,
+        COUNT(DISTINCT CASE WHEN task.id_type_tache = 5
+                            THEN task.id_tache END) AS compartment_tasks,
+        COUNT(DISTINCT CASE WHEN task.id_type_tache = 4
+                                  AND task.control_overflow = 1
+                            THEN task.id_tache END) AS overflow_control_tasks,
+        COUNT(DISTINCT CASE WHEN task.store_data = 1
+                            THEN task.id_tache END) AS task_storage_tasks,
+        run_record.date_creation_run,
+        run_record.date_fin_generation,
+        run_record.id_doc_qxp,
+        run_record.id_doc_pdf,
+        run_record.id_doc_doc,
+        (SELECT DBMS_LOB.GETLENGTH(output_qxp.contenu)
+           FROM qxp_document output_qxp
+          WHERE output_qxp.id_document = run_record.id_doc_qxp
+        ) AS output_qxp_bytes,
+        (SELECT COUNT(*)
+           FROM qxp_run_error error_row
+          WHERE error_row.id_run = run_record.id_run
+        ) AS historical_error_count
+    FROM qxp_run run_record
+    JOIN qxp_suivi suivi
+      ON suivi.id_suivi = run_record.id_suivi
+    JOIN qxp_gabarit gabarit
+      ON gabarit.id_gabarit = suivi.id_gabarit
+    LEFT JOIN qxp_ref_type_rapport report_type
+      ON report_type.id_type_rapport = suivi.id_type_rapport
+    LEFT JOIN qxp_ref_langue_document language
+      ON language.id_langue_document = suivi.id_langue
+    JOIN qxp_asso_run_taches run_task
+      ON run_task.id_run = run_record.id_run
+    JOIN qxp_tache task
+      ON task.id_tache = run_task.id_tache
+     AND task.is_actif = 1
+    WHERE run_record.id_statut_generation = 2
+      AND run_record.id_doc_qxp IS NOT NULL
+      AND run_record.date_fin_generation >= SYSDATE - &CANDIDATE_LOOKBACK_DAYS
+    GROUP BY
+        run_record.id_run,
+        run_record.id_suivi,
+        suivi.id_type_rapport,
+        report_type.libelle,
+        suivi.id_fnd_code,
+        suivi.id_unit_code,
+        suivi.id_langue,
+        language.nom_langue,
+        suivi.date_echeance,
+        suivi.id_gabarit,
+        run_record.gabarit_source,
+        run_record.mode_compart,
+        gabarit.pagination_double,
+        NVL(gabarit.store_data_type, 0),
+        run_record.date_creation_run,
+        run_record.date_fin_generation,
+        run_record.id_doc_qxp,
+        run_record.id_doc_pdf,
+        run_record.id_doc_doc
+), classified AS (
+    SELECT
+        profile.*,
+        CASE
+            WHEN profile.compartment_tasks > 0 THEN 'COMPARTMENT'
+            WHEN profile.dynamic_tasks > 0 THEN 'DYNAMIC'
+            ELSE 'SIMPLE'
+        END AS scenario_class
+    FROM run_profile profile
+    WHERE profile.selected_active_task_count > 0
+      AND profile.selected_change_task_count > 0
+      AND profile.output_qxp_bytes > 0
+), ranked AS (
+    SELECT
+        classified.*,
+        ROW_NUMBER() OVER (
+            PARTITION BY
+                classified.scenario_class,
+                classified.id_type_rapport,
+                CASE WHEN classified.scenario_class = 'COMPARTMENT'
+                     THEN NVL(classified.mode_compart, -1)
+                     ELSE -1
+                END
+            ORDER BY classified.date_fin_generation DESC,
+                     classified.id_run DESC
+        ) AS candidate_rank
+    FROM classified
+)
+SELECT
+    scenario_class,
+    candidate_rank,
+    id_run,
+    id_suivi,
+    id_type_rapport,
+    report_type_label,
+    id_fnd_code,
+    id_unit_code,
+    id_langue,
+    nom_langue,
+    TO_CHAR(date_echeance, 'YYYY-MM-DD HH24:MI:SS') AS due_date,
+    id_gabarit,
+    gabarit_source,
+    mode_compart,
+    pagination_double,
+    store_data_type,
+    selected_active_task_count,
+    selected_change_task_count,
+    sql_tasks,
+    document_tasks,
+    qxp_block_tasks,
+    dynamic_tasks,
+    compartment_tasks,
+    overflow_control_tasks,
+    task_storage_tasks,
+    historical_error_count,
+    output_qxp_bytes,
+    id_doc_qxp,
+    id_doc_pdf,
+    id_doc_doc,
+    TO_CHAR(date_creation_run, 'YYYY-MM-DD HH24:MI:SS') AS creation_time,
+    TO_CHAR(date_fin_generation, 'YYYY-MM-DD HH24:MI:SS') AS end_time
+FROM ranked
+WHERE candidate_rank <= &CANDIDATES_PER_GROUP
+ORDER BY scenario_class, id_type_rapport,
+         NVL(mode_compart, -1), candidate_rank;
+
+
+/* ---------------------------------------------------------------------------
    QOFF-02 - Locate the fresh run just created by the normal UI/backend flow
    Export: run_<ID>/00_new_run_candidates.csv
 
@@ -195,6 +367,136 @@ WHERE run_record.date_creation_run >= TO_DATE('&CREATED_AFTER', 'DD/MM/YYYY HH24
   AND suivi.id_fnd_code = '&FUND_CODE'
 ORDER BY run_record.date_creation_run DESC
 FETCH FIRST 20 ROWS ONLY;
+
+
+/* ---------------------------------------------------------------------------
+   QOFF-02B - Fresh-run basic admission and selected-task validation
+   Export: run_<ID>/00_fresh_run_validation.csv
+
+   Run after QOFF-02 identifies the new ID and before any engine GET/POST.
+   BASIC_ADMISSION_RESULT must be PASS. This query validates the normal batch
+   handoff and proves that the run has active selected work. QOFF-07B, QOFF-08
+   and QOFF-09 still validate source documents and branch-specific inputs.
+   --------------------------------------------------------------------------- */
+WITH fresh_profile AS (
+    SELECT
+        run_record.id_run,
+        run_record.id_suivi,
+        run_record.id_statut_generation,
+        status.libelle AS run_status_label,
+        suivi.id_type_rapport,
+        report_type.libelle AS report_type_label,
+        suivi.id_fnd_code,
+        suivi.id_unit_code,
+        suivi.id_langue,
+        suivi.id_gabarit,
+        run_record.gabarit_source,
+        run_record.mode_compart,
+        CASE WHEN suivi.id_run_suivant = run_record.id_run THEN 1 ELSE 0 END
+            AS is_current_suivi_run,
+        (SELECT COUNT(*)
+           FROM qxp_asso_fond_gabarit association_row
+          WHERE association_row.id_type_rapport = suivi.id_type_rapport
+            AND association_row.id_fnd_code = suivi.id_fnd_code
+            AND association_row.id_langue = suivi.id_langue
+            AND association_row.id_gabarit = suivi.id_gabarit
+        ) AS run_property_match_count,
+        gabarit.is_actif AS gabarit_is_active,
+        MAX(CASE WHEN gabarit.contenu IS NULL THEN 0
+                 ELSE DBMS_LOB.GETLENGTH(gabarit.contenu)
+            END) AS configured_gabarit_bytes,
+        COUNT(DISTINCT CASE WHEN task.is_actif = 1
+                            THEN task.id_tache END) AS configured_active_task_count,
+        COUNT(DISTINCT CASE WHEN task.is_actif = 1
+                                  AND run_task.id_tache IS NOT NULL
+                            THEN task.id_tache END) AS selected_todo_task_count,
+        COUNT(DISTINCT CASE WHEN task.is_actif = 1
+                                  AND run_task.id_tache IS NOT NULL
+                                  AND task.id_type_tache = 1
+                            THEN task.id_tache END) AS selected_sql_tasks,
+        COUNT(DISTINCT CASE WHEN task.is_actif = 1
+                                  AND run_task.id_tache IS NOT NULL
+                                  AND task.id_type_tache = 2
+                            THEN task.id_tache END) AS selected_document_tasks,
+        COUNT(DISTINCT CASE WHEN task.is_actif = 1
+                                  AND run_task.id_tache IS NOT NULL
+                                  AND task.id_type_tache = 3
+                            THEN task.id_tache END) AS selected_qxp_block_tasks,
+        COUNT(DISTINCT CASE WHEN task.is_actif = 1
+                                  AND run_task.id_tache IS NOT NULL
+                                  AND task.id_type_tache = 4
+                            THEN task.id_tache END) AS selected_dynamic_tasks,
+        COUNT(DISTINCT CASE WHEN task.is_actif = 1
+                                  AND run_task.id_tache IS NOT NULL
+                                  AND task.id_type_tache = 5
+                            THEN task.id_tache END) AS selected_compartment_tasks,
+        run_record.date_debut_generation,
+        run_record.date_fin_generation,
+        run_record.id_doc_qxp,
+        run_record.id_doc_pdf,
+        run_record.id_doc_doc
+    FROM qxp_run run_record
+    JOIN qxp_suivi suivi
+      ON suivi.id_suivi = run_record.id_suivi
+    JOIN qxp_gabarit gabarit
+      ON gabarit.id_gabarit = suivi.id_gabarit
+    LEFT JOIN qxp_ref_statut_generation status
+      ON status.id_statut_generation = run_record.id_statut_generation
+    LEFT JOIN qxp_ref_type_rapport report_type
+      ON report_type.id_type_rapport = suivi.id_type_rapport
+    LEFT JOIN qxp_asso_gabarit_taches gabarit_task
+      ON gabarit_task.id_gabarit = suivi.id_gabarit
+    LEFT JOIN qxp_tache task
+      ON task.id_tache = gabarit_task.id_tache
+    LEFT JOIN qxp_asso_run_taches run_task
+      ON run_task.id_run = run_record.id_run
+     AND run_task.id_tache = task.id_tache
+    WHERE run_record.id_run = &RUN_ID
+    GROUP BY
+        run_record.id_run,
+        run_record.id_suivi,
+        run_record.id_statut_generation,
+        status.libelle,
+        suivi.id_type_rapport,
+        report_type.libelle,
+        suivi.id_fnd_code,
+        suivi.id_unit_code,
+        suivi.id_langue,
+        suivi.id_gabarit,
+        suivi.id_run_suivant,
+        gabarit.is_actif,
+        run_record.gabarit_source,
+        run_record.mode_compart,
+        run_record.date_debut_generation,
+        run_record.date_fin_generation,
+        run_record.id_doc_qxp,
+        run_record.id_doc_pdf,
+        run_record.id_doc_doc
+)
+SELECT
+    profile.*,
+    CASE
+        WHEN profile.selected_compartment_tasks > 0 THEN 'COMPARTMENT'
+        WHEN profile.selected_dynamic_tasks > 0 THEN 'DYNAMIC'
+        ELSE 'SIMPLE'
+    END AS scenario_class,
+    CASE
+        WHEN profile.id_statut_generation <> 5 THEN 'STOP: status is not batch-reserved (5)'
+        WHEN profile.is_current_suivi_run <> 1 THEN 'STOP: run is not ID_RUN_SUIVANT'
+        WHEN profile.run_property_match_count <> 1 THEN 'STOP: run-property association count is not 1'
+        WHEN profile.gabarit_is_active <> 1 OR profile.configured_gabarit_bytes <= 0
+          THEN 'STOP: configured gabarit is unavailable'
+        WHEN profile.selected_todo_task_count <= 0 THEN 'STOP: no selected active task'
+        WHEN profile.date_debut_generation IS NOT NULL
+          OR profile.date_fin_generation IS NOT NULL
+          THEN 'STOP: run already has generation timestamps'
+        WHEN profile.id_doc_qxp IS NOT NULL
+          OR profile.id_doc_pdf IS NOT NULL
+          OR profile.id_doc_doc IS NOT NULL
+          THEN 'STOP: run already has generated document links'
+        ELSE 'PASS'
+    END AS basic_admission_result
+FROM fresh_profile profile;
 
 
 /* ---------------------------------------------------------------------------
@@ -951,4 +1253,74 @@ SELECT
 FROM qxp_run run_record
 LEFT JOIN qxp_ref_statut_generation status
   ON status.id_statut_generation = run_record.id_statut_generation
+WHERE run_record.id_run = &RUN_ID;
+
+
+/* ---------------------------------------------------------------------------
+   QOFF-17 - Post-run persisted-trace milestone check
+   Export: run_<ID>/17_trace_milestones.csv
+
+   TRACE_EVIDENCE_RESULT=PASS proves that a non-degraded test reached task
+   processing, at least one QXPS modification step, final QXP fetch and End.
+   It does not replace the complete QOFF-15 export or visual artifact checks.
+   --------------------------------------------------------------------------- */
+SELECT
+    run_record.id_run,
+    CASE WHEN NVL(DBMS_LOB.INSTR(run_record.log_trace,
+             'Run ' || TO_CHAR(run_record.id_run) || ' started'), 0) > 0
+         THEN 1 ELSE 0 END AS has_run_started,
+    CASE WHEN NVL(DBMS_LOB.INSTR(run_record.log_trace,
+             'Run loaded (modeDegrade=false)'), 0) > 0
+         THEN 1 ELSE 0 END AS has_non_degraded_load,
+    CASE WHEN NVL(DBMS_LOB.INSTR(run_record.log_trace,
+             'Tasks prepared and processed'), 0) > 0
+         THEN 1 ELSE 0 END AS has_task_processing,
+    CASE WHEN NVL(DBMS_LOB.INSTR(run_record.log_trace,
+             'Step '), 0) > 0
+         AND NVL(DBMS_LOB.INSTR(run_record.log_trace,
+             ' executing, add='), 0) > 0
+         THEN 1 ELSE 0 END AS has_qxps_step_execution,
+    CASE WHEN REGEXP_LIKE(
+             run_record.log_trace,
+             ' executing, add=[1-9][[:digit:]]*,|, update=[1-9][[:digit:]]*,|, excluded=[1-9][[:digit:]]*,'
+         )
+         THEN 1 ELSE 0 END AS has_nonzero_step_change,
+    CASE WHEN NVL(DBMS_LOB.INSTR(run_record.log_trace,
+             'Modification steps executed'), 0) > 0
+         THEN 1 ELSE 0 END AS has_modification_completion,
+    CASE WHEN NVL(DBMS_LOB.INSTR(run_record.log_trace,
+             'QXP literal fetch completed, bytes='), 0) > 0
+         THEN 1 ELSE 0 END AS has_qxp_render_result,
+    CASE WHEN NVL(DBMS_LOB.INSTR(run_record.log_trace,
+             'End attempt=1'), 0) > 0
+         THEN 1 ELSE 0 END AS has_end_attempt,
+    CASE WHEN NVL(DBMS_LOB.INSTR(run_record.log_trace,
+             'TRACE_TRUNCATED'), 0) > 0
+         THEN 1 ELSE 0 END AS trace_truncated,
+    CASE
+        WHEN run_record.id_statut_generation = 2
+         AND NVL(DBMS_LOB.INSTR(run_record.log_trace,
+             'Run loaded (modeDegrade=false)'), 0) > 0
+         AND NVL(DBMS_LOB.INSTR(run_record.log_trace,
+             'Tasks prepared and processed'), 0) > 0
+         AND NVL(DBMS_LOB.INSTR(run_record.log_trace,
+             'Step '), 0) > 0
+         AND NVL(DBMS_LOB.INSTR(run_record.log_trace,
+             ' executing, add='), 0) > 0
+         AND REGEXP_LIKE(
+             run_record.log_trace,
+             ' executing, add=[1-9][[:digit:]]*,|, update=[1-9][[:digit:]]*,|, excluded=[1-9][[:digit:]]*,'
+         )
+         AND NVL(DBMS_LOB.INSTR(run_record.log_trace,
+             'Modification steps executed'), 0) > 0
+         AND NVL(DBMS_LOB.INSTR(run_record.log_trace,
+             'QXP literal fetch completed, bytes='), 0) > 0
+         AND NVL(DBMS_LOB.INSTR(run_record.log_trace,
+             'End attempt=1'), 0) > 0
+         AND NVL(DBMS_LOB.INSTR(run_record.log_trace,
+             'TRACE_TRUNCATED'), 0) = 0
+        THEN 'PASS'
+        ELSE 'REVIEW'
+    END AS trace_evidence_result
+FROM qxp_run run_record
 WHERE run_record.id_run = &RUN_ID;
