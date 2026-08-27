@@ -24,3 +24,49 @@ AnnualReport_[Fund name]UM14174{}[Date]{}[Language]{}[country]_[currency].pdf
  
 
 Be careful : Use the example to define the rule because Jira add some formatting in the demand. 
+
+
+
+SELECT column_id, column_name, data_type, data_length, nullable
+FROM user_tab_columns
+WHERE table_name = 'QXP_AMUNDI_PERIMETER'
+ORDER BY column_id;
+
+SELECT cc.position, cc.column_name
+FROM user_constraints c
+JOIN user_cons_columns cc
+  ON cc.owner = c.owner
+ AND cc.constraint_name = c.constraint_name
+WHERE c.table_name = 'QXP_AMUNDI_PERIMETER'
+  AND c.constraint_type = 'P'
+ORDER BY cc.position;
+
+SELECT nom_template, contenu_template
+FROM qxp_template_import_def
+WHERE nom_template = 'IT_AMUNDI_PERIMETER';
+
+SELECT fund_label, id_fund_bwr, decalog, fund_name,
+       report_type, report_date, report_language
+FROM qxp_amundi_perimeter
+WHERE id_fund_bwr IN ('11182', '14174', 'UM11182', 'UM14174')
+   OR UPPER(fund_label) LIKE '%ARCANCIA%'
+   OR UPPER(fund_label) LIKE '%ACTIONS%ETATS%UNIS%';
+
+SELECT id_langue_document, nom_langue, valeur_langue
+FROM qxp_ref_langue_document
+ORDER BY id_langue_document;
+
+SELECT id_type_rapport, libelle
+FROM qxp_ref_type_rapport
+ORDER BY id_type_rapport;
+
+SELECT column_name, data_type, data_length
+FROM all_tab_columns
+WHERE owner = 'OWB_DWH'
+  AND table_name = 'REF_FUND'
+  AND (column_name LIKE '%COUNTRY%'
+    OR column_name LIKE '%DOMICIL%'
+    OR column_name LIKE '%NATION%'
+    OR column_name IN ('ID_FND_CODE', 'FND_SHT_DESCRIPTION', 'FND_CURRENCY'))
+ORDER BY column_id;
+
