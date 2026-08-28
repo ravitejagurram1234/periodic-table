@@ -118,13 +118,19 @@ The validation endpoint will:
 - validate the expected header set and reject missing, duplicated, or unknown columns;
 - trim text without losing accents;
 - parse the selected date format strictly;
-- accept only `RA` or `IS` for this scoped importer;
-- normalize language to uppercase and require two characters, such as `FR`;
+- accept the report-type text allowed by the live two-character Oracle column; importing a
+  legacy type such as `PB`, `RC`, or `DICI` does not make that type eligible for the new filename;
+- preserve trimmed string values as supplied, matching the .NET importer rather than silently
+  changing fund codes, report types, or language values;
 - require the `Code Parapluie` header but allow its row value to be empty;
-- validate required fields and Oracle column lengths before database access;
+- read column lengths and nullability from the live Oracle table and validate them before any
+  data-changing statement;
 - detect duplicate business keys within the uploaded file;
-- verify that `FUND_NAME` exists in `OWB_DWH.REF_FUND`, because the download name needs its long name and currency;
 - return total, valid, invalid, and duplicate counts plus detailed row errors.
+
+Java deliberately does not add a `REF_FUND` existence rule to the import. The .NET template
+does not have that rule, and adding it would prevent Java from loading perimeter/history rows
+that .NET can load. At download time, the suivi itself supplies the fund context.
 
 ### Backend endpoints
 
@@ -141,6 +147,81 @@ The GET response contains only `IT_AMUNDI_PERIMETER` and its supported date form
 The validation call accepts the multipart CSV and date format and returns validation results without changing the database. The import call accepts the same file/options plus the selected mode, reparses it server-side, and executes only valid rows. A SHA-256 returned by validation can be sent back on import to prove that the same file was confirmed.
 
 Both write endpoints require SGIAM/SG Connect authorization and an audit record containing user email, original filename, checksum, mode, counts, and result. The existing Java security configuration protects `/api/v1/**` with `api.quark.v1`, Spring exposes it as `SCOPE_api.quark.v1`, and `OAuth2AuthenticationService` reads `mail` directly from the SG Connect `BearerTokenAuthentication` claims. For this Jira, use the existing `SCOPE_api.quark.v1`; no new dedicated import authority is required. Java will use `mail` for audit and will not query `QXP_UTILISATEUR` or `QXP_ASSO_ROLE_TEMPLATE_IMPORT`. Interactive import must reject a token without a real `mail` value; the existing `external_api` client-credentials fallback is not a human audit identity.
+
+### Exact controller inputs
+
+All routes are below the existing `/api/v1` security rule and therefore require the normal
+SGIAM/SG Connect bearer token. The client never sends a database table name, `isAmundi`, fund
+name, fund code, report type, report date, language, country, currency, or Code-Parapluie as a
+separate request value.
+
+#### Read the one supported import configuration
+
+```http
+GET /api/v1/referential/import-templates
+Authorization: Bearer <access-token>
+```
+
+Input: no query parameters and no body. The response is a one-element JSON array describing
+only `IT_AMUNDI_PERIMETER`. There is intentionally no `templateName` input because this
+controller is dedicated to that one template.
+
+#### Validate an AMUNDI perimeter CSV
+
+```http
+POST /api/v1/referential/amundi-perimeter/validate
+Authorization: Bearer <access-token>
+Content-Type: multipart/form-data
+
+file=<required CSV file>
+dateFormat=DD_MM_YYYY
+```
+
+| Part | Required | Allowed value |
+|---|---:|---|
+| `file` | Yes | Non-empty UTF-8 `.csv`, comma-separated, quoted when needed, with the exact 11-column header |
+| `dateFormat` | No | `DD_MM_YYYY` (default, CSV dates such as `31/12/2025`) or `MM_DD_YYYY` (CSV dates such as `12/31/2025`) |
+
+This call does not change Oracle. Keep `checksumSha256` from its JSON response.
+
+#### Import the validated CSV
+
+```http
+POST /api/v1/referential/amundi-perimeter/import
+Authorization: Bearer <access-token>
+Content-Type: multipart/form-data
+
+file=<required, same CSV file>
+dateFormat=DD_MM_YYYY
+mode=DELETE_AND_INSERT
+expectedChecksum=<checksumSha256 returned by validation>
+```
+
+| Part | Required | Allowed value |
+|---|---:|---|
+| `file` | Yes | The same CSV bytes that were validated |
+| `dateFormat` | No | Same value used for validation; default `DD_MM_YYYY` |
+| `mode` | No | `DELETE`, `DELETE_AND_INSERT` (default), or `UPDATE` |
+| `expectedChecksum` | Yes | Exact `checksumSha256` returned by the validation call |
+
+The checksum is a stateless REST safety check replacing the .NET page's server session: it
+prevents the UI from validating one file and importing different bytes. The import reparses
+the file and imports only valid rows, preserving the visible .NET partial-import behavior.
+
+#### Download a report attachment
+
+```http
+GET /api/v1/tableau-de-bord/suivis/{idSuivi}/documents/{format}
+Authorization: Bearer <access-token>
+```
+
+| Path value | Required | Allowed value |
+|---|---:|---|
+| `idSuivi` | Yes | Numeric suivi identifier from Tableau de bord page 2 |
+| `format` | Yes | `pdf`, `qxp`, or `doc` (case-insensitive) |
+
+The server loads every naming value from Oracle using `idSuivi`; the UI chooses only the
+document format.
 
 ### Required Java layers
 
@@ -231,12 +312,11 @@ PeriodicReport_SG-ACTIONS-ETATS-UNIS_UM11182_20250331_FRA_FR_EUR.pdf
 
 Java must derive the decision from `idSuivi`; the UI must not send `isAmundi`, fund name, currency, date, language, or Code-Parapluie.
 
-Use the new AMUNDI formatter only when the perimeter information is unambiguous after these
-three comparisons:
+First, the report must be eligible for this Jira: it must be an Annual report or a Plaquette.
+For an eligible report, the AMUNDI perimeter match then uses exactly these three comparisons:
 
 ```text
-report is Annual or Plaquette
-AND FUND_NAME = suivi.ID_FND_CODE
+FUND_NAME = suivi.ID_FND_CODE
 AND REPORT_TYPE = RA or IS respectively
 AND report month/year matches the selected suivi report month/year
 ```
@@ -296,10 +376,15 @@ Then:
 4. Enable the new filename strategy after compatibility testing/UAT, preferably behind a configuration flag.
 5. Keep the column during rollback; disable the new formatter rather than dropping data.
 
-Risks to resolve:
+Confirmed compatibility points and remaining data risk:
 
 - the checked-in primary key identifies a row using `FUND_NAME + REPORT_DATE + REPORT_LANGUAGE`. It does not include `REPORT_TYPE`. The supplied 148-row CSV contains no fund/date/language combination with both RA and IS, so no key change is required for this Jira. If that business case is introduced later, `REPORT_TYPE` must be added to the primary/unique key;
-- the checked-in `FUND_NAME` is `VARCHAR2(6)` while live/sample values must be checked before coding length validation;
+- the supplied database workbook confirms that live `FUND_NAME` is `VARCHAR2(6)`. The supplied
+  CSV contains one eight-character `Code Comptable`, `936679G0`. The final Java validation
+  therefore reports that row as invalid and does not send it to Oracle. Do not widen this
+  primary-key column silently as part of the Code-Parapluie change. If that row must be
+  imported, obtain a separate DBA/business decision and compatibility review for widening
+  `QXP_AMUNDI_PERIMETER.FUND_NAME` (and any related fund/suivi columns);
 - the existing .NET XML has 10 fields and cannot provide Code-Parapluie, but its generated insert explicitly names those 10 columns, so the additional nullable column does not break the old import;
 - Oracle stores a zero-character `VARCHAR2` value as `NULL`; Java must convert a null Code-Parapluie to `""` while formatting the filename;
 - the old .NET default `DELETE_AND_INSERT` deletes the matched row and inserts only its 10 configured columns. If Java previously populated Code-Parapluie, that legacy re-import resets it to null. This does not crash either application: the next Java download shows an empty Code-Parapluie segment, and a new Java 11-column import restores it;
@@ -325,7 +410,10 @@ Liquibase can be adopted later as the standard database-deployment tool, but the
 ## 8. Minimum acceptance tests
 
 - The supplied UTF-8 BOM, quoted, comma-separated CSV validates successfully after the eleventh `Code Parapluie` header is supplied; its individual value may be empty.
-- Header mismatch, wrong field count, invalid date, invalid language, duplicate key, excessive length, and unknown fund produce row-specific errors.
+- Header mismatch, wrong field count, missing live-required value, invalid date, duplicate key,
+  and excessive live-column length produce row-specific errors.
+- The supplied `936679G0` row is reported invalid while the live `FUND_NAME` limit remains six;
+  other valid rows are still available for the selected partial-import mode.
 - Decimal separator is not requested or used.
 - CRLF and LF both work; quoted commas are preserved.
 - `DELETE`, `DELETE_AND_INSERT`, and `UPDATE` affect only the typed AMUNDI table and report accurate counts.
@@ -385,6 +473,13 @@ from the new repository:
 - the pasted import business writes audit records inside the import transaction, allowing
   a failed import to roll back its own failure trace; sections 12.5A, 12.8, and 12.10 fix
   the transaction boundary;
+- the pasted parser made two unsupported business assumptions: it rejected every perimeter
+  type except RA/IS and required an active `REF_FUND` row. The .NET importer does neither.
+  The final code accepts the live table contract for all rows, while the filename strategy
+  alone remains restricted to RA/IS;
+- the pasted AMUNDI candidate check treated language as a condition. The final code removes
+  language from candidate detection and from the perimeter SQL; language is read only when
+  composing the output filename;
 - the earlier section 12.17 incorrectly proposed a second dashboard controller; the
   repository already has `TableDeBoard_controller`, so section 12.17 now gives an additive
   modification for that existing class and preserves `/api/v1/getDocument`;
@@ -399,17 +494,17 @@ Complete pasted-file manifest:
 
 | # | Pasted file | Review result |
 |---:|---|---|
-| 1 | `Business/AmundiCsvParser.java` | Replace Java 21 `getFirst()`; corrected code is in 12.5. |
-| 2 | `Business/AmundiPerimeterImportBusiness.java` | Remove in-transaction audit handling; corrected code is in 12.8. |
+| 1 | `Business/AmundiCsvParser.java` | Replace Java 21 `getFirst()`, remove RA/IS-only import validation, preserve trimmed values, and use live nullability/lengths; corrected code is in 12.5. |
+| 2 | `Business/AmundiPerimeterImportBusiness.java` | Remove in-transaction audit handling and the invented `REF_FUND` import check; corrected code is in 12.8. |
 | 3 | `Business/DocumentDownloadBusiness.java` | Retained after transaction/content/visited-flow review. |
-| 4 | `Business/ReportFilenameBusiness.java` | Replace two Java 21 `getFirst()` calls; corrected code is in 12.14. |
-| 5 | `domain/AmundiImportModels.java` | Retained; `uuuu` is intentional for strict Java date parsing. |
+| 4 | `Business/ReportFilenameBusiness.java` | Replace two Java 21 `getFirst()` calls and remove language from AMUNDI candidate detection; corrected code is in 12.14. |
+| 5 | `domain/AmundiImportModels.java` | Add live-column metadata; `uuuu` is intentional for strict Java date parsing. |
 | 6 | `domain/FeatureExceptions.java` | Add the typed invalid-format exception from 12.4. |
 | 7 | `domain/ReportDownloadModels.java` | Throw the typed invalid-format exception from 12.3. |
 | 8 | `infra/api/v1/ReferentialController.java` | Retained; SGIAM mail comes from the existing authentication service. |
-| 9 | `infra/dao/AmundiPerimeterDao.java` | Retained. |
+| 9 | `infra/dao/AmundiPerimeterDao.java` | Return live column length/nullability and remove the unsupported fund-existence operation. |
 | 10 | `infra/dao/DocumentDownloadDao.java` | Retained. |
-| 11 | `infra/dao/Impl/SimpleJDBCAmundiPerimeter.java` | Retained after key, nullable-column, bind-variable, and batch review. |
+| 11 | `infra/dao/Impl/SimpleJDBCAmundiPerimeter.java` | Read live column length/nullability; retain the legacy key, nullable Code-Parapluie, bind variables, and batch operations. |
 | 12 | `infra/dao/Impl/SimpleJDBCDocumentDownload.java` | Replace two `getFirst()` calls, use public `OracleTypes`, and trim the language source. |
 | 13 | `service/AmundiPerimeterImportSerInterface.java` | Retained. |
 | 14 | `service/DocumentDownloadSerInterface.java` | Retained. |
@@ -536,6 +631,11 @@ public final class AmundiImportModels {
         public byte[] content() {
             return content.clone();
         }
+    }
+
+    public record OracleColumnDefinition(
+            Integer maximumCharacters,
+            boolean nullable) {
     }
 
     public record AmundiPerimeterRecord(
@@ -766,6 +866,7 @@ import com.socgen.sgs.api.quark.backend.api.domain.AmundiImportModels.AmundiDate
 import com.socgen.sgs.api.quark.backend.api.domain.AmundiImportModels.AmundiImportRowError;
 import com.socgen.sgs.api.quark.backend.api.domain.AmundiImportModels.AmundiPerimeterRecord;
 import com.socgen.sgs.api.quark.backend.api.domain.AmundiImportModels.CsvParseResult;
+import com.socgen.sgs.api.quark.backend.api.domain.AmundiImportModels.OracleColumnDefinition;
 import com.socgen.sgs.api.quark.backend.api.domain.AmundiImportModels.ParsedAmundiRow;
 import com.socgen.sgs.api.quark.backend.api.domain.AmundiImportModels.UploadedFile;
 import com.socgen.sgs.api.quark.backend.api.domain.FeatureExceptions.FeatureConfigurationException;
@@ -800,8 +901,6 @@ public class AmundiCsvParser {
             "EUROPEAN_NORM", "ENGAGEMENT_METHOD", "CODE_PARAPLUIE"
     );
 
-    private static final Set<Integer> OPTIONAL_COLUMNS = Set.of(9, 10);
-
     private final long maxFileSizeBytes;
 
     public AmundiCsvParser(
@@ -813,10 +912,10 @@ public class AmundiCsvParser {
     public CsvParseResult parse(
             UploadedFile file,
             AmundiDateFormat dateFormat,
-            Map<String, Integer> liveColumnLengths) {
+            Map<String, OracleColumnDefinition> liveColumns) {
 
         validateFile(file);
-        verifyLiveSchema(liveColumnLengths);
+        verifyLiveSchema(liveColumns);
 
         byte[] bytes = file.content();
         String checksum = sha256(bytes);
@@ -859,28 +958,21 @@ public class AmundiCsvParser {
                     .toArray(String[]::new);
 
             for (int columnIndex = 0; columnIndex < normalized.length; columnIndex++) {
-                if (!OPTIONAL_COLUMNS.contains(columnIndex) && normalized[columnIndex].isBlank()) {
+                OracleColumnDefinition definition = liveColumns.get(DB_COLUMNS.get(columnIndex));
+                if (!definition.nullable() && normalized[columnIndex].isBlank()) {
                     rowErrors.add(error(csvRowNumber, columnIndex, normalized[columnIndex], "Value is required"));
                 }
-                validateLength(csvRowNumber, columnIndex, normalized[columnIndex], liveColumnLengths, rowErrors);
-            }
-
-            String reportType = normalized[4].toUpperCase(Locale.ROOT);
-            if (!reportType.equals("RA") && !reportType.equals("IS")) {
-                rowErrors.add(error(csvRowNumber, 4, normalized[4], "Only RA and IS are supported"));
-            }
-
-            String language = normalized[6].toUpperCase(Locale.ROOT);
-            if (!language.matches("[A-Z]{2}")) {
-                rowErrors.add(error(csvRowNumber, 6, normalized[6], "Language must contain exactly two letters"));
+                validateLength(csvRowNumber, columnIndex, normalized[columnIndex], liveColumns, rowErrors);
             }
 
             LocalDate reportDate = null;
-            try {
-                reportDate = dateFormat.parse(normalized[5]);
-            } catch (DateTimeParseException exception) {
-                rowErrors.add(error(csvRowNumber, 5, normalized[5],
-                        "Date does not match " + dateFormat));
+            if (!normalized[5].isBlank()) {
+                try {
+                    reportDate = dateFormat.parse(normalized[5]);
+                } catch (DateTimeParseException exception) {
+                    rowErrors.add(error(csvRowNumber, 5, normalized[5],
+                            "Date does not match " + dateFormat));
+                }
             }
 
             if (!rowErrors.isEmpty()) {
@@ -892,10 +984,10 @@ public class AmundiCsvParser {
                     normalized[0],
                     normalized[1],
                     normalized[2],
-                    normalized[3].toUpperCase(Locale.ROOT),
-                    reportType,
+                    normalized[3],
+                    normalized[4],
                     reportDate,
-                    language,
+                    normalized[6],
                     normalized[7],
                     normalized[8],
                     nullIfBlank(normalized[9]),
@@ -932,9 +1024,9 @@ public class AmundiCsvParser {
         }
     }
 
-    private void verifyLiveSchema(Map<String, Integer> liveColumnLengths) {
+    private void verifyLiveSchema(Map<String, OracleColumnDefinition> liveColumns) {
         for (String column : DB_COLUMNS) {
-            if (!liveColumnLengths.containsKey(column)) {
+            if (!liveColumns.containsKey(column)) {
                 throw new FeatureConfigurationException(
                         "Oracle column QXP_AMUNDI_PERIMETER." + column + " is missing");
             }
@@ -952,13 +1044,13 @@ public class AmundiCsvParser {
             long rowNumber,
             int columnIndex,
             String value,
-            Map<String, Integer> liveColumnLengths,
+            Map<String, OracleColumnDefinition> liveColumns,
             List<AmundiImportRowError> errors) {
 
         if (value.isEmpty() || columnIndex == 5) {
             return;
         }
-        Integer maximum = liveColumnLengths.get(DB_COLUMNS.get(columnIndex));
+        Integer maximum = liveColumns.get(DB_COLUMNS.get(columnIndex)).maximumCharacters();
         if (maximum != null && maximum > 0 && value.length() > maximum) {
             errors.add(error(rowNumber, columnIndex, value,
                     "Maximum Oracle length is " + maximum + " characters"));
@@ -1202,16 +1294,14 @@ public class AmundiImportAuditBusiness {
 package com.socgen.sgs.api.quark.backend.api.infra.dao;
 
 import com.socgen.sgs.api.quark.backend.api.domain.AmundiImportModels.AmundiPerimeterRecord;
+import com.socgen.sgs.api.quark.backend.api.domain.AmundiImportModels.OracleColumnDefinition;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public interface AmundiPerimeterDao {
 
-    Map<String, Integer> findLiveColumnLengths();
-
-    Set<String> findExistingFundCodes(Set<String> fundCodes);
+    Map<String, OracleColumnDefinition> findLiveColumns();
 
     int deleteMatching(List<AmundiPerimeterRecord> records);
 
@@ -1227,12 +1317,11 @@ public interface AmundiPerimeterDao {
 package com.socgen.sgs.api.quark.backend.api.infra.dao.Impl;
 
 import com.socgen.sgs.api.quark.backend.api.domain.AmundiImportModels.AmundiPerimeterRecord;
+import com.socgen.sgs.api.quark.backend.api.domain.AmundiImportModels.OracleColumnDefinition;
 import com.socgen.sgs.api.quark.backend.api.infra.dao.AmundiPerimeterDao;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Date;
@@ -1240,30 +1329,18 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 @Repository
 @RequiredArgsConstructor
 public class SimpleJDBCAmundiPerimeter implements AmundiPerimeterDao {
 
-    private static final int ORACLE_IN_LIMIT_SAFE_CHUNK = 900;
-
     private static final String COLUMN_METADATA_SQL = """
-            SELECT COLUMN_NAME, CHAR_LENGTH
+            SELECT COLUMN_NAME, CHAR_LENGTH, NULLABLE
             FROM USER_TAB_COLUMNS
             WHERE TABLE_NAME = 'QXP_AMUNDI_PERIMETER'
-            """;
-
-    private static final String FUND_LOOKUP_SQL = """
-            SELECT DISTINCT rf.ID_FND_CODE
-            FROM OWB_DWH.REF_FUND rf
-            WHERE rf.ID_FND_CODE IN (:fundCodes)
-              AND rf.FND_END_VALIDITY = TO_DATE('31/12/2199', 'DD/MM/YYYY')
             """;
 
     private static final String DELETE_SQL = """
@@ -1297,34 +1374,19 @@ public class SimpleJDBCAmundiPerimeter implements AmundiPerimeterDao {
             """;
 
     private final JdbcTemplate jdbcTemplate;
-    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     @Override
-    public Map<String, Integer> findLiveColumnLengths() {
-        Map<String, Integer> result = new HashMap<>();
+    public Map<String, OracleColumnDefinition> findLiveColumns() {
+        Map<String, OracleColumnDefinition> result = new HashMap<>();
         jdbcTemplate.query(COLUMN_METADATA_SQL, resultSet -> {
             Number length = (Number) resultSet.getObject("CHAR_LENGTH");
-            result.put(resultSet.getString("COLUMN_NAME"), length == null ? null : length.intValue());
+            result.put(
+                    resultSet.getString("COLUMN_NAME"),
+                    new OracleColumnDefinition(
+                            length == null ? null : length.intValue(),
+                            "Y".equalsIgnoreCase(resultSet.getString("NULLABLE"))));
         });
         return result;
-    }
-
-    @Override
-    public Set<String> findExistingFundCodes(Set<String> fundCodes) {
-        if (fundCodes.isEmpty()) {
-            return Set.of();
-        }
-
-        List<String> allCodes = new ArrayList<>(fundCodes);
-        Set<String> existing = new HashSet<>();
-        for (int start = 0; start < allCodes.size(); start += ORACLE_IN_LIMIT_SAFE_CHUNK) {
-            int end = Math.min(start + ORACLE_IN_LIMIT_SAFE_CHUNK, allCodes.size());
-            MapSqlParameterSource parameters = new MapSqlParameterSource(
-                    "fundCodes", allCodes.subList(start, end));
-            existing.addAll(namedParameterJdbcTemplate.queryForList(
-                    FUND_LOOKUP_SQL, parameters, String.class));
-        }
-        return existing;
     }
 
     @Override
@@ -1433,6 +1495,7 @@ import com.socgen.sgs.api.quark.backend.api.domain.AmundiImportModels.AmundiImpo
 import com.socgen.sgs.api.quark.backend.api.domain.AmundiImportModels.AmundiImportValidationResult;
 import com.socgen.sgs.api.quark.backend.api.domain.AmundiImportModels.AmundiPerimeterRecord;
 import com.socgen.sgs.api.quark.backend.api.domain.AmundiImportModels.CsvParseResult;
+import com.socgen.sgs.api.quark.backend.api.domain.AmundiImportModels.OracleColumnDefinition;
 import com.socgen.sgs.api.quark.backend.api.domain.AmundiImportModels.ParsedAmundiRow;
 import com.socgen.sgs.api.quark.backend.api.domain.AmundiImportModels.UploadedFile;
 import com.socgen.sgs.api.quark.backend.api.domain.FeatureExceptions.ImportRejectedException;
@@ -1441,11 +1504,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import static com.socgen.sgs.api.quark.backend.api.domain.AmundiImportModels.EXPECTED_HEADERS;
 import static com.socgen.sgs.api.quark.backend.api.domain.AmundiImportModels.TEMPLATE_NAME;
@@ -1532,34 +1592,9 @@ public class AmundiPerimeterImportBusiness {
     }
 
     private CsvParseResult parseAndValidateFunds(UploadedFile file, AmundiDateFormat dateFormat) {
-        Map<String, Integer> lengths = amundiPerimeterDao.findLiveColumnLengths();
-        CsvParseResult parsed = csvParser.parse(file, dateFormat, lengths);
-
-        Set<String> requestedCodes = parsed.validRows().stream()
-                .map(row -> row.value().fundName())
-                .collect(HashSet::new, Set::add, Set::addAll);
-        Set<String> existingCodes = amundiPerimeterDao.findExistingFundCodes(requestedCodes);
-
-        List<ParsedAmundiRow> stillValid = new ArrayList<>();
-        List<AmundiImportRowError> errors = new ArrayList<>(parsed.errors());
-        for (ParsedAmundiRow row : parsed.validRows()) {
-            if (existingCodes.contains(row.value().fundName())) {
-                stillValid.add(row);
-            } else {
-                errors.add(new AmundiImportRowError(
-                        row.rowNumber(),
-                        "Code Comptable",
-                        row.value().fundName(),
-                        "No active fund exists in OWB_DWH.REF_FUND"));
-            }
-        }
-
-        return new CsvParseResult(
-                parsed.checksumSha256(),
-                parsed.totalRows(),
-                stillValid,
-                errors,
-                parsed.duplicateRows());
+        Map<String, OracleColumnDefinition> liveColumns =
+                amundiPerimeterDao.findLiveColumns();
+        return csvParser.parse(file, dateFormat, liveColumns);
     }
 
     private AmundiImportValidationResult toValidation(UploadedFile file, CsvParseResult parsed) {
@@ -2079,7 +2114,6 @@ public class ReportFilenameBusiness {
         return amundiNamingEnabled
                 && context.fundBasedSuivi()
                 && context.reportDate() != null
-                && context.language() != null
                 && (context.reportTypeId() == ANNUAL_REPORT
                     || context.reportTypeId() == PLAQUETTE);
     }
@@ -2115,7 +2149,6 @@ public class ReportFilenameBusiness {
             ReportNamingContext context,
             AmundiFilenameMatch match) {
         return match.reportDate() != null
-                && isTwoLetterLanguage(context.language())
                 && hasText(context.fundName())
                 && hasText(context.currency());
     }
@@ -2124,6 +2157,12 @@ public class ReportFilenameBusiness {
             ReportNamingContext context,
             AmundiFilenameMatch match,
             DocumentFormat format) {
+
+        if (!hasText(context.language())) {
+            throw new FeatureConfigurationException(
+                    "The suivi/report language required for the filename is missing for idSuivi="
+                            + context.idSuivi());
+        }
 
         String reportName = context.reportTypeId() == ANNUAL_REPORT
                 ? "AnnualReport"
@@ -2193,10 +2232,6 @@ public class ReportFilenameBusiness {
         return reportTypeId == ANNUAL_REPORT
                 || reportTypeId == PLAQUETTE
                 || reportTypeId == DICI;
-    }
-
-    private boolean isTwoLetterLanguage(String value) {
-        return value != null && value.trim().toUpperCase(Locale.ROOT).matches("[A-Z]{2}");
     }
 
     private boolean hasText(String value) {
@@ -2430,6 +2465,7 @@ package com.socgen.sgs.api.quark.backend.api.Business;
 
 import com.socgen.sgs.api.quark.backend.api.domain.AmundiImportModels.AmundiDateFormat;
 import com.socgen.sgs.api.quark.backend.api.domain.AmundiImportModels.CsvParseResult;
+import com.socgen.sgs.api.quark.backend.api.domain.AmundiImportModels.OracleColumnDefinition;
 import com.socgen.sgs.api.quark.backend.api.domain.AmundiImportModels.UploadedFile;
 import com.socgen.sgs.api.quark.backend.api.domain.FeatureExceptions.ImportRejectedException;
 import org.junit.jupiter.api.BeforeEach;
@@ -2507,24 +2543,59 @@ class AmundiCsvParserTest {
                 upload(csv), AmundiDateFormat.DD_MM_YYYY, liveLengths()));
     }
 
+    @Test
+    void acceptsALegacyReportTypeButItWillNotTriggerTheNewFilenameRule() {
+        String csv = HEADER + "\n"
+                + "ARCANCIA,2987,S110191,310127,PB,31/12/2024,FR,FCPE,FIA,,UM14174\n";
+
+        CsvParseResult result = parser.parse(
+                upload(csv), AmundiDateFormat.DD_MM_YYYY, liveColumns());
+
+        assertEquals(1, result.validRows().size());
+        assertEquals("PB", result.validRows().get(0).value().reportType());
+    }
+
+    @Test
+    void reportsTheEightCharacterSampleFundCodeAgainstTheLiveSixCharacterColumn() {
+        String csv = HEADER + "\n"
+                + "FUND,10674,PF210921,936679G0,RA,31/12/2025,FR,SICAV,OPCVM,"
+                + "Méthode de l'engagement,UM11182\n";
+
+        CsvParseResult result = parser.parse(
+                upload(csv), AmundiDateFormat.DD_MM_YYYY, liveColumns());
+
+        assertEquals(0, result.validRows().size());
+        assertTrue(result.errors().stream().anyMatch(error ->
+                error.column().equals("Code Comptable")
+                        && error.reason().contains("Maximum Oracle length is 6")));
+    }
+
     private UploadedFile upload(String csv) {
         return new UploadedFile("amundi.csv", csv.getBytes(StandardCharsets.UTF_8));
     }
 
-    private Map<String, Integer> liveLengths() {
-        Map<String, Integer> lengths = new HashMap<>();
-        lengths.put("FUND_LABEL", 100);
-        lengths.put("ID_FUND_BWR", 50);
-        lengths.put("DECALOG", 50);
-        lengths.put("FUND_NAME", 50);
-        lengths.put("REPORT_TYPE", 2);
-        lengths.put("REPORT_DATE", null);
-        lengths.put("REPORT_LANGUAGE", 2);
-        lengths.put("LEGAL_FORM", 50);
-        lengths.put("EUROPEAN_NORM", 50);
-        lengths.put("ENGAGEMENT_METHOD", 50);
-        lengths.put("CODE_PARAPLUIE", 50);
-        return lengths;
+    private Map<String, OracleColumnDefinition> liveLengths() {
+        return liveColumns();
+    }
+
+    private Map<String, OracleColumnDefinition> liveColumns() {
+        Map<String, OracleColumnDefinition> columns = new HashMap<>();
+        columns.put("FUND_LABEL", required(100));
+        columns.put("ID_FUND_BWR", required(6));
+        columns.put("DECALOG", required(50));
+        columns.put("FUND_NAME", required(6));
+        columns.put("REPORT_TYPE", required(2));
+        columns.put("REPORT_DATE", required(null));
+        columns.put("REPORT_LANGUAGE", required(2));
+        columns.put("LEGAL_FORM", required(50));
+        columns.put("EUROPEAN_NORM", required(50));
+        columns.put("ENGAGEMENT_METHOD", new OracleColumnDefinition(50, true));
+        columns.put("CODE_PARAPLUIE", new OracleColumnDefinition(50, true));
+        return columns;
+    }
+
+    private OracleColumnDefinition required(Integer maximumCharacters) {
+        return new OracleColumnDefinition(maximumCharacters, false);
     }
 }
 ```
@@ -2546,6 +2617,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ReportFilenameBusinessTest {
 
@@ -2587,6 +2659,13 @@ class ReportFilenameBusinessTest {
         assertEquals(
                 "AnnualReport_ARCANCIA_UM14174_20241231_FRA_EN_EUR.pdf",
                 business.buildFilename(context, List.of(match), DocumentFormat.PDF));
+    }
+
+    @Test
+    void amundiCandidateDetectionDoesNotUseLanguage() {
+        ReportNamingContext context = context(1, 2, "ARCANCIA", "EUR", null);
+
+        assertTrue(business.isAmundiCandidate(context));
     }
 
     @Test
@@ -2929,11 +3008,13 @@ This bundle is ready to implement with these boundaries:
 - the only database structure change is the nullable eleventh column;
 - .NET continues inserting its explicit ten columns and ignores the new column;
 - the Java import is fixed to `IT_AMUNDI_PERIMETER` and cannot accept a request-provided table or column name;
-- validation uses the live Oracle column widths, avoiding the stale checked-in `FUND_NAME` width;
+- validation uses the live Oracle column widths and nullability; it does not invent a
+  `REF_FUND` foreign-key rule or restrict the perimeter import to RA/IS;
 - a replacement import is transactional, so an insert failure rolls back its preceding delete;
 - SGIAM/SG Connect `mail` is used directly and `external_api` is rejected for this interactive audited action;
 - the old document procedures and visited flags are reused without changing their signatures;
 - AMUNDI naming is limited to RA and IS, applies equally to PDF/QXP/DOC, and never changes PB/RC/DICI;
+- AMUNDI matching does not compare language; filename language comes only from the suivi/report;
 - null Code-Parapluie deliberately produces an empty segment; a later Java import corrects the next download;
 - absent, conflicting, or unusable AMUNDI matches produce the common filename, as confirmed;
 - the feature flag provides a safe Java rollback while leaving the compatible nullable column in Oracle.
@@ -2944,8 +3025,11 @@ Local verification performed on the final Markdown bundle:
   `javac --release 17` against the locally cached project libraries;
 - the exact method that must be added to `TableDeBoard_controller` compiled against the
   project's Spring API;
-- all three focused test files compiled and all 14 parser, filename, and audit-boundary
+- all three focused test files compiled and all 17 parser, filename, and audit-boundary
   tests passed;
+- the supplied 148-row CSV was rechecked through the final parser after mechanically adding
+  the confirmed eleventh header: 147 rows are valid and the one `936679G0` row receives the
+  controlled six-character Oracle-length error;
 - the new repository itself was not edited.
 
 A full Maven build remains a work-laptop check. This repository has no Maven wrapper and
