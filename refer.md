@@ -5,7 +5,8 @@
 - Backend only; the UI will be implemented separately.
 - Implement only the import template `IT_AMUNDI_PERIMETER`.
 - Add a separate `ReferentialController` for the “Importer un fichier en base” backend.
-- Add a dashboard document-download backend for QXP, PDF, and DOC.
+- Add a filename-aware attachment endpoint for QXP, PDF, and DOC to the existing
+  `TableDeBoard_controller`; do not create a second Tableau de Bord controller.
 - Keep the normal filename rule unchanged for every report type.
 - Apply the new AMUNDI filename only to Annual report (`RA`) and Plaquette (`IS`).
 - Do not port the generic .NET import engine or its support for other templates.
@@ -66,6 +67,11 @@ The .NET page does support a file named `.csv`: it does not validate the extensi
 | Séparateur décimal | `.` or `,`; used only when an XML column has decimal type | Do not apply. This template has no decimal column. The configuration response will mark it as not applicable so the UI can hide it. |
 | Séparateur de colonne | `;` or `|||`; .NET uses raw `String.Split` | Do not expose an arbitrary separator. Use comma for the agreed CSV contract and a real quote-aware CSV parser. |
 | Séparateur de fin de ligne | newline or `@@@`; .NET first uses `ReadLine`, then splits again | Do not expose it for standard CSV. Detect CRLF/LF automatically. `@@@` is excluded from this Java scope. |
+
+The API enum is still named `DD_MM_YYYY`; its Java formatter intentionally uses
+`dd/MM/uuuu`. With strict `java.time` parsing, `uuuu` is the calendar year and correctly
+resolves a `LocalDate`; `yyyy` is year-of-era and can fail strict resolution when no era is
+provided. This does not change the user-visible `dd/MM/yyyy` format.
 
 There is commented .NET code intended to select `|||` and `@@@` automatically for AMUNDI, so those values were historically related to this template. However, its event registration and handler are commented out, and the agreed Java input is the supplied standard comma CSV. Legacy `|||`/`@@@` parsing will therefore not be implemented.
 
@@ -256,7 +262,7 @@ GET /api/v1/tableau-de-bord/suivis/{idSuivi}/documents/{format}
 `format` is an enum limited to QXP, PDF, and DOC. On every request, the service reloads the bytes and naming inputs from Oracle, applies one of the two filename strategies, sets a safe `Content-Disposition: attachment`, returns the correct content type with `Cache-Control: no-store`, and updates only the requested QXP/PDF/DOC visited flag after the document was successfully found. Re-querying and disabling caching ensure that a download immediately after a corrected CSV import receives the corrected filename.
 
 ```text
-TableauDeBordController
+TableDeBoard_controller (existing class)
   -> DocumentDownloadSerInterface
   -> DocumentDownloadService
   -> DocumentDownloadBusiness
@@ -302,7 +308,9 @@ Liquibase can be adopted later as the standard database-deployment tool, but the
 ## 7. Implementation sequence
 
 1. Run the nullable `CODE_PARAPLUIE` schema change; do not change the existing primary key in this Jira.
-2. Copy the new Java files from section 12 into the work-laptop repository. No existing Java class or `pom.xml` changes are required.
+2. Copy the new Java files from section 12 into the work-laptop repository and add the
+   documented field/method/imports to the existing `TableDeBoard_controller`. Do not
+   create `TableauDeBordDocumentController`; `pom.xml` remains unchanged.
 3. Run the automated tests and the live-Oracle verification queries in section 13.
 4. Test with the supplied CSV, null and populated Code-Parapluie values, the old .NET application, and exact QXP/PDF/DOC download names.
 5. Enable the Java endpoints after UAT; normal naming remains the fallback whenever the AMUNDI match is absent, duplicated, or unusable.
@@ -354,9 +362,65 @@ Estimated backend and database effort for this narrowed scope: **8–12 develope
 
 ## 12. Copy-ready Java implementation
 
+### 12.0 Review result for `quark-backend-api-new`
+
+The pasted code is not yet ready to build as-is. These are the exact Jira-related findings
+from the new repository:
+
+- five Java 17 compiler errors: `List.getFirst()` is used once in `AmundiCsvParser`, twice
+  in `ReportFilenameBusiness`, and twice in `SimpleJDBCDocumentDownload`; use `get(0)` after
+  the existing empty/size checks;
+- `SimpleJDBCDocumentDownload` imports the Oracle internal API
+  `oracle.jdbc.internal.OracleTypes`; use the public `oracle.jdbc.OracleTypes`, consistent
+  with the existing `SimpleJDBCTDBDocument` and the declared Oracle driver;
+- `AmundiImportAuditBusiness` and `AmundiFeatureExceptionHandler` were not pasted;
+- the pasted import business writes audit records inside the import transaction, allowing
+  a failed import to roll back its own failure trace; sections 12.5A, 12.8, and 12.10 fix
+  the transaction boundary;
+- the earlier section 12.17 incorrectly proposed a second dashboard controller; the
+  repository already has `TableDeBoard_controller`, so section 12.17 now gives an additive
+  modification for that existing class and preserves `/api/v1/getDocument`;
+- the existing `TableuDeboard_controlerTest` must receive the new service mock and attachment
+  test shown in section 12.18.
+
+No Java source file in either local repository was changed during this review. The corrected
+source remains copy-ready in this Markdown so it can be transferred deliberately to the
+work laptop.
+
+Complete pasted-file manifest:
+
+| # | Pasted file | Review result |
+|---:|---|---|
+| 1 | `Business/AmundiCsvParser.java` | Replace Java 21 `getFirst()`; corrected code is in 12.5. |
+| 2 | `Business/AmundiPerimeterImportBusiness.java` | Remove in-transaction audit handling; corrected code is in 12.8. |
+| 3 | `Business/DocumentDownloadBusiness.java` | Retained after transaction/content/visited-flow review. |
+| 4 | `Business/ReportFilenameBusiness.java` | Replace two Java 21 `getFirst()` calls; corrected code is in 12.14. |
+| 5 | `domain/AmundiImportModels.java` | Retained; `uuuu` is intentional for strict Java date parsing. |
+| 6 | `domain/FeatureExceptions.java` | Add the typed invalid-format exception from 12.4. |
+| 7 | `domain/ReportDownloadModels.java` | Throw the typed invalid-format exception from 12.3. |
+| 8 | `infra/api/v1/ReferentialController.java` | Retained; SGIAM mail comes from the existing authentication service. |
+| 9 | `infra/dao/AmundiPerimeterDao.java` | Retained. |
+| 10 | `infra/dao/DocumentDownloadDao.java` | Retained. |
+| 11 | `infra/dao/Impl/SimpleJDBCAmundiPerimeter.java` | Retained after key, nullable-column, bind-variable, and batch review. |
+| 12 | `infra/dao/Impl/SimpleJDBCDocumentDownload.java` | Replace two `getFirst()` calls, use public `OracleTypes`, and trim the language source. |
+| 13 | `service/AmundiPerimeterImportSerInterface.java` | Retained. |
+| 14 | `service/DocumentDownloadSerInterface.java` | Retained. |
+| 15 | `service/Impl/AmundiPerimeterImportService.java` | Move success/failure audit orchestration here as shown in 12.10. |
+| 16 | `service/Impl/DocumentDownloadService.java` | Retained. |
+
 ### 12.1 What changes and what does not
 
-Create only the new files listed below in `quark-backend-api`. Do not modify an existing Java class, `pom.xml`, the .NET application, `QXP_TEMPLATE_IMPORT_DEF`, or `QXP_PK_SUIVI`. The implementation deliberately uses only dependencies already present in the Java project.
+The current work-laptop copy contains 16 pasted Jira files. The timestamp-based inventory
+below is complete for the paste; the user counted 15, but the repository contains 16.
+Keep those files and correct them from the code in this section. Add two missing support
+files. Modify only the existing `TableDeBoard_controller` (plus its existing test) for
+download integration. Do not create another dashboard controller, modify `pom.xml`, change
+the .NET application, edit `QXP_TEMPLATE_IMPORT_DEF`, or change `QXP_PK_SUIVI`.
+
+The comparison with the earlier local repository found 193 current-only files, 87 same-path
+files with different content, and 7 old-only files. That broad difference is an entire
+repository-version/TDB-module drift and must not be treated as this Jira's change set. The
+16 files created together on 28 August 2026 are the reliable pasted-Jira boundary.
 
 ```text
 src/main/java/com/socgen/sgs/api/quark/backend/api/
@@ -374,8 +438,7 @@ src/main/java/com/socgen/sgs/api/quark/backend/api/
 │   ├── api/
 │   │   ├── exception/AmundiFeatureExceptionHandler.java
 │   │   └── v1/
-│   │       ├── ReferentialController.java
-│   │       └── TableauDeBordDocumentController.java
+│   │       └── ReferentialController.java
 │   └── dao/
 │       ├── AmundiPerimeterDao.java
 │       ├── DocumentDownloadDao.java
@@ -390,7 +453,16 @@ src/main/java/com/socgen/sgs/api/quark/backend/api/
         └── DocumentDownloadService.java
 ```
 
-The two unit-test files are listed in section 12.18.
+Existing file to modify:
+
+```text
+src/main/java/com/socgen/sgs/api/quark/backend/api/infra/api/v1/TableDeBoard_controller.java
+```
+
+The 16 already-pasted files are every entry in the tree except
+`Business/AmundiImportAuditBusiness.java` and
+`infra/api/exception/AmundiFeatureExceptionHandler.java`. The three new focused test files
+and the required update to the existing `TableuDeboard_controlerTest` are in section 12.18.
 
 ### 12.2 `domain/AmundiImportModels.java`
 
@@ -554,6 +626,8 @@ public final class AmundiImportModels {
 ```java
 package com.socgen.sgs.api.quark.backend.api.domain;
 
+import com.socgen.sgs.api.quark.backend.api.domain.FeatureExceptions.InvalidDocumentFormatException;
+
 import java.time.LocalDate;
 import java.util.Locale;
 import java.util.Objects;
@@ -583,7 +657,8 @@ public final class ReportDownloadModels {
                 return valueOf(Objects.requireNonNull(value, "format")
                         .trim().toUpperCase(Locale.ROOT));
             } catch (RuntimeException exception) {
-                throw new IllegalArgumentException("format must be qxp, pdf, or doc", exception);
+                throw new InvalidDocumentFormatException(
+                        "format must be qxp, pdf, or doc", exception);
             }
         }
 
@@ -665,6 +740,12 @@ public final class FeatureExceptions {
             super(message);
         }
     }
+
+    public static final class InvalidDocumentFormatException extends RuntimeException {
+        public InvalidDocumentFormatException(String message, Throwable cause) {
+            super(message, cause);
+        }
+    }
 }
 ```
 
@@ -743,7 +824,7 @@ public class AmundiCsvParser {
             throw new ImportRejectedException("The CSV file has no header row");
         }
 
-        validateHeader(records.getFirst());
+        validateHeader(records.get(0));
 
         List<ParsedAmundiRow> validRows = new ArrayList<>();
         List<AmundiImportRowError> errors = new ArrayList<>();
@@ -1000,7 +1081,9 @@ public class AmundiCsvParser {
 
 ### 12.5A `Business/AmundiImportAuditBusiness.java`
 
-The separate transaction is intentional: an import failure rolls back perimeter changes but must not also erase its audit trace.
+The separate transaction is intentional. The service invokes this component only after the
+business transaction has committed or rolled back. Audit failure is logged and does not
+change the import result.
 
 ```java
 package com.socgen.sgs.api.quark.backend.api.Business;
@@ -1041,6 +1124,35 @@ public class AmundiImportAuditBusiness {
             long startedAt,
             int status,
             String message) {
+        persist(function, file, validation, mode, userEmail, clientIp,
+                startedAt, status, message);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void writeFailure(
+            String function,
+            UploadedFile file,
+            AmundiImportMode mode,
+            String userEmail,
+            String clientIp,
+            long startedAt,
+            RuntimeException exception) {
+        AmundiImportValidationResult empty = new AmundiImportValidationResult(
+                TEMPLATE_NAME, file.originalFilename(), "unavailable", 0, 0, 0, 0, List.of());
+        persist(function, file, empty, mode, userEmail, clientIp, startedAt, 1,
+                "Failed: " + abbreviate(exception.getMessage(), 500));
+    }
+
+    private void persist(
+            String function,
+            UploadedFile file,
+            AmundiImportValidationResult validation,
+            AmundiImportMode mode,
+            String userEmail,
+            String clientIp,
+            long startedAt,
+            int status,
+            String message) {
         try {
             BigDecimal seconds = BigDecimal.valueOf((System.nanoTime() - startedAt) / 1_000_000_000d)
                     .setScale(3, RoundingMode.HALF_UP);
@@ -1065,23 +1177,9 @@ public class AmundiImportAuditBusiness {
                     "QXP");
             auditInsertTraceDao.insertTrace(audit);
         } catch (RuntimeException auditException) {
-            log.error("AMUNDI audit failed for function={} user={}", function, userEmail, auditException);
+            log.error("AMUNDI audit failed for function={} user={}",
+                    function, userEmail, auditException);
         }
-    }
-
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void writeFailure(
-            String function,
-            UploadedFile file,
-            AmundiImportMode mode,
-            String userEmail,
-            String clientIp,
-            long startedAt,
-            RuntimeException exception) {
-        AmundiImportValidationResult empty = new AmundiImportValidationResult(
-                TEMPLATE_NAME, file.originalFilename(), "unavailable", 0, 0, 0, 0, List.of());
-        write(function, file, empty, mode, userEmail, clientIp, startedAt, 1,
-                "Failed: " + abbreviate(exception.getMessage(), 500));
     }
 
     private String abbreviate(String value, int maximum) {
@@ -1351,7 +1449,6 @@ public class AmundiPerimeterImportBusiness {
 
     private final AmundiCsvParser csvParser;
     private final AmundiPerimeterDao amundiPerimeterDao;
-    private final AmundiImportAuditBusiness auditBusiness;
 
     public AmundiImportTemplateConfiguration configuration() {
         return new AmundiImportTemplateConfiguration(
@@ -1369,25 +1466,11 @@ public class AmundiPerimeterImportBusiness {
                 false);
     }
 
-    @Transactional
     public AmundiImportValidationResult validate(
             UploadedFile file,
-            AmundiDateFormat dateFormat,
-            String userEmail,
-            String clientIp) {
-
-        long startedAt = System.nanoTime();
-        try {
-            CsvParseResult parsed = parseAndValidateFunds(file, dateFormat);
-            AmundiImportValidationResult result = toValidation(file, parsed);
-            auditBusiness.write("ValidateAmundiPerimeter", file, result, null, userEmail, clientIp,
-                    startedAt, 0, "Validation completed");
-            return result;
-        } catch (RuntimeException exception) {
-            auditBusiness.writeFailure("ValidateAmundiPerimeter", file, null, userEmail, clientIp,
-                    startedAt, exception);
-            throw exception;
-        }
+            AmundiDateFormat dateFormat) {
+        CsvParseResult parsed = parseAndValidateFunds(file, dateFormat);
+        return toValidation(file, parsed);
     }
 
     @Transactional
@@ -1395,60 +1478,50 @@ public class AmundiPerimeterImportBusiness {
             UploadedFile file,
             AmundiDateFormat dateFormat,
             AmundiImportMode mode,
-            String expectedChecksum,
-            String userEmail,
-            String clientIp) {
+            String expectedChecksum) {
 
-        long startedAt = System.nanoTime();
-        try {
-            CsvParseResult parsed = parseAndValidateFunds(file, dateFormat);
-            AmundiImportValidationResult validation = toValidation(file, parsed);
-
-            if (expectedChecksum == null
-                    || !parsed.checksumSha256().equalsIgnoreCase(expectedChecksum.trim())) {
-                throw new ImportRejectedException(
-                        "The uploaded file is not the same file that was validated (SHA-256 mismatch)");
-            }
-            if (parsed.validRows().isEmpty()) {
-                throw new ImportRejectedException("There are no valid rows to import");
-            }
-
-            List<AmundiPerimeterRecord> rows = parsed.validRows().stream()
-                    .map(ParsedAmundiRow::value)
-                    .toList();
-
-            int deleted = 0;
-            int inserted = 0;
-            int updated = 0;
-
-            switch (mode) {
-                case DELETE -> deleted = amundiPerimeterDao.deleteMatching(rows);
-                case DELETE_AND_INSERT -> {
-                    deleted = amundiPerimeterDao.deleteMatching(rows);
-                    inserted = amundiPerimeterDao.insert(rows);
-                }
-                case UPDATE -> updated = amundiPerimeterDao.update(rows);
-            }
-
-            int primaryAffected = switch (mode) {
-                case DELETE -> deleted;
-                case DELETE_AND_INSERT -> inserted;
-                case UPDATE -> updated;
-            };
-            int unchanged = Math.max(0, rows.size() - primaryAffected);
-
-            AmundiImportResult result = new AmundiImportResult(
-                    validation, mode, deleted, inserted, updated, unchanged);
-            auditBusiness.write("ImportAmundiPerimeter", file, validation, mode, userEmail, clientIp,
-                    startedAt, 0,
-                    "Import completed; deleted=" + deleted + ", inserted=" + inserted
-                            + ", updated=" + updated + ", unchanged=" + unchanged);
-            return result;
-        } catch (RuntimeException exception) {
-            auditBusiness.writeFailure("ImportAmundiPerimeter", file, mode, userEmail, clientIp,
-                    startedAt, exception);
-            throw exception;
+        if (mode == null) {
+            throw new ImportRejectedException("Import mode is required");
         }
+
+        CsvParseResult parsed = parseAndValidateFunds(file, dateFormat);
+        AmundiImportValidationResult validation = toValidation(file, parsed);
+
+        if (expectedChecksum == null
+                || !parsed.checksumSha256().equalsIgnoreCase(expectedChecksum.trim())) {
+            throw new ImportRejectedException(
+                    "The uploaded file is not the same file that was validated (SHA-256 mismatch)");
+        }
+        if (parsed.validRows().isEmpty()) {
+            throw new ImportRejectedException("There are no valid rows to import");
+        }
+
+        List<AmundiPerimeterRecord> rows = parsed.validRows().stream()
+                .map(ParsedAmundiRow::value)
+                .toList();
+
+        int deleted = 0;
+        int inserted = 0;
+        int updated = 0;
+
+        switch (mode) {
+            case DELETE -> deleted = amundiPerimeterDao.deleteMatching(rows);
+            case DELETE_AND_INSERT -> {
+                deleted = amundiPerimeterDao.deleteMatching(rows);
+                inserted = amundiPerimeterDao.insert(rows);
+            }
+            case UPDATE -> updated = amundiPerimeterDao.update(rows);
+        }
+
+        int primaryAffected = switch (mode) {
+            case DELETE -> deleted;
+            case DELETE_AND_INSERT -> inserted;
+            case UPDATE -> updated;
+        };
+        int unchanged = Math.max(0, rows.size() - primaryAffected);
+
+        return new AmundiImportResult(
+                validation, mode, deleted, inserted, updated, unchanged);
     }
 
     private CsvParseResult parseAndValidateFunds(UploadedFile file, AmundiDateFormat dateFormat) {
@@ -1539,6 +1612,7 @@ public interface AmundiPerimeterImportSerInterface {
 package com.socgen.sgs.api.quark.backend.api.service.Impl;
 
 import com.socgen.sgs.api.quark.backend.api.Business.AmundiPerimeterImportBusiness;
+import com.socgen.sgs.api.quark.backend.api.Business.AmundiImportAuditBusiness;
 import com.socgen.sgs.api.quark.backend.api.domain.AmundiImportModels.AmundiDateFormat;
 import com.socgen.sgs.api.quark.backend.api.domain.AmundiImportModels.AmundiImportMode;
 import com.socgen.sgs.api.quark.backend.api.domain.AmundiImportModels.AmundiImportResult;
@@ -1547,13 +1621,16 @@ import com.socgen.sgs.api.quark.backend.api.domain.AmundiImportModels.AmundiImpo
 import com.socgen.sgs.api.quark.backend.api.domain.AmundiImportModels.UploadedFile;
 import com.socgen.sgs.api.quark.backend.api.service.AmundiPerimeterImportSerInterface;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AmundiPerimeterImportService implements AmundiPerimeterImportSerInterface {
 
     private final AmundiPerimeterImportBusiness business;
+    private final AmundiImportAuditBusiness auditBusiness;
 
     @Override
     public AmundiImportTemplateConfiguration configuration() {
@@ -1566,7 +1643,20 @@ public class AmundiPerimeterImportService implements AmundiPerimeterImportSerInt
             AmundiDateFormat dateFormat,
             String userEmail,
             String clientIp) {
-        return business.validate(file, dateFormat, userEmail, clientIp);
+        long startedAt = System.nanoTime();
+        AmundiImportValidationResult result;
+        try {
+            result = business.validate(file, dateFormat);
+        } catch (RuntimeException exception) {
+            writeFailureAudit(
+                    "ValidateAmundiPerimeter", file, null, userEmail, clientIp,
+                    startedAt, exception);
+            throw exception;
+        }
+        writeAudit(
+                "ValidateAmundiPerimeter", file, result, null, userEmail, clientIp,
+                startedAt, "Validation completed");
+        return result;
     }
 
     @Override
@@ -1577,7 +1667,62 @@ public class AmundiPerimeterImportService implements AmundiPerimeterImportSerInt
             String expectedChecksum,
             String userEmail,
             String clientIp) {
-        return business.importFile(file, dateFormat, mode, expectedChecksum, userEmail, clientIp);
+        long startedAt = System.nanoTime();
+        AmundiImportResult result;
+        try {
+            result = business.importFile(
+                    file, dateFormat, mode, expectedChecksum);
+        } catch (RuntimeException exception) {
+            writeFailureAudit(
+                    "ImportAmundiPerimeter", file, mode, userEmail, clientIp,
+                    startedAt, exception);
+            throw exception;
+        }
+        writeAudit(
+                "ImportAmundiPerimeter", file, result.validation(), mode,
+                userEmail, clientIp, startedAt,
+                "Import completed; deleted=" + result.deletedRows()
+                        + ", inserted=" + result.insertedRows()
+                        + ", updated=" + result.updatedRows()
+                        + ", unchanged=" + result.unchangedRows());
+        return result;
+    }
+
+    private void writeAudit(
+            String function,
+            UploadedFile file,
+            AmundiImportValidationResult validation,
+            AmundiImportMode mode,
+            String userEmail,
+            String clientIp,
+            long startedAt,
+            String message) {
+        try {
+            auditBusiness.write(
+                    function, file, validation, mode, userEmail, clientIp,
+                    startedAt, 0, message);
+        } catch (RuntimeException auditException) {
+            log.error("AMUNDI audit transaction failed for function={} user={}",
+                    function, userEmail, auditException);
+        }
+    }
+
+    private void writeFailureAudit(
+            String function,
+            UploadedFile file,
+            AmundiImportMode mode,
+            String userEmail,
+            String clientIp,
+            long startedAt,
+            RuntimeException originalException) {
+        try {
+            auditBusiness.writeFailure(
+                    function, file, mode, userEmail, clientIp,
+                    startedAt, originalException);
+        } catch (RuntimeException auditException) {
+            log.error("AMUNDI failure-audit transaction failed for function={} user={}",
+                    function, userEmail, auditException);
+        }
     }
 }
 ```
@@ -1727,7 +1872,7 @@ import com.socgen.sgs.api.quark.backend.api.domain.ReportDownloadModels.AmundiFi
 import com.socgen.sgs.api.quark.backend.api.domain.ReportDownloadModels.DocumentFormat;
 import com.socgen.sgs.api.quark.backend.api.domain.ReportDownloadModels.ReportNamingContext;
 import com.socgen.sgs.api.quark.backend.api.infra.dao.DocumentDownloadDao;
-import oracle.jdbc.internal.OracleTypes;
+import oracle.jdbc.OracleTypes;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.SqlOutParameter;
 import org.springframework.jdbc.core.SqlParameter;
@@ -1758,7 +1903,7 @@ public class SimpleJDBCDocumentDownload implements DocumentDownloadDao {
                 NVL(TO_DATE(sp.VALEUR, 'MM/DD/YYYY HH24:MI:SS'), s.DATE_ECHEANCE) AS REPORT_DATE,
                 NVL(rf.FND_LNG_DESCRIPTION, NVL(qs.NOM, s.ID_FND_CODE)) AS FUND_NAME,
                 rf.FND_CURRENCY,
-                UPPER(ld.VALEUR_LANGUE) AS REPORT_LANGUAGE,
+                UPPER(TRIM(ld.VALEUR_LANGUE)) AS REPORT_LANGUAGE,
                 CASE WHEN rf.ID_FND_CODE IS NULL THEN 0 ELSE 1 END AS FUND_BASED_SUIVI
             FROM QXP_SUIVI s
             LEFT JOIN OWB_DWH.REF_FUND rf
@@ -1867,10 +2012,10 @@ public class SimpleJDBCDocumentDownload implements DocumentDownloadDao {
 
         Map<String, Object> result = getContentCall.execute(parameters);
         List<byte[]> rows = (List<byte[]>) result.get("RETURN_VALUE");
-        if (rows == null || rows.isEmpty() || rows.getFirst() == null) {
+        if (rows == null || rows.isEmpty() || rows.get(0) == null) {
             return Optional.empty();
         }
-        return Optional.of(rows.getFirst());
+        return Optional.of(rows.get(0));
     }
 
     @Override
@@ -1949,8 +2094,8 @@ public class ReportFilenameBusiness {
             DocumentFormat format) {
 
         if (isAmundiCandidate(context)) {
-            if (matches.size() == 1 && isUsableAmundiMatch(context, matches.getFirst())) {
-                return buildAmundiFilename(context, matches.getFirst(), format);
+            if (matches.size() == 1 && isUsableAmundiMatch(context, matches.get(0))) {
+                return buildAmundiFilename(context, matches.get(0), format);
             }
             if (matches.size() > 1) {
                 log.warn("AMUNDI filename fallback: duplicate matches for idSuivi={}", context.idSuivi());
@@ -2157,67 +2302,78 @@ public class DocumentDownloadService implements DocumentDownloadSerInterface {
 }
 ```
 
-### 12.17 Download controller and scoped exception handler
+### 12.17 Existing Tableau de Bord controller integration and exception handler
 
-`infra/api/v1/TableauDeBordDocumentController.java`
+The current repository already has
+`infra/api/v1/TableDeBoard_controller.java` with `@RequestMapping("/api/v1/")` and the
+legacy `GET /getDocument` JSON/base64 endpoint. Leave that endpoint untouched for
+compatibility. Do **not** create `TableauDeBordDocumentController`.
+
+Add these imports to the existing `TableDeBoard_controller.java`:
 
 ```java
-package com.socgen.sgs.api.quark.backend.api.infra.api.v1;
-
 import com.socgen.sgs.api.quark.backend.api.domain.ReportDownloadModels.ReportDownload;
-import com.socgen.sgs.api.quark.backend.api.service.DocumentDownloadSerInterface;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.CacheControl;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 import java.nio.charset.StandardCharsets;
+```
 
-@RestController
-@RequestMapping("/api/v1/tableau-de-bord")
-@PreAuthorize("hasAuthority('SCOPE_api.quark.v1')")
-@RequiredArgsConstructor
-public class TableauDeBordDocumentController {
+`com.socgen.sgs.api.quark.backend.api.service.*` is already imported, so do not add a
+duplicate explicit import for `DocumentDownloadSerInterface`.
 
-    private final DocumentDownloadSerInterface downloadService;
+Add this field beside the existing `TDBDocumentSerInterface` field. Field injection is used
+here only to match the existing controller and avoid an unrelated refactor of the large
+class:
 
-    @GetMapping("/suivis/{idSuivi}/documents/{format}")
-    public ResponseEntity<byte[]> download(
+```java
+    @Autowired
+    private DocumentDownloadSerInterface documentDownloadService;
+```
+
+Add this method to the existing class. It is additive; the separate route lets the new UI
+receive a real attachment filename while callers of `/api/v1/getDocument` continue to
+receive the existing `TDBDocumentDTO` contract.
+
+```java
+    @GetMapping("/tableau-de-bord/suivis/{idSuivi}/documents/{format}")
+    @PreAuthorize("hasAuthority('SCOPE_api.quark.v1')")
+    @RateLimiter(throttlingPolicyName = "READ_SOME_OPERATION")
+    @Operation(
+            summary = "Download a Tableau de Bord document with its server-generated filename",
+            description = "Downloads qxp, pdf, or doc content and applies the normal or AMUNDI filename rule."
+    )
+    public ResponseEntity<byte[]> downloadDocument(
             @PathVariable long idSuivi,
             @PathVariable String format) {
 
-        ReportDownload document = downloadService.download(idSuivi, format);
+        ReportDownload document = documentDownloadService.download(idSuivi, format);
+        byte[] content = document.content();
+
         HttpHeaders headers = new HttpHeaders();
         headers.setContentDisposition(ContentDisposition.attachment()
                 .filename(document.filename(), StandardCharsets.UTF_8)
                 .build());
         headers.setCacheControl(CacheControl.noStore().mustRevalidate());
         headers.setContentType(MediaType.parseMediaType(document.mediaType()));
-        headers.setContentLength(document.content().length);
+        headers.setContentLength(content.length);
         headers.set("X-Content-Type-Options", "nosniff");
 
-        return ResponseEntity.ok().headers(headers).body(document.content());
+        return ResponseEntity.ok().headers(headers).body(content);
     }
-}
 ```
 
-`infra/api/exception/AmundiFeatureExceptionHandler.java`
+Create `infra/api/exception/AmundiFeatureExceptionHandler.java`:
 
 ```java
 package com.socgen.sgs.api.quark.backend.api.infra.api.exception;
 
 import com.socgen.sgs.api.quark.backend.api.domain.FeatureExceptions.FeatureConfigurationException;
 import com.socgen.sgs.api.quark.backend.api.domain.FeatureExceptions.ImportRejectedException;
+import com.socgen.sgs.api.quark.backend.api.domain.FeatureExceptions.InvalidDocumentFormatException;
 import com.socgen.sgs.api.quark.backend.api.domain.FeatureExceptions.ResourceNotFoundException;
-import com.socgen.sgs.api.quark.backend.api.infra.api.v1.ReferentialController;
-import com.socgen.sgs.api.quark.backend.api.infra.api.v1.TableauDeBordDocumentController;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
@@ -2227,10 +2383,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @Order(Ordered.HIGHEST_PRECEDENCE)
-@RestControllerAdvice(assignableTypes = {
-        ReferentialController.class,
-        TableauDeBordDocumentController.class
-})
+@RestControllerAdvice
 public class AmundiFeatureExceptionHandler {
 
     @ExceptionHandler(ImportRejectedException.class)
@@ -2248,9 +2401,9 @@ public class AmundiFeatureExceptionHandler {
         return problem(HttpStatus.SERVICE_UNAVAILABLE, "Feature configuration error", exception.getMessage());
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ProblemDetail> badRequest(IllegalArgumentException exception) {
-        return problem(HttpStatus.BAD_REQUEST, "Invalid request", exception.getMessage());
+    @ExceptionHandler(InvalidDocumentFormatException.class)
+    public ResponseEntity<ProblemDetail> badRequest(InvalidDocumentFormatException exception) {
+        return problem(HttpStatus.BAD_REQUEST, "Invalid document format", exception.getMessage());
     }
 
     private ResponseEntity<ProblemDetail> problem(HttpStatus status, String title, String detail) {
@@ -2263,7 +2416,7 @@ public class AmundiFeatureExceptionHandler {
 
 ### 12.18 Focused unit tests
 
-Create these two test files. They cover the highest-risk behavior without needing Oracle.
+Create these three test files. They cover the highest-risk behavior without needing Oracle.
 
 `src/test/java/com/socgen/sgs/api/quark/backend/api/Business/AmundiCsvParserTest.java`
 
@@ -2311,8 +2464,8 @@ class AmundiCsvParserTest {
         assertEquals(1, result.totalRows());
         assertEquals(1, result.validRows().size());
         assertTrue(result.errors().isEmpty());
-        assertEquals("SG ACTIONS, ETATS UNIS", result.validRows().getFirst().value().fundLabel());
-        assertEquals("UM11182", result.validRows().getFirst().value().codeParapluie());
+        assertEquals("SG ACTIONS, ETATS UNIS", result.validRows().get(0).value().fundLabel());
+        assertEquals("UM11182", result.validRows().get(0).value().codeParapluie());
     }
 
     @Test
@@ -2324,8 +2477,8 @@ class AmundiCsvParserTest {
                 upload(csv), AmundiDateFormat.DD_MM_YYYY, liveLengths());
 
         assertEquals(1, result.validRows().size());
-        assertNull(result.validRows().getFirst().value().codeParapluie());
-        assertNull(result.validRows().getFirst().value().engagementMethod());
+        assertNull(result.validRows().get(0).value().codeParapluie());
+        assertNull(result.validRows().get(0).value().engagementMethod());
     }
 
     @Test
@@ -2376,6 +2529,7 @@ class AmundiCsvParserTest {
 ```java
 package com.socgen.sgs.api.quark.backend.api.Business;
 
+import com.socgen.sgs.api.quark.backend.api.domain.FeatureExceptions.InvalidDocumentFormatException;
 import com.socgen.sgs.api.quark.backend.api.domain.ReportDownloadModels.AmundiFilenameMatch;
 import com.socgen.sgs.api.quark.backend.api.domain.ReportDownloadModels.DocumentFormat;
 import com.socgen.sgs.api.quark.backend.api.domain.ReportDownloadModels.ReportNamingContext;
@@ -2386,6 +2540,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ReportFilenameBusinessTest {
 
@@ -2466,6 +2621,12 @@ class ReportFilenameBusinessTest {
                 business.buildFilename(context, List.of(match), DocumentFormat.PDF));
     }
 
+    @Test
+    void rejectsUnsupportedDocumentFormat() {
+        assertThrows(InvalidDocumentFormatException.class,
+                () -> DocumentFormat.fromPath("xlsx"));
+    }
+
     private ReportNamingContext context(
             int reportType,
             int status,
@@ -2485,6 +2646,155 @@ class ReportFilenameBusinessTest {
                 true);
     }
 }
+```
+
+`src/test/java/com/socgen/sgs/api/quark/backend/api/service/Impl/AmundiPerimeterImportServiceTest.java`
+
+```java
+package com.socgen.sgs.api.quark.backend.api.service.Impl;
+
+import com.socgen.sgs.api.quark.backend.api.Business.AmundiImportAuditBusiness;
+import com.socgen.sgs.api.quark.backend.api.Business.AmundiPerimeterImportBusiness;
+import com.socgen.sgs.api.quark.backend.api.domain.AmundiImportModels.AmundiDateFormat;
+import com.socgen.sgs.api.quark.backend.api.domain.AmundiImportModels.AmundiImportMode;
+import com.socgen.sgs.api.quark.backend.api.domain.AmundiImportModels.AmundiImportValidationResult;
+import com.socgen.sgs.api.quark.backend.api.domain.AmundiImportModels.UploadedFile;
+import com.socgen.sgs.api.quark.backend.api.domain.FeatureExceptions.ImportRejectedException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+class AmundiPerimeterImportServiceTest {
+
+    private AmundiPerimeterImportBusiness business;
+    private AmundiImportAuditBusiness auditBusiness;
+    private AmundiPerimeterImportService service;
+    private UploadedFile file;
+
+    @BeforeEach
+    void setUp() {
+        business = mock(AmundiPerimeterImportBusiness.class);
+        auditBusiness = mock(AmundiImportAuditBusiness.class);
+        service = new AmundiPerimeterImportService(business, auditBusiness);
+        file = new UploadedFile("amundi.csv", new byte[]{1});
+    }
+
+    @Test
+    void successfulValidationIsNotChangedByAnAuditFailure() {
+        AmundiImportValidationResult validation = new AmundiImportValidationResult(
+                "IT_AMUNDI_PERIMETER", "amundi.csv", "abc", 1, 1, 0, 0, List.of());
+        when(business.validate(file, AmundiDateFormat.DD_MM_YYYY)).thenReturn(validation);
+        doThrow(new RuntimeException("audit unavailable"))
+                .when(auditBusiness)
+                .write(anyString(), any(), any(), any(), anyString(), anyString(),
+                        anyLong(), anyInt(), anyString());
+
+        AmundiImportValidationResult result = service.validate(
+                file, AmundiDateFormat.DD_MM_YYYY, "user@example.com", "127.0.0.1");
+
+        assertSame(validation, result);
+        verify(business).validate(file, AmundiDateFormat.DD_MM_YYYY);
+        verify(auditBusiness).write(anyString(), any(), any(), any(), anyString(), anyString(),
+                anyLong(), anyInt(), anyString());
+    }
+
+    @Test
+    void importFailureIsPreservedWhenFailureAuditAlsoFails() {
+        ImportRejectedException importFailure = new ImportRejectedException("invalid import");
+        when(business.importFile(
+                file, AmundiDateFormat.DD_MM_YYYY, AmundiImportMode.DELETE, "abc"))
+                .thenThrow(importFailure);
+        doThrow(new RuntimeException("audit unavailable"))
+                .when(auditBusiness)
+                .writeFailure(anyString(), any(), any(), anyString(), anyString(),
+                        anyLong(), any(RuntimeException.class));
+
+        RuntimeException thrown = assertThrows(RuntimeException.class, () -> service.importFile(
+                file,
+                AmundiDateFormat.DD_MM_YYYY,
+                AmundiImportMode.DELETE,
+                "abc",
+                "user@example.com",
+                "127.0.0.1"));
+
+        assertSame(importFailure, thrown);
+        verify(auditBusiness).writeFailure(
+                anyString(), any(), any(), anyString(), anyString(),
+                anyLong(), any(RuntimeException.class));
+    }
+}
+```
+
+Also update the existing
+`src/test/java/com/socgen/sgs/api/quark/backend/api/infra/api/v1/TableuDeboard_controlerTest.java`.
+Do not create a second dashboard-controller test class.
+
+Add this field with the existing mocks:
+
+```java
+    @Mock
+    private DocumentDownloadSerInterface documentDownloadService;
+```
+
+Add this setup line in `setUp()`:
+
+```java
+        ReflectionTestUtils.setField(
+                controller,
+                "documentDownloadService",
+                documentDownloadService
+        );
+```
+
+Because `ReportDownload` is a nested record, the existing domain wildcard does not import
+it. Add these imports:
+
+```java
+import com.socgen.sgs.api.quark.backend.api.domain.ReportDownloadModels.ReportDownload;
+import org.springframework.http.MediaType;
+```
+
+Add this test method:
+
+```java
+    @Test
+    void downloadDocument_returnsAttachmentWithGeneratedFilename() {
+        byte[] content = {1, 2, 3};
+        ReportDownload document = new ReportDownload(
+                content,
+                "AnnualReport_ARCANCIA_UM14174_20241231_FRA_FR_EUR.pdf",
+                MediaType.APPLICATION_PDF_VALUE
+        );
+
+        when(documentDownloadService.download(99L, "pdf")).thenReturn(document);
+
+        ResponseEntity<byte[]> response = controller.downloadDocument(99L, "pdf");
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertArrayEquals(content, response.getBody());
+        assertEquals(MediaType.APPLICATION_PDF, response.getHeaders().getContentType());
+        assertEquals(content.length, response.getHeaders().getContentLength());
+        assertEquals(
+                "AnnualReport_ARCANCIA_UM14174_20241231_FRA_FR_EUR.pdf",
+                response.getHeaders().getContentDisposition().getFilename());
+        assertEquals("nosniff", response.getHeaders().getFirst("X-Content-Type-Options"));
+        assertTrue(response.getHeaders().getCacheControl().contains("no-store"));
+        assertTrue(response.getHeaders().getCacheControl().contains("must-revalidate"));
+
+        verify(documentDownloadService).download(99L, "pdf");
+    }
 ```
 
 ## 13. Oracle deployment and verification
@@ -2595,7 +2905,9 @@ GET /api/v1/tableau-de-bord/suivis/{idSuivi}/documents/doc
 
 This bundle is ready to implement with these boundaries:
 
-- it is additive: all Java application files are new and `pom.xml` is unchanged;
+- it adds 18 production files (the 16 already pasted plus the audit component and exception
+  handler), modifies only the existing `TableDeBoard_controller`, and leaves `pom.xml`
+  unchanged;
 - the only database structure change is the nullable eleventh column;
 - .NET continues inserting its explicit ten columns and ignores the new column;
 - the Java import is fixed to `IT_AMUNDI_PERIMETER` and cannot accept a request-provided table or column name;
@@ -2608,4 +2920,19 @@ This bundle is ready to implement with these boundaries:
 - absent, duplicate, or unusable AMUNDI matches produce the common filename, as confirmed;
 - the feature flag provides a safe Java rollback while leaving the compatible nullable column in Oracle.
 
-Local verification performed on this bundle: all 19 new production files and both test files were extracted from this Markdown and compiled with Java 21 against the locally cached project libraries. All 10 focused parser and filename tests passed. A Maven build and Oracle integration test could not be run on this machine because the repository has no Maven wrapper, `mvn` is not installed, and no database connection is available; run those two checks on the work laptop before merging.
+Local verification performed on the final Markdown bundle:
+
+- all 18 complete new production classes were mechanically extracted and compiled with
+  `javac --release 17` against the locally cached project libraries;
+- the exact method that must be added to `TableDeBoard_controller` compiled against the
+  project's Spring API;
+- all three focused test files compiled and all 13 parser, filename, and audit-boundary
+  tests passed;
+- the new repository itself was not edited.
+
+A full Maven build remains a work-laptop check. This repository has no Maven wrapper and
+its corporate parent `com.socgen.sgs.sgs-stack:sgs-api-core:11.4.0` is not available from
+public Maven Central on this machine. Oracle integration also cannot be executed here
+without the database connection. After pasting the final code, run the corporate Maven
+build, the existing `TableuDeboard_controlerTest`, and the Oracle checks in section 13
+before merging.
