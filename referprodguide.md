@@ -91,7 +91,7 @@ Spaces in the fund name are changed to hyphens so that the name is safe to downl
 | Code Parapluie | New **Code Parapluie** column in the AMUNDI perimeter CSV file |
 | `YYYYMMDD` | **Date de clôture** in the matching AMUNDI perimeter row |
 | Country | Always `FRA` for this enhancement |
-| Language | **Langues** in the matching AMUNDI perimeter row, using a two-letter code such as `FR` |
+| Language | Language of the report being downloaded, using its two-letter code such as `FR` |
 | Currency | Main fund referential; this is the same currency source used previously |
 | Extension | Download selected by the user, such as PDF, QXP or DOC |
 
@@ -101,21 +101,26 @@ The CSV field **Code Comptable** is used to find the correct fund. It is not dis
 
 EOS Quark does not check whether the fund name contains “AMUNDI” and does not check the management-company name.
 
-The system checks the information imported with the template **IT_AMUNDI_PERIMETER**. The new AMUNDI name is used only when all the following conditions are met:
+The system checks the information imported with the template **IT_AMUNDI_PERIMETER**. Only
+an Annual report or a Plaquette is eligible for the new name. For an eligible report, there
+are exactly three comparisons with the imported perimeter:
 
-1. The document is an Annual report or a Plaquette.
-2. The report's fund code matches **Code Comptable** in the imported AMUNDI perimeter.
-3. The report type matches: `RA` for an Annual report or `IS` for a Plaquette.
-4. The month and year of the report match the month and year of **Date de clôture** in the imported perimeter.
-5. The report language matches **Langues** in the imported perimeter.
-6. Exactly one imported perimeter row matches the report.
+1. The report's fund code matches **Code Comptable**.
+2. The report type matches: `RA` for an Annual report or `IS` for a Plaquette.
+3. The month and year of the report match the month and year of **Date de clôture**.
+
+If these comparisons return conflicting perimeter information, the standard name is used as
+a safety fallback. This conflict check is not another AMUNDI matching field.
+
+The imported **Langues** value is not used to decide whether the report is AMUNDI. The
+language written in the downloaded filename is taken from the report being downloaded.
 
 ### Difference from the previous check
 
 | Previous check | New check |
 |---|---|
-| Used a matching AMUNDI perimeter row with a BWR code as the AMUNDI indicator | Requires exactly one usable matching AMUNDI perimeter row; Code Parapluie may still be blank |
-| Compared fund code, report type, and report month/year | Also compares the report language |
+| Used a matching AMUNDI perimeter row with a BWR code as the AMUNDI indicator | Requires unambiguous matching AMUNDI perimeter information; Code Parapluie may still be blank |
+| Compared fund code, report type, and report month/year | Keeps the same three comparisons; report language is not an AMUNDI matching condition |
 | Could identify the other legacy report types in the perimeter | Special naming is limited to Annual reports and Plaquettes |
 
 ## 5. What happens when no AMUNDI match is found
@@ -124,10 +129,10 @@ The document is still downloaded. EOS Quark uses the unchanged standard file nam
 
 - the report is not an Annual report or Plaquette;
 - no AMUNDI perimeter row matches;
-- more than one row matches;
+- the matching perimeter information is conflicting or unclear;
 - the matched information cannot be used to create the special name.
 
-If exactly one row matches but **Code Parapluie** is empty, the AMUNDI format is still used with an empty section:
+If the AMUNDI match is unambiguous but **Code Parapluie** is empty, the AMUNDI format is still used with an empty section:
 
 ```text
 AnnualReport_ARCANCIA__20241231_FRA_FR_EUR.pdf
@@ -145,7 +150,9 @@ Production users upload a comma-separated CSV file through:
 Référentiel > Importer un fichier en base
 ```
 
-The CSV contains its column headings, and **Code Parapluie** is the eleventh column. The import accepts only Annual (`RA`) and Plaquette (`IS`) perimeter rows for this enhancement.
+The CSV contains its column headings, and **Code Parapluie** is the eleventh column. The new
+special filename applies only to Annual (`RA`) and Plaquette (`IS`) rows. Other legacy report
+types may remain in the perimeter import, but they always use the standard filename.
 
 Adding the new Code Parapluie information does not stop the existing application from operating during the transition to the new application.
 
