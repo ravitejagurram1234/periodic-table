@@ -223,7 +223,7 @@ PeriodicReport_SG-ACTIONS-ETATS-UNIS_UM11182_20250331_FRA_FR_EUR.pdf
 | CodeParapluie | New `QXP_AMUNDI_PERIMETER.CODE_PARAPLUIE` column; convert Oracle `NULL` to an empty filename segment |
 | YYYYMMDD | Matched perimeter `REPORT_DATE`, formatted `yyyyMMdd` |
 | Country | Fixed literal `FRA` |
-| Language | Matched perimeter `REPORT_LANGUAGE`, uppercase two-character code such as `FR` |
+| Language | Language of the suivi/report being downloaded from `QXP_REF_LANGUE_DOCUMENT.VALEUR_LANGUE`, uppercase two-character code such as `FR`; it is not an AMUNDI matching condition |
 | Currency | `REF_FUND.FND_CURRENCY` |
 | extension | The requested, whitelisted lowercase type: `qxp`, `pdf`, or `doc` |
 
@@ -231,24 +231,31 @@ PeriodicReport_SG-ACTIONS-ETATS-UNIS_UM11182_20250331_FRA_FR_EUR.pdf
 
 Java must derive the decision from `idSuivi`; the UI must not send `isAmundi`, fund name, currency, date, language, or Code-Parapluie.
 
-Use the new AMUNDI formatter only when exactly one perimeter row matches:
+Use the new AMUNDI formatter only when the perimeter information is unambiguous after these
+three comparisons:
 
 ```text
 report is Annual or Plaquette
 AND FUND_NAME = suivi.ID_FND_CODE
 AND REPORT_TYPE = RA or IS respectively
 AND report month/year matches the selected suivi report month/year
-AND REPORT_LANGUAGE matches the suivi language
 ```
+
+Do not compare `QXP_AMUNDI_PERIMETER.REPORT_LANGUAGE` when deciding whether the report is
+AMUNDI. Language is imported because it remains part of the legacy table key, but the
+downloaded filename uses the language of the suivi/report. If several perimeter rows differ
+only by language but produce the same `REPORT_DATE + CODE_PARAPLUIE`, they represent one
+naming candidate. Conflicting dates or Code-Parapluie values are ambiguous and fall back to
+the common filename.
 
 Decision:
 
 ```text
 Not RA/IS                                  -> normal filename
-RA/IS with zero perimeter rows            -> normal filename
-RA/IS with one row and Code-Parapluie     -> new AMUNDI filename
-RA/IS with one row but no Code-Parapluie  -> new AMUNDI filename with an empty segment and warning log
-Duplicate/otherwise unusable match        -> normal filename and warning log
+RA/IS with zero naming candidates             -> normal filename
+RA/IS with one candidate and Code-Parapluie    -> new AMUNDI filename
+RA/IS with one candidate but no Code-Parapluie -> new AMUNDI filename with an empty segment and warning log
+Conflicting/otherwise unusable candidates      -> normal filename and warning log
 ```
 
 PB, RC, and DICI always keep normal naming, even if a legacy perimeter row exists for them.
@@ -270,7 +277,7 @@ TableDeBoard_controller (existing class)
   -> SimpleJDBCDocumentDownload
 ```
 
-The existing Oracle `GetContenuDocument` and `UpdateStatutDocument` operations can be reused. Add a separate Java-specific metadata query/DAO operation for Code-Parapluie, perimeter date, and perimeter language. Do not change the existing .NET dashboard cursor/result contract during the parallel run.
+The existing Oracle `GetContenuDocument` and `UpdateStatutDocument` operations can be reused. Add a separate Java-specific metadata query/DAO operation for Code-Parapluie and perimeter date. Obtain filename language from the suivi/report metadata, not from the AMUNDI match. Do not change the existing .NET dashboard cursor/result contract during the parallel run.
 
 ## 6. Database changes and deployment safety
 
@@ -313,7 +320,7 @@ Liquibase can be adopted later as the standard database-deployment tool, but the
    create `TableauDeBordDocumentController`; `pom.xml` remains unchanged.
 3. Run the automated tests and the live-Oracle verification queries in section 13.
 4. Test with the supplied CSV, null and populated Code-Parapluie values, the old .NET application, and exact QXP/PDF/DOC download names.
-5. Enable the Java endpoints after UAT; normal naming remains the fallback whenever the AMUNDI match is absent, duplicated, or unusable.
+5. Enable the Java endpoints after UAT; normal naming remains the fallback whenever the AMUNDI match is absent, conflicting, or unusable.
 
 ## 8. Minimum acceptance tests
 
@@ -326,10 +333,11 @@ Liquibase can be adopted later as the standard database-deployment tool, but the
 - Normal RA, IP, PB, RC, and DICI filenames remain byte-for-byte compatible with .NET behavior.
 - A complete RA match produces `AnnualReport_...` and a complete IS match produces `PeriodicReport_...`.
 - PB, RC, and DICI never use the new formatter.
-- The date is the matched perimeter date; country is `FRA`; language is two characters; currency is from `REF_FUND`.
+- The date is the matched perimeter date; country is `FRA`; language is the two-character suivi/report language; currency is from `REF_FUND`.
+- A different `REPORT_LANGUAGE` value in the perimeter does not prevent the three-field AMUNDI match.
 - QXP, PDF, and DOC share the same basename and retain the requested extension.
-- Zero or duplicate/unusable perimeter match uses the normal filename and writes a warning log.
-- One RA/IS perimeter match with null Code-Parapluie still uses the AMUNDI formatter and produces a deliberate empty segment, for example `AnnualReport_ARCANCIA__20241231_FRA_FR_EUR.pdf`.
+- Zero or conflicting/unusable perimeter naming candidates use the normal filename and write a warning log.
+- One unambiguous RA/IS naming candidate with null Code-Parapluie still uses the AMUNDI formatter and produces a deliberate empty segment, for example `AnnualReport_ARCANCIA__20241231_FRA_FR_EUR.pdf`.
 - After a Java import supplies Code-Parapluie, the next download re-queries Oracle and immediately uses the corrected filename.
 - The old .NET importer and QXP/PDF/DOC downloads still work after adding the nullable column.
 - An old .NET `DELETE_AND_INSERT` on a Java-populated row resets Code-Parapluie to null; the subsequent Java download/import follows the agreed empty-then-correct workflow.
@@ -690,7 +698,6 @@ public final class ReportDownloadModels {
 
     public record AmundiFilenameMatch(
             LocalDate reportDate,
-            String reportLanguage,
             String codeParapluie) {
     }
 
@@ -1920,13 +1927,12 @@ public class SimpleJDBCDocumentDownload implements DocumentDownloadDao {
             """;
 
     private static final String AMUNDI_MATCH_SQL = """
-            SELECT ap.REPORT_DATE, ap.REPORT_LANGUAGE, ap.CODE_PARAPLUIE
+            SELECT DISTINCT ap.REPORT_DATE, ap.CODE_PARAPLUIE
             FROM QXP_AMUNDI_PERIMETER ap
             WHERE ap.FUND_NAME = :fundCode
               AND ap.REPORT_TYPE = :reportType
               AND ap.REPORT_DATE >= :monthStart
               AND ap.REPORT_DATE < :nextMonth
-              AND UPPER(TRIM(ap.REPORT_LANGUAGE)) = :language
             """;
 
     private final JdbcTemplate jdbcTemplate;
@@ -1991,15 +1997,13 @@ public class SimpleJDBCDocumentDownload implements DocumentDownloadDao {
                 .addValue("fundCode", context.fundCode())
                 .addValue("reportType", perimeterReportType)
                 .addValue("monthStart", Date.valueOf(monthStart))
-                .addValue("nextMonth", Date.valueOf(monthStart.plusMonths(1)))
-                .addValue("language", context.language());
+                .addValue("nextMonth", Date.valueOf(monthStart.plusMonths(1)));
 
         return namedParameterJdbcTemplate.query(
                 AMUNDI_MATCH_SQL,
                 parameters,
                 (resultSet, rowNumber) -> new AmundiFilenameMatch(
                         toLocalDate(resultSet.getDate("REPORT_DATE")),
-                        resultSet.getString("REPORT_LANGUAGE"),
                         resultSet.getString("CODE_PARAPLUIE")));
     }
 
@@ -2098,7 +2102,8 @@ public class ReportFilenameBusiness {
                 return buildAmundiFilename(context, matches.get(0), format);
             }
             if (matches.size() > 1) {
-                log.warn("AMUNDI filename fallback: duplicate matches for idSuivi={}", context.idSuivi());
+                log.warn("AMUNDI filename fallback: conflicting naming candidates for idSuivi={}",
+                        context.idSuivi());
             } else if (matches.size() == 1) {
                 log.warn("AMUNDI filename fallback: unusable match for idSuivi={}", context.idSuivi());
             }
@@ -2110,7 +2115,7 @@ public class ReportFilenameBusiness {
             ReportNamingContext context,
             AmundiFilenameMatch match) {
         return match.reportDate() != null
-                && isTwoLetterLanguage(match.reportLanguage())
+                && isTwoLetterLanguage(context.language())
                 && hasText(context.fundName())
                 && hasText(context.currency());
     }
@@ -2135,7 +2140,7 @@ public class ReportFilenameBusiness {
                 + "_" + sanitizeAmundiSegment(context.fundName())
                 + "_" + codeParapluie
                 + "_" + AMUNDI_DATE.format(match.reportDate())
-                + "_FRA_" + match.reportLanguage().trim().toUpperCase(Locale.ROOT)
+                + "_FRA_" + context.language().trim().toUpperCase(Locale.ROOT)
                 + "_" + sanitizeAmundiSegment(context.currency().toUpperCase(Locale.ROOT))
                 + "." + format.extension();
     }
@@ -2555,7 +2560,7 @@ class ReportFilenameBusinessTest {
     void createsAnnualReportAmundiFilename() {
         ReportNamingContext context = context(1, 2, "SG ACTIONS ETATS UNIS", "EUR", "FR");
         AmundiFilenameMatch match = new AmundiFilenameMatch(
-                LocalDate.of(2025, 3, 31), "FR", "UM11182");
+                LocalDate.of(2025, 3, 31), "UM11182");
 
         assertEquals(
                 "AnnualReport_SG-ACTIONS-ETATS-UNIS_UM11182_20250331_FRA_FR_EUR.pdf",
@@ -2566,7 +2571,7 @@ class ReportFilenameBusinessTest {
     void createsPeriodicReportForPlaquetteAndKeepsRequestedExtension() {
         ReportNamingContext context = context(2, 2, "SG ACTIONS ETATS UNIS", "EUR", "FR");
         AmundiFilenameMatch match = new AmundiFilenameMatch(
-                LocalDate.of(2025, 3, 31), "FR", "UM11182");
+                LocalDate.of(2025, 3, 31), "UM11182");
 
         assertEquals(
                 "PeriodicReport_SG-ACTIONS-ETATS-UNIS_UM11182_20250331_FRA_FR_EUR.qxp",
@@ -2574,10 +2579,21 @@ class ReportFilenameBusinessTest {
     }
 
     @Test
+    void usesTheSuiviLanguageInTheAmundiFilename() {
+        ReportNamingContext context = context(1, 2, "ARCANCIA", "EUR", "EN");
+        AmundiFilenameMatch match = new AmundiFilenameMatch(
+                LocalDate.of(2024, 12, 31), "UM14174");
+
+        assertEquals(
+                "AnnualReport_ARCANCIA_UM14174_20241231_FRA_EN_EUR.pdf",
+                business.buildFilename(context, List.of(match), DocumentFormat.PDF));
+    }
+
+    @Test
     void keepsTheEmptySegmentWhenCodeParapluieIsNull() {
         ReportNamingContext context = context(1, 2, "ARCANCIA", "EUR", "FR");
         AmundiFilenameMatch match = new AmundiFilenameMatch(
-                LocalDate.of(2024, 12, 31), "FR", null);
+                LocalDate.of(2024, 12, 31), null);
 
         assertEquals(
                 "AnnualReport_ARCANCIA__20241231_FRA_FR_EUR.doc",
@@ -2597,24 +2613,26 @@ class ReportFilenameBusinessTest {
     }
 
     @Test
-    void duplicateMatchFallsBackToTheCommonCertifiedName() {
+    void conflictingCandidatesFallBackToTheCommonCertifiedName() {
         ReportNamingContext context = new ReportNamingContext(
                 99L, "74078", null, 1, 10,
                 LocalDate.of(2024, 12, 31),
                 "PATRIMOINE REACTIF", "EUR", "FR", true);
-        AmundiFilenameMatch match = new AmundiFilenameMatch(
-                LocalDate.of(2024, 12, 31), "FR", "UM14174");
+        AmundiFilenameMatch first = new AmundiFilenameMatch(
+                LocalDate.of(2024, 12, 31), "UM14174");
+        AmundiFilenameMatch second = new AmundiFilenameMatch(
+                LocalDate.of(2024, 12, 30), "UM99999");
 
         assertEquals(
                 "74078 - PATRIMOINE REACTIF - 31-12-2024 - RA - FR - C.pdf",
-                business.buildFilename(context, List.of(match, match), DocumentFormat.PDF));
+                business.buildFilename(context, List.of(first, second), DocumentFormat.PDF));
     }
 
     @Test
     void prospectusAlwaysUsesTheCommonRule() {
         ReportNamingContext context = context(3, 2, "ARCANCIA", "EUR", "FR");
         AmundiFilenameMatch match = new AmundiFilenameMatch(
-                LocalDate.of(2024, 12, 31), "FR", "UM14174");
+                LocalDate.of(2024, 12, 31), "UM14174");
 
         assertEquals(
                 "310127 - ARCANCIA - 31-03-2025 - PB.pdf",
@@ -2917,7 +2935,7 @@ This bundle is ready to implement with these boundaries:
 - the old document procedures and visited flags are reused without changing their signatures;
 - AMUNDI naming is limited to RA and IS, applies equally to PDF/QXP/DOC, and never changes PB/RC/DICI;
 - null Code-Parapluie deliberately produces an empty segment; a later Java import corrects the next download;
-- absent, duplicate, or unusable AMUNDI matches produce the common filename, as confirmed;
+- absent, conflicting, or unusable AMUNDI matches produce the common filename, as confirmed;
 - the feature flag provides a safe Java rollback while leaving the compatible nullable column in Oracle.
 
 Local verification performed on the final Markdown bundle:
@@ -2926,7 +2944,7 @@ Local verification performed on the final Markdown bundle:
   `javac --release 17` against the locally cached project libraries;
 - the exact method that must be added to `TableDeBoard_controller` compiled against the
   project's Spring API;
-- all three focused test files compiled and all 13 parser, filename, and audit-boundary
+- all three focused test files compiled and all 14 parser, filename, and audit-boundary
   tests passed;
 - the new repository itself was not edited.
 
