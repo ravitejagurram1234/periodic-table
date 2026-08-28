@@ -362,6 +362,7 @@ Create only the new files listed below in `quark-backend-api`. Do not modify an 
 src/main/java/com/socgen/sgs/api/quark/backend/api/
 ├── Business/
 │   ├── AmundiCsvParser.java
+│   ├── AmundiImportAuditBusiness.java
 │   ├── AmundiPerimeterImportBusiness.java
 │   ├── DocumentDownloadBusiness.java
 │   └── ReportFilenameBusiness.java
@@ -997,6 +998,99 @@ public class AmundiCsvParser {
 }
 ```
 
+### 12.5A `Business/AmundiImportAuditBusiness.java`
+
+The separate transaction is intentional: an import failure rolls back perimeter changes but must not also erase its audit trace.
+
+```java
+package com.socgen.sgs.api.quark.backend.api.Business;
+
+import com.socgen.sgs.api.quark.backend.api.domain.AmundiImportModels.AmundiImportMode;
+import com.socgen.sgs.api.quark.backend.api.domain.AmundiImportModels.AmundiImportValidationResult;
+import com.socgen.sgs.api.quark.backend.api.domain.AmundiImportModels.UploadedFile;
+import com.socgen.sgs.api.quark.backend.api.domain.Audit;
+import com.socgen.sgs.api.quark.backend.api.infra.dao.AuditInsertTraceDao;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.LocalDate;
+import java.util.List;
+
+import static com.socgen.sgs.api.quark.backend.api.domain.AmundiImportModels.TEMPLATE_NAME;
+
+@Slf4j
+@Component
+@RequiredArgsConstructor
+public class AmundiImportAuditBusiness {
+
+    private final AuditInsertTraceDao auditInsertTraceDao;
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void write(
+            String function,
+            UploadedFile file,
+            AmundiImportValidationResult validation,
+            AmundiImportMode mode,
+            String userEmail,
+            String clientIp,
+            long startedAt,
+            int status,
+            String message) {
+        try {
+            BigDecimal seconds = BigDecimal.valueOf((System.nanoTime() - startedAt) / 1_000_000_000d)
+                    .setScale(3, RoundingMode.HALF_UP);
+            Audit audit = new Audit(
+                    abbreviate(clientIp, 100),
+                    LocalDate.now(),
+                    LocalDate.now(),
+                    "referential/importer-un-fichier",
+                    abbreviate(userEmail, 200),
+                    "Referential",
+                    function,
+                    abbreviate(message, 1000),
+                    "template=" + TEMPLATE_NAME,
+                    "file=" + abbreviate(file.originalFilename(), 300),
+                    "checksum=" + validation.checksumSha256(),
+                    "mode=" + (mode == null ? "VALIDATE" : mode),
+                    "total=" + validation.totalRows() + ", valid=" + validation.validRows()
+                            + ", invalid=" + validation.invalidRows(),
+                    seconds,
+                    status,
+                    0,
+                    "QXP");
+            auditInsertTraceDao.insertTrace(audit);
+        } catch (RuntimeException auditException) {
+            log.error("AMUNDI audit failed for function={} user={}", function, userEmail, auditException);
+        }
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void writeFailure(
+            String function,
+            UploadedFile file,
+            AmundiImportMode mode,
+            String userEmail,
+            String clientIp,
+            long startedAt,
+            RuntimeException exception) {
+        AmundiImportValidationResult empty = new AmundiImportValidationResult(
+                TEMPLATE_NAME, file.originalFilename(), "unavailable", 0, 0, 0, 0, List.of());
+        write(function, file, empty, mode, userEmail, clientIp, startedAt, 1,
+                "Failed: " + abbreviate(exception.getMessage(), 500));
+    }
+
+    private String abbreviate(String value, int maximum) {
+        String safe = value == null ? "" : value;
+        return safe.length() <= maximum ? safe : safe.substring(0, maximum - 3) + "...";
+    }
+}
+```
+
 ### 12.6 `infra/dao/AmundiPerimeterDao.java`
 
 ```java
@@ -1236,18 +1330,12 @@ import com.socgen.sgs.api.quark.backend.api.domain.AmundiImportModels.AmundiPeri
 import com.socgen.sgs.api.quark.backend.api.domain.AmundiImportModels.CsvParseResult;
 import com.socgen.sgs.api.quark.backend.api.domain.AmundiImportModels.ParsedAmundiRow;
 import com.socgen.sgs.api.quark.backend.api.domain.AmundiImportModels.UploadedFile;
-import com.socgen.sgs.api.quark.backend.api.domain.Audit;
 import com.socgen.sgs.api.quark.backend.api.domain.FeatureExceptions.ImportRejectedException;
 import com.socgen.sgs.api.quark.backend.api.infra.dao.AmundiPerimeterDao;
-import com.socgen.sgs.api.quark.backend.api.infra.dao.AuditInsertTraceDao;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -1257,14 +1345,13 @@ import java.util.Set;
 import static com.socgen.sgs.api.quark.backend.api.domain.AmundiImportModels.EXPECTED_HEADERS;
 import static com.socgen.sgs.api.quark.backend.api.domain.AmundiImportModels.TEMPLATE_NAME;
 
-@Slf4j
 @Component
 @RequiredArgsConstructor
 public class AmundiPerimeterImportBusiness {
 
     private final AmundiCsvParser csvParser;
     private final AmundiPerimeterDao amundiPerimeterDao;
-    private final AuditInsertTraceDao auditInsertTraceDao;
+    private final AmundiImportAuditBusiness auditBusiness;
 
     public AmundiImportTemplateConfiguration configuration() {
         return new AmundiImportTemplateConfiguration(
@@ -1293,11 +1380,11 @@ public class AmundiPerimeterImportBusiness {
         try {
             CsvParseResult parsed = parseAndValidateFunds(file, dateFormat);
             AmundiImportValidationResult result = toValidation(file, parsed);
-            writeAudit("ValidateAmundiPerimeter", file, result, null, userEmail, clientIp,
+            auditBusiness.write("ValidateAmundiPerimeter", file, result, null, userEmail, clientIp,
                     startedAt, 0, "Validation completed");
             return result;
         } catch (RuntimeException exception) {
-            writeFailureAudit("ValidateAmundiPerimeter", file, null, userEmail, clientIp,
+            auditBusiness.writeFailure("ValidateAmundiPerimeter", file, null, userEmail, clientIp,
                     startedAt, exception);
             throw exception;
         }
@@ -1352,13 +1439,13 @@ public class AmundiPerimeterImportBusiness {
 
             AmundiImportResult result = new AmundiImportResult(
                     validation, mode, deleted, inserted, updated, unchanged);
-            writeAudit("ImportAmundiPerimeter", file, validation, mode, userEmail, clientIp,
+            auditBusiness.write("ImportAmundiPerimeter", file, validation, mode, userEmail, clientIp,
                     startedAt, 0,
                     "Import completed; deleted=" + deleted + ", inserted=" + inserted
                             + ", updated=" + updated + ", unchanged=" + unchanged);
             return result;
         } catch (RuntimeException exception) {
-            writeFailureAudit("ImportAmundiPerimeter", file, mode, userEmail, clientIp,
+            auditBusiness.writeFailure("ImportAmundiPerimeter", file, mode, userEmail, clientIp,
                     startedAt, exception);
             throw exception;
         }
@@ -1411,62 +1498,6 @@ public class AmundiPerimeterImportBusiness {
                 parsed.errors());
     }
 
-    private void writeFailureAudit(
-            String function,
-            UploadedFile file,
-            AmundiImportMode mode,
-            String userEmail,
-            String clientIp,
-            long startedAt,
-            RuntimeException exception) {
-        AmundiImportValidationResult empty = new AmundiImportValidationResult(
-                TEMPLATE_NAME, file.originalFilename(), "unavailable", 0, 0, 0, 0, List.of());
-        writeAudit(function, file, empty, mode, userEmail, clientIp, startedAt, 1,
-                "Failed: " + abbreviate(exception.getMessage(), 500));
-    }
-
-    private void writeAudit(
-            String function,
-            UploadedFile file,
-            AmundiImportValidationResult validation,
-            AmundiImportMode mode,
-            String userEmail,
-            String clientIp,
-            long startedAt,
-            int status,
-            String message) {
-        try {
-            BigDecimal seconds = BigDecimal.valueOf((System.nanoTime() - startedAt) / 1_000_000_000d)
-                    .setScale(3, RoundingMode.HALF_UP);
-            Audit audit = new Audit(
-                    abbreviate(clientIp, 100),
-                    LocalDate.now(),
-                    LocalDate.now(),
-                    "referential/importer-un-fichier",
-                    abbreviate(userEmail, 200),
-                    "Referential",
-                    function,
-                    abbreviate(message, 1000),
-                    "template=" + TEMPLATE_NAME,
-                    "file=" + abbreviate(file.originalFilename(), 300),
-                    "checksum=" + validation.checksumSha256(),
-                    "mode=" + (mode == null ? "VALIDATE" : mode),
-                    "total=" + validation.totalRows() + ", valid=" + validation.validRows()
-                            + ", invalid=" + validation.invalidRows(),
-                    seconds,
-                    status,
-                    0,
-                    "QXP");
-            auditInsertTraceDao.insertTrace(audit);
-        } catch (RuntimeException auditException) {
-            log.error("AMUNDI audit failed for function={} user={}", function, userEmail, auditException);
-        }
-    }
-
-    private String abbreviate(String value, int maximum) {
-        String safe = value == null ? "" : value;
-        return safe.length() <= maximum ? safe : safe.substring(0, maximum - 3) + "...";
-    }
 }
 ```
 
@@ -2577,4 +2608,4 @@ This bundle is ready to implement with these boundaries:
 - absent, duplicate, or unusable AMUNDI matches produce the common filename, as confirmed;
 - the feature flag provides a safe Java rollback while leaving the compatible nullable column in Oracle.
 
-Local verification performed on this bundle: all 18 new production files and both test files were extracted from this Markdown and compiled with Java 21 against the locally cached project libraries. All 10 focused parser and filename tests passed. A Maven build and Oracle integration test could not be run on this machine because the repository has no Maven wrapper, `mvn` is not installed, and no database connection is available; run those two checks on the work laptop before merging.
+Local verification performed on this bundle: all 19 new production files and both test files were extracted from this Markdown and compiled with Java 21 against the locally cached project libraries. All 10 focused parser and filename tests passed. A Maven build and Oracle integration test could not be run on this machine because the repository has no Maven wrapper, `mvn` is not installed, and no database connection is available; run those two checks on the work laptop before merging.
