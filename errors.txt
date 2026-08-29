@@ -70,3 +70,4 @@ WHERE owner = 'OWB_DWH'
     OR column_name IN ('ID_FND_CODE', 'FND_SHT_DESCRIPTION', 'FND_CURRENCY'))
 ORDER BY column_id;
 
+fgfgf
