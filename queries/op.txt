@@ -80,3 +80,6 @@ SOURCE	QXP_PK_SUIVI.INSERTRUNTACHES	PACKAGE BODY	991												* Auteur : Ludov
 SOURCE	QXP_PK_SUIVI.INSERTRUNTACHES	PACKAGE BODY	992												* Révision :  XXX JIRA QXP-XXXX XX/XX/2010 : Résumé modification
 SOURCE	QXP_PK_SUIVI.INSERTRUNTACHES	PACKAGE BODY	993												********************************************************************************************/
 TYPE_SOURCE	QXP_PK_COMMON.NUMBERARRAY	PACKAGE	11												TYPE NumberArray IS TABLE OF NUMBER INDEX BY BINARY_INTEGER;
+this is the run added newly i guess, there are few null columns in between indeed.
+first row from qxp_run
+505257	79855				1	1	02/09/2026	1			0	0	0			0	0			ludovic.cueff@sgss.socgen.com
