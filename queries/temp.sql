@@ -1,44 +1,84 @@
 /* ---------------------------------------------------------------------------
-   QOFF-01G - Bounded old-UI run-creation exception evidence
-   Export: planning/08_ui_creation_error_evidence.csv
+   QOFF-01I - Deployed QXP_PK_SUIVI.InsertRun source fragment
+   Export: planning/10_deployed_insertrun_source_fragment.csv
 
-   Use when QOFF-01F has no matching committed run. QXP.Framework writes to
-   QXP_LOG by default when UseLog4Net is not enabled. This query returns only
-   recent run/task/WCF creation messages, a bounded ORA excerpt and a bounded
-   first exception line. It does not return an entire stack trace.
+   Read-only. Returns only the InsertRun routine from the deployed package
+   specification and package body, with original Oracle source line numbers.
+   It stops at the next top-level routine with matching indentation and also
+   applies a hard cap of 220 lines per fragment. It never returns the complete
+   package unless the package itself contains only this routine.
 
-   If this returns no rows, obtain the deployed WebSite UseLog4Net setting and
-   the corresponding bounded log entries from operations. Never export an
-   entire log file or credentials.
+   Use this before writing the additive legacy overload. Do not compile or
+   change either package object until the returned fragments are reviewed.
+   No substitution values are required.
    --------------------------------------------------------------------------- */
+WITH source_lines AS (
+    SELECT
+        package_source.type AS source_type,
+        package_source.line AS source_line,
+        package_source.text AS source_text,
+        LENGTH(package_source.text) - LENGTH(LTRIM(package_source.text))
+            AS indentation
+    FROM all_source package_source
+    WHERE package_source.owner = SYS_CONTEXT('USERENV', 'CURRENT_SCHEMA')
+      AND package_source.name = 'QXP_PK_SUIVI'
+      AND package_source.type IN ('PACKAGE', 'PACKAGE BODY')
+), routine_starts AS (
+    SELECT
+        source_line.source_type,
+        source_line.source_line AS start_line,
+        source_line.indentation
+    FROM source_lines source_line
+    WHERE REGEXP_LIKE(
+              source_line.source_text,
+              '^[[:space:]]*FUNCTION[[:space:]]+INSERTRUN([[:space:]]|[(]|$)',
+              'i'
+          )
+), routine_ranges AS (
+    SELECT
+        routine_start.source_type,
+        routine_start.start_line,
+        NVL(
+            (
+                SELECT MIN(next_routine.source_line) - 1
+                FROM source_lines next_routine
+                WHERE next_routine.source_type = routine_start.source_type
+                  AND next_routine.source_line > routine_start.start_line
+                  AND next_routine.indentation = routine_start.indentation
+                  AND REGEXP_LIKE(
+                          next_routine.source_text,
+                          '^[[:space:]]*(FUNCTION|PROCEDURE)[[:space:]]+',
+                          'i'
+                      )
+            ),
+            (
+                SELECT MAX(last_source_line.source_line)
+                FROM source_lines last_source_line
+                WHERE last_source_line.source_type = routine_start.source_type
+            )
+        ) AS detected_end_line
+    FROM routine_starts routine_start
+)
 SELECT
-    TO_CHAR(log_entry.log_date, 'YYYY-MM-DD HH24:MI:SS') AS log_time,
-    log_entry.log_type,
-    log_entry.log_message,
-    REGEXP_SUBSTR(
-        REPLACE(REPLACE(log_entry.log_info, CHR(13), ' '), CHR(10), ' '),
-        'ORA-[[:digit:]]{5}:.{0,500}'
-    ) AS oracle_error_excerpt,
-    SUBSTR(
-        log_entry.log_info,
-        1,
-        LEAST(
-            600,
-            CASE
-                WHEN INSTR(log_entry.log_info, CHR(10)) > 0
-                THEN INSTR(log_entry.log_info, CHR(10)) - 1
-                ELSE NVL(LENGTH(log_entry.log_info), 0)
-            END
-        )
-    ) AS exception_head,
-    NVL(LENGTH(log_entry.log_info), 0) AS full_exception_chars
-FROM qxp_log log_entry
-WHERE log_entry.log_date >= SYSDATE - 2
-  AND (
-        log_entry.log_message = 'CreationRunKO'
-        OR LOWER(log_entry.log_message) LIKE '%run%'
-        OR LOWER(log_entry.log_message) LIKE '%tache%'
-        OR LOWER(log_entry.log_message) LIKE '%wcf%'
-      )
-ORDER BY log_entry.log_date DESC
-FETCH FIRST 20 ROWS ONLY;
+    source_line.source_type,
+    source_line.source_line,
+    RTRIM(source_line.source_text, CHR(13) || CHR(10)) AS source_text,
+    CASE
+        WHEN routine_range.detected_end_line
+             > routine_range.start_line + 220
+         AND source_line.source_line = routine_range.start_line + 220
+        THEN 'STOP: FRAGMENT CAPPED; EXPORT DEPLOYED OBJECT TO A FILE'
+        ELSE NULL
+    END AS fragment_warning
+FROM source_lines source_line
+JOIN routine_ranges routine_range
+  ON routine_range.source_type = source_line.source_type
+ AND source_line.source_line BETWEEN routine_range.start_line
+                                 AND LEAST(
+                                         routine_range.detected_end_line,
+                                         routine_range.start_line + 220
+                                     )
+ORDER BY
+    CASE source_line.source_type WHEN 'PACKAGE' THEN 1 ELSE 2 END,
+    source_line.source_line;
+
