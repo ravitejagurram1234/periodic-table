@@ -1,1 +1,13 @@
-505257	79855	1	A générer	1	1	Rapport annuel	104128		1	447	1	0	1	1		1	1	20976640	5	5	1	4	0	0	0	SIMPLE	PASS
+query 05a results
+505257	32	2	Doc EOS	DOCUMENT_INSERT_OR_REPLACE	0	1	UPDATE_AND_MODIFY_CONFIGURED		<NULL>		[Logo]	4			0		0	6504448	CHECK QOFF-08: exactly one usable source document is required	0	POST_ONLY: task counts plus QOFF-17
+505257	33	2	Doc EOS	DOCUMENT_INSERT_OR_REPLACE	0	1	UPDATE_AND_MODIFY_CONFIGURED		[Mot du Gerant]	13	[Mot du Gerant]	13			0		0	6504448	CHECK QOFF-08: exactly one usable source document is required	0	POST_ONLY: task counts plus QOFF-17
+505257	35	2	Doc EOS	DOCUMENT_INSERT_OR_REPLACE	0	1	UPDATE_AND_MODIFY_CONFIGURED		<NULL>		[Regles et Methodes ]	19			0		0	6504448	CHECK QOFF-08: exactly one usable source document is required	0	POST_ONLY: task counts plus QOFF-17
+505257	54	2	Doc EOS	DOCUMENT_INSERT_OR_REPLACE	0	1	UPDATE_AND_MODIFY_CONFIGURED		[NOM_SGP]	7	[NOM_SGP]	7			0		0	6504448	CHECK QOFF-08: exactly one usable source document is required	0	POST_ONLY: task counts plus QOFF-17
+505257	282	1	SQL	VALUE_UPDATE	1	0	UPDATE_AND_MODIFY_CONFIGURED	2791	<NULL>		<NULL>				0		0	6504448	CONFIGURED: prove fetched rows and updateCount at runtime	0	POST_ONLY: task counts plus QOFF-17
+
+
+query 08 results
+505257	1	79855	32	5	2								0			<NULL>		[Logo]	4	0
+505257	1	79855	33	1	1								0			[Mot du Gerant]	13	[Mot du Gerant]	13	0
+505257	1	79855	35	9	1								0			<NULL>		[Regles et Methodes ]	19	0
+505257	1	79855	54	10	2								0			[NOM_SGP]	7	[NOM_SGP]	7	0
