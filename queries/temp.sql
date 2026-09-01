@@ -1,5 +1,155 @@
 
 /* ---------------------------------------------------------------------------
+   QOFF-02A - Pre-reservation validation for an old-UI-created status-1 run
+   Export: run_<ID>/00_pre_reservation_validation.csv
+
+   Use only for an ID returned by QOFF-01C, with the batch, old .NET engine and
+   Java engine already stopped. PRE_RESERVATION_RESULT must be PASS before the
+   separate guarded reservation script is executed. This query changes nothing.
+   --------------------------------------------------------------------------- */
+WITH run_context AS (
+    SELECT
+        run_record.id_run,
+        run_record.id_suivi,
+        run_record.id_statut_generation,
+        status.libelle AS run_status_label,
+        suivi.id_statut_generation AS suivi_status,
+        suivi.id_run_suivant,
+        suivi.id_type_rapport,
+        report_type.libelle AS report_type_label,
+        suivi.id_fnd_code,
+        suivi.id_unit_code,
+        suivi.id_langue,
+        suivi.id_gabarit,
+        run_record.gabarit_source,
+        run_record.mode_compart,
+        run_record.date_planification,
+        run_record.date_debut_generation,
+        run_record.date_fin_generation,
+        run_record.id_doc_qxp,
+        run_record.id_doc_pdf,
+        run_record.id_doc_doc,
+        gabarit.is_actif AS gabarit_is_active,
+        CASE WHEN gabarit.contenu IS NULL THEN 0
+             ELSE DBMS_LOB.GETLENGTH(gabarit.contenu)
+        END AS configured_gabarit_bytes,
+        (SELECT COUNT(*)
+           FROM qxp_asso_fond_gabarit association_row
+          WHERE association_row.id_type_rapport = suivi.id_type_rapport
+            AND association_row.id_fnd_code = suivi.id_fnd_code
+            AND association_row.id_langue = suivi.id_langue
+            AND association_row.id_gabarit = suivi.id_gabarit
+        ) AS run_property_match_count
+    FROM qxp_run run_record
+    JOIN qxp_suivi suivi
+      ON suivi.id_suivi = run_record.id_suivi
+    JOIN qxp_gabarit gabarit
+      ON gabarit.id_gabarit = suivi.id_gabarit
+    LEFT JOIN qxp_ref_statut_generation status
+      ON status.id_statut_generation = run_record.id_statut_generation
+    LEFT JOIN qxp_ref_type_rapport report_type
+      ON report_type.id_type_rapport = suivi.id_type_rapport
+    WHERE run_record.id_run = &RUN_ID
+), task_profile AS (
+    SELECT
+        run_task.id_run,
+        COUNT(DISTINCT task.id_tache) AS selected_active_task_count,
+        COUNT(DISTINCT CASE WHEN task.id_type_tache BETWEEN 1 AND 5
+                            THEN task.id_tache END) AS selected_change_task_count,
+        COUNT(DISTINCT CASE WHEN task.id_type_tache = 1
+                            THEN task.id_tache END) AS selected_sql_tasks,
+        COUNT(DISTINCT CASE WHEN task.id_type_tache = 2
+                            THEN task.id_tache END) AS selected_document_tasks,
+        COUNT(DISTINCT CASE WHEN task.id_type_tache = 3
+                            THEN task.id_tache END) AS selected_qxp_block_tasks,
+        COUNT(DISTINCT CASE WHEN task.id_type_tache = 4
+                            THEN task.id_tache END) AS selected_dynamic_tasks,
+        COUNT(DISTINCT CASE WHEN task.id_type_tache = 5
+                            THEN task.id_tache END) AS selected_compartment_tasks
+    FROM qxp_asso_run_taches run_task
+    JOIN qxp_tache task
+      ON task.id_tache = run_task.id_tache
+     AND task.is_actif = 1
+    JOIN run_context context
+      ON context.id_run = run_task.id_run
+    JOIN qxp_asso_gabarit_taches gabarit_task
+      ON gabarit_task.id_gabarit = context.id_gabarit
+     AND gabarit_task.id_tache = task.id_tache
+    GROUP BY run_task.id_run
+)
+SELECT
+    context.id_run,
+    context.id_suivi,
+    context.id_statut_generation,
+    context.run_status_label,
+    context.suivi_status,
+    context.id_type_rapport,
+    context.report_type_label,
+    context.id_fnd_code,
+    context.id_unit_code,
+    context.id_langue,
+    context.id_gabarit,
+    context.gabarit_source,
+    context.mode_compart,
+    CASE WHEN context.id_run_suivant = context.id_run THEN 1 ELSE 0 END
+        AS is_current_suivi_run,
+    CASE WHEN context.date_planification IS NULL
+               OR context.date_planification < SYSDATE
+         THEN 1 ELSE 0 END AS batch_time_eligible,
+    TO_CHAR(context.date_planification, 'YYYY-MM-DD HH24:MI:SS') AS planned_time,
+    context.run_property_match_count,
+    context.gabarit_is_active,
+    context.configured_gabarit_bytes,
+    NVL(tasks.selected_active_task_count, 0) AS selected_active_task_count,
+    NVL(tasks.selected_change_task_count, 0) AS selected_change_task_count,
+    NVL(tasks.selected_sql_tasks, 0) AS selected_sql_tasks,
+    NVL(tasks.selected_document_tasks, 0) AS selected_document_tasks,
+    NVL(tasks.selected_qxp_block_tasks, 0) AS selected_qxp_block_tasks,
+    NVL(tasks.selected_dynamic_tasks, 0) AS selected_dynamic_tasks,
+    NVL(tasks.selected_compartment_tasks, 0) AS selected_compartment_tasks,
+    CASE
+        WHEN NVL(tasks.selected_compartment_tasks, 0) > 0 THEN 'COMPARTMENT'
+        WHEN NVL(tasks.selected_dynamic_tasks, 0) > 0 THEN 'DYNAMIC'
+        ELSE 'SIMPLE'
+    END AS scenario_class,
+    CASE
+        WHEN NVL(context.id_statut_generation, -1) <> 1
+          THEN 'STOP: run status is not UI-created (1)'
+        WHEN NVL(context.suivi_status, -1) <> 1
+          THEN 'STOP: QXP_SUIVI status is not UI-created (1)'
+        WHEN NVL(context.id_run_suivant, -1) <> context.id_run
+          THEN 'STOP: run is not ID_RUN_SUIVANT'
+        WHEN NVL(context.gabarit_source, -1) NOT IN (1, 2, 3, 4)
+          THEN 'STOP: gabarit source is not 1, 2, 3 or 4'
+        WHEN context.date_planification IS NOT NULL
+         AND context.date_planification >= SYSDATE THEN 'STOP: run is not batch-time eligible'
+        WHEN context.run_property_match_count <> 1
+          THEN 'STOP: run-property association count is not 1'
+        WHEN context.gabarit_is_active <> 1
+          THEN 'STOP: configured gabarit is inactive'
+        WHEN context.gabarit_source = 1 AND context.configured_gabarit_bytes <= 0
+          THEN 'STOP: source-1 gabarit content is unavailable'
+        WHEN NVL(tasks.selected_change_task_count, 0) <= 0
+          THEN 'STOP: no selected active change-capable task'
+        WHEN context.date_debut_generation IS NOT NULL
+          OR context.date_fin_generation IS NOT NULL
+          THEN 'STOP: run already has generation timestamps'
+        WHEN context.id_doc_qxp IS NOT NULL
+          OR context.id_doc_pdf IS NOT NULL
+          OR context.id_doc_doc IS NOT NULL
+          THEN 'STOP: run already has generated document links'
+        ELSE 'PASS'
+    END AS pre_reservation_result
+FROM run_context context
+LEFT JOIN task_profile tasks
+  ON tasks.id_run = context.id_run;
+
+
+
+
+
+
+/* ---------------------------------------------------------------------------
    QOFF-05A - Selected-task configured change readiness
    Export: run_<ID>/04_selected_task_change_readiness.csv
 
@@ -118,121 +268,155 @@ ORDER BY task.id_tache;
 
 
 
-
 /* ---------------------------------------------------------------------------
-   QOFF-08 - DOC EOS documents selected by the Get_Taches rules
-   Export: run_<ID>/06_selected_task_documents.csv
+   QOFF-07B - Effective starting-gabarit document selected for this run
+   Export: run_<ID>/05b_effective_gabarit_source.csv
 
-   MATCHED_DOCUMENT_COUNT=0 is a missing-document case. More than 1 exposes a
-   duplicate task cursor row. This query does not retrieve document BLOBs.
+   Reconstructs Get_Gabarit / Get_Gabarit_Document /
+   Get_Gabarit_Document_Certifie without selecting BLOB content.
    --------------------------------------------------------------------------- */
-WITH document_task_context AS (
-    SELECT DISTINCT
+WITH run_context AS (
+    SELECT
         run_record.id_run,
-        run_record.id_statut_generation,
+        run_record.gabarit_source,
+        run_record.id_suivi_gabarit_source,
         suivi.id_suivi,
+        suivi.id_gabarit,
         suivi.id_fnd_code,
         suivi.id_unit_code,
+        suivi.id_type_rapport,
         suivi.id_langue,
         suivi.date_echeance,
-        fond_gabarit.societe,
-        task.id_tache,
-        task.id_sous_categorie,
-        task.conserver_style,
-        task.rotation_image,
-        task.crop_image_values,
-        task.position_image,
-        task.bloc_source,
-        task.bloc_destination,
-        category.id_type_categorie
+        CASE
+            WHEN run_record.gabarit_source = 4
+            THEN run_record.id_suivi_gabarit_source
+            ELSE suivi.id_suivi
+        END AS document_source_suivi_id
     FROM qxp_run run_record
     JOIN qxp_suivi suivi
       ON suivi.id_suivi = run_record.id_suivi
-     AND suivi.id_run_suivant = run_record.id_run
-    JOIN qxp_asso_fond_gabarit fond_gabarit
-      ON fond_gabarit.id_type_rapport = suivi.id_type_rapport
-     AND fond_gabarit.id_fnd_code = suivi.id_fnd_code
-     AND fond_gabarit.id_langue = suivi.id_langue
-     AND fond_gabarit.id_gabarit = suivi.id_gabarit
-    JOIN qxp_asso_run_taches run_task
-      ON run_task.id_run = run_record.id_run
-    JOIN qxp_tache task
-      ON task.id_tache = run_task.id_tache
-     AND task.is_actif = 1
-     AND task.id_type_tache = 2
-    LEFT JOIN qxp_ref_sous_categorie subcategory
-      ON subcategory.id_sous_categorie = task.id_sous_categorie
-    LEFT JOIN qxp_ref_categorie category
-      ON category.id_categorie = subcategory.id_categorie
     WHERE run_record.id_run = &RUN_ID
-), selected_document_rows AS (
+), document_source AS (
     SELECT
-        task_context.*,
-        document_row.id_document,
-        document_row.format,
-        document_row.date_echeance AS document_due_date,
-        document_row.nom_complet_document,
-        document_row.taille_document,
-        CASE WHEN document_row.contenu IS NULL THEN NULL
-             ELSE DBMS_LOB.GETLENGTH(document_row.contenu)
-        END AS actual_document_bytes,
-        COUNT(document_row.id_document) OVER (
-            PARTITION BY task_context.id_run, task_context.id_tache
-        ) AS matched_document_count
-    FROM document_task_context task_context
-    LEFT JOIN qxp_document document_row
-      ON document_row.id_sous_categorie = task_context.id_sous_categorie
-     AND document_row.is_actif = 1
-     AND document_row.id_langue = task_context.id_langue
+        context.id_run,
+        context.gabarit_source,
+        source_suivi.id_suivi AS source_suivi_id,
+        source_next_run.id_qxp_upload,
+        upload.id_upload,
+        upload.taille_document AS upload_declared_bytes,
+        CASE WHEN upload.contenu IS NULL THEN NULL
+             ELSE DBMS_LOB.GETLENGTH(upload.contenu)
+        END AS upload_actual_bytes,
+        previous_document.id_document AS previous_document_id,
+        previous_document.nom_complet_document AS previous_document_name,
+        previous_document.taille_document AS previous_declared_bytes,
+        CASE WHEN previous_document.contenu IS NULL THEN NULL
+             ELSE DBMS_LOB.GETLENGTH(previous_document.contenu)
+        END AS previous_actual_bytes,
+        source_suivi.id_langue AS source_language
+    FROM run_context context
+    JOIN qxp_suivi source_suivi
+      ON source_suivi.id_suivi = context.document_source_suivi_id
+    LEFT JOIN qxp_run source_next_run
+      ON source_next_run.id_run = source_suivi.id_run_suivant
+    LEFT JOIN qxp_document_upload upload
+      ON upload.id_upload = source_next_run.id_qxp_upload
+    LEFT JOIN qxp_run previous_run
+      ON previous_run.id_run = source_suivi.id_run_precedent
+    LEFT JOIN qxp_document previous_document
+      ON previous_document.id_document = previous_run.id_doc_qxp
+), certified_candidates AS (
+    SELECT
+        context.id_run,
+        previous_suivi.id_suivi AS source_suivi_id,
+        certified.id_document,
+        certified.nom_complet_document,
+        certified.taille_document AS declared_bytes,
+        CASE WHEN certified.contenu IS NULL THEN NULL
+             ELSE DBMS_LOB.GETLENGTH(certified.contenu)
+        END AS actual_bytes,
+        previous_suivi.id_langue AS source_language,
+        ROW_NUMBER() OVER (
+            ORDER BY previous_suivi.date_echeance DESC
+        ) AS candidate_rank
+    FROM run_context context
+    JOIN qxp_suivi previous_suivi
+      ON previous_suivi.id_fnd_code = context.id_fnd_code
      AND (
-            (task_context.id_type_categorie = 1
-             AND document_row.id_fnd_code = task_context.id_fnd_code)
-         OR (task_context.id_type_categorie = 2
-             AND document_row.societe = task_context.societe)
-         OR (task_context.id_type_categorie = 3
-             AND document_row.id_fnd_code = task_context.id_fnd_code
-             AND document_row.id_unit_code = task_context.id_unit_code)
+            (previous_suivi.id_unit_code IS NULL AND context.id_unit_code IS NULL)
+         OR previous_suivi.id_unit_code = context.id_unit_code
      )
-     AND (
-            (task_context.id_sous_categorie IN (5, 10)
-             AND document_row.date_echeance = (
-                 SELECT MAX(candidate.date_echeance)
-                 FROM qxp_document candidate
-                 WHERE candidate.id_sous_categorie = task_context.id_sous_categorie
-                   AND candidate.id_langue = task_context.id_langue
-                   AND candidate.societe = task_context.societe
-                   AND candidate.date_echeance <= task_context.date_echeance
-             ))
-         OR (task_context.id_sous_categorie NOT IN (5, 10)
-             AND document_row.date_echeance = task_context.date_echeance)
-     )
+     AND previous_suivi.id_type_rapport = context.id_type_rapport
+     AND previous_suivi.id_suivi <> context.id_suivi
+     AND previous_suivi.date_echeance < context.date_echeance
+    JOIN qxp_document_certifie certified
+      ON certified.id_document = previous_suivi.id_qxp_certifie
+    JOIN qxp_ref_langue_document previous_language
+      ON previous_language.id_langue_document = previous_suivi.id_langue
+    JOIN qxp_ref_langue_document current_language
+      ON current_language.id_langue_document = context.id_langue
+     AND SUBSTR(current_language.valeur_langue, 1, 2)
+         = SUBSTR(previous_language.valeur_langue, 1, 2)
 )
 SELECT
-    id_run,
-    id_statut_generation,
-    id_suivi,
-    id_tache,
-    id_sous_categorie,
-    id_type_categorie,
-    id_document,
-    format,
-    TO_CHAR(document_due_date, 'YYYY-MM-DD HH24:MI:SS') AS document_due_date,
-    nom_complet_document,
-    taille_document,
-    actual_document_bytes,
-    conserver_style,
-    rotation_image,
-    crop_image_values,
-    position_image,
-    CASE WHEN bloc_source IS NULL THEN '<NULL>'
-         ELSE '[' || bloc_source || ']'
-    END AS bloc_source_exact,
-    LENGTH(bloc_source) AS bloc_source_length,
-    CASE WHEN bloc_destination IS NULL THEN '<NULL>'
-         ELSE '[' || bloc_destination || ']'
-    END AS bloc_destination_exact,
-    LENGTH(bloc_destination) AS bloc_destination_length,
-    matched_document_count
-FROM selected_document_rows
-ORDER BY id_tache, id_document;
+    context.id_run,
+    context.gabarit_source,
+    'GABARIT' AS selected_source_kind,
+    TO_CHAR(gabarit.id_gabarit) AS selected_source_id,
+    gabarit.nom AS selected_source_name,
+    gabarit.taille_document AS declared_bytes,
+    DBMS_LOB.GETLENGTH(gabarit.contenu) AS actual_bytes,
+    gabarit.id_langue AS source_language,
+    context.id_suivi AS source_suivi_id
+FROM run_context context
+JOIN qxp_gabarit gabarit
+  ON gabarit.id_gabarit = context.id_gabarit
+ AND gabarit.is_actif = 1
+WHERE context.gabarit_source = 1
+UNION ALL
+SELECT
+    context.id_run,
+    context.gabarit_source,
+    CASE WHEN NVL(source.id_qxp_upload, 0) > 0
+         THEN 'DOCUMENT_UPLOAD'
+         ELSE 'PREVIOUS_QXP_DOCUMENT'
+    END AS selected_source_kind,
+    TO_CHAR(CASE WHEN NVL(source.id_qxp_upload, 0) > 0
+                 THEN source.id_upload
+                 ELSE source.previous_document_id
+            END) AS selected_source_id,
+    CASE WHEN NVL(source.id_qxp_upload, 0) > 0
+         THEN 'DG_' || source.id_upload || '.qxp'
+         ELSE source.previous_document_name
+    END AS selected_source_name,
+    CASE WHEN NVL(source.id_qxp_upload, 0) > 0
+         THEN source.upload_declared_bytes
+         ELSE source.previous_declared_bytes
+    END AS declared_bytes,
+    CASE WHEN NVL(source.id_qxp_upload, 0) > 0
+         THEN source.upload_actual_bytes
+         ELSE source.previous_actual_bytes
+    END AS actual_bytes,
+    source.source_language,
+    source.source_suivi_id
+FROM run_context context
+JOIN document_source source
+  ON source.id_run = context.id_run
+WHERE context.gabarit_source IN (2, 4)
+UNION ALL
+SELECT
+    context.id_run,
+    context.gabarit_source,
+    'PREVIOUS_CERTIFIED_QXP' AS selected_source_kind,
+    TO_CHAR(certified.id_document) AS selected_source_id,
+    certified.nom_complet_document || '.QXP' AS selected_source_name,
+    certified.declared_bytes,
+    certified.actual_bytes,
+    certified.source_language,
+    certified.source_suivi_id
+FROM run_context context
+LEFT JOIN certified_candidates certified
+  ON certified.id_run = context.id_run
+ AND certified.candidate_rank = 1
+WHERE context.gabarit_source = 3;
 
