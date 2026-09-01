@@ -1,580 +1,127 @@
-# EOS Quark First Simple Diagnostic Run Query - Copy Packet
+#### 6.2.2 DEV change ORA-INSERTRUN-COMPAT-01
 
-## Status
+`QOFF-01I` proved the exact deployed anchors. This change touches only `QXP_PK_SUIVI`; do not edit
+`QXP_PK_RUN`. Keep existing specification lines 106-117 and body lines 799-856 unchanged.
 
-- Support/evidence SQL only.
-- Java source changes: **none**.
-- `application.yaml` changes: **none**.
-- Oracle data changes: **none**. Every database statement below is read-only.
-- Intended baseline: Wave 10E applied and `mvn clean install` reported successful.
-
-## File To Create
-
-`EOS_Quark_First_Simple_Diagnostic_Run_Queries.sql`
-
-Expected SHA-256 after creation:
-
-```text
-6569917e8af91d72711c0dc6a073d44083f3b665be292fc15762cdb88d032641  EOS_Quark_First_Simple_Diagnostic_Run_Queries.sql
-```
-
-## Exact Use Order
-
-1. Run only `QOFF-01D` first and save `planning/05_simple_sql_diagnostic_candidates.csv`.
-2. Prefer `CANDIDATE_RANK=1` with `GABARIT_SOURCE=1`. Do not use `BASELINE_RUN_ID` as the Swagger ID.
-3. Set `DEFINE RUN_ID` to the selected `SWAGGER_RUN_ID`.
-4. Run `QOFF-02C`; require `DIAGNOSTIC_CANDIDATE_RESULT=PASS`.
-5. In `EOS_Quark_Office_Live_Run_Evidence_Queries.sql`, set the same `RUN_ID` and run `QOFF-02B`; require `BASIC_ADMISSION_RESULT=PASS`.
-6. Run and export `QOFF-02D`, `QOFF-03`, `QOFF-04`, `QOFF-05`, `QOFF-05A`, `QOFF-07`, and `QOFF-07B` before execution.
-7. Keep Rabbit disabled. Call properties GET once, then process POST once.
-8. After execution, run the guide's complete post-run evidence set. `QOFF-17=PASS` is the proof that this Java run produced a non-zero change.
-
-## Stop Rules
-
-- If `QOFF-01D` returns no rows, do not weaken the filters and do not manually edit an old run. Save the zero-row result and use the guide's guarded old-UI creation/reservation path.
-- If either `QOFF-02B` or `QOFF-02C` is not `PASS`, do not call GET or POST.
-- A previous same-task run with a non-zero update makes an update likely; it cannot guarantee current business data still returns the same rows. Only the post-run evidence proves the current result.
-- The query never selects task SQL, bind/parameter values, trace contents, error messages, or document payloads.
-
-## Complete File Content
+**Package specification:** insert the following declaration immediately after current line 117 (`RETURN NUMBER;`)
+and before current blank line 118:
 
 ```sql
-/*
-===============================================================================
-EOS Quark Engine - first simple diagnostic run selection
-===============================================================================
-
-Purpose
-  Find an untouched status-5 run for the first Wave 10E diagnostic execution.
-
-Strict candidate requirements
-  - current QXP_RUN status is 5;
-  - current QXP_SUIVI status is 1 and ID_RUN_SUIVANT points to the run;
-  - no generation timestamps, generated-document links, persisted run errors,
-    or persisted execution trace exist;
-  - exactly one run-property association exists;
-  - the configured gabarit is active and source 1 content is present when used;
-  - every selected task is active and belongs to the run gabarit;
-  - at least one selected type-1 SQL/value task has non-empty SQL;
-  - no selected type-2 document, type-3 previous-QXP, type-4 dynamic, or
-    type-5 compartment task exists;
-  - no selected unknown task type exists, so the candidate is genuinely
-    SQL/value-only;
-  - the successful previous run used the exact same selected task IDs;
-  - the previous run has no persisted run errors and its trace proves at least
-    one non-zero update;
-  - SQL text, bind values, parameter values, and document payloads are never
-    selected.
-
-Safety
-  - All statements in this file are read-only SELECT statements.
-  - A QOFF-01D result is only a candidate. QOFF-02B and QOFF-02C must both pass
-    immediately before the Swagger POST.
-  - A same-task baseline with a non-zero update is the strongest available
-    pre-run evidence, but current Oracle data can still make this run update
-    zero blocks. Only the post-run QOFF-17 result proves the actual run.
-  - Do not execute a fallback/config-only candidate without reviewing it first.
-===============================================================================
-*/
-
-SET VERIFY ON
-
-DEFINE CANDIDATE_LOOKBACK_DAYS = 7300
-DEFINE CANDIDATES_PER_REPORT_TYPE = 10
-DEFINE RUN_ID = 0
-
-
-/* ---------------------------------------------------------------------------
-   QOFF-01D - Strict status-5 simple SQL-only diagnostic candidates
-   Export: planning/05_simple_sql_diagnostic_candidates.csv
-
-   An empty result is a valid outcome. Do not weaken this query or update an
-   old run. Use the guarded old-UI flow when no suitable status-5 row exists.
-   --------------------------------------------------------------------------- */
-WITH selected_task_profile AS (
-    SELECT
-        run_record.id_run,
-        COUNT(DISTINCT run_task.id_tache) AS selected_task_row_count,
-        COUNT(DISTINCT CASE
-            WHEN task.is_actif = 1
-             AND gabarit_task.id_tache IS NOT NULL
-            THEN task.id_tache END) AS selected_active_configured_task_count,
-        COUNT(DISTINCT CASE
-            WHEN task.is_actif = 1
-             AND gabarit_task.id_tache IS NOT NULL
-             AND task.id_type_tache = 1
-            THEN task.id_tache END) AS selected_sql_task_count,
-        COUNT(DISTINCT CASE
-            WHEN task.is_actif = 1
-             AND gabarit_task.id_tache IS NOT NULL
-             AND task.id_type_tache = 1
-             AND task.sql IS NOT NULL
-             AND DBMS_LOB.GETLENGTH(task.sql) > 0
-            THEN task.id_tache END) AS selected_nonempty_sql_task_count,
-        COUNT(DISTINCT CASE
-            WHEN task.is_actif = 1
-             AND gabarit_task.id_tache IS NOT NULL
-             AND task.id_type_tache = 2
-            THEN task.id_tache END) AS selected_document_task_count,
-        COUNT(DISTINCT CASE
-            WHEN task.is_actif = 1
-             AND gabarit_task.id_tache IS NOT NULL
-             AND task.id_type_tache = 3
-            THEN task.id_tache END) AS selected_previous_qxp_task_count,
-        COUNT(DISTINCT CASE
-            WHEN task.is_actif = 1
-             AND gabarit_task.id_tache IS NOT NULL
-             AND task.id_type_tache = 4
-            THEN task.id_tache END) AS selected_dynamic_task_count,
-        COUNT(DISTINCT CASE
-            WHEN task.is_actif = 1
-             AND gabarit_task.id_tache IS NOT NULL
-             AND task.id_type_tache = 5
-            THEN task.id_tache END) AS selected_compartment_task_count,
-        COUNT(DISTINCT CASE
-            WHEN task.is_actif = 1
-             AND gabarit_task.id_tache IS NOT NULL
-             AND (task.id_type_tache IS NULL
-                  OR task.id_type_tache NOT BETWEEN 1 AND 5)
-            THEN task.id_tache END) AS selected_other_task_count,
-        SUM(CASE
-            WHEN task.is_actif = 1
-             AND gabarit_task.id_tache IS NOT NULL
-             AND task.id_type_tache = 1
-             AND task.sql IS NOT NULL
-            THEN DBMS_LOB.GETLENGTH(task.sql)
-            ELSE 0 END) AS selected_total_sql_chars
-    FROM qxp_run run_record
-    JOIN qxp_suivi suivi
-      ON suivi.id_suivi = run_record.id_suivi
-    JOIN qxp_asso_run_taches run_task
-      ON run_task.id_run = run_record.id_run
-    LEFT JOIN qxp_tache task
-      ON task.id_tache = run_task.id_tache
-    LEFT JOIN qxp_asso_gabarit_taches gabarit_task
-      ON gabarit_task.id_gabarit = suivi.id_gabarit
-     AND gabarit_task.id_tache = task.id_tache
-    GROUP BY run_record.id_run
-), candidate AS (
-    SELECT
-        run_record.id_run,
-        run_record.id_suivi,
-        suivi.id_type_rapport,
-        report_type.libelle AS report_type_label,
-        suivi.id_fnd_code,
-        suivi.id_unit_code,
-        suivi.id_langue,
-        language.nom_langue,
-        suivi.date_echeance,
-        suivi.id_gabarit,
-        run_record.gabarit_source,
-        run_record.mode_compart,
-        gabarit.pagination_double,
-        NVL(gabarit.store_data_type, 0) AS store_data_type,
-        task_profile.selected_task_row_count,
-        task_profile.selected_active_configured_task_count,
-        task_profile.selected_sql_task_count,
-        task_profile.selected_nonempty_sql_task_count,
-        task_profile.selected_document_task_count,
-        task_profile.selected_previous_qxp_task_count,
-        task_profile.selected_dynamic_task_count,
-        task_profile.selected_compartment_task_count,
-        task_profile.selected_other_task_count,
-        task_profile.selected_total_sql_chars,
-        suivi.id_run_precedent AS baseline_run_id,
-        previous_run.id_doc_qxp AS baseline_qxp_document_id,
-        previous_run.id_doc_pdf AS baseline_pdf_document_id,
-        previous_run.id_doc_doc AS baseline_doc_document_id,
-        TO_CHAR(previous_run.date_fin_generation, 'YYYY-MM-DD HH24:MI:SS')
-            AS baseline_end_time,
-        run_record.date_creation_run,
-        run_record.date_planification,
-        CASE
-            WHEN previous_run.id_statut_generation = 2
-             AND previous_run.id_doc_qxp IS NOT NULL
-             AND NOT EXISTS (
-                    SELECT current_task.id_tache
-                    FROM qxp_asso_run_taches current_task
-                    WHERE current_task.id_run = run_record.id_run
-                    MINUS
-                    SELECT baseline_task.id_tache
-                    FROM qxp_asso_run_taches baseline_task
-                    WHERE baseline_task.id_run = previous_run.id_run
-                 )
-             AND NOT EXISTS (
-                    SELECT baseline_task.id_tache
-                    FROM qxp_asso_run_taches baseline_task
-                    WHERE baseline_task.id_run = previous_run.id_run
-                    MINUS
-                    SELECT current_task.id_tache
-                    FROM qxp_asso_run_taches current_task
-                    WHERE current_task.id_run = run_record.id_run
-                 )
-             AND NOT EXISTS (
-                    SELECT 1
-                    FROM qxp_run_error baseline_error
-                    WHERE baseline_error.id_run = previous_run.id_run
-                 )
-             AND REGEXP_LIKE(
-                    previous_run.log_trace,
-                    ', update=[1-9][[:digit:]]*,'
-                 )
-            THEN 1 ELSE 0
-        END AS baseline_same_tasks_nonzero_update
-    FROM qxp_run run_record
-    JOIN qxp_suivi suivi
-      ON suivi.id_suivi = run_record.id_suivi
-     AND suivi.id_run_suivant = run_record.id_run
-     AND suivi.id_statut_generation = 1
-    JOIN qxp_gabarit gabarit
-      ON gabarit.id_gabarit = suivi.id_gabarit
-     AND gabarit.is_actif = 1
-    JOIN selected_task_profile task_profile
-      ON task_profile.id_run = run_record.id_run
-    LEFT JOIN qxp_run previous_run
-      ON previous_run.id_run = suivi.id_run_precedent
-    LEFT JOIN qxp_ref_type_rapport report_type
-      ON report_type.id_type_rapport = suivi.id_type_rapport
-    LEFT JOIN qxp_ref_langue_document language
-      ON language.id_langue_document = suivi.id_langue
-    WHERE run_record.id_statut_generation = 5
-      AND run_record.gabarit_source IN (1, 2, 3, 4)
-      AND (run_record.date_planification IS NULL
-           OR run_record.date_planification < SYSDATE)
-      AND run_record.date_debut_generation IS NULL
-      AND run_record.date_fin_generation IS NULL
-      AND run_record.id_doc_qxp IS NULL
-      AND run_record.id_doc_pdf IS NULL
-      AND run_record.id_doc_doc IS NULL
-      AND (run_record.log_trace IS NULL
-           OR DBMS_LOB.GETLENGTH(run_record.log_trace) = 0)
-      AND NOT EXISTS (
-            SELECT 1
-            FROM qxp_run_error current_error
-            WHERE current_error.id_run = run_record.id_run
-          )
-      AND run_record.date_creation_run >= SYSDATE - &CANDIDATE_LOOKBACK_DAYS
-      AND (run_record.gabarit_source <> 1
-           OR (gabarit.contenu IS NOT NULL
-               AND DBMS_LOB.GETLENGTH(gabarit.contenu) > 0))
-      AND (SELECT COUNT(*)
-           FROM qxp_asso_fond_gabarit association_row
-           WHERE association_row.id_type_rapport = suivi.id_type_rapport
-             AND association_row.id_fnd_code = suivi.id_fnd_code
-             AND association_row.id_langue = suivi.id_langue
-             AND association_row.id_gabarit = suivi.id_gabarit) = 1
-      AND task_profile.selected_task_row_count
-            = task_profile.selected_active_configured_task_count
-      AND task_profile.selected_sql_task_count > 0
-      AND task_profile.selected_nonempty_sql_task_count
-            = task_profile.selected_sql_task_count
-      AND task_profile.selected_document_task_count = 0
-      AND task_profile.selected_previous_qxp_task_count = 0
-      AND task_profile.selected_dynamic_task_count = 0
-      AND task_profile.selected_compartment_task_count = 0
-      AND task_profile.selected_other_task_count = 0
-), ranked AS (
-    SELECT
-        candidate.*,
-        ROW_NUMBER() OVER (
-            PARTITION BY candidate.id_type_rapport
-            ORDER BY
-                CASE WHEN candidate.gabarit_source = 1 THEN 0 ELSE 1 END,
-                candidate.selected_other_task_count,
-                candidate.date_creation_run DESC,
-                candidate.id_run DESC
-        ) AS candidate_rank
-    FROM candidate
-    WHERE candidate.baseline_same_tasks_nonzero_update = 1
+-- Legacy .NET compatibility: the old caller does not supply p_email.
+FUNCTION InsertRun
+(
+    p_idSuivi             IN NUMBER
+  , p_datePlanification   IN DATE
+  , p_gabarit_source      IN NUMBER
+  , p_idCreateur          IN NUMBER
+  , p_integrerN1          IN NUMBER
+  , p_modeCompart         IN NUMBER
+  , p_idSuiviSrc          IN NUMBER := NULL
 )
-SELECT
-    'SIMPLE_SQL_DIAGNOSTIC' AS scenario_class,
-    candidate_rank,
-    id_run AS swagger_run_id,
-    id_suivi,
-    id_type_rapport,
-    report_type_label,
-    id_fnd_code,
-    id_unit_code,
-    id_langue,
-    nom_langue,
-    TO_CHAR(date_echeance, 'YYYY-MM-DD HH24:MI:SS') AS due_date,
-    id_gabarit,
-    gabarit_source,
-    mode_compart,
-    pagination_double,
-    store_data_type,
-    selected_task_row_count,
-    selected_active_configured_task_count,
-    selected_sql_task_count,
-    selected_nonempty_sql_task_count,
-    selected_other_task_count,
-    selected_total_sql_chars,
-    baseline_run_id,
-    baseline_qxp_document_id,
-    baseline_pdf_document_id,
-    baseline_doc_document_id,
-    baseline_end_time,
-    'EXPECTED: same selected tasks previously produced a non-zero update; QOFF-17 must prove this run'
-        AS expected_update_proof,
-    TO_CHAR(date_creation_run, 'YYYY-MM-DD HH24:MI:SS') AS creation_time,
-    TO_CHAR(date_planification, 'YYYY-MM-DD HH24:MI:SS') AS planned_time,
-    'RUN QOFF-02B AND QOFF-02C IMMEDIATELY BEFORE POST' AS next_action
-FROM ranked
-WHERE candidate_rank <= &CANDIDATES_PER_REPORT_TYPE
-ORDER BY id_type_rapport, candidate_rank;
-
-
-/* ---------------------------------------------------------------------------
-   QOFF-02C - Revalidate the selected simple SQL-only diagnostic run
-   Export: run_<ID>/00B_simple_sql_diagnostic_validation.csv
-
-   Set RUN_ID first. DIAGNOSTIC_CANDIDATE_RESULT must be PASS. QOFF-02B must
-   independently return BASIC_ADMISSION_RESULT=PASS.
-   --------------------------------------------------------------------------- */
-WITH selected_task_profile AS (
-    SELECT
-        run_record.id_run,
-        COUNT(DISTINCT run_task.id_tache) AS selected_task_row_count,
-        COUNT(DISTINCT CASE
-            WHEN task.is_actif = 1
-             AND gabarit_task.id_tache IS NOT NULL
-            THEN task.id_tache END) AS selected_active_configured_task_count,
-        COUNT(DISTINCT CASE
-            WHEN task.is_actif = 1
-             AND gabarit_task.id_tache IS NOT NULL
-             AND task.id_type_tache = 1
-            THEN task.id_tache END) AS selected_sql_task_count,
-        COUNT(DISTINCT CASE
-            WHEN task.is_actif = 1
-             AND gabarit_task.id_tache IS NOT NULL
-             AND task.id_type_tache = 1
-             AND task.sql IS NOT NULL
-             AND DBMS_LOB.GETLENGTH(task.sql) > 0
-            THEN task.id_tache END) AS selected_nonempty_sql_task_count,
-        COUNT(DISTINCT CASE
-            WHEN task.is_actif = 1
-             AND gabarit_task.id_tache IS NOT NULL
-             AND task.id_type_tache BETWEEN 2 AND 5
-            THEN task.id_tache END) AS selected_excluded_task_count,
-        COUNT(DISTINCT CASE
-            WHEN task.is_actif = 1
-             AND gabarit_task.id_tache IS NOT NULL
-             AND (task.id_type_tache IS NULL
-                  OR task.id_type_tache NOT BETWEEN 1 AND 5)
-            THEN task.id_tache END) AS selected_other_task_count
-    FROM qxp_run run_record
-    JOIN qxp_suivi suivi
-      ON suivi.id_suivi = run_record.id_suivi
-    LEFT JOIN qxp_asso_run_taches run_task
-      ON run_task.id_run = run_record.id_run
-    LEFT JOIN qxp_tache task
-      ON task.id_tache = run_task.id_tache
-    LEFT JOIN qxp_asso_gabarit_taches gabarit_task
-      ON gabarit_task.id_gabarit = suivi.id_gabarit
-     AND gabarit_task.id_tache = task.id_tache
-    WHERE run_record.id_run = &RUN_ID
-    GROUP BY run_record.id_run
-), run_context AS (
-    SELECT
-        run_record.id_run,
-        run_record.id_suivi,
-        run_record.id_statut_generation,
-        suivi.id_statut_generation AS suivi_status,
-        suivi.id_run_suivant,
-        suivi.id_type_rapport,
-        suivi.id_gabarit,
-        run_record.gabarit_source,
-        gabarit.is_actif AS gabarit_is_active,
-        CASE WHEN gabarit.contenu IS NULL THEN 0
-             ELSE DBMS_LOB.GETLENGTH(gabarit.contenu)
-        END AS configured_gabarit_bytes,
-        run_record.date_planification,
-        run_record.date_debut_generation,
-        run_record.date_fin_generation,
-        run_record.id_doc_qxp,
-        run_record.id_doc_pdf,
-        run_record.id_doc_doc,
-        CASE WHEN run_record.log_trace IS NULL THEN 0
-             ELSE DBMS_LOB.GETLENGTH(run_record.log_trace)
-        END AS current_trace_chars,
-        (SELECT COUNT(*)
-         FROM qxp_run_error current_error
-         WHERE current_error.id_run = run_record.id_run) AS current_error_count,
-        suivi.id_run_precedent AS baseline_run_id,
-        previous_run.id_statut_generation AS baseline_status,
-        previous_run.id_doc_qxp AS baseline_qxp_document_id,
-        task_profile.selected_task_row_count,
-        task_profile.selected_active_configured_task_count,
-        task_profile.selected_sql_task_count,
-        task_profile.selected_nonempty_sql_task_count,
-        task_profile.selected_excluded_task_count,
-        task_profile.selected_other_task_count,
-        (SELECT COUNT(*)
-         FROM qxp_asso_fond_gabarit association_row
-         WHERE association_row.id_type_rapport = suivi.id_type_rapport
-           AND association_row.id_fnd_code = suivi.id_fnd_code
-           AND association_row.id_langue = suivi.id_langue
-           AND association_row.id_gabarit = suivi.id_gabarit)
-            AS run_property_match_count,
-        CASE
-            WHEN previous_run.id_statut_generation = 2
-             AND previous_run.id_doc_qxp IS NOT NULL
-             AND NOT EXISTS (
-                    SELECT current_task.id_tache
-                    FROM qxp_asso_run_taches current_task
-                    WHERE current_task.id_run = run_record.id_run
-                    MINUS
-                    SELECT baseline_task.id_tache
-                    FROM qxp_asso_run_taches baseline_task
-                    WHERE baseline_task.id_run = previous_run.id_run
-                 )
-             AND NOT EXISTS (
-                    SELECT baseline_task.id_tache
-                    FROM qxp_asso_run_taches baseline_task
-                    WHERE baseline_task.id_run = previous_run.id_run
-                    MINUS
-                    SELECT current_task.id_tache
-                    FROM qxp_asso_run_taches current_task
-                    WHERE current_task.id_run = run_record.id_run
-                 )
-             AND NOT EXISTS (
-                    SELECT 1
-                    FROM qxp_run_error baseline_error
-                    WHERE baseline_error.id_run = previous_run.id_run
-                 )
-             AND REGEXP_LIKE(
-                    previous_run.log_trace,
-                    ', update=[1-9][[:digit:]]*,'
-                 )
-            THEN 1 ELSE 0
-        END AS baseline_same_tasks_nonzero_update
-    FROM qxp_run run_record
-    JOIN qxp_suivi suivi
-      ON suivi.id_suivi = run_record.id_suivi
-    JOIN qxp_gabarit gabarit
-      ON gabarit.id_gabarit = suivi.id_gabarit
-    JOIN selected_task_profile task_profile
-      ON task_profile.id_run = run_record.id_run
-    LEFT JOIN qxp_run previous_run
-      ON previous_run.id_run = suivi.id_run_precedent
-    WHERE run_record.id_run = &RUN_ID
-)
-SELECT
-    context.id_run,
-    context.id_suivi,
-    context.id_type_rapport,
-    context.id_gabarit,
-    context.gabarit_source,
-    context.selected_task_row_count,
-    context.selected_active_configured_task_count,
-    context.selected_sql_task_count,
-    context.selected_nonempty_sql_task_count,
-    context.selected_excluded_task_count,
-    context.selected_other_task_count,
-    context.current_trace_chars,
-    context.current_error_count,
-    context.baseline_run_id,
-    context.baseline_status,
-    context.baseline_qxp_document_id,
-    context.baseline_same_tasks_nonzero_update,
-    CASE
-        WHEN NVL(context.id_statut_generation, -1) <> 5
-          THEN 'STOP: QXP_RUN status is not 5'
-        WHEN NVL(context.suivi_status, -1) <> 1
-          THEN 'STOP: QXP_SUIVI status is not 1'
-        WHEN NVL(context.id_run_suivant, -1) <> context.id_run
-          THEN 'STOP: run is not ID_RUN_SUIVANT'
-        WHEN NVL(context.gabarit_source, -1) NOT IN (1, 2, 3, 4)
-          THEN 'STOP: invalid gabarit source'
-        WHEN NVL(context.gabarit_is_active, 0) <> 1
-          THEN 'STOP: gabarit is inactive'
-        WHEN context.gabarit_source = 1
-         AND context.configured_gabarit_bytes <= 0
-          THEN 'STOP: source-1 gabarit content is empty'
-        WHEN context.run_property_match_count <> 1
-          THEN 'STOP: run-property association count is not 1'
-        WHEN context.date_planification IS NOT NULL
-         AND context.date_planification >= SYSDATE
-          THEN 'STOP: run is not yet eligible by planning time'
-        WHEN context.date_debut_generation IS NOT NULL
-          OR context.date_fin_generation IS NOT NULL
-          THEN 'STOP: run already has generation timestamps'
-        WHEN context.id_doc_qxp IS NOT NULL
-          OR context.id_doc_pdf IS NOT NULL
-          OR context.id_doc_doc IS NOT NULL
-          THEN 'STOP: run already has generated-document links'
-        WHEN context.current_trace_chars <> 0
-          THEN 'STOP: run already has a persisted execution trace'
-        WHEN context.current_error_count <> 0
-          THEN 'STOP: run already has persisted run errors'
-        WHEN context.selected_task_row_count
-             <> context.selected_active_configured_task_count
-          THEN 'STOP: selected task is inactive or not configured for gabarit'
-        WHEN context.selected_sql_task_count <= 0
-          THEN 'STOP: no selected SQL/value task'
-        WHEN context.selected_nonempty_sql_task_count
-             <> context.selected_sql_task_count
-          THEN 'STOP: selected SQL task has empty SQL'
-        WHEN context.selected_excluded_task_count <> 0
-          THEN 'STOP: document/previous-QXP/dynamic/compartment task is selected'
-        WHEN context.selected_other_task_count <> 0
-          THEN 'STOP: unknown task type is selected'
-        WHEN context.baseline_same_tasks_nonzero_update <> 1
-          THEN 'STOP: no clean same-task successful baseline with non-zero update'
-        ELSE 'PASS'
-    END AS diagnostic_candidate_result,
-    'QOFF-02B BASIC_ADMISSION_RESULT must independently be PASS'
-        AS mandatory_next_check
-FROM run_context context;
-
-
-/* ---------------------------------------------------------------------------
-   QOFF-02D - Selected task metadata for the chosen diagnostic run
-   Export: run_<ID>/00C_selected_diagnostic_tasks.csv
-
-   SQL text is intentionally excluded. SQL_LENGTH proves configuration only.
-   --------------------------------------------------------------------------- */
-SELECT
-    run_task.id_run,
-    task.id_tache,
-    task.id_type_tache,
-    task_type.libelle AS task_type_label,
-    task.is_actif,
-    CASE WHEN gabarit_task.id_tache IS NULL THEN 0 ELSE 1 END
-        AS configured_for_run_gabarit,
-    CASE WHEN task.sql IS NULL THEN NULL
-         ELSE DBMS_LOB.GETLENGTH(task.sql)
-    END AS sql_length,
-    task.output_data_type,
-    task.nb_decimal,
-    task.decimal_significative,
-    task.afficher_zero,
-    task.store_data,
-    task.conserver_style,
-    LENGTH(task.bloc_source) AS bloc_source_length,
-    LENGTH(task.bloc_destination) AS bloc_destination_length
-FROM qxp_run run_record
-JOIN qxp_suivi suivi
-  ON suivi.id_suivi = run_record.id_suivi
-JOIN qxp_asso_run_taches run_task
-  ON run_task.id_run = run_record.id_run
-JOIN qxp_tache task
-  ON task.id_tache = run_task.id_tache
-LEFT JOIN qxp_asso_gabarit_taches gabarit_task
-  ON gabarit_task.id_gabarit = suivi.id_gabarit
- AND gabarit_task.id_tache = task.id_tache
-LEFT JOIN qxp_ref_type_tache task_type
-  ON task_type.id_type_tache = task.id_type_tache
-WHERE run_record.id_run = &RUN_ID
-ORDER BY task.id_tache;
-
-
-PROMPT Required before Swagger POST:
-PROMPT 1. QOFF-02C DIAGNOSTIC_CANDIDATE_RESULT = PASS.
-PROMPT 2. Main evidence query QOFF-02B BASIC_ADMISSION_RESULT = PASS.
-PROMPT 3. Run QOFF-03, QOFF-04, QOFF-05, QOFF-05A, QOFF-07 and QOFF-07B.
-PROMPT 4. Rabbit remains disabled.
-PROMPT 5. Call properties GET once, then process POST once.
+RETURN NUMBER;
 ```
 
+**Package body:** insert the following complete overload immediately after current line 856 (`END;`) and before
+the comment beginning at current line 859 (`Nom : InsertRunTaches`):
+
+```sql
+-- Legacy .NET compatibility: resolve email, then use the current implementation.
+FUNCTION InsertRun
+(
+    p_idSuivi             IN NUMBER
+  , p_datePlanification   IN DATE
+  , p_gabarit_source      IN NUMBER
+  , p_idCreateur          IN NUMBER
+  , p_integrerN1          IN NUMBER
+  , p_modeCompart         IN NUMBER
+  , p_idSuiviSrc          IN NUMBER := NULL
+)
+RETURN NUMBER
+IS
+  v_email QXP_UTILISATEUR.EMAIL%TYPE;
+BEGIN
+  IF NVL(p_idCreateur, 0) = 0 THEN
+    v_email := NULL;
+  ELSE
+    SELECT utilisateur.email
+    INTO v_email
+    FROM QXP_UTILISATEUR utilisateur
+    WHERE utilisateur.id_utilisateur = p_idCreateur;
+  END IF;
+
+  RETURN InsertRun
+  (
+      p_idSuivi           => p_idSuivi
+    , p_datePlanification => p_datePlanification
+    , p_gabarit_source    => p_gabarit_source
+    , p_idCreateur        => p_idCreateur
+    , p_email             => v_email
+    , p_integrerN1        => p_integrerN1
+    , p_modeCompart       => p_modeCompart
+    , p_idSuiviSrc        => p_idSuiviSrc
+  );
+END InsertRun;
+```
+
+Why this is safe:
+
+- the old six-input named call resolves only to the new legacy overload;
+- a seven- or eight-input email-aware call resolves to the existing implementation by `P_EMAIL` name/type;
+- a seven-input legacy positional call has `NUMBER` at position 5 and resolves to the legacy overload;
+- the named `p_email` delegation resolves explicitly to the current implementation;
+- the current email-aware declaration/body and all `QXP_PK_RUN` routines remain unchanged;
+- creator `0`, used by automatic compartment runs, stores null email as seen in existing data;
+- a missing nonzero `QXP_UTILISATEUR` row raises an error instead of creating an unattributed run.
+
+Apply and validate:
+
+1. Keep the old UI, Batch, .NET Engine and Java Engine stopped.
+2. Save a private rollback export of the deployed package specification/body; do not paste it into chat.
+3. Insert only the two fragments above using the SQL Developer package editors.
+4. Compile the package specification and then immediately compile the package body.
+5. Run `QOFF-01J`; continue only when it returns exactly two `OBJECT` rows and both are `VALID`, with no `ERROR`
+   rows.
+6. Rerun `QOFF-01H`. It must show two InsertRun signatures: one containing required `P_EMAIL`, and one without
+   `P_EMAIL`; both retain optional `P_IDSUIVISRC`.
+7. Stop and share the complete `QOFF-01J` and `QOFF-01H` results. Do not start the UI until both are reviewed.
+8. After review, start only the old UI components needed for creation. Keep Batch and both engines stopped.
+9. Make one Programmed/Planned normal source-1 creation attempt, then run `QOFF-01C` and stop for review.
+10. After the normal path passes, separately test one real compartment creation before declaring coexistence
+   compatibility complete.
+
+Rollback: if either package object is invalid, an unexpected signature appears, or old-UI creation still reports
+`PLS-00306`, keep all callers stopped, restore both private pre-change package objects, compile both, and rerun
+`QOFF-01J` plus `QOFF-01H`. Do not modify `QXP_RUN`, `QXP_SUIVI` or `QXP_PK_RUN` to compensate.
+
+For simultaneous engine operation, route each queued run to either .NET or Java. Never let both engines process the
+same run ID. Use separate queues/routing keys or an equivalent dispatcher decision, retain the atomic run-claim
+guard, and record the selected engine in operational evidence.
+
+For the current first diagnostic, route 1 is recommended pending operator confirmation. Path B is blocked in this
+DEV deployment until route 2 is implemented; retain the remaining Path B steps for the restored compatible flow.
+
+1. Stop/disable the **batch**, the **old .NET engine**, and the **Java engine** before clicking Generate in the UI.
+   Keep only the UI/backend components needed to call `QXP_PK_SUIVI.InsertRun` available. Confirm all three consumers
+   are stopped; stopping them after creation is too late because the batch can race the operator.
+2. In the old UI, select the real fund/unit, report, date, language, gabarit/source mode, compartment mode and active
+   tasks needed for the case. Select tasks normally in the UI; never add rows directly to `QXP_ASSO_RUN_TACHES`.
+3. Submit/plan the run through the normal UI flow. `InsertRun` creates or refreshes the current `QXP_RUN` with status
+   `1`, sets `QXP_SUIVI.ID_RUN_SUIVANT`, sets `QXP_SUIVI.ID_STATUT_GENERATION=1`, and `InsertRunTaches` records the
+   selected tasks.
+4. Run `QOFF-01C` and save `04_ui_created_status1_candidates.csv`. Choose `UI_CREATED_RUN_ID` for the intended
+   scenario/report/mode. Prefer `CONFIGURED_CHANGE_SHAPE=UPDATE_AND_MODIFY_CONFIGURED` and
+   `BASELINE_HAS_NONZERO_STEP_CHANGE=1` when available.
+5. Set `RUN_ID` in the evidence SQL file. Run `QOFF-02A` and save `00_pre_reservation_validation.csv`. Continue only
+   when `PRE_RESERVATION_RESULT=PASS`.
+6. Before changing status, run `QOFF-03` through `QOFF-09`, including `QOFF-05A`. This catches a wrong report, empty
+   dynamic template, missing task document or bad compartment child while rollback is still simple.
+7. In SQL Developer/SQLcl, turn **autocommit off**. In the same Oracle session, open
+   `EOS_Quark_NonProd_Swagger_Run_Reservation.sql`, set both `RUN_ID` and `CONFIRM_RUN_ID`, execute it once, and save
+   DBMS output/result as `00_reservation_console.txt`.
+8. The script must print `RESERVATION_UPDATED_ROWS=1`, `QXP_RUN_STATUS=5`, and `TRANSACTION IS UNCOMMITTED`. Its
+   post-check must be `PASS`.
+9. Before committing, run `QOFF-02B` in that same session. If it is not `PASS`, execute `ROLLBACK`; do not repair any
+   other row. If it is `PASS`, execute `COMMIT` manually.
+10. Run `QOFF-02B` again after commit and save the final result as `00_selected_run_validation.csv`.
+11. Start Java with `engine.input.rabbit.enabled=false`. Keep the batch and old .NET engine stopped until all
+   pre/post evidence for that run is complete.
