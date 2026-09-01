@@ -1,20 +1,48 @@
-2026-09-01 21:56:27	1	Erreur lors de l'insertion des taches : 	ORA-06550: Ligne 1, colonne 7 : PLS-00306: numéro ou types d'arguments erronés dans appel à 'INSERTRUNTACHES' ORA-06550: Ligne 1, colonne 7 : PL/SQL: Statement ignored:Method:ExecuteNonQuery CommandType:StoredProcedure SQL:QXP_PK_SUIVI.InsertRunTaches	ORA-06550: Ligne 1, colonne 7 :	251
-2026-09-01 21:56:27	1	CreationRunKO	ORA-06550: Ligne 1, colonne 7 : PLS-00306: numéro ou types d'arguments erronés dans appel à 'INSERTRUNTACHES' ORA-06550: Ligne 1, colonne 7 : PL/SQL: Statement ignored:Method:ExecuteNonQuery CommandType:StoredProcedure SQL:QXP_PK_SUIVI.InsertRunTaches	ORA-06550: Ligne 1, colonne 7 :	251
-2026-09-01 21:56:27	1	Erreur lors de la création du (des) run(s)	ORA-06550: Ligne 1, colonne 7 : PLS-00306: numéro ou types d'arguments erronés dans appel à 'INSERTRUNTACHES' ORA-06550: Ligne 1, colonne 7 : PL/SQL: Statement ignored:Method:ExecuteNonQuery CommandType:StoredProcedure SQL:QXP_PK_SUIVI.InsertRunTaches	ORA-06550: Ligne 1, colonne 7 :	251
-2026-09-01 00:31:23	1	Erreur lors de l'insertion du run : 	ORA-06550: Ligne 1, colonne 15 : PLS-00306: numéro ou types d'arguments erronés dans appel à 'INSERTRUN' ORA-06550: Ligne 1, colonne 7 : PL/SQL: Statement ignored:Method:ExecuteScalar CommandType:StoredProcedure SQL:QXP_PK_SUIVI.InsertRun	ORA-06550: Ligne 1, colonne 15 :	238
-2026-09-01 00:31:23	1	CreationRunKO	ORA-06550: Ligne 1, colonne 15 : PLS-00306: numéro ou types d'arguments erronés dans appel à 'INSERTRUN' ORA-06550: Ligne 1, colonne 7 : PL/SQL: Statement ignored:Method:ExecuteScalar CommandType:StoredProcedure SQL:QXP_PK_SUIVI.InsertRun	ORA-06550: Ligne 1, colonne 15 :	238
-2026-09-01 00:31:23	1	Erreur lors de la création du (des) run(s)	ORA-06550: Ligne 1, colonne 15 : PLS-00306: numéro ou types d'arguments erronés dans appel à 'INSERTRUN' ORA-06550: Ligne 1, colonne 7 : PL/SQL: Statement ignored:Method:ExecuteScalar CommandType:StoredProcedure SQL:QXP_PK_SUIVI.InsertRun	ORA-06550: Ligne 1, colonne 15 :	238
-2026-08-31 23:49:56	1	Erreur lors de l'insertion du run : 	ORA-06550: Ligne 1, colonne 15 : PLS-00306: numéro ou types d'arguments erronés dans appel à 'INSERTRUN' ORA-06550: Ligne 1, colonne 7 : PL/SQL: Statement ignored:Method:ExecuteScalar CommandType:StoredProcedure SQL:QXP_PK_SUIVI.InsertRun	ORA-06550: Ligne 1, colonne 15 :	238
-2026-08-31 23:49:56	1	CreationRunKO	ORA-06550: Ligne 1, colonne 15 : PLS-00306: numéro ou types d'arguments erronés dans appel à 'INSERTRUN' ORA-06550: Ligne 1, colonne 7 : PL/SQL: Statement ignored:Method:ExecuteScalar CommandType:StoredProcedure SQL:QXP_PK_SUIVI.InsertRun	ORA-06550: Ligne 1, colonne 15 :	238
-2026-08-31 23:49:56	1	Erreur lors de la création du (des) run(s)	ORA-06550: Ligne 1, colonne 15 : PLS-00306: numéro ou types d'arguments erronés dans appel à 'INSERTRUN' ORA-06550: Ligne 1, colonne 7 : PL/SQL: Statement ignored:Method:ExecuteScalar CommandType:StoredProcedure SQL:QXP_PK_SUIVI.InsertRun	ORA-06550: Ligne 1, colonne 15 :	238
-2026-08-31 22:43:48	1	Erreur lors de l'insertion du run : 	ORA-06550: Ligne 1, colonne 15 : PLS-00306: numéro ou types d'arguments erronés dans appel à 'INSERTRUN' ORA-06550: Ligne 1, colonne 7 : PL/SQL: Statement ignored:Method:ExecuteScalar CommandType:StoredProcedure SQL:QXP_PK_SUIVI.InsertRun	ORA-06550: Ligne 1, colonne 15 :	238
-2026-08-31 22:43:48	1	CreationRunKO	ORA-06550: Ligne 1, colonne 15 : PLS-00306: numéro ou types d'arguments erronés dans appel à 'INSERTRUN' ORA-06550: Ligne 1, colonne 7 : PL/SQL: Statement ignored:Method:ExecuteScalar CommandType:StoredProcedure SQL:QXP_PK_SUIVI.InsertRun	ORA-06550: Ligne 1, colonne 15 :	238
-2026-08-31 22:43:48	1	Erreur lors de la création du (des) run(s)	ORA-06550: Ligne 1, colonne 15 : PLS-00306: numéro ou types d'arguments erronés dans appel à 'INSERTRUN' ORA-06550: Ligne 1, colonne 7 : PL/SQL: Statement ignored:Method:ExecuteScalar CommandType:StoredProcedure SQL:QXP_PK_SUIVI.InsertRun	ORA-06550: Ligne 1, colonne 15 :	238
-2026-08-31 22:41:49	1	Erreur lors de l'insertion du run : 	ORA-06550: Ligne 1, colonne 15 : PLS-00306: numéro ou types d'arguments erronés dans appel à 'INSERTRUN' ORA-06550: Ligne 1, colonne 7 : PL/SQL: Statement ignored:Method:ExecuteScalar CommandType:StoredProcedure SQL:QXP_PK_SUIVI.InsertRun	ORA-06550: Ligne 1, colonne 15 :	238
-2026-08-31 22:41:49	1	CreationRunKO	ORA-06550: Ligne 1, colonne 15 : PLS-00306: numéro ou types d'arguments erronés dans appel à 'INSERTRUN' ORA-06550: Ligne 1, colonne 7 : PL/SQL: Statement ignored:Method:ExecuteScalar CommandType:StoredProcedure SQL:QXP_PK_SUIVI.InsertRun	ORA-06550: Ligne 1, colonne 15 :	238
-2026-08-31 22:41:49	1	Erreur lors de la création du (des) run(s)	ORA-06550: Ligne 1, colonne 15 : PLS-00306: numéro ou types d'arguments erronés dans appel à 'INSERTRUN' ORA-06550: Ligne 1, colonne 7 : PL/SQL: Statement ignored:Method:ExecuteScalar CommandType:StoredProcedure SQL:QXP_PK_SUIVI.InsertRun	ORA-06550: Ligne 1, colonne 15 :	238
-2026-08-31 22:40:36	1	Erreur lors de l'insertion du run : 	ORA-06550: Ligne 1, colonne 15 : PLS-00306: numéro ou types d'arguments erronés dans appel à 'INSERTRUN' ORA-06550: Ligne 1, colonne 7 : PL/SQL: Statement ignored:Method:ExecuteScalar CommandType:StoredProcedure SQL:QXP_PK_SUIVI.InsertRun	ORA-06550: Ligne 1, colonne 15 :	238
-2026-08-31 22:40:36	1	CreationRunKO	ORA-06550: Ligne 1, colonne 15 : PLS-00306: numéro ou types d'arguments erronés dans appel à 'INSERTRUN' ORA-06550: Ligne 1, colonne 7 : PL/SQL: Statement ignored:Method:ExecuteScalar CommandType:StoredProcedure SQL:QXP_PK_SUIVI.InsertRun	ORA-06550: Ligne 1, colonne 15 :	238
-2026-08-31 22:40:36	1	Erreur lors de la création du (des) run(s)	ORA-06550: Ligne 1, colonne 15 : PLS-00306: numéro ou types d'arguments erronés dans appel à 'INSERTRUN' ORA-06550: Ligne 1, colonne 7 : PL/SQL: Statement ignored:Method:ExecuteScalar CommandType:StoredProcedure SQL:QXP_PK_SUIVI.InsertRun	ORA-06550: Ligne 1, colonne 15 :	238
-2026-08-31 22:39:26	1	Erreur lors de l'insertion du run : 	ORA-06550: Ligne 1, colonne 15 : PLS-00306: numéro ou types d'arguments erronés dans appel à 'INSERTRUN' ORA-06550: Ligne 1, colonne 7 : PL/SQL: Statement ignored:Method:ExecuteScalar CommandType:StoredProcedure SQL:QXP_PK_SUIVI.InsertRun	ORA-06550: Ligne 1, colonne 15 :	238
-2026-08-31 22:39:26	1	Erreur lors de la création du (des) run(s)	ORA-06550: Ligne 1, colonne 15 : PLS-00306: numéro ou types d'arguments erronés dans appel à 'INSERTRUN' ORA-06550: Ligne 1, colonne 7 : PL/SQL: Statement ignored:Method:ExecuteScalar CommandType:StoredProcedure SQL:QXP_PK_SUIVI.InsertRun	ORA-06550: Ligne 1, colonne 15 :	238
+SESSION	QXP														SESSION_USER=QXP
+OBJECT	QXP_PK_COMMON	PACKAGE													STATUS=VALID; LAST_DDL=2026-08-27 21:30:29
+OBJECT	QXP_PK_COMMON	PACKAGE BODY													STATUS=VALID; LAST_DDL=2026-08-27 21:30:42
+OBJECT	QXP_PK_SUIVI	PACKAGE													STATUS=VALID; LAST_DDL=2026-09-01 21:33:40
+OBJECT	QXP_PK_SUIVI	PACKAGE BODY													STATUS=VALID; LAST_DDL=2026-09-01 21:33:46
+ARGUMENT	QXP_PK_SUIVI.INSERTRUNTACHES	PACKAGE			15	1	1	P_IDRUN	NUMBER	IN	N				DATA_LEVEL=0; DATA_LENGTH=22
+ARGUMENT	QXP_PK_SUIVI.INSERTRUNTACHES	PACKAGE			15	2	2	P_IDTACHES	TABLE	IN	N	QXP	TABLE_NUMBER		DATA_LEVEL=0; DATA_LENGTH=NULL
+SOURCE	QXP_PK_SUIVI.INSERTRUNTACHES	PACKAGE	140												PROCEDURE InsertRunTaches
+SOURCE	QXP_PK_SUIVI.INSERTRUNTACHES	PACKAGE	141												(
+SOURCE	QXP_PK_SUIVI.INSERTRUNTACHES	PACKAGE	142												"    p_idRun			      IN NUMBER"
+SOURCE	QXP_PK_SUIVI.INSERTRUNTACHES	PACKAGE	143												"--  , p_idTaches		    IN qxp_pk_common.NumberArray  "
+SOURCE	QXP_PK_SUIVI.INSERTRUNTACHES	PACKAGE	144												"  , p_idTaches		    IN TABLE_NUMBER"
+SOURCE	QXP_PK_SUIVI.INSERTRUNTACHES	PACKAGE	145												
+SOURCE	QXP_PK_SUIVI.INSERTRUNTACHES	PACKAGE	146												);
+SOURCE	QXP_PK_SUIVI.INSERTRUNTACHES	PACKAGE	147												
+SOURCE	QXP_PK_SUIVI.INSERTRUNTACHES	PACKAGE BODY	944												PROCEDURE InsertRunTaches
+SOURCE	QXP_PK_SUIVI.INSERTRUNTACHES	PACKAGE BODY	945												(
+SOURCE	QXP_PK_SUIVI.INSERTRUNTACHES	PACKAGE BODY	946												    p_idRun     IN NUMBER,
+SOURCE	QXP_PK_SUIVI.INSERTRUNTACHES	PACKAGE BODY	947												    p_idTaches  IN TABLE_NUMBER
+SOURCE	QXP_PK_SUIVI.INSERTRUNTACHES	PACKAGE BODY	948												)
+SOURCE	QXP_PK_SUIVI.INSERTRUNTACHES	PACKAGE BODY	949												IS
+SOURCE	QXP_PK_SUIVI.INSERTRUNTACHES	PACKAGE BODY	950												BEGIN
+SOURCE	QXP_PK_SUIVI.INSERTRUNTACHES	PACKAGE BODY	951												  DELETE FROM QXP_ASSO_RUN_TACHES
+SOURCE	QXP_PK_SUIVI.INSERTRUNTACHES	PACKAGE BODY	952												  WHERE ID_RUN = p_idRun;
+SOURCE	QXP_PK_SUIVI.INSERTRUNTACHES	PACKAGE BODY	953												
+SOURCE	QXP_PK_SUIVI.INSERTRUNTACHES	PACKAGE BODY	954												  IF p_idTaches IS NOT NULL AND p_idTaches.COUNT > 0 THEN
+SOURCE	QXP_PK_SUIVI.INSERTRUNTACHES	PACKAGE BODY	955												    FOR i IN p_idTaches.FIRST .. p_idTaches.LAST LOOP
+SOURCE	QXP_PK_SUIVI.INSERTRUNTACHES	PACKAGE BODY	956												      INSERT INTO QXP_ASSO_RUN_TACHES (
+SOURCE	QXP_PK_SUIVI.INSERTRUNTACHES	PACKAGE BODY	957												          ID_RUN,
+SOURCE	QXP_PK_SUIVI.INSERTRUNTACHES	PACKAGE BODY	958												          ID_TACHE
+SOURCE	QXP_PK_SUIVI.INSERTRUNTACHES	PACKAGE BODY	959												      )
+SOURCE	QXP_PK_SUIVI.INSERTRUNTACHES	PACKAGE BODY	960												      VALUES (
+SOURCE	QXP_PK_SUIVI.INSERTRUNTACHES	PACKAGE BODY	961												          p_idRun,
+SOURCE	QXP_PK_SUIVI.INSERTRUNTACHES	PACKAGE BODY	962												          p_idTaches(i)
+SOURCE	QXP_PK_SUIVI.INSERTRUNTACHES	PACKAGE BODY	963												      );
+SOURCE	QXP_PK_SUIVI.INSERTRUNTACHES	PACKAGE BODY	964												    END LOOP;
+SOURCE	QXP_PK_SUIVI.INSERTRUNTACHES	PACKAGE BODY	965												  END IF;
+SOURCE	QXP_PK_SUIVI.INSERTRUNTACHES	PACKAGE BODY	966												END InsertRunTaches;
+SOURCE	QXP_PK_SUIVI.INSERTRUNTACHES	PACKAGE BODY	967												
+SOURCE	QXP_PK_SUIVI.INSERTRUNTACHES	PACKAGE BODY	968												/*******************************************************************************************
+SOURCE	QXP_PK_SUIVI.INSERTRUNTACHES	PACKAGE BODY	969												* Nom : GetContenuDocument
+SOURCE	QXP_PK_SUIVI.INSERTRUNTACHES	PACKAGE BODY	970												* Description : Récupère le document (QXP, PDF, DOC) (flux binaire)
+SOURCE	QXP_PK_SUIVI.INSERTRUNTACHES	PACKAGE BODY	971												* JIRA : QXP-
+SOURCE	QXP_PK_SUIVI.INSERTRUNTACHES	PACKAGE BODY	972												* Date : 01/09/2009
+SOURCE	QXP_PK_SUIVI.INSERTRUNTACHES	PACKAGE BODY	973												* Auteur : Ludovic Cueff
+SOURCE	QXP_PK_SUIVI.INSERTRUNTACHES	PACKAGE BODY	974												* Révision :  XXX JIRA QXP-XXXX XX/XX/2010 : Résumé modification
+SOURCE	QXP_PK_SUIVI.INSERTRUNTACHES	PACKAGE BODY	975												********************************************************************************************/
+TYPE_SOURCE	QXP_PK_COMMON.NUMBERARRAY	PACKAGE	11												TYPE NumberArray IS TABLE OF NUMBER INDEX BY BINARY_INTEGER;
