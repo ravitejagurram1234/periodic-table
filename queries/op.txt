@@ -1,7 +1,65 @@
-QOFF-02A results:
-505255	79781	1	A générer	1	1	Rapport annuel	102008		1	426	3	100	1	1	2026-08-30 01:30:00	1	1	21956608	1	1	1	0	0	0	0	SIMPLE	PASS
-QOFF-05A results:
-505255	282	1	SQL	VALUE_UPDATE	1	0	UPDATE_CONFIGURED	2791	<NULL>		<NULL>				0		100	6453248	CONFIGURED: prove fetched rows and updateCount at runtime	0	POST_ONLY: task counts plus QOFF-17
+new run added evidently is 505258.
+qoff-01f query results:
+505258	79981	1	1	1	2	Plaquette	101011		1	399	1	0	3	1	2	0	0	0	2026-09-02 23:58:05		POSSIBLE_COMMITTED_UI_ATTEMPT
+505257	79855	1	1	1	1	Rapport annuel	104128		1	447	1	0	5	1	4	0	0	0	2026-09-02 00:06:21		POSSIBLE_COMMITTED_UI_ATTEMPT
 
-QOFF-07B results:
-505255	3	PREVIOUS_CERTIFIED_QXP	50356	102008 - CARPILIG P1 - 31-12-2024 - RA - FR - C.QXP	16545792	16545792	1	76168
+qoff-01c query results:
+SIMPLE	1	505257	79855	1	1	1	Rapport annuel	104128		1	Français	2025-12-01 00:00:00	447	1	0	0	0	20976640	6504448	5	5	1	4	0	0	0	1	4	UPDATE_AND_MODIFY_CONFIGURED	0	0	504759	2	1050199	1050200		0	2026-09-02 00:06:21	
+SIMPLE	2	505255	79781	1	1	1	Rapport annuel	102008		1	Français	2025-12-01 00:00:00	426	3	100	0	0	21956608	6453248	1	1	1	0	0	0	0	1	0	UPDATE_CONFIGURED	0	0	504688	2	1050057	1050058		0	2026-08-27 21:54:21	2026-08-30 01:30:00
+SIMPLE	3	505254	79782	1	1	1	Rapport annuel	102021		1	Français	2025-12-01 00:00:00	426	3	100	0	0	21956608	6453248	1	1	1	0	0	0	0	1	0	UPDATE_CONFIGURED	0	0	504681	2	1050043	1050044		0	2026-08-27 21:54:21	2026-08-30 01:30:00
+SIMPLE	1	505258	79981	1	1	2	Plaquette	101011		1	Français	2025-12-01 00:00:00	399	1	0	0	0	3673088	2315264	3	3	1	2	0	0	0	1	2	UPDATE_AND_MODIFY_CONFIGURED	0	0	502467	2	1045606	1045607		0	2026-09-02 23:58:05	
+
+q0ff-02a query results
+505258	79981	1	A générer	1	2	Plaquette	101011		1	399	1	0	1	1		1	1	3673088	3	3	1	2	0	0	0	SIMPLE	PASS
+
+q0ff-03 query results
+505258	79981	1	A générer	1	A générer		2026-09-02 23:58:05			2	Plaquette	101011		1	Français	FR	2025-12-01 00:00:00	399	0399 - NPC_IP_OPCVM_FCPE_FIVG_FR	0	0	1		0	0	502467	505258					0
+
+QOFF-04 query results
+505258	79981	1	p_code_port	CODE_PORT OU ID_STRUCTURE	1	Texte	101011	6
+505258	79981	2	p_date_echeance	DATE_ECHEANCE	4	Date	12/31/2025 00:00:00	19
+
+QOFF-05 query results
+505258	32	2	Doc EOS	Logo	1	5		0		1		<NULL>		0							1	0	0		0	0	<NULL>		[Logo]	4	Logo
+505258	54	2	Doc EOS	Nom Societe de Gestion	1	10		0		1		<NULL>		0							1	0	0		0	0	[NOM_SGP]	7	[NOM_SGP]	7	Nom Societe de Gestion
+505258	88	1	SQL	DIP_NPC - 000_Données préparatoires au dossier	1		2888	1		1		[-]		0							1	0	0		0	0	<NULL>		<NULL>		--Plaq 2009 -001- Données préparatoires au dossier
+505258	223	4	DYNAMIQUE	02 - SFTR	0		135271	0		1		<NULL>		0				5	2:1		1	0	0		1	0	<NULL>		[ANCRE_SFT]	9	
+505258	228	1	SQL	DIP_NPC - 09_Techniques de gestion efficace du portefeuille	0		21752	0		1		[-]		0							1	0	0		0	0	<NULL>		<NULL>		Tache techniques de gestion efficace de portefeuille
+505258	247	1	SQL	DIP_NPC - 01_Etat du patrimoine	0		1062	1		1		[-]		0							1	0	0		0	0	<NULL>		<NULL>		Ex tache 89
+505258	248	1	SQL	DIP_NPC - 03_Eléments portefeuille titres	0		1848	1		1		[-]		0							1	0	0		0	0	<NULL>		<NULL>		Ex tache 91
+505258	249	1	SQL	DIP_NPC - 04_Répartition portefeuille par devise	0		3183	1		1		[-]		0							1	0	0		0	0	<NULL>		<NULL>		Ex tache 92
+505258	250	1	SQL	DIP_NPC - 06_Répartition portefeuille par Secteur Economique	0		3702	1		1		[-]		0							1	0	0		0	0	<NULL>		<NULL>		Ex tache 93
+505258	251	1	SQL	DIP_NPC - 05_Répartition portefeuille par pays	0		3700	1		1		[-]		0							1	0	0		0	0	<NULL>		<NULL>		Ex tache 94
+505258	252	1	SQL	DIP_NPC - 07_Répartition portefeuille par Nature	0		1183	1		1		[-]		0							1	0	0		0	0	<NULL>		<NULL>		Ex tache 95
+505258	253	1	SQL	DIP_NPC - 08_Mouvements dans le portefeuille	0		2951	1		1		[-]		0							1	0	0		0	0	<NULL>		<NULL>		Ex tache 96
+505258	254	1	SQL	DIP_NPC - 02_Valeur par part	0		2284	1		1		[-]		0							1	0	0		0	0	<NULL>		<NULL>		Ex tache 97
+505258	255	1	SQL	DIP_NPC - 10_Distribution de dividendes	0		3660	1		1		[-]		0							1	0	0		0	0	<NULL>		<NULL>		Ex tache 98
+505258	256	1	SQL	DIP_NPC - 11_Taux de frais de gestion variables	0		2980	1		1		[-]		0							1	0	0		0	0	<NULL>		<NULL>		Ex tache 244
+505258	258	4	DYNAMIQUE	01 - Inventaire type Gallery	0		17863	0		1		<NULL>		0				4	9:L3,4,3|8:L2,4,3|7:L1,4,3|5:4,3|4:3		1	0	0		0	0	<NULL>		[ANCRE_INV]	9	9:L2,5,4,3|8:L2:4,3|5:4,3|4:3
+
+QOFF-05A query results
+505258	32	2	Doc EOS	DOCUMENT_INSERT_OR_REPLACE	0	1	UPDATE_AND_MODIFY_CONFIGURED		<NULL>		[Logo]	4			0		0	2315264	CHECK QOFF-08: exactly one usable source document is required	0	POST_ONLY: task counts plus QOFF-17
+505258	54	2	Doc EOS	DOCUMENT_INSERT_OR_REPLACE	0	1	UPDATE_AND_MODIFY_CONFIGURED		[NOM_SGP]	7	[NOM_SGP]	7			0		0	2315264	CHECK QOFF-08: exactly one usable source document is required	0	POST_ONLY: task counts plus QOFF-17
+505258	88	1	SQL	VALUE_UPDATE	1	0	UPDATE_AND_MODIFY_CONFIGURED	2888	<NULL>		<NULL>				0		0	2315264	CONFIGURED: prove fetched rows and updateCount at runtime	0	POST_ONLY: task counts plus QOFF-17
+
+QOFF-06 query returned 0 rows
+
+QOFF-07 query results
+505258	399	0399 - NPC_IP_OPCVM_FCPE_FIVG_FR	2	1	1	0	0	11	0	0	379	3673088	3673088	379.FR - SFTR - IP-NPC 2023		2315264	1		
+
+QOFF-07B query results
+505258	1	GABARIT	399	0399 - NPC_IP_OPCVM_FCPE_FIVG_FR	3673088	3673088	1	79981
+
+QOFF-08 query results
+505258	1	79981	32	5	2	544277	jpg	2016-03-01 00:00:00	Amiral_Gestion_logo	44976	44976		0			<NULL>		[Logo]	4	1
+505258	1	79981	54	10	2	544278	qxp	2016-03-01 00:00:00	AMIRAL GESTION	100352	100352		0			[NOM_SGP]	7	[NOM_SGP]	7	1
+
+QOFF-08B query returned 0 rows
+
+QOFF-09 query returned 0 rows
+
+QOFF-10 query results:
+NLS_DATE_FORMAT	DD-MON-RR
+NLS_DATE_LANGUAGE	AMERICAN
+NLS_NUMERIC_CHARACTERS	.,
+NLS_TERRITORY	AMERICA
