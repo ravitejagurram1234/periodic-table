@@ -1,5 +1,151 @@
 
 /* ---------------------------------------------------------------------------
+   QOFF-02B - Selected Swagger-run admission and task validation
+   Export: run_<ID>/00_selected_run_validation.csv
+
+   Run after choosing an ID from QOFF-01B, or after reserving a QOFF-01C ID,
+   and before any engine GET/POST.
+   BASIC_ADMISSION_RESULT must be PASS. This query validates the normal batch
+   handoff and proves that the run has active selected work. QOFF-07B, QOFF-08
+   and QOFF-09 still validate source documents and branch-specific inputs.
+   --------------------------------------------------------------------------- */
+WITH selected_profile AS (
+    SELECT
+        run_record.id_run,
+        run_record.id_suivi,
+        run_record.id_statut_generation,
+        status.libelle AS run_status_label,
+        suivi.id_statut_generation AS suivi_status,
+        suivi.id_type_rapport,
+        report_type.libelle AS report_type_label,
+        suivi.id_fnd_code,
+        suivi.id_unit_code,
+        suivi.id_langue,
+        suivi.id_gabarit,
+        run_record.gabarit_source,
+        run_record.mode_compart,
+        CASE WHEN suivi.id_run_suivant = run_record.id_run THEN 1 ELSE 0 END
+            AS is_current_suivi_run,
+        (SELECT COUNT(*)
+           FROM qxp_asso_fond_gabarit association_row
+          WHERE association_row.id_type_rapport = suivi.id_type_rapport
+            AND association_row.id_fnd_code = suivi.id_fnd_code
+            AND association_row.id_langue = suivi.id_langue
+            AND association_row.id_gabarit = suivi.id_gabarit
+        ) AS run_property_match_count,
+        gabarit.is_actif AS gabarit_is_active,
+        MAX(CASE WHEN gabarit.contenu IS NULL THEN 0
+                 ELSE DBMS_LOB.GETLENGTH(gabarit.contenu)
+            END) AS configured_gabarit_bytes,
+        COUNT(DISTINCT CASE WHEN task.is_actif = 1
+                            THEN task.id_tache END) AS configured_active_task_count,
+        COUNT(DISTINCT CASE WHEN task.is_actif = 1
+                                  AND run_task.id_tache IS NOT NULL
+                            THEN task.id_tache END) AS selected_todo_task_count,
+        COUNT(DISTINCT CASE WHEN task.is_actif = 1
+                                  AND run_task.id_tache IS NOT NULL
+                                  AND task.id_type_tache BETWEEN 1 AND 5
+                            THEN task.id_tache END) AS selected_change_task_count,
+        COUNT(DISTINCT CASE WHEN task.is_actif = 1
+                                  AND run_task.id_tache IS NOT NULL
+                                  AND task.id_type_tache = 1
+                            THEN task.id_tache END) AS selected_sql_tasks,
+        COUNT(DISTINCT CASE WHEN task.is_actif = 1
+                                  AND run_task.id_tache IS NOT NULL
+                                  AND task.id_type_tache = 2
+                            THEN task.id_tache END) AS selected_document_tasks,
+        COUNT(DISTINCT CASE WHEN task.is_actif = 1
+                                  AND run_task.id_tache IS NOT NULL
+                                  AND task.id_type_tache = 3
+                            THEN task.id_tache END) AS selected_qxp_block_tasks,
+        COUNT(DISTINCT CASE WHEN task.is_actif = 1
+                                  AND run_task.id_tache IS NOT NULL
+                                  AND task.id_type_tache = 4
+                            THEN task.id_tache END) AS selected_dynamic_tasks,
+        COUNT(DISTINCT CASE WHEN task.is_actif = 1
+                                  AND run_task.id_tache IS NOT NULL
+                                  AND task.id_type_tache = 5
+                            THEN task.id_tache END) AS selected_compartment_tasks,
+        run_record.date_debut_generation,
+        run_record.date_fin_generation,
+        run_record.id_doc_qxp,
+        run_record.id_doc_pdf,
+        run_record.id_doc_doc
+    FROM qxp_run run_record
+    JOIN qxp_suivi suivi
+      ON suivi.id_suivi = run_record.id_suivi
+    JOIN qxp_gabarit gabarit
+      ON gabarit.id_gabarit = suivi.id_gabarit
+    LEFT JOIN qxp_ref_statut_generation status
+      ON status.id_statut_generation = run_record.id_statut_generation
+    LEFT JOIN qxp_ref_type_rapport report_type
+      ON report_type.id_type_rapport = suivi.id_type_rapport
+    LEFT JOIN qxp_asso_gabarit_taches gabarit_task
+      ON gabarit_task.id_gabarit = suivi.id_gabarit
+    LEFT JOIN qxp_tache task
+      ON task.id_tache = gabarit_task.id_tache
+    LEFT JOIN qxp_asso_run_taches run_task
+      ON run_task.id_run = run_record.id_run
+     AND run_task.id_tache = task.id_tache
+    WHERE run_record.id_run = &RUN_ID
+    GROUP BY
+        run_record.id_run,
+        run_record.id_suivi,
+        run_record.id_statut_generation,
+        status.libelle,
+        suivi.id_statut_generation,
+        suivi.id_type_rapport,
+        report_type.libelle,
+        suivi.id_fnd_code,
+        suivi.id_unit_code,
+        suivi.id_langue,
+        suivi.id_gabarit,
+        suivi.id_run_suivant,
+        gabarit.is_actif,
+        run_record.gabarit_source,
+        run_record.mode_compart,
+        run_record.date_debut_generation,
+        run_record.date_fin_generation,
+        run_record.id_doc_qxp,
+        run_record.id_doc_pdf,
+        run_record.id_doc_doc
+)
+SELECT
+    profile.*,
+    CASE
+        WHEN profile.selected_compartment_tasks > 0 THEN 'COMPARTMENT'
+        WHEN profile.selected_dynamic_tasks > 0 THEN 'DYNAMIC'
+        ELSE 'SIMPLE'
+    END AS scenario_class,
+    CASE
+        WHEN NVL(profile.id_statut_generation, -1) <> 5
+          THEN 'STOP: status is not batch-reserved (5)'
+        WHEN NVL(profile.suivi_status, -1) <> 1
+          THEN 'STOP: QXP_SUIVI status must remain 1 before processing'
+        WHEN profile.is_current_suivi_run <> 1 THEN 'STOP: run is not ID_RUN_SUIVANT'
+        WHEN NVL(profile.gabarit_source, -1) NOT IN (1, 2, 3, 4)
+          THEN 'STOP: gabarit source is not 1, 2, 3 or 4'
+        WHEN profile.run_property_match_count <> 1 THEN 'STOP: run-property association count is not 1'
+        WHEN profile.gabarit_is_active <> 1
+          THEN 'STOP: configured gabarit is inactive'
+        WHEN profile.gabarit_source = 1 AND profile.configured_gabarit_bytes <= 0
+          THEN 'STOP: source-1 gabarit content is unavailable'
+        WHEN profile.selected_change_task_count <= 0
+          THEN 'STOP: no selected active change-capable task'
+        WHEN profile.date_debut_generation IS NOT NULL
+          OR profile.date_fin_generation IS NOT NULL
+          THEN 'STOP: run already has generation timestamps'
+        WHEN profile.id_doc_qxp IS NOT NULL
+          OR profile.id_doc_pdf IS NOT NULL
+          OR profile.id_doc_doc IS NOT NULL
+          THEN 'STOP: run already has generated document links'
+        ELSE 'PASS'
+    END AS basic_admission_result
+FROM selected_profile profile;
+
+
+
+/* ---------------------------------------------------------------------------
    QOFF-01F - Reconcile a recent old-UI creation attempt
    Export: planning/07_recent_ui_creation_attempts.csv
 
