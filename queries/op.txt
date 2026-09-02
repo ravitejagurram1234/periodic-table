@@ -63,3 +63,89 @@ NLS_DATE_FORMAT	DD-MON-RR
 NLS_DATE_LANGUAGE	AMERICAN
 NLS_NUMERIC_CHARACTERS	.,
 NLS_TERRITORY	AMERICA
+
+
+
+{
+  "type": "about:blank",
+  "title": "Forbidden",
+  "status": 403,
+  "detail": "Access Denied",
+  "instance": "/api/v1/EngineService/fetchRunProperties/505258"
+}
+{
+  "type": "about:blank",
+  "title": "Forbidden",
+  "status": 403,
+  "detail": "Access Denied",
+  "instance": "/api/v1/EngineService/processRun/505258"
+}
+
+C:\Users\rgurram062722\bin\jdk21-current\bin\java.exe -Dspring.profiles.active=local -Dspring.config.location=classpath:/,file:./src/main/config/local/ -XX:TieredStopAtLevel=1 -Dspring.output.ansi.enabled=always -javaagent:C:\Users\rgurram062722\bin\idea-IU-26.1\lib\idea_rt.jar=52633 -Dfile.encoding=UTF-8 -Dsun.stdout.encoding=UTF-8 -Dsun.stderr.encoding=UTF-8 @C:\Users\rgurram062722\AppData\Local\Temp\idea_arg_file1528800972 com.socgen.sgs.api.quark.engine.Application
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::               (v3.5.15)
+
+2026-09-03 05:02:26.074 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.sgs.api.quark.engine.Application - Starting Application using Java 21.0.11 with PID 19128 (C:\Users\rgurram062722\Documents\GitHub\engine service repo\quark-engine\target\classes started by rgurram062722 in C:\Users\rgurram062722\Documents\GitHub\engine service repo\quark-engine)
+2026-09-03 05:02:26.081 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.sgs.api.quark.engine.Application - The following 1 profile is active: "local"
+2026-09-03 05:02:26.491 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.b.d.restart.ChangeableUrls - The Class-Path manifest attribute in C:\Users\rgurram062722\.m2\repository\com\oracle\database\jdbc\ojdbc11\21.18.0.0\ojdbc11-21.18.0.0.jar referenced one or more files that do not exist: file:/C:/Users/rgurram062722/.m2/repository/com/oracle/database/jdbc/ojdbc11/21.18.0.0/oraclepki.jar
+2026-09-03 05:02:26.491 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor - Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2026-09-03 05:02:26.491 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor - For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2026-09-03 05:02:41.620 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-09-03 05:02:41.731 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 86 ms. Found 0 JPA repository interfaces.
+2026-09-03 05:02:42.531 WARN  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'com.socgen.apibank.autoconfigure.swaggerui.SwaggerUiAutoConfiguration' of type [com.socgen.apibank.autoconfigure.swaggerui.SwaggerUiAutoConfiguration] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). The currently created BeanPostProcessor [swaggerUiOptionsOptionsPropagator] is declared through a non-static factory method on that class; consider declaring it as static instead.
+2026-09-03 05:02:42.551 WARN  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'sg.swagger-ui3-com.socgen.apibank.autoconfigure.swaggerui.SwaggerUiProperties' of type [com.socgen.apibank.autoconfigure.swaggerui.SwaggerUiProperties] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected/applied to a currently created BeanPostProcessor [swaggerUiOptionsOptionsPropagator]? Check the corresponding BeanPostProcessor declaration and its dependencies/advisors. If this bean does not have to be post-processed, declare it with ROLE_INFRASTRUCTURE.
+2026-09-03 05:02:42.634 WARN  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'sg.openapi-com.socgen.apibank.openapi.OpenApiProperties' of type [com.socgen.apibank.openapi.OpenApiProperties] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected/applied to a currently created BeanPostProcessor [swaggerUiOptionsOptionsPropagator]? Check the corresponding BeanPostProcessor declaration and its dependencies/advisors. If this bean does not have to be post-processed, declare it with ROLE_INFRASTRUCTURE.
+2026-09-03 05:02:43.052 WARN  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'com.socgen.apibank.problem.servlet.SgConnectProblemConfiguration' of type [com.socgen.apibank.problem.servlet.SgConnectProblemConfiguration] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). The currently created BeanPostProcessor [problemSecurityBeanPostProcessor] is declared through a non-static factory method on that class; consider declaring it as static instead.
+2026-09-03 05:02:43.772 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2026-09-03 05:02:43.795 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-09-03 05:02:43.795 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.55]
+2026-09-03 05:02:44.004 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2026-09-03 05:02:44.004 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 17512 ms
+2026-09-03 05:02:47.143 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-09-03 05:02:47.666 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] org.hibernate.Version - HHH000412: Hibernate ORM core version 6.6.53.Final
+2026-09-03 05:02:47.836 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2026-09-03 05:02:49.019 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-09-03 05:02:49.122 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2026-09-03 05:02:49.127 WARN  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] c.z.hikari.util.DriverDataSource - Registered driver with driverClassName=oracle.jdbc.driver.OracleDriver was not found, trying direct instantiation.
+2026-09-03 05:02:50.245 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection oracle.jdbc.driver.T4CConnection@9b10ded
+2026-09-03 05:02:50.251 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2026-09-03 05:02:50.750 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.hibernate.orm.connections.pooling - HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 19.0
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-09-03 05:02:51.749 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-09-03 05:02:51.761 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-09-03 05:02:53.268 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.t.i.TaskProcessServiceImpl - Registered 7 task process strategies: [class com.socgen.sgs.api.quark.engine.domain.task.TaskCompartiment, class com.socgen.sgs.api.quark.engine.domain.task.TaskSql, class com.socgen.sgs.api.quark.engine.domain.task.TaskSystem, class com.socgen.sgs.api.quark.engine.domain.task.TaskDynamique, class com.socgen.sgs.api.quark.engine.domain.task.TaskDocument, class com.socgen.sgs.api.quark.engine.domain.task.TaskDid, class com.socgen.sgs.api.quark.engine.domain.task.TaskQxpPrevious]
+2026-09-03 05:02:53.272 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.t.i.TaskPostProcessServiceImpl - Registered 1 task post-process strategies: [class com.socgen.sgs.api.quark.engine.domain.task.TaskDid]
+2026-09-03 05:02:53.804 WARN  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-09-03 05:02:56.266 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.a.p.s.ProblemSecurityBeanPostProcessor - Register HttpSecurity's exceptionHandling
+2026-09-03 05:02:56.397 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.s.w.a.c.ChannelProcessingFilter - Validated configuration attributes
+2026-09-03 05:02:57.162 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.b.a.e.web.EndpointLinksResolver - Exposing 13 endpoints beneath base path '/actuator'
+2026-09-03 05:02:57.215 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.a.p.s.ProblemSecurityBeanPostProcessor - Register HttpSecurity's exceptionHandling
+2026-09-03 05:02:57.287 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.a.p.s.ProblemSecurityBeanPostProcessor - Register BearerTokenAuthenticationFilter's authentication entry point
+2026-09-03 05:02:57.327 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.s.w.a.c.ChannelProcessingFilter - Validated configuration attributes
+2026-09-03 05:02:57.840 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.b.a.h.H2ConsoleAutoConfiguration - H2 console available at '/h2-console'. Database available at 'jdbc:oracle:thin:@osfreygp3dwr1.ocp.cloud.socgen:1522:YGP3DWR1'
+2026-09-03 05:02:58.119 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.w.s.a.s.AnnotationActionEndpointMapping - Supporting [WS-Addressing August 2004, WS-Addressing 1.0]
+2026-09-03 05:02:58.338 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.b.d.a.OptionalLiveReloadServer - LiveReload server is running on port 35729
+2026-09-03 05:02:58.537 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/'
+2026-09-03 05:02:58.564 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.sgs.api.quark.engine.Application - Started Application in 34.244 seconds (process running for 39.189)
+2026-09-03 05:02:58.573 WARN  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.c.events.SpringDocAppInitializer - SpringDoc /api-docs endpoint is enabled by default. To disable it in production, set the property 'springdoc.api-docs.enabled=false'
+2026-09-03 05:02:58.573 WARN  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.c.events.SpringDocAppInitializer - SpringDoc /swagger-ui.html endpoint is enabled by default. To disable it in production, set the property 'springdoc.swagger-ui.enabled=false'
+2026-09-03 05:03:28.209 INFO  [http-nio-8080-exec-1] [runId= suiviId= taskId= stepIndex= childRunId=] o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-09-03 05:03:28.209 INFO  [http-nio-8080-exec-1] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2026-09-03 05:03:28.213 INFO  [http-nio-8080-exec-1] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.web.servlet.DispatcherServlet - Completed initialization in 2 ms
+2026-09-03 05:03:31.268 INFO  [http-nio-8080-exec-1] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.api.AbstractOpenApiResource - Init duration for springdoc-openapi is: 412 ms
+2026-09-03 05:04:03.577 WARN  [http-nio-8080-exec-5] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver - Resolved [org.springframework.security.authorization.AuthorizationDeniedException: Access Denied]
+2026-09-03 05:05:04.877 WARN  [http-nio-8080-exec-1] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver - Resolved [org.springframework.security.authorization.AuthorizationDeniedException: Access Denied]
+
