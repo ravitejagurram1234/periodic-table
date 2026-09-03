@@ -1,87 +1,36 @@
-new run added evidently is 505258.
-qoff-01f query results:
-505258	79981	1	1	1	2	Plaquette	101011		1	399	1	0	3	1	2	0	0	0	2026-09-02 23:58:05		POSSIBLE_COMMITTED_UI_ATTEMPT
-505257	79855	1	1	1	1	Rapport annuel	104128		1	447	1	0	5	1	4	0	0	0	2026-09-02 00:06:21		POSSIBLE_COMMITTED_UI_ATTEMPT
-
-qoff-01c query results:
-SIMPLE	1	505257	79855	1	1	1	Rapport annuel	104128		1	Français	2025-12-01 00:00:00	447	1	0	0	0	20976640	6504448	5	5	1	4	0	0	0	1	4	UPDATE_AND_MODIFY_CONFIGURED	0	0	504759	2	1050199	1050200		0	2026-09-02 00:06:21	
-SIMPLE	2	505255	79781	1	1	1	Rapport annuel	102008		1	Français	2025-12-01 00:00:00	426	3	100	0	0	21956608	6453248	1	1	1	0	0	0	0	1	0	UPDATE_CONFIGURED	0	0	504688	2	1050057	1050058		0	2026-08-27 21:54:21	2026-08-30 01:30:00
-SIMPLE	3	505254	79782	1	1	1	Rapport annuel	102021		1	Français	2025-12-01 00:00:00	426	3	100	0	0	21956608	6453248	1	1	1	0	0	0	0	1	0	UPDATE_CONFIGURED	0	0	504681	2	1050043	1050044		0	2026-08-27 21:54:21	2026-08-30 01:30:00
-SIMPLE	1	505258	79981	1	1	2	Plaquette	101011		1	Français	2025-12-01 00:00:00	399	1	0	0	0	3673088	2315264	3	3	1	2	0	0	0	1	2	UPDATE_AND_MODIFY_CONFIGURED	0	0	502467	2	1045606	1045607		0	2026-09-02 23:58:05	
-
-q0ff-02a query results
-505258	79981	1	A générer	1	2	Plaquette	101011		1	399	1	0	1	1		1	1	3673088	3	3	1	2	0	0	0	SIMPLE	PASS
-
-q0ff-03 query results
-505258	79981	1	A générer	1	A générer		2026-09-02 23:58:05			2	Plaquette	101011		1	Français	FR	2025-12-01 00:00:00	399	0399 - NPC_IP_OPCVM_FCPE_FIVG_FR	0	0	1		0	0	502467	505258					0
-
-QOFF-04 query results
-505258	79981	1	p_code_port	CODE_PORT OU ID_STRUCTURE	1	Texte	101011	6
-505258	79981	2	p_date_echeance	DATE_ECHEANCE	4	Date	12/31/2025 00:00:00	19
-
-QOFF-05 query results
-505258	32	2	Doc EOS	Logo	1	5		0		1		<NULL>		0							1	0	0		0	0	<NULL>		[Logo]	4	Logo
-505258	54	2	Doc EOS	Nom Societe de Gestion	1	10		0		1		<NULL>		0							1	0	0		0	0	[NOM_SGP]	7	[NOM_SGP]	7	Nom Societe de Gestion
-505258	88	1	SQL	DIP_NPC - 000_Données préparatoires au dossier	1		2888	1		1		[-]		0							1	0	0		0	0	<NULL>		<NULL>		--Plaq 2009 -001- Données préparatoires au dossier
-505258	223	4	DYNAMIQUE	02 - SFTR	0		135271	0		1		<NULL>		0				5	2:1		1	0	0		1	0	<NULL>		[ANCRE_SFT]	9	
-505258	228	1	SQL	DIP_NPC - 09_Techniques de gestion efficace du portefeuille	0		21752	0		1		[-]		0							1	0	0		0	0	<NULL>		<NULL>		Tache techniques de gestion efficace de portefeuille
-505258	247	1	SQL	DIP_NPC - 01_Etat du patrimoine	0		1062	1		1		[-]		0							1	0	0		0	0	<NULL>		<NULL>		Ex tache 89
-505258	248	1	SQL	DIP_NPC - 03_Eléments portefeuille titres	0		1848	1		1		[-]		0							1	0	0		0	0	<NULL>		<NULL>		Ex tache 91
-505258	249	1	SQL	DIP_NPC - 04_Répartition portefeuille par devise	0		3183	1		1		[-]		0							1	0	0		0	0	<NULL>		<NULL>		Ex tache 92
-505258	250	1	SQL	DIP_NPC - 06_Répartition portefeuille par Secteur Economique	0		3702	1		1		[-]		0							1	0	0		0	0	<NULL>		<NULL>		Ex tache 93
-505258	251	1	SQL	DIP_NPC - 05_Répartition portefeuille par pays	0		3700	1		1		[-]		0							1	0	0		0	0	<NULL>		<NULL>		Ex tache 94
-505258	252	1	SQL	DIP_NPC - 07_Répartition portefeuille par Nature	0		1183	1		1		[-]		0							1	0	0		0	0	<NULL>		<NULL>		Ex tache 95
-505258	253	1	SQL	DIP_NPC - 08_Mouvements dans le portefeuille	0		2951	1		1		[-]		0							1	0	0		0	0	<NULL>		<NULL>		Ex tache 96
-505258	254	1	SQL	DIP_NPC - 02_Valeur par part	0		2284	1		1		[-]		0							1	0	0		0	0	<NULL>		<NULL>		Ex tache 97
-505258	255	1	SQL	DIP_NPC - 10_Distribution de dividendes	0		3660	1		1		[-]		0							1	0	0		0	0	<NULL>		<NULL>		Ex tache 98
-505258	256	1	SQL	DIP_NPC - 11_Taux de frais de gestion variables	0		2980	1		1		[-]		0							1	0	0		0	0	<NULL>		<NULL>		Ex tache 244
-505258	258	4	DYNAMIQUE	01 - Inventaire type Gallery	0		17863	0		1		<NULL>		0				4	9:L3,4,3|8:L2,4,3|7:L1,4,3|5:4,3|4:3		1	0	0		0	0	<NULL>		[ANCRE_INV]	9	9:L2,5,4,3|8:L2:4,3|5:4,3|4:3
-
-QOFF-05A query results
-505258	32	2	Doc EOS	DOCUMENT_INSERT_OR_REPLACE	0	1	UPDATE_AND_MODIFY_CONFIGURED		<NULL>		[Logo]	4			0		0	2315264	CHECK QOFF-08: exactly one usable source document is required	0	POST_ONLY: task counts plus QOFF-17
-505258	54	2	Doc EOS	DOCUMENT_INSERT_OR_REPLACE	0	1	UPDATE_AND_MODIFY_CONFIGURED		[NOM_SGP]	7	[NOM_SGP]	7			0		0	2315264	CHECK QOFF-08: exactly one usable source document is required	0	POST_ONLY: task counts plus QOFF-17
-505258	88	1	SQL	VALUE_UPDATE	1	0	UPDATE_AND_MODIFY_CONFIGURED	2888	<NULL>		<NULL>				0		0	2315264	CONFIGURED: prove fetched rows and updateCount at runtime	0	POST_ONLY: task counts plus QOFF-17
-
-QOFF-06 query returned 0 rows
-
-QOFF-07 query results
-505258	399	0399 - NPC_IP_OPCVM_FCPE_FIVG_FR	2	1	1	0	0	11	0	0	379	3673088	3673088	379.FR - SFTR - IP-NPC 2023		2315264	1		
-
-QOFF-07B query results
-505258	1	GABARIT	399	0399 - NPC_IP_OPCVM_FCPE_FIVG_FR	3673088	3673088	1	79981
-
-QOFF-08 query results
-505258	1	79981	32	5	2	544277	jpg	2016-03-01 00:00:00	Amiral_Gestion_logo	44976	44976		0			<NULL>		[Logo]	4	1
-505258	1	79981	54	10	2	544278	qxp	2016-03-01 00:00:00	AMIRAL GESTION	100352	100352		0			[NOM_SGP]	7	[NOM_SGP]	7	1
-
-QOFF-08B query returned 0 rows
-
-QOFF-09 query returned 0 rows
-
-QOFF-10 query results:
-NLS_DATE_FORMAT	DD-MON-RR
-NLS_DATE_LANGUAGE	AMERICAN
-NLS_NUMERIC_CHARACTERS	.,
-NLS_TERRITORY	AMERICA
-
-
-
 {
-  "type": "about:blank",
-  "title": "Forbidden",
-  "status": 403,
-  "detail": "Access Denied",
-  "instance": "/api/v1/EngineService/fetchRunProperties/505258"
-}
-{
-  "type": "about:blank",
-  "title": "Forbidden",
-  "status": 403,
-  "detail": "Access Denied",
-  "instance": "/api/v1/EngineService/processRun/505258"
+  "typeRapport": "PLAQUETTE",
+  "typeRapportCode": 2,
+  "idFndCode": "101011",
+  "idSuivi": 79981,
+  "dateEcheance": "2025-12-01T00:00:00",
+  "idLangue": 1,
+  "societe": "AMRGE",
+  "codeLangue": "FR",
+  "gabaritSource": "GABARIT",
+  "idSuiviGabaritSource": -2147483648,
+  "idGabarit": 399,
+  "idGabaritTemplate": 379,
+  "integrerN1": false,
+  "compartimentMode": "UNKNOWN",
+  "compartimentModeCode": 0,
+  "runType": "Manuelle",
+  "generateToWord": false,
+  "modeDegrade": false,
+  "idLastPdf": -2147483648,
+  "idLastQxp": -2147483648,
+  "idLastDoc": -2147483648,
+  "nbPageBySpread": 1,
+  "storeDataTypeCode": 0
 }
 
-C:\Users\rgurram062722\bin\jdk21-current\bin\java.exe -Dspring.profiles.active=local -Dspring.config.location=classpath:/,file:./src/main/config/local/ -XX:TieredStopAtLevel=1 -Dspring.output.ansi.enabled=always -javaagent:C:\Users\rgurram062722\bin\idea-IU-26.1\lib\idea_rt.jar=52633 -Dfile.encoding=UTF-8 -Dsun.stdout.encoding=UTF-8 -Dsun.stderr.encoding=UTF-8 @C:\Users\rgurram062722\AppData\Local\Temp\idea_arg_file1528800972 com.socgen.sgs.api.quark.engine.Application
+{
+  "runId": 505258,
+  "statusCode": 2,
+  "status": "Generated"
+}
+
+C:\Users\rgurram062722\bin\jdk21-current\bin\java.exe -Dspring.profiles.active=local -Dspring.config.location=classpath:/,file:./src/main/config/local/ -DJPA_SHOW_SQL=false -XX:TieredStopAtLevel=1 -Dspring.output.ansi.enabled=always -javaagent:C:\Users\rgurram062722\bin\idea-IU-26.1\lib\idea_rt.jar=55551 -Dfile.encoding=UTF-8 -Dsun.stdout.encoding=UTF-8 -Dsun.stderr.encoding=UTF-8 @C:\Users\rgurram062722\AppData\Local\Temp\idea_arg_file32884100 com.socgen.sgs.api.quark.engine.Application
 
   .   ____          _            __ _ _
  /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
@@ -92,31 +41,31 @@ C:\Users\rgurram062722\bin\jdk21-current\bin\java.exe -Dspring.profiles.active=l
 
  :: Spring Boot ::               (v3.5.15)
 
-2026-09-03 05:02:26.074 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.sgs.api.quark.engine.Application - Starting Application using Java 21.0.11 with PID 19128 (C:\Users\rgurram062722\Documents\GitHub\engine service repo\quark-engine\target\classes started by rgurram062722 in C:\Users\rgurram062722\Documents\GitHub\engine service repo\quark-engine)
-2026-09-03 05:02:26.081 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.sgs.api.quark.engine.Application - The following 1 profile is active: "local"
-2026-09-03 05:02:26.491 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.b.d.restart.ChangeableUrls - The Class-Path manifest attribute in C:\Users\rgurram062722\.m2\repository\com\oracle\database\jdbc\ojdbc11\21.18.0.0\ojdbc11-21.18.0.0.jar referenced one or more files that do not exist: file:/C:/Users/rgurram062722/.m2/repository/com/oracle/database/jdbc/ojdbc11/21.18.0.0/oraclepki.jar
-2026-09-03 05:02:26.491 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor - Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
-2026-09-03 05:02:26.491 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor - For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
-2026-09-03 05:02:41.620 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
-2026-09-03 05:02:41.731 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 86 ms. Found 0 JPA repository interfaces.
-2026-09-03 05:02:42.531 WARN  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'com.socgen.apibank.autoconfigure.swaggerui.SwaggerUiAutoConfiguration' of type [com.socgen.apibank.autoconfigure.swaggerui.SwaggerUiAutoConfiguration] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). The currently created BeanPostProcessor [swaggerUiOptionsOptionsPropagator] is declared through a non-static factory method on that class; consider declaring it as static instead.
-2026-09-03 05:02:42.551 WARN  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'sg.swagger-ui3-com.socgen.apibank.autoconfigure.swaggerui.SwaggerUiProperties' of type [com.socgen.apibank.autoconfigure.swaggerui.SwaggerUiProperties] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected/applied to a currently created BeanPostProcessor [swaggerUiOptionsOptionsPropagator]? Check the corresponding BeanPostProcessor declaration and its dependencies/advisors. If this bean does not have to be post-processed, declare it with ROLE_INFRASTRUCTURE.
-2026-09-03 05:02:42.634 WARN  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'sg.openapi-com.socgen.apibank.openapi.OpenApiProperties' of type [com.socgen.apibank.openapi.OpenApiProperties] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected/applied to a currently created BeanPostProcessor [swaggerUiOptionsOptionsPropagator]? Check the corresponding BeanPostProcessor declaration and its dependencies/advisors. If this bean does not have to be post-processed, declare it with ROLE_INFRASTRUCTURE.
-2026-09-03 05:02:43.052 WARN  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'com.socgen.apibank.problem.servlet.SgConnectProblemConfiguration' of type [com.socgen.apibank.problem.servlet.SgConnectProblemConfiguration] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). The currently created BeanPostProcessor [problemSecurityBeanPostProcessor] is declared through a non-static factory method on that class; consider declaring it as static instead.
-2026-09-03 05:02:43.772 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
-2026-09-03 05:02:43.795 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.a.catalina.core.StandardService - Starting service [Tomcat]
-2026-09-03 05:02:43.795 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.55]
-2026-09-03 05:02:44.004 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
-2026-09-03 05:02:44.004 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 17512 ms
-2026-09-03 05:02:47.143 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
-2026-09-03 05:02:47.666 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] org.hibernate.Version - HHH000412: Hibernate ORM core version 6.6.53.Final
-2026-09-03 05:02:47.836 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
-2026-09-03 05:02:49.019 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
-2026-09-03 05:02:49.122 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
-2026-09-03 05:02:49.127 WARN  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] c.z.hikari.util.DriverDataSource - Registered driver with driverClassName=oracle.jdbc.driver.OracleDriver was not found, trying direct instantiation.
-2026-09-03 05:02:50.245 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection oracle.jdbc.driver.T4CConnection@9b10ded
-2026-09-03 05:02:50.251 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
-2026-09-03 05:02:50.750 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.hibernate.orm.connections.pooling - HHH10001005: Database info:
+2026-09-03 05:27:21.930 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.sgs.api.quark.engine.Application - Starting Application using Java 21.0.11 with PID 21624 (C:\Users\rgurram062722\Documents\GitHub\engine service repo\quark-engine\target\classes started by rgurram062722 in C:\Users\rgurram062722\Documents\GitHub\engine service repo\quark-engine)
+2026-09-03 05:27:21.933 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.sgs.api.quark.engine.Application - The following 1 profile is active: "local"
+2026-09-03 05:27:22.122 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.b.d.restart.ChangeableUrls - The Class-Path manifest attribute in C:\Users\rgurram062722\.m2\repository\com\oracle\database\jdbc\ojdbc11\21.18.0.0\ojdbc11-21.18.0.0.jar referenced one or more files that do not exist: file:/C:/Users/rgurram062722/.m2/repository/com/oracle/database/jdbc/ojdbc11/21.18.0.0/oraclepki.jar
+2026-09-03 05:27:22.123 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor - Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2026-09-03 05:27:22.123 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor - For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2026-09-03 05:27:24.123 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-09-03 05:27:24.192 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 58 ms. Found 0 JPA repository interfaces.
+2026-09-03 05:27:24.568 WARN  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'com.socgen.apibank.autoconfigure.swaggerui.SwaggerUiAutoConfiguration' of type [com.socgen.apibank.autoconfigure.swaggerui.SwaggerUiAutoConfiguration] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). The currently created BeanPostProcessor [swaggerUiOptionsOptionsPropagator] is declared through a non-static factory method on that class; consider declaring it as static instead.
+2026-09-03 05:27:24.586 WARN  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'sg.swagger-ui3-com.socgen.apibank.autoconfigure.swaggerui.SwaggerUiProperties' of type [com.socgen.apibank.autoconfigure.swaggerui.SwaggerUiProperties] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected/applied to a currently created BeanPostProcessor [swaggerUiOptionsOptionsPropagator]? Check the corresponding BeanPostProcessor declaration and its dependencies/advisors. If this bean does not have to be post-processed, declare it with ROLE_INFRASTRUCTURE.
+2026-09-03 05:27:24.653 WARN  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'sg.openapi-com.socgen.apibank.openapi.OpenApiProperties' of type [com.socgen.apibank.openapi.OpenApiProperties] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected/applied to a currently created BeanPostProcessor [swaggerUiOptionsOptionsPropagator]? Check the corresponding BeanPostProcessor declaration and its dependencies/advisors. If this bean does not have to be post-processed, declare it with ROLE_INFRASTRUCTURE.
+2026-09-03 05:27:24.839 WARN  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'com.socgen.apibank.problem.servlet.SgConnectProblemConfiguration' of type [com.socgen.apibank.problem.servlet.SgConnectProblemConfiguration] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). The currently created BeanPostProcessor [problemSecurityBeanPostProcessor] is declared through a non-static factory method on that class; consider declaring it as static instead.
+2026-09-03 05:27:25.225 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2026-09-03 05:27:25.241 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-09-03 05:27:25.241 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.55]
+2026-09-03 05:27:25.384 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2026-09-03 05:27:25.384 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 3261 ms
+2026-09-03 05:27:26.358 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-09-03 05:27:26.424 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] org.hibernate.Version - HHH000412: Hibernate ORM core version 6.6.53.Final
+2026-09-03 05:27:26.465 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2026-09-03 05:27:26.762 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-09-03 05:27:26.799 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2026-09-03 05:27:26.804 WARN  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] c.z.hikari.util.DriverDataSource - Registered driver with driverClassName=oracle.jdbc.driver.OracleDriver was not found, trying direct instantiation.
+2026-09-03 05:27:27.335 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection oracle.jdbc.driver.T4CConnection@3583e5a0
+2026-09-03 05:27:27.337 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2026-09-03 05:27:27.498 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.hibernate.orm.connections.pooling - HHH10001005: Database info:
 	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
 	Database driver: undefined/unknown
 	Database version: 19.0
@@ -124,28 +73,143 @@ C:\Users\rgurram062722\bin\jdk21-current\bin\java.exe -Dspring.profiles.active=l
 	Isolation level: undefined/unknown
 	Minimum pool size: undefined/unknown
 	Maximum pool size: undefined/unknown
-2026-09-03 05:02:51.749 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
-2026-09-03 05:02:51.761 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
-2026-09-03 05:02:53.268 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.t.i.TaskProcessServiceImpl - Registered 7 task process strategies: [class com.socgen.sgs.api.quark.engine.domain.task.TaskCompartiment, class com.socgen.sgs.api.quark.engine.domain.task.TaskSql, class com.socgen.sgs.api.quark.engine.domain.task.TaskSystem, class com.socgen.sgs.api.quark.engine.domain.task.TaskDynamique, class com.socgen.sgs.api.quark.engine.domain.task.TaskDocument, class com.socgen.sgs.api.quark.engine.domain.task.TaskDid, class com.socgen.sgs.api.quark.engine.domain.task.TaskQxpPrevious]
-2026-09-03 05:02:53.272 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.t.i.TaskPostProcessServiceImpl - Registered 1 task post-process strategies: [class com.socgen.sgs.api.quark.engine.domain.task.TaskDid]
-2026-09-03 05:02:53.804 WARN  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
-2026-09-03 05:02:56.266 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.a.p.s.ProblemSecurityBeanPostProcessor - Register HttpSecurity's exceptionHandling
-2026-09-03 05:02:56.397 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.s.w.a.c.ChannelProcessingFilter - Validated configuration attributes
-2026-09-03 05:02:57.162 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.b.a.e.web.EndpointLinksResolver - Exposing 13 endpoints beneath base path '/actuator'
-2026-09-03 05:02:57.215 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.a.p.s.ProblemSecurityBeanPostProcessor - Register HttpSecurity's exceptionHandling
-2026-09-03 05:02:57.287 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.a.p.s.ProblemSecurityBeanPostProcessor - Register BearerTokenAuthenticationFilter's authentication entry point
-2026-09-03 05:02:57.327 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.s.w.a.c.ChannelProcessingFilter - Validated configuration attributes
-2026-09-03 05:02:57.840 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.b.a.h.H2ConsoleAutoConfiguration - H2 console available at '/h2-console'. Database available at 'jdbc:oracle:thin:@osfreygp3dwr1.ocp.cloud.socgen:1522:YGP3DWR1'
-2026-09-03 05:02:58.119 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.w.s.a.s.AnnotationActionEndpointMapping - Supporting [WS-Addressing August 2004, WS-Addressing 1.0]
-2026-09-03 05:02:58.338 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.b.d.a.OptionalLiveReloadServer - LiveReload server is running on port 35729
-2026-09-03 05:02:58.537 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/'
-2026-09-03 05:02:58.564 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.sgs.api.quark.engine.Application - Started Application in 34.244 seconds (process running for 39.189)
-2026-09-03 05:02:58.573 WARN  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.c.events.SpringDocAppInitializer - SpringDoc /api-docs endpoint is enabled by default. To disable it in production, set the property 'springdoc.api-docs.enabled=false'
-2026-09-03 05:02:58.573 WARN  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.c.events.SpringDocAppInitializer - SpringDoc /swagger-ui.html endpoint is enabled by default. To disable it in production, set the property 'springdoc.swagger-ui.enabled=false'
-2026-09-03 05:03:28.209 INFO  [http-nio-8080-exec-1] [runId= suiviId= taskId= stepIndex= childRunId=] o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
-2026-09-03 05:03:28.209 INFO  [http-nio-8080-exec-1] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
-2026-09-03 05:03:28.213 INFO  [http-nio-8080-exec-1] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.web.servlet.DispatcherServlet - Completed initialization in 2 ms
-2026-09-03 05:03:31.268 INFO  [http-nio-8080-exec-1] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.api.AbstractOpenApiResource - Init duration for springdoc-openapi is: 412 ms
-2026-09-03 05:04:03.577 WARN  [http-nio-8080-exec-5] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver - Resolved [org.springframework.security.authorization.AuthorizationDeniedException: Access Denied]
-2026-09-03 05:05:04.877 WARN  [http-nio-8080-exec-1] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver - Resolved [org.springframework.security.authorization.AuthorizationDeniedException: Access Denied]
-
+2026-09-03 05:27:27.896 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-09-03 05:27:27.902 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-09-03 05:27:28.433 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.t.i.TaskProcessServiceImpl - Registered 7 task process strategies: [class com.socgen.sgs.api.quark.engine.domain.task.TaskDynamique, class com.socgen.sgs.api.quark.engine.domain.task.TaskSql, class com.socgen.sgs.api.quark.engine.domain.task.TaskQxpPrevious, class com.socgen.sgs.api.quark.engine.domain.task.TaskDid, class com.socgen.sgs.api.quark.engine.domain.task.TaskCompartiment, class com.socgen.sgs.api.quark.engine.domain.task.TaskDocument, class com.socgen.sgs.api.quark.engine.domain.task.TaskSystem]
+2026-09-03 05:27:28.437 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.t.i.TaskPostProcessServiceImpl - Registered 1 task post-process strategies: [class com.socgen.sgs.api.quark.engine.domain.task.TaskDid]
+2026-09-03 05:27:28.708 WARN  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-09-03 05:27:29.774 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.a.p.s.ProblemSecurityBeanPostProcessor - Register HttpSecurity's exceptionHandling
+2026-09-03 05:27:29.860 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.s.w.a.c.ChannelProcessingFilter - Validated configuration attributes
+2026-09-03 05:27:30.264 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.b.a.e.web.EndpointLinksResolver - Exposing 13 endpoints beneath base path '/actuator'
+2026-09-03 05:27:30.319 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.a.p.s.ProblemSecurityBeanPostProcessor - Register HttpSecurity's exceptionHandling
+2026-09-03 05:27:30.381 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.a.p.s.ProblemSecurityBeanPostProcessor - Register BearerTokenAuthenticationFilter's authentication entry point
+2026-09-03 05:27:30.390 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.s.w.a.c.ChannelProcessingFilter - Validated configuration attributes
+2026-09-03 05:27:30.733 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.b.a.h.H2ConsoleAutoConfiguration - H2 console available at '/h2-console'. Database available at 'jdbc:oracle:thin:@osfreygp3dwr1.ocp.cloud.socgen:1522:YGP3DWR1'
+2026-09-03 05:27:30.822 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.w.s.a.s.AnnotationActionEndpointMapping - Supporting [WS-Addressing August 2004, WS-Addressing 1.0]
+2026-09-03 05:27:31.055 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.b.d.a.OptionalLiveReloadServer - LiveReload server is running on port 35729
+2026-09-03 05:27:31.169 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/'
+2026-09-03 05:27:31.192 INFO  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.sgs.api.quark.engine.Application - Started Application in 9.938 seconds (process running for 11.007)
+2026-09-03 05:27:31.201 WARN  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.c.events.SpringDocAppInitializer - SpringDoc /api-docs endpoint is enabled by default. To disable it in production, set the property 'springdoc.api-docs.enabled=false'
+2026-09-03 05:27:31.201 WARN  [restartedMain] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.c.events.SpringDocAppInitializer - SpringDoc /swagger-ui.html endpoint is enabled by default. To disable it in production, set the property 'springdoc.swagger-ui.enabled=false'
+2026-09-03 05:27:45.896 INFO  [http-nio-8080-exec-1] [runId= suiviId= taskId= stepIndex= childRunId=] o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-09-03 05:27:45.896 INFO  [http-nio-8080-exec-1] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2026-09-03 05:27:45.898 INFO  [http-nio-8080-exec-1] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.web.servlet.DispatcherServlet - Completed initialization in 2 ms
+2026-09-03 05:27:46.784 INFO  [http-nio-8080-exec-10] [runId= suiviId= taskId= stepIndex= childRunId=] o.s.api.AbstractOpenApiResource - Init duration for springdoc-openapi is: 411 ms
+2026-09-03 05:28:26.235 INFO  [http-nio-8080-exec-2] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.a.v.EngineServiceController - Fetching run properties for runId: 505258
+2026-09-03 05:28:26.235 INFO  [http-nio-8080-exec-2] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Retrieving properties for runId: 505258
+2026-09-03 05:28:26.235 INFO  [http-nio-8080-exec-2] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.b.GetRunPropertiesBusiness - Business layer: fetching run properties for runId: 505258
+2026-09-03 05:28:26.238 INFO  [http-nio-8080-exec-2] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.GetRunPropertiesDaoImpl - Fetching run properties for runId: 505258
+2026-09-03 05:28:26.405 INFO  [http-nio-8080-exec-2] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.GetRunPropertiesDaoImpl - Successfully retrieved run properties for runId: 505258
+2026-09-03 05:28:26.406 INFO  [http-nio-8080-exec-2] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Successfully retrieved properties for runId: 505258
+2026-09-03 05:29:30.926 INFO  [http-nio-8080-exec-10] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.a.v.EngineServiceController - Fetching run properties for runId: 505258
+2026-09-03 05:29:30.926 INFO  [http-nio-8080-exec-10] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Retrieving properties for runId: 505258
+2026-09-03 05:29:30.926 INFO  [http-nio-8080-exec-10] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.b.GetRunPropertiesBusiness - Business layer: fetching run properties for runId: 505258
+2026-09-03 05:29:30.927 INFO  [http-nio-8080-exec-10] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.GetRunPropertiesDaoImpl - Fetching run properties for runId: 505258
+2026-09-03 05:29:30.956 INFO  [http-nio-8080-exec-10] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.GetRunPropertiesDaoImpl - Successfully retrieved run properties for runId: 505258
+2026-09-03 05:29:30.956 INFO  [http-nio-8080-exec-10] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Successfully retrieved properties for runId: 505258
+2026-09-03 05:29:58.143 INFO  [http-nio-8080-exec-1] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.a.v.EngineServiceController - Processing run with runId: 505258
+2026-09-03 05:29:58.144 INFO  [http-nio-8080-exec-1] [runId= suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Processing run with runId: 505258
+2026-09-03 05:29:58.151 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.b.RunStartUpdateBusiness - Business layer: starting run with ID: 505258
+2026-09-03 05:29:58.152 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.RunStartUpdateDaoImpl - Starting run with ID: 505258
+2026-09-03 05:29:58.171 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.RunStartUpdateDaoImpl - Successfully started run with ID: 505258
+2026-09-03 05:29:58.174 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Run started successfully with runId: 505258
+2026-09-03 05:29:58.175 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Loading run with runId: 505258
+2026-09-03 05:29:58.175 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Retrieving properties for runId: 505258
+2026-09-03 05:29:58.175 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.b.GetRunPropertiesBusiness - Business layer: fetching run properties for runId: 505258
+2026-09-03 05:29:58.175 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.GetRunPropertiesDaoImpl - Fetching run properties for runId: 505258
+2026-09-03 05:29:58.187 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.GetRunPropertiesDaoImpl - Successfully retrieved run properties for runId: 505258
+2026-09-03 05:29:58.188 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Successfully retrieved properties for runId: 505258
+2026-09-03 05:29:58.188 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.b.GetGabaritBusiness - Fetching template metadata for idGabarit=399
+2026-09-03 05:29:58.189 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.GetGabaritDaoImpl - Fetching template metadata for idGabarit=399
+2026-09-03 05:29:58.344 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.GetGabaritDaoImpl - Successfully retrieved template metadata for idGabarit=399
+2026-09-03 05:29:58.344 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.b.GetGabaritBusiness - Prepared template document paths; documentId=399, dataBytes=3673088
+2026-09-03 05:29:58.347 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.i.q.c.QxpsHttpClient - QXPS call: method=POST, messageTypes=AddFileMessage, queryParameterCount=0, requestBytes=3673088
+2026-09-03 05:29:59.491 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.i.q.c.QxpsHttpClient - QXPS completed: method=POST, messageTypes=AddFileMessage, httpStatus=200, durationMs=1143, responseCategory=BINARY, responseBytes=48, responseChars=0
+2026-09-03 05:29:59.491 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.i.q.helper.QxpsHelper - File added to QXPS document pool
+2026-09-03 05:29:59.491 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.i.q.p.FilePoolService - File available in root workspace [505258]
+2026-09-03 05:29:59.492 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.i.q.p.FilePoolService - File available in root workspace [505258]
+2026-09-03 05:29:59.493 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.i.q.c.QxpsHttpClient - QXPS call: method=GET, messageTypes=FetchXmlMessage, queryParameterCount=0, requestBytes=0
+2026-09-03 05:30:00.824 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.i.q.c.QxpsHttpClient - QXPS completed: method=GET, messageTypes=FetchXmlMessage, httpStatus=200, durationMs=1331, responseCategory=TEXT, responseBytes=0, responseChars=719344
+2026-09-03 05:30:01.179 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId= taskId= stepIndex= childRunId=] c.s.sgs.api.quark.engine.domain.Run - Template structure loaded for run [505258]: 824 boxes across 10 pages
+2026-09-03 05:30:01.227 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId= taskId= stepIndex= childRunId=] c.s.sgs.api.quark.engine.domain.Run - Template identity evaluation completed for run [505258]
+2026-09-03 05:30:01.228 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.b.GetInParamsBusiness - Business layer: loading in-params for runId: 505258
+2026-09-03 05:30:01.228 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.GetInParamsDaoImpl - Fetching in-params for idSuivi: 79981
+2026-09-03 05:30:01.255 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.GetInParamsDaoImpl - Loaded 2 in-params for idSuivi: 79981
+2026-09-03 05:30:01.255 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.LoadTasksServiceImpl - Loading tasks for runId: 505258
+2026-09-03 05:30:01.256 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.b.GetTasksBusiness - Business layer: loading tasks for runId: 505258
+2026-09-03 05:30:01.256 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.impl.GetTasksDaoImpl - Fetching tasks for runId: 505258
+2026-09-03 05:30:01.387 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.impl.GetTasksDaoImpl - Fetched 16 task rows for runId: 505258
+2026-09-03 05:30:01.394 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.LoadTasksServiceImpl - Loaded 16 tasks for runId: 505258
+2026-09-03 05:30:01.394 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.LoadTasksServiceImpl - Loading task exceptions for runId: 505258
+2026-09-03 05:30:01.394 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.b.GetTaskExceptionsBusiness - Business layer: loading task exceptions for runId: 505258
+2026-09-03 05:30:01.395 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.GetTaskExceptionsDaoImpl - Fetching task exceptions for runId: 505258
+2026-09-03 05:30:01.417 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.GetTaskExceptionsDaoImpl - Fetched 0 task exception rows for runId: 505258
+2026-09-03 05:30:01.418 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.LoadTasksServiceImpl - Task exception loading completed for run [505258]: 0 loaded, 0 missing-task rows skipped, 0 duplicate-block rows skipped
+2026-09-03 05:30:01.418 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.LoadTasksServiceImpl - DID task added for runId: 505258
+2026-09-03 05:30:01.419 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.b.LoadTemplatesBusiness - No TODO dynamic task for run [505258], skipping template loading
+2026-09-03 05:30:01.421 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Run load summary: runId=505258, suiviId=79981, reportTypeCode=2, gabaritSource=GABARIT, gabaritBytes=3673088, degraded=false, inParamCount=2, taskCount=17, todoTaskCount=4, todoDocumentTaskCount=2, templateCount=0, taskTypeCounts={TaskDid=1, TaskDocument=2, TaskDynamique=2, TaskSql=12}, dynamicTemplateBytes=0
+2026-09-03 05:30:01.422 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId= taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Run loading completed for runId: 505258
+2026-09-03 05:30:01.423 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId=79981 taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessTasksServiceImpl - Preparing tasks for runId: 505258
+2026-09-03 05:30:01.429 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId=79981 taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessTasksServiceImpl - Task preparation completed for runId: 505258
+2026-09-03 05:30:01.432 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId=79981 taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.GetDocumentDaoImpl - Fetching reference document for subcategory [5] and language [1]
+2026-09-03 05:30:01.479 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId=79981 taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.i.q.c.QxpsHttpClient - QXPS call: method=POST, messageTypes=AddFileMessage, queryParameterCount=0, requestBytes=44976
+2026-09-03 05:30:01.523 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId=79981 taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.i.q.c.QxpsHttpClient - QXPS completed: method=POST, messageTypes=AddFileMessage, httpStatus=200, durationMs=42, responseCategory=BINARY, responseBytes=48, responseChars=0
+2026-09-03 05:30:01.523 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId=79981 taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.i.q.helper.QxpsHelper - File added to QXPS document pool
+2026-09-03 05:30:01.523 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId=79981 taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.i.q.p.FilePoolService - File available in root workspace [505258]
+2026-09-03 05:30:01.523 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId=79981 taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.d.i.GetDocumentDaoImpl - Fetching reference document for subcategory [10] and language [1]
+2026-09-03 05:30:01.550 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId=79981 taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.i.q.c.QxpsHttpClient - QXPS call: method=POST, messageTypes=AddFileMessage, queryParameterCount=0, requestBytes=100352
+2026-09-03 05:30:01.590 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId=79981 taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.i.q.c.QxpsHttpClient - QXPS completed: method=POST, messageTypes=AddFileMessage, httpStatus=200, durationMs=40, responseCategory=BINARY, responseBytes=48, responseChars=0
+2026-09-03 05:30:01.590 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId=79981 taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.i.q.helper.QxpsHelper - File added to QXPS document pool
+2026-09-03 05:30:01.590 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId=79981 taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.i.q.p.FilePoolService - File available in root workspace [505258]
+2026-09-03 05:30:01.590 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId=79981 taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessTasksServiceImpl - Processing tasks for runId: 505258
+Standard Commons Logging discovery in action with spring-jcl: please remove commons-logging.jar from classpath in order to avoid potential conflicts
+2026-09-03 05:30:01.710 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId=79981 taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessTasksServiceImpl - Task result: taskId=32, taskType=TaskDocument, inError=false, updateBlocks=0, modifyBlocks=1, storedDataRows=0
+2026-09-03 05:30:01.710 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId=79981 taskId=54 stepIndex= childRunId=] c.s.s.a.q.e.i.i.q.p.FilePoolService - File available in root workspace [505258]
+2026-09-03 05:30:01.710 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId=79981 taskId=54 stepIndex= childRunId=] c.s.s.a.q.e.i.i.q.c.QxpsHttpClient - QXPS call: method=GET, messageTypes=FetchXmlMessage, queryParameterCount=0, requestBytes=0
+2026-09-03 05:30:01.851 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId=79981 taskId=54 stepIndex= childRunId=] c.s.s.a.q.e.i.i.q.c.QxpsHttpClient - QXPS completed: method=GET, messageTypes=FetchXmlMessage, httpStatus=200, durationMs=140, responseCategory=TEXT, responseBytes=0, responseChars=2562
+2026-09-03 05:30:01.856 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId=79981 taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessTasksServiceImpl - Task result: taskId=54, taskType=TaskDocument, inError=false, updateBlocks=1, modifyBlocks=0, storedDataRows=0
+2026-09-03 05:30:01.937 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId=79981 taskId=88 stepIndex= childRunId=] c.s.s.a.q.e.b.ProcessSqlBusiness - SQL task completed: taskId=88, runId=505258, sqlChars=2888, bindCount=2, rowCount=9, durationMs=78
+2026-09-03 05:30:01.938 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId=79981 taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessTasksServiceImpl - Task result: taskId=88, taskType=TaskSql, inError=false, updateBlocks=9, modifyBlocks=0, storedDataRows=0
+2026-09-03 05:30:01.938 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId=79981 taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessTasksServiceImpl - Task result: taskId=0, taskType=TaskDid, inError=false, updateBlocks=0, modifyBlocks=0, storedDataRows=0
+2026-09-03 05:30:01.953 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId=79981 taskId=0 stepIndex= childRunId=] c.s.s.a.q.e.s.t.i.DidTaskPostProcessStrategy - DID update mode: NAME_VALUE for run [505258]
+2026-09-03 05:30:01.954 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId=79981 taskId=0 stepIndex= childRunId=] c.s.s.a.q.e.s.t.i.DidTaskPostProcessStrategy - DID task post-process completed for run [505258]
+2026-09-03 05:30:01.954 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId=79981 taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessTasksServiceImpl - Task processing completed for runId: 505258
+2026-09-03 05:30:01.955 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId=79981 taskId= stepIndex= childRunId=] c.s.s.a.q.e.b.QxpsCallerBusiness - Starting step execution for run [505258] with 2 steps
+2026-09-03 05:30:01.956 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId=79981 taskId= stepIndex=0 childRunId=] c.s.s.a.q.e.b.QxpsCallerBusiness - Preparing step [0] for run [505258]
+2026-09-03 05:30:01.959 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId=79981 taskId= stepIndex=0 childRunId=] c.s.s.a.q.e.b.QxpsCallerBusiness - Executing step [0]: add=0 update=11 excluded=0
+2026-09-03 05:30:01.964 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId=79981 taskId= stepIndex=0 childRunId=] c.s.s.a.q.e.i.i.q.QxpsmSoapClient - QXPSM started: operation=processRequest, nameValueCount=11, modifierLayoutCount=0
+2026-09-03 05:30:02.295 WARN  [http-nio-8080-exec-1] [runId=505258 suiviId=79981 taskId= stepIndex=0 childRunId=] org.apache.axis.utils.JavaUtils - Unable to find required classes (javax.activation.DataHandler and javax.mail.internet.MimeMultipart). Attachment support is disabled.
+2026-09-03 05:30:06.056 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId=79981 taskId= stepIndex=0 childRunId=] c.s.s.a.q.e.i.i.q.QxpsmSoapClient - QXPSM completed: operation=processRequest, durationMs=4092, nameValueCount=11, modifierLayoutCount=0, streamBytes=0, textChars=55, multipartCount=1
+2026-09-03 05:30:06.057 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId=79981 taskId= stepIndex=0 childRunId=] c.s.s.a.q.e.i.i.q.c.QxpsHttpClient - QXPS call: method=GET, messageTypes=LiteralMessage, queryParameterCount=0, requestBytes=0
+2026-09-03 05:30:06.174 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId=79981 taskId= stepIndex=0 childRunId=] c.s.s.a.q.e.i.i.q.c.QxpsHttpClient - QXPS completed: method=GET, messageTypes=LiteralMessage, httpStatus=200, durationMs=115, responseCategory=BINARY, responseBytes=3681280, responseChars=0
+2026-09-03 05:30:06.175 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId=79981 taskId= stepIndex=0 childRunId=] c.s.s.a.q.e.b.QxpsCallerBusiness - Step [0] completed for run [505258]
+2026-09-03 05:30:06.175 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId=79981 taskId= stepIndex=1 childRunId=] c.s.s.a.q.e.b.QxpsCallerBusiness - Preparing step [1] for run [505258]
+2026-09-03 05:30:06.175 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId=79981 taskId= stepIndex=1 childRunId=] c.s.s.a.q.e.i.i.q.p.FilePoolService - File available in root workspace [505258]
+2026-09-03 05:30:06.176 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId=79981 taskId= stepIndex=1 childRunId=] c.s.s.a.q.e.i.i.q.c.QxpsHttpClient - QXPS call: method=GET, messageTypes=FetchXmlMessage, queryParameterCount=0, requestBytes=0
+2026-09-03 05:30:06.868 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId=79981 taskId= stepIndex=1 childRunId=] c.s.s.a.q.e.i.i.q.c.QxpsHttpClient - QXPS completed: method=GET, messageTypes=FetchXmlMessage, httpStatus=200, durationMs=692, responseCategory=TEXT, responseBytes=0, responseChars=707258
+2026-09-03 05:30:07.056 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId=79981 taskId= stepIndex=1 childRunId=] c.s.s.a.q.e.b.QxpsCallerBusiness - Executing step [1]: add=0 update=1 excluded=0
+2026-09-03 05:30:07.081 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId=79981 taskId= stepIndex=1 childRunId=] c.s.s.a.q.e.i.i.q.c.QxpsHttpClient - QXPS call: method=POST, messageTypes=AddFileMessage, queryParameterCount=0, requestBytes=351
+2026-09-03 05:30:07.101 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId=79981 taskId= stepIndex=1 childRunId=] c.s.s.a.q.e.i.i.q.c.QxpsHttpClient - QXPS completed: method=POST, messageTypes=AddFileMessage, httpStatus=200, durationMs=20, responseCategory=BINARY, responseBytes=48, responseChars=0
+2026-09-03 05:30:07.104 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId=79981 taskId= stepIndex=1 childRunId=] c.s.s.a.q.e.i.i.q.c.QxpsHttpClient - QXPS call: method=GET, messageTypes=ModifyMessage,SaveAsMessage,QxpRenderMessage, queryParameterCount=4, requestBytes=0
+2026-09-03 05:30:07.463 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId=79981 taskId= stepIndex=1 childRunId=] c.s.s.a.q.e.i.i.q.c.QxpsHttpClient - QXPS completed: method=GET, messageTypes=ModifyMessage,SaveAsMessage,QxpRenderMessage, httpStatus=200, durationMs=358, responseCategory=TEXT, responseBytes=0, responseChars=28
+2026-09-03 05:30:07.464 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId=79981 taskId= stepIndex=1 childRunId=] c.s.s.a.q.e.i.i.q.c.QxpsHttpClient - QXPS call: method=GET, messageTypes=LiteralMessage, queryParameterCount=0, requestBytes=0
+2026-09-03 05:30:07.566 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId=79981 taskId= stepIndex=1 childRunId=] c.s.s.a.q.e.i.i.q.c.QxpsHttpClient - QXPS completed: method=GET, messageTypes=LiteralMessage, httpStatus=200, durationMs=101, responseCategory=BINARY, responseBytes=3811328, responseChars=0
+2026-09-03 05:30:07.566 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId=79981 taskId= stepIndex=1 childRunId=] c.s.s.a.q.e.b.QxpsCallerBusiness - Step [1] completed for run [505258]
+2026-09-03 05:30:07.566 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId=79981 taskId= stepIndex= childRunId=] c.s.s.a.q.e.b.QxpsCallerBusiness - All steps completed for run [505258]
+2026-09-03 05:30:07.566 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId=79981 taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.impl.CheckServiceImpl - Starting Check step for run [505258]
+2026-09-03 05:30:07.567 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId=79981 taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.impl.CheckServiceImpl - Check step completed for run [505258]
+2026-09-03 05:30:07.567 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId=79981 taskId= stepIndex= childRunId=] c.s.s.a.q.e.b.QxpsCallerBusiness - Starting final renders for run [505258]
+2026-09-03 05:30:07.570 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId=79981 taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.i.q.c.QxpsHttpClient - QXPS call: method=GET, messageTypes=PdfRenderMessage, queryParameterCount=6, requestBytes=0
+2026-09-03 05:30:15.838 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId=79981 taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.i.q.c.QxpsHttpClient - QXPS completed: method=GET, messageTypes=PdfRenderMessage, httpStatus=200, durationMs=8266, responseCategory=BINARY, responseBytes=524313, responseChars=0
+2026-09-03 05:30:15.838 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId=79981 taskId= stepIndex= childRunId=] c.s.s.a.q.e.b.QxpsCallerBusiness - PDF render completed for run [505258]
+2026-09-03 05:30:15.839 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId=79981 taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.i.q.c.QxpsHttpClient - QXPS call: method=GET, messageTypes=LiteralMessage, queryParameterCount=0, requestBytes=0
+2026-09-03 05:30:15.938 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId=79981 taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.i.q.c.QxpsHttpClient - QXPS completed: method=GET, messageTypes=LiteralMessage, httpStatus=200, durationMs=99, responseCategory=BINARY, responseBytes=3811328, responseChars=0
+2026-09-03 05:30:15.938 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId=79981 taskId= stepIndex= childRunId=] c.s.s.a.q.e.b.QxpsCallerBusiness - QXP fetched (literal) for run [505258]
+2026-09-03 05:30:15.938 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId=79981 taskId= stepIndex= childRunId=] c.s.s.a.q.e.b.QxpsCallerBusiness - All renders completed for run [505258]
+2026-09-03 05:30:15.954 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId=79981 taskId= stepIndex= childRunId=] c.s.s.a.q.e.business.EndRunBusiness - Finalizing run [505258] with status [GENERATED]
+2026-09-03 05:30:16.915 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId=79981 taskId= stepIndex= childRunId=] c.s.s.a.q.e.business.EndRunBusiness - Stored QXP document [id=1051258, 3811328 bytes] in QXP_DOCUMENT for run [505258]
+2026-09-03 05:30:17.066 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId=79981 taskId= stepIndex= childRunId=] c.s.s.a.q.e.business.EndRunBusiness - Stored PDF document [id=1051259, 524313 bytes] in QXP_DOCUMENT for run [505258]
+2026-09-03 05:30:17.163 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId=79981 taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.dao.impl.EndRunDaoImpl - End_Run executed for run [505258]
+2026-09-03 05:30:17.177 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId=79981 taskId= stepIndex= childRunId=] c.s.s.a.q.e.i.dao.impl.AuditDaoImpl - Audit row inserted for run [505258]
+2026-09-03 05:30:17.177 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId=79981 taskId= stepIndex= childRunId=] c.s.s.a.q.e.business.EndRunBusiness - Run [505258] finalized successfully
+2026-09-03 05:30:17.189 INFO  [http-nio-8080-exec-1] [runId=505258 suiviId=79981 taskId= stepIndex= childRunId=] c.s.s.a.q.e.s.i.ProcessRunServiceImpl - Run completed: runId=505258, status=GENERATED, durationMs=17789, errorCount=0, terminalStatePersisted=true, finalQxpBytes=3811328, finalPdfBytes=524313, finalJpgBytes=0
